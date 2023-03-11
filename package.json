@@ -1,14 +1,41 @@
 {
-  "name": "osrs-tracker",
+  "name": "osrs-tracker-web",
   "version": "0.0.0",
-  "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test"
-  },
   "private": true,
+  "description": "A web application for tracking item prices and xp gains in Old School Runescape.",
+  "keywords": [
+    "runescape",
+    "osrs",
+    "oldschool-runescape",
+    "hiscores",
+    "items",
+    "prices"
+  ],
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Freek Mencke",
+    "email": "freek_mencke.dev@outlook.com",
+    "url": "https://github.com/osrs-tracker/osrs-tracker-web"
+  },
+  "scripts": {
+    "build": "ng build",
+    "predeploy": "ng build",
+    "deploy": "aws s3 sync --delete ./dist/osrs-tracker-web s3://osrs-tracker.freekmencke.com",
+    "deploy:dryrun": "npm run deploy -- --dryrun",
+    "lint": "ng lint",
+    "prettier": "prettier --write .",
+    "prettier:ci": "prettier --check .",
+    "start": "ng serve --open",
+    "test": "ng test",
+    "test:ci": "ng test --watch false --browsers ChromeHeadless",
+    "watch": "ng build --watch --configuration development"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "prettier": "./.prettierrc.json",
   "dependencies": {
     "@angular/animations": "^15.2.0",
     "@angular/common": "^15.2.0",
@@ -18,21 +45,38 @@
     "@angular/platform-browser": "^15.2.0",
     "@angular/platform-browser-dynamic": "^15.2.0",
     "@angular/router": "^15.2.0",
+    "commitizen": "^4.3.0",
+    "cz-conventional-changelog": "^3.3.0",
     "rxjs": "~7.8.0",
+    "stream-browserify": "^3.0.0",
     "tslib": "^2.3.0",
+    "xml-js": "^1.6.11",
     "zone.js": "~0.12.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^15.2.0",
+    "@angular-eslint/builder": "15.2.1",
+    "@angular-eslint/eslint-plugin": "15.2.1",
+    "@angular-eslint/eslint-plugin-template": "15.2.1",
+    "@angular-eslint/schematics": "15.2.1",
+    "@angular-eslint/template-parser": "15.2.1",
     "@angular/cli": "~15.2.0",
     "@angular/compiler-cli": "^15.2.0",
     "@types/jasmine": "~4.3.0",
+    "@typescript-eslint/eslint-plugin": "5.48.2",
+    "@typescript-eslint/parser": "5.48.2",
+    "autoprefixer": "^10.4.14",
+    "eslint": "^8.33.0",
+    "eslint-config-prettier": "^8.6.0",
     "jasmine-core": "~4.5.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.1.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
+    "postcss": "^8.4.21",
+    "prettier": "^2.8.4",
+    "tailwindcss": "^3.2.7",
     "typescript": "~4.9.4"
   }
 }

@@ -1,0 +1,81 @@
+<div class="min-h-screen flex flex-col">
+  <nav class="sticky top-0 z-50 text-white bg-slate-900 border-b border-slate-300/20">
+    <div class="relative container mx-auto flex items-center px-4 py-4">
+      <!-- Logo -->
+      <a
+        class="active:text-emerald-500 hover:text-emerald-400 font-bold text-lg"
+        routerLink="/"
+        >OSRS Tracker</a
+      >
+
+      <!-- Spacer -->
+      <div class="flex-grow"></div>
+
+      <!-- Desktop menu -->
+      <div class="hidden lg:flex items-center">
+        <ul class="flex space-x-4 font-semibold">
+          <li *ngFor="let route of routes">
+            <a
+              class="active:text-emerald-600 hover:text-emerald-500"
+              [routerLink]="route.path"
+              routerLinkActive="text-emerald-400"
+              [routerLinkActiveOptions]="{ exact: route.path === '/' }"
+              >{{ route.name }}</a
+            >
+          </li>
+        </ul>
+      </div>
+
+      <!-- Mobile menu button -->
+      <menu-button [(menuCollapsed)]="menuCollapsed"></menu-button>
+
+      <div class="flex border-l border-slate-300/20 font-bold ml-4 lg:ml-6 pl-4 lg:pl-6">
+        <dark-mode></dark-mode>
+      </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div
+      *ngIf="!menuCollapsed"
+      class="absolute w-full lg:hidden border-b border-slate-300/20"
+    >
+      <div class="bg-slate-800 shadow-2xl">
+        <ul class="container mx-auto flex flex-col font-semibold py-2">
+          <li
+            *ngFor="let route of routes"
+            class="border-b last:border-b-0 border-b-slate-700"
+          >
+            <a
+              class="flex active:text-emerald-600 hover:text-emerald-500 px-4 py-2 bg-slate-800"
+              (click)="menuCollapsed = true"
+              [routerLink]="route.path"
+              routerLinkActive="text-emerald-400"
+              [routerLinkActiveOptions]="{ exact: route.path === '/' }"
+              >{{ route.name }}</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="relative">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer
+    class="flex justify-center text-slate-500 bg-slate-900 border-t border-slate-300/20 text-sm mt-auto px-4 py-2"
+  >
+    <div class="border-r border-slate-300/20 font-semibold mr-6 pr-6">&copy; OSRS Tracker 2023</div>
+    <a
+      class="active:text-slate-300 hover:text-slate-400 mr-6"
+      routerLink="/privacy"
+      >Privacy</a
+    >
+    <a
+      class="active:text-slate-300 hover:text-slate-400"
+      routerLink="/terms"
+      >Terms</a
+    >
+  </footer>
+</div>

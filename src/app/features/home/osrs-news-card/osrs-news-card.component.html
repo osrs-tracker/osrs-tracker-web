@@ -1,0 +1,27 @@
+<article
+  class="flex flex-col h-full shadow-xl rounded-lg border border-slate-200 dark:border-transparent bg-slate-100 dark:bg-slate-800"
+>
+  <img
+    class="rounded-t-lg cursor-pointer"
+    loading="lazy"
+    [src]="osrsNewsItem.enclosure.link"
+    [alt]="osrsNewsItem.title"
+    (click)="openLink(osrsNewsItem.link)"
+  />
+  <div class="flex flex-col flex-grow p-4">
+    <div class="flex justify-between text-slate-500 dark:text-slate-400 mb-2">
+      <small>{{ osrsNewsItem.pubDate | date }}</small>
+      <small>{{ osrsNewsItem.categories[0] }}</small>
+    </div>
+    <h3 class="font-semibold mb-2">{{ osrsNewsItem.title }}</h3>
+    <div class="mb-2">{{ osrsNewsItem.description }}</div>
+    <div class="mt-auto">
+      <a
+        class="active:text-emerald-400 hover:text-emerald-500 text-emerald-600 font-semibold dark:active:text-emerald-600 dark:hover:text-emerald-500 dark:text-emerald-400"
+        [href]="osrsNewsItem.link"
+        target="_blank"
+        >Read more</a
+      >
+    </div>
+  </div>
+</article>

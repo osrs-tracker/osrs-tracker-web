@@ -1,0 +1,20 @@
+<header class="container mx-auto py-24">
+  <h1 class="flex flex-col items-center text-center">
+    <span class="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 dark:text-white">OSRS Tracker</span>
+    <span
+      class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-emerald-600 dark:text-emerald-400 mt-2 sm:mt-3 lg:mt-4"
+      >Track your OSRS progress.</span
+    >
+  </h1>
+</header>
+
+<section class="container mx-auto pb-8 px-4">
+  <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">OSRS News</h2>
+
+  <div class="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
+    <osrs-news-card
+      *ngFor="let newsItem of osrsNewsItems"
+      [osrsNewsItem]="newsItem"
+    ></osrs-news-card>
+  </div>
+</section>
