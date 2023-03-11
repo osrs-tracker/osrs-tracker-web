@@ -2,14 +2,15 @@
   "name": "osrs-tracker-web",
   "version": "0.0.0",
   "private": true,
-  "description": "A web application for tracking item prices and xp gains in Old School Runescape.",
+  "description": "Keep track of everything that matters in Old School Runescape. Track the latest news, item prices, hiscores, and XP gains.",
   "keywords": [
     "runescape",
     "osrs",
     "oldschool-runescape",
     "hiscores",
     "items",
-    "prices"
+    "price-tracker",
+    "xp-tracker"
   ],
   "license": "Apache-2.0",
   "author": {
