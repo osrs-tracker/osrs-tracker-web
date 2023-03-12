@@ -21,7 +21,7 @@
   },
   "scripts": {
     "build": "ng build",
-    "predeploy": "ng build",
+    "predeploy": "ng build && touch ./dist/osrs-tracker-web/robots.txt",
     "deploy": "aws s3 sync --delete ./dist/osrs-tracker-web s3://osrs-tracker.freekmencke.com",
     "deploy:dryrun": "npm run deploy -- --dryrun",
     "lint": "ng lint",
