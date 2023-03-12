@@ -13,11 +13,11 @@ export class XpTrackerComponent {
   constructor(private cdRef: ChangeDetectorRef, private router: Router) {}
 
   searchUser(username: string) {
+    if (!username) return;
+
     this.setLoading(true);
 
-    this.router.navigate(['xp-tracker', username]).catch(() => {
-      this.setLoading(false);
-    });
+    this.router.navigate(['xp-tracker', username]);
   }
 
   private setLoading(loading: boolean) {
