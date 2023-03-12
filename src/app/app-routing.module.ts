@@ -15,13 +15,11 @@ const routes: Routes = [
       },
       {
         path: 'price-tracker',
-        pathMatch: 'full',
         loadChildren: () => import('./features/coming-soon/coming-soon.module').then(m => m.ComingSoonModule),
       },
       {
         path: 'xp-tracker',
-        pathMatch: 'full',
-        loadChildren: () => import('./features/coming-soon/coming-soon.module').then(m => m.ComingSoonModule),
+        loadChildren: () => import('./features/xp-tracker/xp-tracker.module').then(m => m.XpTrackerModule),
       },
       {
         path: 'privacy',

@@ -1,0 +1,65 @@
+<!-- Player not found -->
+<header
+  *ngIf="!playerDetails"
+  class="container mx-auto py-48 sm:py-72"
+>
+  <h1 class="flex flex-col items-center text-center">
+    <span class="text-7xl sm:text-8xl lg:text-9xl font-bold text-slate-900 dark:text-white">404</span>
+    <span class="accent text-2xl sm:text-3xl lg:text-4xl font-semibold mt-2 sm:mt-3 lg:mt-4">NOT FOUND</span>
+  </h1>
+</header>
+
+<!-- Player found -->
+<div
+  *ngIf="playerDetails"
+  class="container mx-auto my-8 px-4 grid lg:grid-cols-3 2xl:grid-cols-4 gap-8"
+>
+  <section>
+    <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Player details</h1>
+    <div
+      class="shadow-xl rounded-lg border border-slate-200 dark:border-transparent bg-slate-100 dark:bg-slate-800 p-4 flex"
+    >
+      <div class="flex-1 font-bold">
+        <div>Username:</div>
+        <div>Mode:</div>
+        <div *ngIf="playerDetails.type === PlayerType.Hardcore">Hardcore status:</div>
+        <div *ngIf="playerDetails.type !== PlayerType.Normal && playerDetails.status !== PlayerStatus.Default">
+          Ironman status:
+        </div>
+        <div *ngIf="playerDetails.type !== PlayerType.Normal">Last checked:</div>
+      </div>
+      <div class="flex-1 font-semibold">
+        <div>{{ playerDetails.username }}</div>
+        <div>{{ playerDetails.type }}</div>
+        <div *ngIf="playerDetails.type === PlayerType.Hardcore">
+          <span
+            *ngIf="playerDetails.diedAsHardcore"
+            class="text-red-500"
+          >
+            Dead
+          </span>
+          <span
+            *ngIf="!playerDetails.diedAsHardcore"
+            class="text-green-500"
+          >
+            Alive
+          </span>
+        </div>
+        <div
+          *ngIf="playerDetails.type !== PlayerType.Normal && playerDetails.status !== PlayerStatus.Default"
+          class="text-red-500"
+        >
+          {{ playerDetails.status }}
+        </div>
+        <div *ngIf="playerDetails.type !== PlayerType.Normal">
+          {{ playerDetails.lastModified | date : 'yy/MM/dd, HH:mm' }}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="lg:grid-span-2 2xl:col-span-3">
+    <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">XP logs</h1>
+    <p>Under construction...</p>
+  </section>
+</div>
