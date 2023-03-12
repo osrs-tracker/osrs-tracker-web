@@ -5,7 +5,7 @@ import { DarkModeService } from './dark-mode.service';
   selector: 'dark-mode',
   template: `
     <div
-      class="cursor-pointer active:text-emerald-600 hover:text-emerald-500 w-6 h-6"
+      class="cursor-pointer link-states--dark w-6 h-6"
       (click)="darkModeService.toggleDarkMode()"
     >
       <svg

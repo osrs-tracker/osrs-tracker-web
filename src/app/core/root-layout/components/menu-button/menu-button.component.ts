@@ -5,7 +5,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, HostBinding, Input, O
   template: `
     <button
       type="button"
-      class="lg:hidden active:text-emerald-600 hover:text-emerald-500"
+      class="lg:hidden link-states--dark"
       (click)="menuCollapsedChange.next((menuCollapsed = !menuCollapsed))"
     >
       <svg

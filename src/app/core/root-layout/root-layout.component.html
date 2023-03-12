@@ -3,7 +3,7 @@
     <div class="relative container mx-auto flex items-center px-4 py-4">
       <!-- Logo -->
       <a
-        class="active:text-emerald-500 hover:text-emerald-400 font-bold text-lg"
+        class="link-states--dark font-bold text-lg"
         routerLink="/"
         >OSRS Tracker</a
       >
@@ -16,7 +16,7 @@
         <ul class="flex space-x-4 font-semibold">
           <li *ngFor="let route of routes">
             <a
-              class="active:text-emerald-600 hover:text-emerald-500"
+              class="link-states--dark"
               [routerLink]="route.path"
               routerLinkActive="text-emerald-400"
               [routerLinkActiveOptions]="{ exact: route.path === '/' }"
@@ -40,13 +40,13 @@
       class="absolute w-full lg:hidden border-b border-slate-300/20"
     >
       <div class="bg-slate-800 shadow-2xl">
-        <ul class="container mx-auto flex flex-col font-semibold py-2">
+        <ul class="container mx-auto flex flex-col font-semibold">
           <li
             *ngFor="let route of routes"
             class="border-b last:border-b-0 border-b-slate-700"
           >
             <a
-              class="flex active:text-emerald-600 hover:text-emerald-500 px-4 py-2 bg-slate-800"
+              class="flex link-states--dark px-4 py-4 bg-slate-800"
               (click)="menuCollapsed = true"
               [routerLink]="route.path"
               routerLinkActive="text-emerald-400"
@@ -77,5 +77,8 @@
       routerLink="/terms"
       >Terms</a
     >
+    <div class="border-l border-slate-300/20 font-semibold ml-6 pl-6">
+      This content is not endorsed by or affiliated with Jagex.
+    </div>
   </footer>
 </div>
