@@ -64,21 +64,26 @@
   </main>
 
   <footer
-    class="flex justify-center text-slate-500 bg-slate-900 border-t border-slate-300/20 text-sm mt-auto px-4 py-2"
+    class="flex flex-col md:flex-row items-center justify-center text-slate-500 bg-slate-900 border-t border-slate-300/20 text-sm mt-auto px-4 py-2"
   >
-    <div class="border-r border-slate-300/20 font-semibold mr-6 pr-6">&copy; OSRS Tracker 2023</div>
-    <a
-      class="active:text-slate-300 hover:text-slate-400 mr-6"
-      routerLink="/privacy"
-      >Privacy</a
-    >
-    <a
-      class="active:text-slate-300 hover:text-slate-400"
-      routerLink="/terms"
-      >Terms</a
-    >
-    <div class="border-l border-slate-300/20 font-semibold ml-6 pl-6">
+    <div class="border-slate-300/20 font-semibold md:border-r md:mr-6 md:pr-6">&copy; OSRS Tracker 2023</div>
+
+    <div class="border-slate-300/20 md:border-r md:mr-6 md:pr-6 py-2 md:py-0">
       This content is not endorsed by or affiliated with Jagex.
+    </div>
+    <div>
+      <a
+        class="active:text-slate-300 hover:text-slate-400 mr-6"
+        routerLink="/privacy"
+      >
+        Privacy
+      </a>
+      <a
+        class="active:text-slate-300 hover:text-slate-400"
+        routerLink="/terms"
+      >
+        Terms
+      </a>
     </div>
   </footer>
 </div>
