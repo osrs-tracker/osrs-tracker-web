@@ -28,7 +28,7 @@
             "assets": ["src/favicon.png", "src/favicon-dark.png", "src/assets"],
             "styles": ["src/styles.scss"],
             "scripts": [],
-            "allowedCommonJsDependencies": ["xml-js"]
+            "allowedCommonJsDependencies": ["rss-to-json"]
           },
           "configurations": {
             "production": {

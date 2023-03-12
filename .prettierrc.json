@@ -7,7 +7,7 @@
   "trailingComma": "all",
   "bracketSpacing": true,
   "bracketSameLine": false,
-  "arrowParens": "always",
+  "arrowParens": "avoid",
   "rangeStart": 0,
   "requirePragma": false,
   "insertPragma": false,
@@ -15,5 +15,6 @@
   "htmlWhitespaceSensitivity": "css",
   "endOfLine": "lf",
   "embeddedLanguageFormatting": "auto",
-  "singleAttributePerLine": true
+  "singleAttributePerLine": true,
+  "semi": true
 }

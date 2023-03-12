@@ -11,27 +11,27 @@ const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        loadChildren: () => import('./features/home/home.module').then((m) => m.HomeModule),
+        loadChildren: () => import('./features/home/home.module').then(m => m.HomeModule),
       },
       {
         path: 'price-tracker',
         pathMatch: 'full',
-        loadChildren: () => import('./features/coming-soon/coming-soon.module').then((m) => m.ComingSoonModule),
+        loadChildren: () => import('./features/coming-soon/coming-soon.module').then(m => m.ComingSoonModule),
       },
       {
         path: 'xp-tracker',
         pathMatch: 'full',
-        loadChildren: () => import('./features/coming-soon/coming-soon.module').then((m) => m.ComingSoonModule),
+        loadChildren: () => import('./features/coming-soon/coming-soon.module').then(m => m.ComingSoonModule),
       },
       {
         path: 'privacy',
         pathMatch: 'full',
-        loadChildren: () => import('./features/coming-soon/coming-soon.module').then((m) => m.ComingSoonModule),
+        loadChildren: () => import('./features/coming-soon/coming-soon.module').then(m => m.ComingSoonModule),
       },
       {
         path: 'terms',
         pathMatch: 'full',
-        loadChildren: () => import('./features/coming-soon/coming-soon.module').then((m) => m.ComingSoonModule),
+        loadChildren: () => import('./features/coming-soon/coming-soon.module').then(m => m.ComingSoonModule),
       },
     ],
   },

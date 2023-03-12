@@ -12,7 +12,7 @@ export class HomeComponent implements OnInit {
   constructor(private cdRef: ChangeDetectorRef, private osrsProxyRepo: OsrsProxyRepo) {}
 
   ngOnInit(): void {
-    this.osrsProxyRepo.getOSRSNews().subscribe((newsItems) => {
+    this.osrsProxyRepo.getOSRSNews().subscribe(newsItems => {
       this.osrsNewsItems = newsItems.slice(0, 4);
       this.cdRef.markForCheck();
     });
