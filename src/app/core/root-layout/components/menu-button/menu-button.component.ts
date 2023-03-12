@@ -7,6 +7,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, HostBinding, Input, O
       type="button"
       class="lg:hidden link-states--dark"
       (click)="menuCollapsedChange.next((menuCollapsed = !menuCollapsed))"
+      aria-label="Menu"
     >
       <svg
         *ngIf="!menuCollapsed"
