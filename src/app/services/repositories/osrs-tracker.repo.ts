@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Player } from '@osrs-tracker/models';
+import { HiscoreEntry, Player } from '@osrs-tracker/models';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -11,5 +11,11 @@ export class OsrsTrackerRepo {
 
   getPlayerInfo(username: string): Observable<Player> {
     return this.httpClient.get<Player>(`/player/${username}`);
+  }
+
+  getPlayerHiscores(username: string, scrapingOffset = 0, skip = 0): Observable<HiscoreEntry[]> {
+    return this.httpClient.get<HiscoreEntry[]>(`/player/${username}/hiscores`, {
+      params: { scrapingOffset, skip },
+    });
   }
 }

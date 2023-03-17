@@ -1,0 +1,66 @@
+<header class="flex items-center justify-between mb-4">
+  <h1 class="text-2xl font-bold text-slate-900 dark:text-white">XP logs</h1>
+</header>
+
+<ng-template #playerNotTrackedMsg>
+  <p class="text-lg">This player is not being tracked yet...</p>
+</ng-template>
+
+<div
+  *ngIf="isPlayerTracked; else playerNotTrackedMsg"
+  class="flex flex-col gap-4"
+>
+  <!-- skeleton loader -->
+  <ng-template [ngIf]="!hiscoreDiffs">
+    <div
+      *ngFor="let skills of [].constructor(7); let i = index"
+      class="shadow-lg rounded-lg bg-slate-100 dark:bg-slate-800"
+    >
+      <h2 class="rounded-t-lg bg-slate-300 dark:bg-slate-700 px-4 py-2">
+        <div class="animate-pulse h-5 w-24 my-1 rounded-xl bg-slate-200 dark:bg-slate-600"></div>
+      </h2>
+      <div class="p-4 grid grid-cols-2 xl:grid-cols-3 gap-2">
+        <div *ngFor="let skills of [].constructor(((i * 3) % 9) + 6)">
+          <div class="animate-pulse h-4 w-20 my-2 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
+          <div class="animate-pulse h-4 w-28 my-2 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- content -->
+  <div
+    *ngFor="let diff of hiscoreDiffs; let i = index"
+    class="text-lg shadow-lg rounded-lg bg-slate-100 dark:bg-slate-800"
+  >
+    <h2 class="font-semibold rounded-t-lg bg-slate-300 dark:bg-slate-700 px-4 py-2">
+      <ng-template [ngIf]="i === 0">Today</ng-template>
+      <ng-template [ngIf]="i === 1">Yesterday</ng-template>
+      <ng-template [ngIf]="i > 1">{{ diff.date | date : 'MMMM dd' }}</ng-template>
+    </h2>
+
+    <!-- hiscore diffs -->
+    <div
+      *ngIf="hasXpGained(diff); else noXpGainedMsg"
+      class="p-4 grid grid-cols-2 xl:grid-cols-3 gap-2"
+    >
+      <ng-template
+        ngFor
+        let-skill
+        [ngForOf]="diff.skills"
+      >
+        <div *ngIf="skill.xp">
+          <div>{{ skill.name }}</div>
+          <div class="font-thin text-slate-900 dark:text-white">+&nbsp;{{ skill.xp | number }}&nbsp;XP</div>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- no xp gained -->
+    <ng-template #noXpGainedMsg>
+      <div class="p-4">
+        <p class="text-base opacity-70">Nothing interesting happend.</p>
+      </div>
+    </ng-template>
+  </div>
+</div>

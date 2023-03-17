@@ -14,52 +14,15 @@
   *ngIf="playerDetails"
   class="container mx-auto my-8 px-4 grid lg:grid-cols-3 2xl:grid-cols-4 gap-8"
 >
-  <section>
-    <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Player details</h1>
-    <div
-      class="shadow-xl rounded-lg border border-slate-200 dark:border-transparent bg-slate-100 dark:bg-slate-800 p-4 flex"
-    >
-      <div class="flex-1 font-bold">
-        <div>Username:</div>
-        <div>Mode:</div>
-        <div *ngIf="playerDetails.type === PlayerType.Hardcore">Hardcore status:</div>
-        <div *ngIf="playerDetails.type !== PlayerType.Normal && playerDetails.status !== PlayerStatus.Default">
-          Ironman status:
-        </div>
-        <div *ngIf="playerDetails.type !== PlayerType.Normal">Last checked:</div>
-      </div>
-      <div class="flex-1 font-semibold">
-        <div>{{ playerDetails.username }}</div>
-        <div>{{ playerDetails.type }}</div>
-        <div *ngIf="playerDetails.type === PlayerType.Hardcore">
-          <span
-            *ngIf="playerDetails.diedAsHardcore"
-            class="text-red-500"
-          >
-            Dead
-          </span>
-          <span
-            *ngIf="!playerDetails.diedAsHardcore"
-            class="text-green-500"
-          >
-            Alive
-          </span>
-        </div>
-        <div
-          *ngIf="playerDetails.type !== PlayerType.Normal && playerDetails.status !== PlayerStatus.Default"
-          class="text-red-500"
-        >
-          {{ playerDetails.status }}
-        </div>
-        <div *ngIf="playerDetails.type !== PlayerType.Normal">
-          {{ playerDetails.lastModified | date : 'yy/MM/dd, HH:mm' }}
-        </div>
-      </div>
-    </div>
-  </section>
+  <player-widget
+    [playerDetails]="playerDetails"
+    [today]="today"
+  ></player-widget>
 
-  <section class="lg:grid-span-2 2xl:col-span-3">
-    <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">XP logs</h1>
-    <p>Under construction...</p>
-  </section>
+  <player-logs
+    class="lg:col-span-2 2xl:col-span-3"
+    [playerDetails]="playerDetails"
+    [today]="today"
+    [history]="history"
+  ></player-logs>
 </div>
