@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HiscoreEntry } from '@osrs-tracker/models';
-import partition from 'lodash-es/partition';
 import {
   BossEnum,
-  Hiscore,
-  MiniGame,
+  BountyHunterEnum,
+  ClueScrollsEnum,
+  CompetitiveEnum,
   MiniGameEnum,
-  ParseOrder,
-  PO_2023_03_15,
   RaidEnum,
-  Skill,
   SkillEnum,
-} from './hiscore.model';
+} from './hiscore.enum';
+import { Hiscore, MiniGame, Skill } from './hiscore.model';
+
+import { ParseOrder, PO_2023_03_15 } from './hiscore.parse-order';
 
 @Injectable({
   providedIn: 'root',
@@ -30,86 +30,110 @@ export class HiscoreService {
   parseHiscoreString(hiscoreString: string): Omit<Hiscore, keyof HiscoreEntry> {
     const lines = hiscoreString.split('\n').filter(line => line.length);
 
-    const skills = lines.slice(0, 24).map((line, i) => this.parseSkillLine(PO_2023_03_15, line, i));
-    const leaguePoints = lines.slice(24, 25).map((line, i) => this.parseMiniGameLine(PO_2023_03_15, line, 24 + i))[0];
-    const bountyHunter = lines.slice(25, 27).map((line, i) => this.parseMiniGameLine(PO_2023_03_15, line, 25 + i));
-    const clueScrolls = lines.slice(27, 35).map((line, i) => this.parseMiniGameLine(PO_2023_03_15, line, 27 + i));
-    const miniGames = lines.slice(34, 38).map((line, i) => this.parseMiniGameLine(PO_2023_03_15, line, 34 + i));
-    const bossesAndRaids = lines.slice(38).map((line, i) => this.parseMiniGameLine(PO_2023_03_15, line, 38 + i));
+    // we can put a function here later to determine the parser based on the date
+    const parser = PO_2023_03_15;
 
-    const [bosses, raids] = partition(bossesAndRaids, val => Object.values(BossEnum).includes(val.name as BossEnum));
+    const skillsInPO = PO_2023_03_15.filter(val => Object.values(SkillEnum).includes(val as SkillEnum)).length;
 
-    return {
-      skills,
-      leaguePoints,
-      bountyHunter,
-      clueScrolls,
-      miniGames,
-      bosses,
-      raids,
-    };
+    // skills are the first entries, after that come the minigames
+    const skills = lines.slice(0, skillsInPO).map((line, i) => this.parseSkillLine(parser, line, i));
+    const minigames = lines.slice(skillsInPO).map((line, i) => this.parseMiniGameLine(parser, line, i + skillsInPO));
+
+    // Create a new hiscore object with skills and minigame placeholders
+    const hiscore = {
+      skills: skills.reduce((acc, val) => (acc = { ...acc, [val.name]: val }), {}),
+      bosses: {},
+      raids: {},
+      clueScrolls: {},
+      competitive: {},
+      bountyHunter: {},
+      miniGames: {},
+    } as Hiscore;
+
+    // Fill the minigame placeholders
+    minigames.forEach(miniGame => {
+      if (Object.values(BossEnum).includes(miniGame.name as BossEnum))
+        return (hiscore.bosses[miniGame.name as BossEnum] = miniGame);
+
+      if (Object.values(RaidEnum).includes(miniGame.name as RaidEnum))
+        return (hiscore.raids[miniGame.name as RaidEnum] = miniGame);
+
+      if (Object.values(ClueScrollsEnum).includes(miniGame.name as ClueScrollsEnum))
+        return (hiscore.clueScrolls[miniGame.name as ClueScrollsEnum] = miniGame);
+
+      if (Object.values(CompetitiveEnum).includes(miniGame.name as CompetitiveEnum))
+        return (hiscore.competitive[miniGame.name as CompetitiveEnum] = miniGame);
+
+      if (Object.values(BountyHunterEnum).includes(miniGame.name as BountyHunterEnum))
+        return (hiscore.bountyHunter[miniGame.name as BountyHunterEnum] = miniGame);
+
+      if (Object.values(MiniGameEnum).includes(miniGame.name as MiniGameEnum))
+        return (hiscore.miniGames[miniGame.name as MiniGameEnum] = miniGame);
+
+      // Will be logged if a new minigame is added to the hiscore page
+      return console.error('Unknown minigame', miniGame);
+    });
+
+    return hiscore;
   }
 
-  hiscoreDiff(first: Hiscore, last: Hiscore): Hiscore {
-    type HiscoreEntries = [string, Skill[] | MiniGame | MiniGame[]][];
-
-    const firstHiscore: HiscoreEntries = Object.entries(first).sort((a, b) => a[0].localeCompare(b[0]));
-    const lastHiscore: HiscoreEntries = Object.entries(last).sort((a, b) => a[0].localeCompare(b[0]));
-
-    const diffEntries: HiscoreEntries = firstHiscore.map(([key, firstValue], index) => {
-      // use the date from the last hiscore
-      if (key === 'date') return [key, lastHiscore[index][1]];
-      // exclude these keys from diff
-      if (['sourceString', 'scrapingOffset'].includes(key)) return [key, firstValue];
-
-      if (Array.isArray(firstValue)) {
-        if (Object.hasOwn(firstValue[0], 'xp')) {
-          const lastValue = lastHiscore[index][1] as Skill[];
-
-          const skillDiffs = (firstValue as Skill[]).map(
-            (skill, i) =>
-              ({
-                name: skill.name,
-                rank: skill.rank - lastValue[i].rank,
-                level: skill.level - lastValue[i].level,
-                xp: this.expDiff(skill.xp, lastValue[i].xp),
-              } as Skill),
-          );
-
-          return [key, skillDiffs] as [string, Skill[]];
-        } else {
-          const lastValue = lastHiscore[index][1] as MiniGame[];
-
-          const MiniGameDiffs = (firstValue as MiniGame[]).map(
-            (miniGame, i) =>
-              ({
-                name: miniGame.name,
-                rank: miniGame.rank - lastValue[i].rank,
-                score: miniGame.score - lastValue[i].score,
-              } as MiniGame),
-          );
-
-          return [key, MiniGameDiffs] as [string, MiniGame[]];
-        }
-      } else {
-        const lastValue = lastHiscore[index][1] as MiniGame;
-
-        const miniGameDiff = {
-          name: key,
-          rank: firstValue.rank - lastValue.rank,
-          score: firstValue.score - lastValue.score,
-        };
-
-        return [key, miniGameDiff] as [string, MiniGame];
+  /**
+   * Returns the difference between two hiscores as a new Hiscore object.
+   */
+  hiscoreDiff(recent: Hiscore, old: Hiscore): Hiscore {
+    const diffEntries = Object.entries(recent).map(([hiscoreKey, recentValue]) => {
+      switch (hiscoreKey) {
+        case 'date':
+        case 'sourceString':
+        case 'scrapingOffset':
+          return [hiscoreKey, old[hiscoreKey]];
+        case 'skills':
+          return [
+            hiscoreKey,
+            Object.fromEntries(
+              Object.entries<Skill>(recentValue).map(([skillName, skill]) => [
+                skillName,
+                {
+                  name: skillName,
+                  rank: skill.rank - old.skills[skillName as SkillEnum].rank,
+                  level: skill.level - old.skills[skillName as SkillEnum].level,
+                  xp: this.expDiff(skill.xp, old.skills[skillName as SkillEnum].xp),
+                },
+              ]),
+            ),
+          ];
+        case 'bosses':
+        case 'raids':
+        case 'clueScrolls':
+        case 'competitive':
+        case 'bountyHunter':
+        case 'miniGames':
+          return [
+            hiscoreKey,
+            Object.fromEntries(
+              Object.entries<MiniGame>(recentValue).map(([miniGameName, miniGame]) => [
+                miniGameName,
+                {
+                  name: miniGameName,
+                  rank: miniGame.rank - (old[hiscoreKey] as { [key: string]: MiniGame })[miniGameName].rank,
+                  score: miniGame.score - (old[hiscoreKey] as { [key: string]: MiniGame })[miniGameName].score,
+                },
+              ]),
+            ),
+          ];
+        default:
+          throw new Error('Unknown hiscore key: ' + hiscoreKey);
       }
     });
 
     return Object.fromEntries(diffEntries) as Hiscore;
   }
 
+  /**
+   *  For some reason for free to play people membership skills can have 0 or -1 exp in the hiscore API.
+   *  Default to zero to fix ghost exp in membership skills (+1 exp).
+   */
   private expDiff(a: string | number, b: string | number): number {
-    // For some reason for free to play people membership skills can have 0 or -1 exp in the hiscore API.
-    // Default to zero to fix ghost exp in membership skills (+1 exp).
     return Math.max(Number(a), 0) - Math.max(Number(b), 0);
   }
 

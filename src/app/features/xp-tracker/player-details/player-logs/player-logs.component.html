@@ -47,7 +47,7 @@
       <ng-template
         ngFor
         let-skill
-        [ngForOf]="diff.skills"
+        [ngForOf]="skills(diff)"
       >
         <div *ngIf="skill.xp">
           <div>{{ skill.name }}</div>

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
+import { SkillEnum } from 'src/app/services/hiscores/hiscore.enum';
 import { Hiscore } from 'src/app/services/hiscores/hiscore.model';
 
 @Component({
@@ -17,12 +18,12 @@ export class PlayerWidgetComponent {
   calculateCombatLevel(hiscore?: Hiscore): string | number {
     if (!hiscore) return '...';
 
-    const [, attack, defence, strength, hitpoints, ranged, prayer, magic] = hiscore.skills.map(skill => skill.level);
+    const lvl = (skill: SkillEnum): number => hiscore.skills[skill].level;
 
-    const base = 0.25 * (defence + hitpoints + Math.floor(prayer / 2));
-    const melee = 0.325 * (attack + strength);
-    const range = 0.325 * (Math.floor(ranged / 2) + ranged);
-    const mage = 0.325 * (Math.floor(magic / 2) + magic);
+    const base = 0.25 * (lvl(SkillEnum.Defence) + lvl(SkillEnum.Hitpoints) + Math.floor(lvl(SkillEnum.Defence) / 2));
+    const melee = 0.325 * (lvl(SkillEnum.Attack) + lvl(SkillEnum.Strength));
+    const range = 0.325 * (Math.floor(lvl(SkillEnum.Ranged) / 2) + lvl(SkillEnum.Ranged));
+    const mage = 0.325 * (Math.floor(lvl(SkillEnum.Magic) / 2) + lvl(SkillEnum.Magic));
 
     return Math.floor(base + Math.max(melee, range, mage));
   }

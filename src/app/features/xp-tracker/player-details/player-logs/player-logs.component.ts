@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Player } from '@osrs-tracker/models';
-import { Hiscore } from 'src/app/services/hiscores/hiscore.model';
+import { Hiscore, Skill } from 'src/app/services/hiscores/hiscore.model';
 import { HiscoreService } from 'src/app/services/hiscores/hiscore.service';
 
 @Component({
@@ -29,7 +29,11 @@ export class PlayerLogsComponent implements OnChanges {
   }
 
   hasXpGained(hiscore: Hiscore): boolean {
-    return hiscore.skills.some(skill => skill.xp > 0);
+    return this.skills(hiscore).some(skill => skill.xp > 0);
+  }
+
+  skills(hiscore: Hiscore): Skill[] {
+    return Object.values(hiscore.skills);
   }
 
   private calculateHiscoreDiffs(): void {
