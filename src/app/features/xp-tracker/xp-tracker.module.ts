@@ -2,7 +2,9 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { SpinnerComponent } from 'src/app/standalone/spinner.component';
+import { IconDirective } from 'src/app/standalone/components/icon/icon.component';
+import { SpinnerComponent } from 'src/app/standalone/components/spinner/spinner.component';
+import { DateOrdinalPipe } from 'src/app/standalone/pipes/date-ordinal.pipe';
 import { PlayerDetailsComponent } from './player-details/player-details.component';
 import { playerDetailsResolver } from './player-details/player-details.resolver';
 import { playerDetailsTitleResolver } from './player-details/player-details.title-resolver';
@@ -29,6 +31,8 @@ import { XpTrackerComponent } from './xp-tracker.component';
       },
     ]),
     // Standalone
+    DateOrdinalPipe,
+    IconDirective,
     SpinnerComponent,
   ],
   declarations: [XpTrackerComponent, PlayerDetailsComponent, PlayerLogsComponent, PlayerWidgetComponent],

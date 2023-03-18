@@ -1,7 +1,7 @@
 import { HttpContextToken, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { apiConfig } from 'src/config/api.config';
+import { config } from 'src/config/config';
 
 export const BASE_URL_PREFIX = new HttpContextToken<boolean>(() => true);
 
@@ -12,6 +12,6 @@ export class BaseUrlInterceptor<T> implements HttpInterceptor {
   intercept(req: HttpRequest<T>, next: HttpHandler): Observable<HttpEvent<T>> {
     if (!req.context.get(BASE_URL_PREFIX)) return next.handle(req);
 
-    return next.handle(req.clone({ url: apiConfig.baseUrl + req.url }));
+    return next.handle(req.clone({ url: config.apiBaseUrl + req.url }));
   }
 }

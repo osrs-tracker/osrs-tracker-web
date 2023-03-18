@@ -19,7 +19,7 @@
       <h2 class="rounded-t-lg bg-slate-300 dark:bg-slate-700 px-4 py-2">
         <div class="animate-pulse h-5 w-24 my-1 rounded-xl bg-slate-200 dark:bg-slate-600"></div>
       </h2>
-      <div class="p-4 grid grid-cols-2 xl:grid-cols-3 gap-2">
+      <div class="p-4 grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-2">
         <div *ngFor="let skills of [].constructor(((i * 3) % 9) + 6)">
           <div class="animate-pulse h-4 w-20 my-2 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
           <div class="animate-pulse h-4 w-28 my-2 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
@@ -36,13 +36,13 @@
     <h2 class="font-semibold rounded-t-lg bg-slate-300 dark:bg-slate-700 px-4 py-2">
       <ng-template [ngIf]="i === 0">Today</ng-template>
       <ng-template [ngIf]="i === 1">Yesterday</ng-template>
-      <ng-template [ngIf]="i > 1">{{ diff.date | date : 'MMMM dd' }}</ng-template>
+      <ng-template [ngIf]="i > 1">{{ diff.date | date : 'MMMM dd' | dateOrdinal : diff.date }}</ng-template>
     </h2>
 
     <!-- hiscore diffs -->
     <div
       *ngIf="hasXpGained(diff); else noXpGainedMsg"
-      class="p-4 grid grid-cols-2 xl:grid-cols-3 gap-2"
+      class="p-4 grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gr gap-2"
     >
       <ng-template
         ngFor
@@ -50,8 +50,15 @@
         [ngForOf]="skills(diff)"
       >
         <div *ngIf="skill.xp">
-          <div>{{ skill.name }}</div>
-          <div class="font-thin text-slate-900 dark:text-white">+&nbsp;{{ skill.xp | number }}&nbsp;XP</div>
+          <div class="flex items-center gap-2">
+            <img
+              icon
+              [name]="skill.name"
+              class="w-4 h-4"
+            />
+            <span>{{ skill.name }}</span>
+          </div>
+          <div class="font-thin text-slate-900 dark:text-white ml-2">+&nbsp;{{ skill.xp | number }}&nbsp;XP</div>
         </div>
       </ng-template>
     </div>

@@ -1,4 +1,22 @@
-<h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Player details</h2>
+<header class="flex items-end justify-between mb-4">
+  <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ capitalizedUsername }}</h2>
+
+  <div class="relative flex gap-2 mb-0.5">
+    <img
+      *ngIf="playerDetails.type !== PlayerType.Normal"
+      icon
+      [name]="playerDetails.status === PlayerStatus.Default ? playerDetails.type : playerDetails.status"
+      class="h-6 w-6"
+    />
+    <img
+      *ngIf="playerDetails.diedAsHardcore"
+      icon
+      name="dead"
+      class="h-6 w-6"
+    />
+  </div>
+</header>
+
 <div class="shadow-lg rounded-lg bg-slate-100 dark:bg-slate-800 p-4 flex">
   <div class="flex flex-col flex-1 font-bold gap-y-1">
     <div>Username:</div>
@@ -22,13 +40,13 @@
     <div *ngIf="playerDetails.type === PlayerType.Hardcore">
       <span
         *ngIf="playerDetails.diedAsHardcore"
-        class="text-red-500"
+        class="text-red-400"
       >
         dead
       </span>
       <span
         *ngIf="!playerDetails.diedAsHardcore"
-        class="text-green-500"
+        class="text-green-400"
       >
         alive
       </span>

@@ -15,6 +15,14 @@ export class PlayerWidgetComponent {
   @Input() playerDetails: Player;
   @Input() today?: Hiscore;
 
+  /** Split the name into an array of words and capitalize each part */
+  get capitalizedUsername(): string {
+    return this.playerDetails.username
+      .split(/\s/g)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
   calculateCombatLevel(hiscore?: Hiscore): string | number {
     if (!hiscore) return '...';
 
