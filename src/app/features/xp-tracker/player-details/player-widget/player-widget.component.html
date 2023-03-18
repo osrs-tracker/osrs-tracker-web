@@ -1,0 +1,49 @@
+<h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Player details</h2>
+<div class="shadow-lg rounded-lg bg-slate-100 dark:bg-slate-800 p-4 flex">
+  <div class="flex flex-col flex-1 font-bold gap-y-1">
+    <div>Username:</div>
+    <div>Combat level:</div>
+    <div>Mode:</div>
+    <div *ngIf="playerDetails.type === PlayerType.Hardcore">Hardcore status:</div>
+    <div
+      *ngIf="
+        playerDetails.type !== PlayerType.Normal &&
+        (playerDetails.diedAsHardcore || playerDetails.status !== PlayerStatus.Default)
+      "
+    >
+      Ironman status:
+    </div>
+    <div *ngIf="playerDetails.type !== PlayerType.Normal">Last checked:</div>
+  </div>
+  <div class="flex flex-col flex-1 font-semibold gap-y-1">
+    <div>{{ playerDetails.username }}</div>
+    <div>{{ calculateCombatLevel(today) }}</div>
+    <div>{{ playerDetails.type }}</div>
+    <div *ngIf="playerDetails.type === PlayerType.Hardcore">
+      <span
+        *ngIf="playerDetails.diedAsHardcore"
+        class="text-red-500"
+      >
+        dead
+      </span>
+      <span
+        *ngIf="!playerDetails.diedAsHardcore"
+        class="text-green-500"
+      >
+        alive
+      </span>
+    </div>
+    <div *ngIf="playerDetails.diedAsHardcore">
+      {{ playerDetails.status }}
+    </div>
+    <div
+      *ngIf="playerDetails.type !== PlayerType.Normal && playerDetails.status !== PlayerStatus.Default"
+      class="text-red-500"
+    >
+      {{ playerDetails.status }}
+    </div>
+    <div *ngIf="playerDetails.type !== PlayerType.Normal">
+      {{ playerDetails.lastModified | date : 'MMMM dd, HH:mm' }}
+    </div>
+  </div>
+</div>

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { OsrsNewsItem } from 'src/app/services/osrs-proxy.repo';
+import { OsrsNewsItem } from 'src/app/services/repositories/osrs-proxy.repo';
 
 @Component({
   selector: 'osrs-news-card',

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { OsrsNewsItem, OsrsProxyRepo } from 'src/app/services/osrs-proxy.repo';
+import { OsrsNewsItem, OsrsProxyRepo } from 'src/app/services/repositories/osrs-proxy.repo';
 
 @Component({
   selector: 'home',

@@ -5,7 +5,8 @@ import { Injectable } from '@angular/core';
 })
 export class DarkModeService {
   get isDarkModeEnabled(): boolean {
-    return localStorage.getItem('darkMode') === 'true';
+    // set darkMode as default
+    return (localStorage.getItem('darkMode') ?? 'true') === 'true';
   }
 
   toggleDarkMode() {
