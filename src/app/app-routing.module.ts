@@ -14,6 +14,7 @@ const routes: Routes = [
         loadChildren: () => import('./features/home/home.module').then(m => m.HomeModule),
       },
       {
+        title: 'Price Tracker - OSRS Tracker',
         path: 'price-tracker',
         loadChildren: () => import('./features/coming-soon/coming-soon.module').then(m => m.ComingSoonModule),
       },
@@ -22,11 +23,13 @@ const routes: Routes = [
         loadChildren: () => import('./features/xp-tracker/xp-tracker.module').then(m => m.XpTrackerModule),
       },
       {
+        title: 'Privacy - OSRS Tracker',
         path: 'privacy',
         pathMatch: 'full',
         loadChildren: () => import('./features/coming-soon/coming-soon.module').then(m => m.ComingSoonModule),
       },
       {
+        title: 'Terms - OSRS Tracker',
         path: 'terms',
         pathMatch: 'full',
         loadChildren: () => import('./features/coming-soon/coming-soon.module').then(m => m.ComingSoonModule),

@@ -5,6 +5,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { SpinnerComponent } from 'src/app/standalone/spinner.component';
 import { PlayerDetailsComponent } from './player-details/player-details.component';
 import { playerDetailsResolver } from './player-details/player-details.resolver';
+import { playerDetailsTitleResolver } from './player-details/player-details.title-resolver';
 import { PlayerLogsComponent } from './player-details/player-logs/player-logs.component';
 import { PlayerWidgetComponent } from './player-details/player-widget/player-widget.component';
 import { XpTrackerComponent } from './xp-tracker.component';
@@ -14,8 +15,18 @@ import { XpTrackerComponent } from './xp-tracker.component';
     SharedModule,
     FormsModule,
     RouterModule.forChild([
-      { path: '', pathMatch: 'full', component: XpTrackerComponent },
-      { path: ':username', component: PlayerDetailsComponent, resolve: { player: playerDetailsResolver } },
+      {
+        title: 'XP Tracker - OSRS Tracker',
+        path: '',
+        pathMatch: 'full',
+        component: XpTrackerComponent,
+      },
+      {
+        title: playerDetailsTitleResolver,
+        path: ':username',
+        component: PlayerDetailsComponent,
+        resolve: { player: playerDetailsResolver },
+      },
     ]),
     // Standalone
     SpinnerComponent,
