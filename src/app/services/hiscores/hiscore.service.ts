@@ -70,7 +70,7 @@ export class HiscoreService {
         return (hiscore.miniGames[miniGame.name as MiniGameEnum] = miniGame);
 
       // Will be logged if a new minigame is added to the hiscore page
-      return console.error('Unknown minigame', miniGame);
+      throw new Error(`Unknown minigame: "${miniGame.name}"`);
     });
 
     return hiscore;
