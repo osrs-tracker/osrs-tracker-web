@@ -17,5 +17,3 @@
 
   <p align="center">Keep track of everything that matters in Old School Runescape. <br>Track the latest news, item prices, hiscores, and XP gains.</p>
 </div>
-
-##
