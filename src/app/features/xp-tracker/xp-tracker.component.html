@@ -12,25 +12,43 @@
       />
       <button
         type="submit"
-        class="absolute right-0 button--primary"
+        class="absolute rounded-full right-0 button--primary"
         (click)="searchUser(username)"
       >
-        <spinner *ngIf="loading"></spinner>
+        <span [class.invisible]="loading">Search</span>
 
-        <span *ngIf="!loading">Search</span>
+        <spinner
+          class="absolute block top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+          *ngIf="loading"
+        ></spinner>
       </button>
     </form>
   </div>
 </header>
 
-<div class="container mx-auto mb-8 px-4 flex flex-col gap-8">
-  <section>
-    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Recent</h2>
-    <p>Under construction...</p>
-  </section>
-
-  <section>
-    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Favorite</h2>
-    <p>Under construction...</p>
-  </section>
+<div class="container mx-auto mb-8 px-4">
+  <div class="mx-auto max-w-xl lg:max-w-5xl grid lg:grid-cols-2 gap-8">
+    <section>
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Recent</h2>
+      <div class="grid gap-4">
+        <a
+          [routerLink]="['/xp-tracker', username]"
+          *ngFor="let username of recentPlayers"
+        >
+          <player-xp-widget [username]="username"></player-xp-widget>
+        </a>
+      </div>
+    </section>
+    <section>
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Favorite</h2>
+      <div class="grid gap-4">
+        <a
+          [routerLink]="['/xp-tracker', username]"
+          *ngFor="let username of favoritePlayers"
+        >
+          <player-xp-widget [username]="username"></player-xp-widget>
+        </a>
+      </div>
+    </section>
+  </div>
 </div>

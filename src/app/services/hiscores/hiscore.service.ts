@@ -28,12 +28,11 @@ export class HiscoreService {
   }
 
   parseHiscoreString(hiscoreString: string): Omit<Hiscore, keyof HiscoreEntry> {
+    const parser = this.getCurrentParser();
+
     const lines = hiscoreString.split('\n').filter(line => line.length);
 
-    // we can put a function here later to determine the parser based on the date
-    const parser = PO_2023_03_15;
-
-    const skillsInPO = PO_2023_03_15.filter(val => Object.values(SkillEnum).includes(val as SkillEnum)).length;
+    const skillsInPO = parser.filter(val => Object.values(SkillEnum).includes(val as SkillEnum)).length;
 
     // skills are the first entries, after that come the minigames
     const skills = lines.slice(0, skillsInPO).map((line, i) => this.parseSkillLine(parser, line, i));
@@ -97,7 +96,7 @@ export class HiscoreService {
                   name: skillName,
                   rank: skill.rank - old.skills[skillName as SkillEnum].rank,
                   level: skill.level - old.skills[skillName as SkillEnum].level,
-                  xp: this.expDiff(skill.xp, old.skills[skillName as SkillEnum].xp),
+                  xp: this.xpDiff(skill.xp, old.skills[skillName as SkillEnum].xp),
                 },
               ]),
             ),
@@ -129,11 +128,31 @@ export class HiscoreService {
     return Object.fromEntries(diffEntries) as Hiscore;
   }
 
+  getOverallXpDiff(today: HiscoreEntry, recent: HiscoreEntry): number {
+    const todayOverall = this.getSkillFromSourceString(today.sourceString, SkillEnum.Overall);
+    const recentOverall = this.getSkillFromSourceString(recent.sourceString, SkillEnum.Overall);
+
+    return this.xpDiff(todayOverall.xp, recentOverall.xp);
+  }
+
+  private getSkillFromSourceString(sourceString: string, skill: SkillEnum): Skill {
+    const parser = this.getCurrentParser();
+
+    const lines = sourceString.split('\n').filter(line => line.length);
+    const overallLineNo = parser.indexOf(skill);
+
+    return this.parseSkillLine(parser, lines[overallLineNo], overallLineNo);
+  }
+
+  private getCurrentParser(): ParseOrder {
+    return PO_2023_03_15;
+  }
+
   /**
    *  For some reason for free to play people membership skills can have 0 or -1 exp in the hiscore API.
    *  Default to zero to fix ghost exp in membership skills (+1 exp).
    */
-  private expDiff(a: string | number, b: string | number): number {
+  private xpDiff(a: string | number, b: string | number): number {
     return Math.max(Number(a), 0) - Math.max(Number(b), 0);
   }
 

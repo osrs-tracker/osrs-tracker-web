@@ -16,7 +16,7 @@
   }
 
   .button--primary {
-    @apply text-white dark:text-slate-900 font-semibold rounded-full border px-6 py-2
+    @apply text-white dark:text-slate-900 font-semibold rounded-lg border px-6 py-2
       bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 border-emerald-500 hover:border-emerald-600 active:border-emerald-700
       dark:bg-emerald-400 dark:hover:bg-emerald-500 dark:active:bg-emerald-600 dark:border-emerald-400 dark:hover:border-emerald-500 dark:active:border-emerald-600;
   }

@@ -6,6 +6,7 @@ import { Hiscore } from 'src/app/services/hiscores/hiscore.model';
 import { HiscoreService } from 'src/app/services/hiscores/hiscore.service';
 import { OsrsProxyRepo } from 'src/app/services/repositories/osrs-proxy.repo';
 import { OsrsTrackerRepo } from 'src/app/services/repositories/osrs-tracker.repo';
+import { XpTrackerService } from '../xp-tracker.service';
 
 @Component({
   selector: 'player-details',
@@ -13,12 +14,12 @@ import { OsrsTrackerRepo } from 'src/app/services/repositories/osrs-tracker.repo
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerDetailsComponent implements OnInit {
+  today: Hiscore;
+  history: Hiscore[] = [];
+
   get playerDetails(): Player | null {
     return this.activatedRoute.snapshot.data['player'];
   }
-
-  today: Hiscore;
-  history: Hiscore[] = [];
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -26,12 +27,14 @@ export class PlayerDetailsComponent implements OnInit {
     private hiscoreService: HiscoreService,
     private osrsProxyRepo: OsrsProxyRepo,
     private osrsTrackerRepo: OsrsTrackerRepo,
+    private xpTrackerService: XpTrackerService,
   ) {}
 
   ngOnInit(): void {
-    if (this.playerDetails) {
-      this.getPlayerHiscores();
-    }
+    if (!this.playerDetails) return;
+
+    this.getPlayerHiscores();
+    this.xpTrackerService.pushRecentPlayer(this.playerDetails.username);
   }
 
   getPlayerHiscores(scrapingOffset?: number, skip?: number): void {

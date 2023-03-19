@@ -9,8 +9,10 @@ import { Observable } from 'rxjs';
 export class OsrsTrackerRepo {
   constructor(private httpClient: HttpClient) {}
 
-  getPlayerInfo(username: string): Observable<Player> {
-    return this.httpClient.get<Player>(`/player/${username}`);
+  getPlayerInfo(username: string, includeLatestHiscoreEntry?: boolean): Observable<Player> {
+    return this.httpClient.get<Player>(`/player/${username}`, {
+      params: { ...(includeLatestHiscoreEntry ? { hiscore: true } : {}) },
+    });
   }
 
   getPlayerHiscores(username: string, scrapingOffset = 0, skip = 0): Observable<HiscoreEntry[]> {
