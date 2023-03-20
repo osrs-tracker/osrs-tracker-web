@@ -11,7 +11,7 @@ export class IconDirective implements OnInit {
   constructor(private el: ElementRef) {}
 
   ngOnInit() {
-    this.el.nativeElement.src = iconMap[this.name];
+    this.el.nativeElement.src = '/assets/icons' + iconMap[this.name];
 
     this.el.nativeElement.loading = 'lazy';
     this.el.nativeElement.alt = `${this.name} icon`;

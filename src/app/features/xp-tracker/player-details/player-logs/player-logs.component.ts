@@ -1,7 +1,13 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Player } from '@osrs-tracker/models';
-import { Hiscore, Skill } from 'src/app/services/hiscores/hiscore.model';
+import { Hiscore, MiniGame, Skill } from 'src/app/services/hiscores/hiscore.model';
 import { HiscoreService } from 'src/app/services/hiscores/hiscore.service';
+import { XpTrackerService } from '../../xp-tracker.service';
+
+export enum ViewType {
+  Other,
+  Skills,
+}
 
 @Component({
   selector: 'player-logs',
@@ -9,31 +15,51 @@ import { HiscoreService } from 'src/app/services/hiscores/hiscore.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerLogsComponent implements OnChanges {
+  readonly ViewType: typeof ViewType = ViewType;
+  viewType: ViewType = this.xpTrackerService.getViewType();
+
+  hiscoreDiffs: Hiscore[];
+
+  otherKeys: (keyof Hiscore)[] = ['bountyHunter', 'clueScrolls', 'competitive', 'miniGames', 'bosses', 'raids'];
+
   @Input() playerDetails: Player;
 
   @Input() today: Hiscore | null;
   @Input() history: Hiscore[] | null;
 
-  hiscoreDiffs: Hiscore[];
-
   get isPlayerTracked(): boolean {
     return !!this.playerDetails.scrapingOffsets?.length;
   }
 
-  constructor(private hiscoreService: HiscoreService) {}
+  constructor(private hiscoreService: HiscoreService, private xpTrackerService: XpTrackerService) {}
 
   ngOnChanges({ history }: SimpleChanges): void {
-    if (history?.currentValue.length) {
-      this.calculateHiscoreDiffs();
-    }
-  }
-
-  hasXpGained(hiscore: Hiscore): boolean {
-    return this.skills(hiscore).some(skill => skill.xp > 0);
+    if (history?.currentValue.length) this.calculateHiscoreDiffs();
   }
 
   skills(hiscore: Hiscore): Skill[] {
     return Object.values(hiscore.skills);
+  }
+
+  hasXpDiff(hiscore: Hiscore): boolean {
+    return this.skills(hiscore).some(skill => skill.xp > 0);
+  }
+
+  miniGames(type: keyof Hiscore, hiscore: Hiscore): MiniGame[] {
+    return Object.values(hiscore[type]);
+  }
+
+  hasMiniGameDiff(type: keyof Hiscore, hiscore: Hiscore): boolean {
+    return this.miniGames(type, hiscore).some(boss => boss.score > 0);
+  }
+
+  filteredOtherKeys(hiscore: Hiscore): (keyof Hiscore)[] {
+    return this.otherKeys.filter(key => this.hasMiniGameDiff(key, hiscore));
+  }
+
+  setView(viewType: ViewType): void {
+    this.viewType = viewType;
+    this.xpTrackerService.setViewType(viewType);
   }
 
   private calculateHiscoreDiffs(): void {

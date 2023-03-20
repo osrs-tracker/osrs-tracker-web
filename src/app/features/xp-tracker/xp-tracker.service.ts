@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { StorageKey } from 'src/app/core/storage/storage';
+import { ViewType } from './player-details/player-logs/player-logs.component';
 
 @Injectable({
   providedIn: 'root',
@@ -45,5 +46,13 @@ export class XpTrackerService {
     }
 
     localStorage.setItem(StorageKey.XpTrackerFavoritePlayers, JSON.stringify(favoritePlayers));
+  }
+
+  getViewType(): ViewType {
+    return parseInt(localStorage.getItem(StorageKey.XpTrackerViewType)! ?? ViewType.Skills);
+  }
+
+  setViewType(viewType: ViewType): void {
+    localStorage.setItem(StorageKey.XpTrackerViewType, viewType.toString());
   }
 }

@@ -3,4 +3,5 @@ export const enum StorageKey {
 
   XpTrackerRecentPlayers = 'xp-tracker-recent-players',
   XpTrackerFavoritePlayers = 'xp-tracker-favorite-players',
+  XpTrackerViewType = 'xp-tracker-view-type',
 }
