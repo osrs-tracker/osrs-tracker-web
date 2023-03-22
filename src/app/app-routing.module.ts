@@ -26,7 +26,7 @@ const routes: Routes = [
         title: 'Privacy - OSRS Tracker',
         path: 'privacy',
         pathMatch: 'full',
-        loadChildren: () => import('./features/coming-soon/coming-soon.module').then(m => m.ComingSoonModule),
+        loadChildren: () => import('./features/privacy/privacy.module').then(m => m.PrivacyModule),
       },
       {
         title: 'Terms - OSRS Tracker',
