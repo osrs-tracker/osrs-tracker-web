@@ -32,7 +32,7 @@ const routes: Routes = [
         title: 'Terms - OSRS Tracker',
         path: 'terms',
         pathMatch: 'full',
-        loadChildren: () => import('./features/coming-soon/coming-soon.module').then(m => m.ComingSoonModule),
+        loadChildren: () => import('./features/terms/terms.module').then(m => m.TermsModule),
       },
     ],
   },
