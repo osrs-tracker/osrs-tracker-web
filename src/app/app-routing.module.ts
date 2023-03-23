@@ -18,20 +18,20 @@ const routes: Routes = [
         path: 'price-tracker',
         loadChildren: () => import('./features/coming-soon/coming-soon.module').then(m => m.ComingSoonModule),
       },
+      // {
+      //   path: 'price-tracker',
+      //   loadChildren: () => import('./features/price-tracker/price-tracker.module').then(m => m.PriceTrackerModule),
+      // },
       {
         path: 'xp-tracker',
         loadChildren: () => import('./features/xp-tracker/xp-tracker.module').then(m => m.XpTrackerModule),
       },
       {
-        title: 'Privacy - OSRS Tracker',
         path: 'privacy',
-        pathMatch: 'full',
         loadChildren: () => import('./features/privacy/privacy.module').then(m => m.PrivacyModule),
       },
       {
-        title: 'Terms - OSRS Tracker',
         path: 'terms',
-        pathMatch: 'full',
         loadChildren: () => import('./features/terms/terms.module').then(m => m.TermsModule),
       },
     ],
