@@ -22,7 +22,7 @@
   }
 
   .link {
-    @apply active:text-emerald-700 hover:text-emerald-600 text-emerald-500 dark:active:text-emerald-600 dark:hover:text-emerald-500 dark:text-emerald-400;
+    @apply font-semibold active:text-emerald-700 hover:text-emerald-600 text-emerald-500 dark:active:text-emerald-600 dark:hover:text-emerald-500 dark:text-emerald-400;
   }
 
   .link-states {
