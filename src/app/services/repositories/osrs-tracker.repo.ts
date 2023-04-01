@@ -1,13 +1,25 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HiscoreEntry, Item, Player } from '@osrs-tracker/models';
-import { Observable } from 'rxjs';
+import { HiscoreEntry, Item, OsrsNewsItem, Player } from '@osrs-tracker/models';
+import { Observable, startWith, tap } from 'rxjs';
+import { StorageKey } from 'src/app/core/storage/storage';
 
 @Injectable({
   providedIn: 'root',
 })
 export class OsrsTrackerRepo {
   constructor(private httpClient: HttpClient) {}
+
+  //
+  // News
+  //
+
+  getLatestOsrsNewsItems(): Observable<OsrsNewsItem[]> {
+    return this.httpClient.get<OsrsNewsItem[]>('/news/latest').pipe(
+      tap(osrsNewsItems => localStorage.setItem(StorageKey.OsrsNews, JSON.stringify(osrsNewsItems))),
+      startWith(JSON.parse(localStorage.getItem(StorageKey.OsrsNews) || '[]')),
+    );
+  }
 
   //
   // Players
