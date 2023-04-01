@@ -1,10 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HiscoreEntry } from '@osrs-tracker/models';
-import parse from 'rss-to-json';
-import { from, map, Observable, tap } from 'rxjs';
-import { config } from 'src/config/config';
+import { map, Observable, startWith, tap } from 'rxjs';
 import { StorageKey } from '../../core/storage/storage';
+import { NewsService } from '../news/news.service';
 
 export class OsrsNewsItem {
   constructor(
@@ -24,24 +23,18 @@ export class OsrsNewsItem {
   providedIn: 'root',
 })
 export class OsrsProxyRepo {
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient, private rssService: NewsService) {}
 
   //
   // News
   //
 
+  /** will use prefetched url when visiting home directly */
   getOSRSNews(): Observable<OsrsNewsItem[]> {
-    return from(parse(`${config.apiBaseUrl}/rs/m=news/latest_news.rss?oldschool=true`)).pipe(
-      map(rss =>
-        rss.items.map(
-          item =>
-            new OsrsNewsItem(item.title, new Date(item.published), item.category, item.link, item.description, {
-              url: item.enclosures[0].url,
-              type: item.enclosures[0].type,
-            }),
-        ),
-      ),
+    return this.httpClient.get('/rs/m=news/latest_news.rss?oldschool=true', { responseType: 'text' }).pipe(
+      map(rss => this.rssService.parseRss(rss)),
       tap(osrsNewsItems => localStorage.setItem(StorageKey.OsrsNews, JSON.stringify(osrsNewsItems))),
+      startWith(JSON.parse(localStorage.getItem(StorageKey.OsrsNews) || '[]')),
     );
   }
 
