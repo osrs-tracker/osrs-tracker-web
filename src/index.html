@@ -17,6 +17,7 @@
         send_page_view: false,
         anonymize_ip: true,
         cookie_flags: 'SameSite=None;Secure',
+        ...(location.hostname === 'localhost' ? { debug_mode: true } : {}),
       });
     </script>
 
