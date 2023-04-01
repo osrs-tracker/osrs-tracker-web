@@ -5,7 +5,7 @@ import { Player } from '@osrs-tracker/models';
 import { catchError, of } from 'rxjs';
 import { OsrsTrackerRepo } from 'src/app/services/repositories/osrs-tracker.repo';
 
-export const playerDetailsResolver: ResolveFn<Player | null> = (route: ActivatedRouteSnapshot) =>
+export const playerDetailResolver: ResolveFn<Player | null> = (route: ActivatedRouteSnapshot) =>
   inject(OsrsTrackerRepo)
     .getPlayerInfo(route.params['username'])
     .pipe(

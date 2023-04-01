@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { forkJoin } from 'rxjs';
+import { trackChanges } from 'src/app/core/decorators/track-changes.decorator';
 import { SkillEnum } from 'src/app/services/hiscores/hiscore.enum';
 import { HiscoreService } from 'src/app/services/hiscores/hiscore.service';
 import { OsrsProxyRepo } from 'src/app/services/repositories/osrs-proxy.repo';
@@ -58,7 +59,7 @@ export class PlayerXpWidgetComponent implements OnInit {
   readonly PlayerStatus: typeof PlayerStatus = PlayerStatus;
   readonly SkillEnum: typeof SkillEnum = SkillEnum;
 
-  loading = true;
+  @trackChanges loading = true;
 
   playerDetails: Player;
   overallDiff: number | null = null;
@@ -66,7 +67,7 @@ export class PlayerXpWidgetComponent implements OnInit {
   @Input() username: string;
 
   constructor(
-    private cdRef: ChangeDetectorRef,
+    public cdRef: ChangeDetectorRef,
     private hiscoreService: HiscoreService,
     private osrsProxyRepo: OsrsProxyRepo,
     private osrsTrackerRepo: OsrsTrackerRepo,
@@ -84,7 +85,6 @@ export class PlayerXpWidgetComponent implements OnInit {
       }
 
       this.loading = false;
-      this.cdRef.markForCheck();
     });
   }
 }

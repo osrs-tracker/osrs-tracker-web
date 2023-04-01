@@ -18,8 +18,8 @@
         <span [class.invisible]="loading">Search</span>
 
         <spinner
-          class="absolute block top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
           *ngIf="loading"
+          class="absolute block top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
         ></spinner>
       </button>
     </form>
@@ -33,7 +33,7 @@
       <p *ngIf="!recentPlayers?.length">No players looked up yet.</p>
       <div class="grid gap-4">
         <a
-          [routerLink]="['/xp-tracker', username]"
+          [routerLink]="['/trackers/xp', username]"
           *ngFor="let username of recentPlayers"
         >
           <player-xp-widget [username]="username"></player-xp-widget>
@@ -45,7 +45,7 @@
       <p *ngIf="!favoritePlayers?.length">No players favorited yet.</p>
       <div class="grid gap-4">
         <a
-          [routerLink]="['/xp-tracker', username]"
+          [routerLink]="['/trackers/xp', username]"
           *ngFor="let username of favoritePlayers"
         >
           <player-xp-widget [username]="username"></player-xp-widget>

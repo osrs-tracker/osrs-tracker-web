@@ -12,11 +12,11 @@ export class RootLayoutComponent {
       name: 'Home',
     },
     {
-      path: '/price-tracker',
+      path: '/trackers/price',
       name: 'Price Tracker',
     },
     {
-      path: '/xp-tracker',
+      path: '/trackers/xp',
       name: 'XP Tracker',
     },
   ];

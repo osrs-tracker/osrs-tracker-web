@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HiscoreEntry } from '@osrs-tracker/models';
 import parse from 'rss-to-json';
-import { from, map, Observable, startWith, tap } from 'rxjs';
+import { from, map, Observable, tap } from 'rxjs';
 import { config } from 'src/config/config';
 import { StorageKey } from '../../core/storage/storage';
 
@@ -26,6 +26,10 @@ export class OsrsNewsItem {
 export class OsrsProxyRepo {
   constructor(private httpClient: HttpClient) {}
 
+  //
+  // News
+  //
+
   getOSRSNews(): Observable<OsrsNewsItem[]> {
     return from(parse(`${config.apiBaseUrl}/rs/m=news/latest_news.rss?oldschool=true`)).pipe(
       map(rss =>
@@ -38,9 +42,12 @@ export class OsrsProxyRepo {
         ),
       ),
       tap(osrsNewsItems => localStorage.setItem(StorageKey.OsrsNews, JSON.stringify(osrsNewsItems))),
-      startWith(JSON.parse(localStorage.getItem(StorageKey.OsrsNews) || '[]')),
     );
   }
+
+  //
+  // Players
+  //
 
   getPlayerHiscore(username: string): Observable<HiscoreEntry> {
     return this.httpClient

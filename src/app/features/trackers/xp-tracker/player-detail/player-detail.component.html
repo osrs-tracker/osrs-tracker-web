@@ -1,6 +1,6 @@
 <!-- Player not found -->
 <header
-  *ngIf="!playerDetails"
+  *ngIf="!playerDetail"
   class="container mx-auto py-48 sm:py-72"
 >
   <h1 class="flex flex-col items-center text-center">
@@ -11,17 +11,17 @@
 
 <!-- Player found -->
 <div
-  *ngIf="playerDetails"
+  *ngIf="playerDetail"
   class="container mx-auto my-8 px-4 grid lg:grid-cols-3 2xl:grid-cols-4 gap-8"
 >
-  <player-details-widget
-    [playerDetails]="playerDetails"
+  <player-detail-widget
+    [playerDetail]="playerDetail"
     [today]="today"
-  ></player-details-widget>
+  ></player-detail-widget>
 
   <player-logs
     class="lg:col-span-2 2xl:col-span-3"
-    [playerDetails]="playerDetails"
+    [playerDetail]="playerDetail"
     [today]="today"
     [history]="history"
   ></player-logs>

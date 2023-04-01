@@ -22,13 +22,13 @@ export class PlayerLogsComponent implements OnChanges {
 
   otherKeys: (keyof Hiscore)[] = ['bountyHunter', 'clueScrolls', 'competitive', 'miniGames', 'bosses', 'raids'];
 
-  @Input() playerDetails: Player;
+  @Input() playerDetail: Player;
 
   @Input() today: Hiscore | null;
   @Input() history: Hiscore[] | null;
 
   get isPlayerTracked(): boolean {
-    return !!this.playerDetails.scrapingOffsets?.length;
+    return !!this.playerDetail.scrapingOffsets?.length;
   }
 
   constructor(private hiscoreService: HiscoreService, private xpTrackerService: XpTrackerService) {}

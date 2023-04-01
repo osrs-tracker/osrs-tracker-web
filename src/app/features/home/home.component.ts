@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { trackChanges } from 'src/app/core/decorators/track-changes.decorator';
 import { OsrsNewsItem, OsrsProxyRepo } from 'src/app/services/repositories/osrs-proxy.repo';
 
 @Component({
@@ -7,14 +9,21 @@ import { OsrsNewsItem, OsrsProxyRepo } from 'src/app/services/repositories/osrs-
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements OnInit {
-  osrsNewsItems: OsrsNewsItem[] = [];
+  @trackChanges osrsNewsItems: OsrsNewsItem[] = [];
 
-  constructor(private cdRef: ChangeDetectorRef, private osrsProxyRepo: OsrsProxyRepo) {}
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    public cdRef: ChangeDetectorRef,
+    private osrsProxyRepo: OsrsProxyRepo,
+  ) {}
 
   ngOnInit(): void {
-    this.osrsProxyRepo.getOSRSNews().subscribe(newsItems => {
-      this.osrsNewsItems = newsItems.slice(0, 4);
-      this.cdRef.markForCheck();
-    });
+    this.setNews(this.activatedRoute.snapshot.data['osrsNewsItems']);
+
+    this.osrsProxyRepo.getOSRSNews().subscribe(osrsNewsItems => this.setNews(osrsNewsItems));
+  }
+
+  private setNews(osrsNewsItems: OsrsNewsItem[]): void {
+    this.osrsNewsItems = osrsNewsItems.slice(0, 4);
   }
 }

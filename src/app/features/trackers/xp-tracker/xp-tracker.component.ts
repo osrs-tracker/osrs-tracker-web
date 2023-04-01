@@ -26,7 +26,7 @@ export class XpTrackerComponent {
 
     this.setLoading(true);
 
-    this.router.navigate(['xp-tracker', username]);
+    this.router.navigate(['/trackers/xp', username]);
   }
 
   private setLoading(loading: boolean) {
