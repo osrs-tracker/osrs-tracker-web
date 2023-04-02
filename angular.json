@@ -26,11 +26,12 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
+              "src/assets",
               "src/favicon.png",
               "src/favicon-dark.png",
-              "src/assets",
               "src/manifest.webmanifest",
-              "src/sitemap.xml"
+              "src/sitemap.xml",
+              "src/robots.txt"
             ],
             "styles": ["src/styles.scss"],
             "scripts": [],

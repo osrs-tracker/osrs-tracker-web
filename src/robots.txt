@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://osrs-tracker.freekmencke.com/sitemap.xml
