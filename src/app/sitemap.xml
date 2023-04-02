@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.w3.org/1999/xhtml" xmlns:sitemap="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/xp</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/about/privacy</loc>
+    <priority>0.0</priority>
+    <lastmod>2023-03-22</lastmod>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/about/terms</loc>
+    <priority>0.0</priority>
+    <lastmod>2023-03-22</lastmod>
+  </url>
+</urlset>

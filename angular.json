@@ -25,7 +25,13 @@
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": ["src/favicon.png", "src/favicon-dark.png", "src/assets", "src/manifest.webmanifest"],
+            "assets": [
+              "src/favicon.png",
+              "src/favicon-dark.png",
+              "src/assets",
+              "src/manifest.webmanifest",
+              "src/sitemap.xml"
+            ],
             "styles": ["src/styles.scss"],
             "scripts": [],
             "allowedCommonJsDependencies": []
