@@ -5,13 +5,11 @@ import { config } from 'src/config/config';
 
 export const BASE_URL_PREFIX = new HttpContextToken<boolean>(() => true);
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class BaseUrlInterceptor<T> implements HttpInterceptor {
-  intercept(req: HttpRequest<T>, next: HttpHandler): Observable<HttpEvent<T>> {
-    if (!req.context.get(BASE_URL_PREFIX)) return next.handle(req);
+  intercept(request: HttpRequest<T>, next: HttpHandler): Observable<HttpEvent<T>> {
+    if (!request.context.get(BASE_URL_PREFIX)) return next.handle(request);
 
-    return next.handle(req.clone({ url: config.apiBaseUrl + req.url }));
+    return next.handle(request.clone({ url: config.apiBaseUrl + request.url }));
   }
 }

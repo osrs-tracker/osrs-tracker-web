@@ -15,12 +15,7 @@
         class="absolute rounded-full right-0 button--primary"
         (click)="searchUser(username)"
       >
-        <span [class.invisible]="loading">Search</span>
-
-        <spinner
-          *ngIf="loading"
-          class="absolute block top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-        ></spinner>
+        Search
       </button>
     </form>
   </div>

@@ -1,0 +1,42 @@
+.loading-indicator__container {
+  animation: loadingIndicatorContainer 300ms; // fade in
+
+  .loading-indicator {
+    animation: loadingIndicator 2s ease-in-out infinite; // move left to right
+    &__knob {
+      animation: loadingIndicatorKnob 2s ease-in-out infinite; // grow and shrink, fade in and out, center knob when growing
+    }
+  }
+}
+
+@keyframes loadingIndicatorContainer {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes loadingIndicator {
+  10% {
+    transform: translateX(-10%);
+  }
+  90% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes loadingIndicatorKnob {
+  10%,
+  90% {
+    transform: translateX(0);
+    width: 0%;
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateX(-50%);
+    width: 30%;
+    opacity: 0.9;
+  }
+}

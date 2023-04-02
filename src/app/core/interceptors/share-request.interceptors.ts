@@ -1,19 +1,17 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { finalize, Observable, share } from 'rxjs';
+import { Observable, finalize, share } from 'rxjs';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
  * This interceptor is used to share ongoing requests to reduce the number of unnecessary requests.
  */
-@Injectable({
-  providedIn: 'root',
-})
-export class ShareRequestInterceptor implements HttpInterceptor {
-  private ongoingRequests = new Map<string, Observable<HttpEvent<any>>>();
+@Injectable()
+export class ShareRequestInterceptor<T> implements HttpInterceptor {
+  private ongoingRequests = new Map<string, Observable<HttpEvent<T>>>();
 
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(request: HttpRequest<T>, next: HttpHandler): Observable<HttpEvent<T>> {
     // Do not share non-GET requests
     if (request.method !== 'GET') return next.handle(request);
 

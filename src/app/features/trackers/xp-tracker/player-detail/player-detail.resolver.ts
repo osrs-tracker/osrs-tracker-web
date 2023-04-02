@@ -7,7 +7,7 @@ import { OsrsTrackerRepo } from 'src/app/services/repositories/osrs-tracker.repo
 
 export const playerDetailResolver: ResolveFn<Player | null> = (route: ActivatedRouteSnapshot) =>
   inject(OsrsTrackerRepo)
-    .getPlayerInfo(route.params['username'])
+    .getPlayerInfo(route.params['username'], false, true)
     .pipe(
       catchError((err: HttpErrorResponse) => {
         if (err.status === 404) return of(null);

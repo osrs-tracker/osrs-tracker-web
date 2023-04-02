@@ -1,7 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HiscoreEntry, Item, OsrsNewsItem, Player } from '@osrs-tracker/models';
 import { Observable, startWith, tap } from 'rxjs';
+import { LOADING_INDICATOR } from 'src/app/core/interceptors/loading-indicator.interceptor';
 import { StorageKey } from 'src/app/core/storage/storage';
 
 @Injectable({
@@ -25,8 +26,9 @@ export class OsrsTrackerRepo {
   // Players
   //
 
-  getPlayerInfo(username: string, includeLatestHiscoreEntry?: boolean): Observable<Player> {
+  getPlayerInfo(username: string, includeLatestHiscoreEntry?: boolean, loadingIndicator?: boolean): Observable<Player> {
     return this.httpClient.get<Player>(`/player/${username}`, {
+      context: new HttpContext().set(LOADING_INDICATOR, loadingIndicator),
       params: { ...(includeLatestHiscoreEntry ? { hiscore: true } : {}) },
     });
   }
@@ -45,7 +47,9 @@ export class OsrsTrackerRepo {
     return this.httpClient.get<Item[]>(`/item/search/${query}`);
   }
 
-  getItemInfo(itemId: number): Observable<Item> {
-    return this.httpClient.get<Item>(`/item/${itemId}`);
+  getItemInfo(itemId: number, loadingIndicator?: boolean): Observable<Item> {
+    return this.httpClient.get<Item>(`/item/${itemId}`, {
+      context: new HttpContext().set(LOADING_INDICATOR, loadingIndicator),
+    });
   }
 }
