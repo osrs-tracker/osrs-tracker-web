@@ -1,10 +1,10 @@
+import { CommonModule } from '@angular/common';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { GoogleAnalyticsService } from './google-analytics.service';
 
 @NgModule({
-  imports: [SharedModule, RouterModule],
+  imports: [CommonModule, RouterModule],
   providers: [
     {
       provide: APP_INITIALIZER,

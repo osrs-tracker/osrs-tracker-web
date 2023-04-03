@@ -1,11 +1,11 @@
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { PrivacyComponent } from './privacy.component';
 
 @NgModule({
   imports: [
-    SharedModule,
+    CommonModule,
     RouterModule.forChild([
       { title: 'Privacy - OSRS Tracker', path: '', pathMatch: 'full', component: PrivacyComponent },
     ]),

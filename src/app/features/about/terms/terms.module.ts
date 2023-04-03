@@ -1,11 +1,11 @@
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { TermsComponent } from './terms.component';
 
 @NgModule({
   imports: [
-    SharedModule,
+    CommonModule,
     RouterModule.forChild([{ title: 'Terms - OSRS Tracker', path: '', pathMatch: 'full', component: TermsComponent }]),
   ],
   declarations: [TermsComponent],

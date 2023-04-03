@@ -1,7 +1,7 @@
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { IconDirective } from 'src/app/standalone/components/icon/icon.directive';
 import { SpinnerComponent } from 'src/app/standalone/components/spinner/spinner.component';
 import { ItemDetailComponent } from './item-detail/item-detail.component';
@@ -11,7 +11,7 @@ import { PriceTrackerComponent } from './price-tracker.component';
 
 @NgModule({
   imports: [
-    SharedModule,
+    CommonModule,
     FormsModule,
     RouterModule.forChild([
       {

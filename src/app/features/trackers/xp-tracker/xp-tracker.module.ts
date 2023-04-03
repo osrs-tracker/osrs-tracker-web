@@ -1,7 +1,7 @@
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { IconDirective } from 'src/app/standalone/components/icon/icon.directive';
 import { SpinnerComponent } from 'src/app/standalone/components/spinner/spinner.component';
 import { CapitalizeWordsPipe } from 'src/app/standalone/pipes/capitalize.pipe';
@@ -16,7 +16,7 @@ import { XpTrackerComponent } from './xp-tracker.component';
 
 @NgModule({
   imports: [
-    SharedModule,
+    CommonModule,
     FormsModule,
     RouterModule.forChild([
       {
