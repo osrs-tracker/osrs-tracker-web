@@ -25,8 +25,9 @@
   "scripts": {
     "build": "ng build",
     "predeploy": "ng build",
-    "deploy": "aws s3 sync --delete ./dist/osrs-tracker-web s3://osrs-tracker.freekmencke.com",
-    "deploy:dryrun": "npm run deploy -- --dryrun",
+    "deploy": "npm run deploy:app && npm run deploy:assets",
+    "deploy:app": "aws s3 sync --delete --exclude 'assets/*' --exclude '*.js' --exclude '*.css' ./dist/osrs-tracker-web s3://osrs-tracker.freekmencke.com",
+    "deploy:assets": "aws s3 sync --delete --size-only ./dist/osrs-tracker-web s3://osrs-tracker.freekmencke.com",
     "lint": "ng lint",
     "prettier": "prettier --write .",
     "prettier:ci": "prettier --check .",

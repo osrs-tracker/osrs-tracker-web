@@ -33,6 +33,6 @@ import { PriceTrackerComponent } from './price-tracker.component';
     IconDirective,
     SpinnerComponent,
   ],
-  declarations: [PriceTrackerComponent],
+  declarations: [PriceTrackerComponent, ItemDetailComponent],
 })
 export class PriceTrackerModule {}

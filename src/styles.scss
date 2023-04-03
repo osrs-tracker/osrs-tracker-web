@@ -42,10 +42,16 @@
 }
 
 @layer utilities {
-  .safe-area {
+  .sa-t {
     padding-top: env(safe-area-inset-top);
+  }
+  .sa-l {
     padding-left: env(safe-area-inset-left);
+  }
+  .sa-r {
     padding-right: env(safe-area-inset-right);
+  }
+  .sa-b {
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
