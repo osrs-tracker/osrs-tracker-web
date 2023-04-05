@@ -8,7 +8,7 @@ import { Item } from '@osrs-tracker/models';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ItemDetailComponent {
-  get itemDetail(): Item | null {
+  get itemDetail(): Item {
     return this.activatedRoute.snapshot.data['item'];
   }
 

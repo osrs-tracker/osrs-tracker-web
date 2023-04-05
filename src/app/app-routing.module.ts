@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { RootLayoutComponent } from './core/root-layout/root-layout.component';
+import { NotFound404Component } from './standalone/not-found-404.component';
 
 const routes: Routes = [
   {
@@ -41,6 +42,11 @@ const routes: Routes = [
             loadChildren: () => import('./features/about/terms/terms.module').then(m => m.TermsModule),
           },
         ],
+      },
+      {
+        path: '**',
+        title: '404 Not Found - OSRS Tracker',
+        component: NotFound404Component,
       },
     ],
   },

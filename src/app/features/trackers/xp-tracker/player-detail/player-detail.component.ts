@@ -18,7 +18,7 @@ export class PlayerDetailComponent implements OnInit {
   @trackChanges today: Hiscore;
   @trackChanges history: Hiscore[] = [];
 
-  get playerDetail(): Player | null {
+  get playerDetail(): Player {
     return this.activatedRoute.snapshot.data['player'];
   }
 

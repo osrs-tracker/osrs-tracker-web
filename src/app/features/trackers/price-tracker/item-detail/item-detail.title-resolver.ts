@@ -1,4 +1,3 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
 import { catchError, map, of } from 'rxjs';
@@ -9,8 +8,5 @@ export const itemDetailTitleResolver: ResolveFn<string> = (route: ActivatedRoute
     .getItemInfo(route.params['id'], true)
     .pipe(
       map(item => `${item.name} - Price Tracker - OSRS Tracker`),
-      catchError((err: HttpErrorResponse) => {
-        if (err.status === 404) return of('404 Not Found - Price Tracker - OSRS Tracker');
-        throw err;
-      }),
+      catchError(() => of('')),
     );
