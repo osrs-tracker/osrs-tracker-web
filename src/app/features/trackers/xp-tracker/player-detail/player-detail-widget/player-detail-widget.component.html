@@ -1,5 +1,5 @@
 <section class="flex flex-col gap-4">
-  <header class="flex items-end justify-between mb-4">
+  <header class="flex items-end justify-between">
     <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ playerDetail.username | capitalizeWords }}</h2>
 
     <div class="relative flex gap-2 mb-0.5">
@@ -66,7 +66,7 @@
   </div>
 
   <button
-    class="button--primary flex items-center justify-center gap-2"
+    class="button--primary flex items-center justify-between"
     (click)="toggleFavorite()"
   >
     <svg
@@ -84,7 +84,9 @@
       />
     </svg>
 
-    <span *ngIf="isFavorite">Remove favorite</span>
-    <span *ngIf="!isFavorite">Add favorite</span>
+    <div *ngIf="isFavorite">Remove favorite</div>
+    <div *ngIf="!isFavorite">Add favorite</div>
+
+    <div class="w-6"></div>
   </button>
 </section>

@@ -26,10 +26,13 @@ export class OsrsTrackerRepo {
   // Players
   //
 
-  getPlayerInfo(username: string, includeLatestHiscoreEntry?: boolean, loadingIndicator?: boolean): Observable<Player> {
+  getPlayerInfo(
+    username: string,
+    options?: { includeLatestHiscoreEntry?: boolean; loadingIndicator?: boolean },
+  ): Observable<Player> {
     return this.httpClient.get<Player>(`/player/${username}`, {
-      context: new HttpContext().set(LOADING_INDICATOR, loadingIndicator),
-      params: { ...(includeLatestHiscoreEntry ? { hiscore: true } : {}) },
+      context: new HttpContext().set(LOADING_INDICATOR, options?.loadingIndicator),
+      params: { ...(options?.includeLatestHiscoreEntry ? { hiscore: true } : {}) },
     });
   }
 
@@ -47,9 +50,9 @@ export class OsrsTrackerRepo {
     return this.httpClient.get<Item[]>(`/item/search/${query}`);
   }
 
-  getItemInfo(itemId: number, loadingIndicator?: boolean): Observable<Item> {
+  getItemInfo(itemId: number, options?: { loadingIndicator: boolean }): Observable<Item> {
     return this.httpClient.get<Item>(`/item/${itemId}`, {
-      context: new HttpContext().set(LOADING_INDICATOR, loadingIndicator),
+      context: new HttpContext().set(LOADING_INDICATOR, options?.loadingIndicator),
     });
   }
 }

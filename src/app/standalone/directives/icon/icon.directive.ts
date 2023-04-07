@@ -1,4 +1,5 @@
 import { Directive, ElementRef, Input, OnInit } from '@angular/core';
+import { config } from 'src/config/config';
 import { iconMap } from './icon.config';
 
 @Directive({
@@ -6,15 +7,13 @@ import { iconMap } from './icon.config';
   selector: 'img[icon]',
 })
 export class IconDirective implements OnInit {
-  private readonly wikiBase = 'https://oldschool.runescape.wiki/images'; // wiki base url;
-
   @Input() name: string;
   @Input() wiki: boolean; // use icon from wiki
 
   constructor(private el: ElementRef) {}
 
   ngOnInit() {
-    if (this.wiki) this.el.nativeElement.src = `${this.wikiBase}/${this.name.replaceAll(/\s/g, '_')}`;
+    if (this.wiki) this.el.nativeElement.src = `${config.wikiBaseUrl}/images/${this.name.replaceAll(/\s/g, '_')}`;
     else this.el.nativeElement.src = '/assets/icons' + iconMap[this.name];
 
     this.el.nativeElement.loading = 'lazy';

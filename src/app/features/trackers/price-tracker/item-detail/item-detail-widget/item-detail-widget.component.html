@@ -1,0 +1,103 @@
+<section class="flex flex-col gap-4">
+  <header class="flex items-end justify-between">
+    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ itemDetail.name }}</h2>
+  </header>
+
+  <div class="shadow-lg rounded-lg bg-slate-100 dark:bg-slate-800 p-4 flex flex-col gap-4">
+    <picture class="flex justify-center">
+      <img
+        class="w-48 h-48 object-contain"
+        [src]="detailIconUrl"
+      />
+    </picture>
+
+    <section class="text-lg">
+      <h3 class="font-semibold">Examine:</h3>
+      <p class="text-slate-900 dark:text-white">{{ itemDetail.examine }}</p>
+    </section>
+
+    <section>
+      <h3 class="text-lg font-semibold mb-4 text-center">Values</h3>
+
+      <div class="flex flex-col gap-1">
+        <section class="flex justify-between items-center">
+          <h3 class="font-semibold">Value</h3>
+          <p class="flex items-center text-slate-900 dark:text-white">{{ itemDetail.value | number }}&ngsp;gp</p>
+        </section>
+
+        <section class="flex justify-between items-center">
+          <h3 class="font-semibold">High alc</h3>
+          <p class="flex items-center text-slate-900 dark:text-white">{{ itemDetail.highalch | number }}&ngsp;gp</p>
+        </section>
+
+        <section class="flex justify-between items-center">
+          <h3 class="font-semibold">Low alc</h3>
+          <p class="flex items-center text-slate-900 dark:text-white">{{ itemDetail.lowalch | number }}&ngsp;gp</p>
+        </section>
+      </div>
+    </section>
+
+    <section>
+      <h3 class="text-lg font-semibold mb-4 text-center">Grand Exchange</h3>
+
+      <div class="flex flex-col gap-1">
+        <section class="flex justify-between items-center">
+          <h3 class="font-semibold">High</h3>
+          <p
+            class="flex items-center text-slate-900 dark:text-white"
+            tooltip
+            [tooltipTemplate]="highTooltip"
+          >
+            {{ latestPrices.high | number }}&ngsp;gp
+          </p>
+          <ng-template #highTooltip>
+            Buy time: <br />{{ latestPrices.highTime | date : 'yyyy/MM/dd,&nbsp;HH:mm:ss' }}
+          </ng-template>
+        </section>
+
+        <section class="flex justify-between items-center">
+          <h3 class="font-semibold">Low</h3>
+          <p
+            class="flex items-center text-slate-900 dark:text-white"
+            tooltip
+            [tooltipTemplate]="lowTooltip"
+          >
+            {{ latestPrices.low | number }}&ngsp;gp
+          </p>
+          <ng-template #lowTooltip>
+            Sell time: <br />{{ latestPrices.lowTime | date : 'yyyy/MM/dd,&nbsp;HH:mm:ss' }}
+          </ng-template>
+        </section>
+
+        <section class="flex justify-between items-center">
+          <h3 class="font-semibold">Limit</h3>
+          <p class="flex items-center text-slate-900 dark:text-white">{{ itemDetail.limit | number }}</p>
+        </section>
+      </div>
+    </section>
+  </div>
+
+  <button
+    class="button--primary flex items-center justify-between"
+    (click)="goToWiki()"
+  >
+    <div class="w-6"></div>
+
+    <div>OSRS Wiki</div>
+
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="1.5"
+      stroke="currentColor"
+      class="w-6 h-6"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+      />
+    </svg>
+  </button>
+</section>

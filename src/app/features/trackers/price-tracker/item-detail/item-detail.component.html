@@ -1,8 +1,11 @@
-<header class="container mx-auto py-48 sm:py-72">
-  <h1 class="flex flex-col items-center text-center">
-    <span class="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 dark:text-white">Coming soon!</span>
-    <span class="accent text-2xl sm:text-3xl lg:text-4xl font-semibold mt-2 sm:mt-3 lg:mt-4">
-      This section is still under construction.
-    </span>
-  </h1>
-</header>
+<div class="container mx-auto my-8 px-4 grid lg:grid-cols-3 2xl:grid-cols-4 gap-8">
+  <item-detail-widget
+    [itemDetail]="itemDetail"
+    [latestPrices]="latestPrices"
+  ></item-detail-widget>
+
+  <div class="flex flex-col gap-4">
+    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Details</h2>
+    <div>Work in progress...</div>
+  </div>
+</div>

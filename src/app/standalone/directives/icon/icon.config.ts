@@ -10,11 +10,13 @@ import {
 } from 'src/app/services/hiscores/hiscore.enum';
 
 export const iconMap: { [key: string]: string } = {
+  ['dead']: '/skull.png',
+  ['coins']: '/coins.png',
+
   [PlayerType.Ironman]: '/player_type/ironman.png',
   [PlayerType.Ultimate]: '/player_type/ultimate.png',
   [PlayerType.Hardcore]: '/player_type/hardcore_ironman.png',
 
-  ['dead']: '/skull.png',
   [PlayerStatus.DeIroned]: '/player_type/de_ironman.png',
   [PlayerStatus.DeUltimated]: '/player_type/de_ultimate.png',
 

@@ -11,7 +11,7 @@ export const playerDetailResolver: ResolveFn<Player | null> = (route: ActivatedR
   const router = inject(Router);
   const osrsTrackerRepo = inject(OsrsTrackerRepo);
 
-  return osrsTrackerRepo.getPlayerInfo(route.params['username'], false, true).pipe(
+  return osrsTrackerRepo.getPlayerInfo(route.params['username'], { loadingIndicator: true }).pipe(
     catchError((err: HttpErrorResponse) => {
       if (err.status === 404) {
         router.navigate(['**'], { skipLocationChange: true }).then(() => {

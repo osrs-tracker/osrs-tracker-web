@@ -76,7 +76,7 @@ export class PlayerXpWidgetComponent implements OnInit {
   ngOnInit(): void {
     forkJoin([
       this.osrsProxyRepo.getPlayerHiscore(this.username),
-      this.osrsTrackerRepo.getPlayerInfo(this.username, true),
+      this.osrsTrackerRepo.getPlayerInfo(this.username, { includeLatestHiscoreEntry: true }),
     ]).subscribe(([hiscore, player]) => {
       this.playerDetails = player;
 

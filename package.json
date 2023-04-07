@@ -44,6 +44,7 @@
   "prettier": "./.prettierrc.json",
   "dependencies": {
     "@angular/animations": "^15.2.5",
+    "@angular/cdk": "^15.2.6",
     "@angular/common": "^15.2.5",
     "@angular/compiler": "^15.2.5",
     "@angular/core": "^15.2.5",
@@ -66,7 +67,7 @@
     "@angular-eslint/template-parser": "15.2.1",
     "@angular/cli": "~15.2.4",
     "@angular/compiler-cli": "^15.2.5",
-    "@osrs-tracker/models": "^0.3.2",
+    "@osrs-tracker/models": "^0.3.3",
     "@tailwindcss/forms": "^0.5.3",
     "@types/gtag.js": "^0.0.12",
     "@types/jasmine": "~4.3.1",
