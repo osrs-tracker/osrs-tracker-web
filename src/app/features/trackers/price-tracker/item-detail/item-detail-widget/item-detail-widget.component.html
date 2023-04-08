@@ -4,7 +4,7 @@
   </header>
 
   <div class="shadow-lg rounded-lg bg-slate-100 dark:bg-slate-800 p-4 flex flex-col gap-4">
-    <picture class="flex justify-center">
+    <picture class="flex justify-center py-4">
       <img
         class="w-48 h-48 object-contain"
         [src]="detailIconUrl"
@@ -51,7 +51,8 @@
             {{ latestPrices.high | number }}&ngsp;gp
           </p>
           <ng-template #highTooltip>
-            Buy time: <br />{{ latestPrices.highTime | date : 'yyyy/MM/dd,&nbsp;HH:mm:ss' }}
+            <div class="font-semibold">Buy time:</div>
+            <div>{{ latestPrices.highTime | date : 'yyyy/MM/dd,&nbsp;HH:mm:ss' }}</div>
           </ng-template>
         </section>
 
@@ -65,7 +66,8 @@
             {{ latestPrices.low | number }}&ngsp;gp
           </p>
           <ng-template #lowTooltip>
-            Sell time: <br />{{ latestPrices.lowTime | date : 'yyyy/MM/dd,&nbsp;HH:mm:ss' }}
+            <div class="font-semibold">Sell time:</div>
+            <div>{{ latestPrices.lowTime | date : 'yyyy/MM/dd,&nbsp;HH:mm:ss' }}</div>
           </ng-template>
         </section>
 
