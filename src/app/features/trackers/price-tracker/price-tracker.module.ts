@@ -4,8 +4,11 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { SpinnerComponent } from 'src/app/standalone/components/spinner/spinner.component';
+import { InfoTooltipComponent } from 'src/app/standalone/components/tooltip/info-tooltip.component';
 import { TooltipComponent } from 'src/app/standalone/components/tooltip/tooltip.component';
 import { IconDirective } from 'src/app/standalone/directives/icon/icon.directive';
+import { TimeAgoPipe } from 'src/app/standalone/pipes/time-ago.pipe';
+import { ItemAnalyticsComponent } from './item-detail/item-analytics/item-analytics.component';
 import { ItemDetailWidgetComponent } from './item-detail/item-detail-widget/item-detail.widget.component';
 import { ItemDetailComponent } from './item-detail/item-detail.component';
 import { itemDetailResolver } from './item-detail/item-detail.resolver';
@@ -35,8 +38,10 @@ import { PriceTrackerComponent } from './price-tracker.component';
     // Standalone
     IconDirective,
     SpinnerComponent,
+    TimeAgoPipe,
     TooltipComponent,
+    InfoTooltipComponent,
   ],
-  declarations: [PriceTrackerComponent, ItemDetailComponent, ItemDetailWidgetComponent],
+  declarations: [PriceTrackerComponent, ItemAnalyticsComponent, ItemDetailComponent, ItemDetailWidgetComponent],
 })
 export class PriceTrackerModule {}

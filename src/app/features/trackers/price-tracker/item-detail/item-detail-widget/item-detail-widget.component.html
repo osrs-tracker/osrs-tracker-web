@@ -1,12 +1,12 @@
 <section class="flex flex-col gap-4">
-  <header class="flex items-end justify-between">
+  <header>
     <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ itemDetail.name }}</h2>
   </header>
 
   <div class="shadow-lg rounded-lg bg-slate-100 dark:bg-slate-800 p-4 flex flex-col gap-4">
     <picture class="flex justify-center py-4">
       <img
-        class="w-48 h-48 object-contain"
+        class="w-40 h-40 object-contain"
         [src]="detailIconUrl"
       />
     </picture>
@@ -17,63 +17,66 @@
     </section>
 
     <section>
-      <h3 class="text-lg font-semibold mb-4 text-center">Values</h3>
+      <h3 class="text-lg font-semibold text-center">Values</h3>
 
       <div class="flex flex-col gap-1">
-        <section class="flex justify-between items-center">
+        <section class="flex justify-between">
           <h3 class="font-semibold">Value</h3>
-          <p class="flex items-center text-slate-900 dark:text-white">{{ itemDetail.value | number }}&ngsp;gp</p>
+          <div class="text-slate-900 dark:text-white">{{ itemDetail.value | number }}&ngsp;gp</div>
         </section>
 
-        <section class="flex justify-between items-center">
+        <section class="flex justify-between">
           <h3 class="font-semibold">High alc</h3>
-          <p class="flex items-center text-slate-900 dark:text-white">{{ itemDetail.highalch | number }}&ngsp;gp</p>
+          <div class="text-slate-900 dark:text-white">{{ itemDetail.highalch | number }}&ngsp;gp</div>
         </section>
 
-        <section class="flex justify-between items-center">
+        <section class="flex justify-between">
           <h3 class="font-semibold">Low alc</h3>
-          <p class="flex items-center text-slate-900 dark:text-white">{{ itemDetail.lowalch | number }}&ngsp;gp</p>
+          <div class="text-slate-900 dark:text-white">{{ itemDetail.lowalch | number }}&ngsp;gp</div>
         </section>
       </div>
     </section>
 
     <section>
-      <h3 class="text-lg font-semibold mb-4 text-center">Grand Exchange</h3>
+      <h3 class="text-lg font-semibold text-center">Grand Exchange</h3>
 
       <div class="flex flex-col gap-1">
-        <section class="flex justify-between items-center">
-          <h3 class="font-semibold">High</h3>
-          <p
-            class="flex items-center text-slate-900 dark:text-white"
+        <section class="flex justify-between">
+          <h3 class="flex font-semibold">
+            <div>Buy price</div>
+            <info-tooltip>The price of the latest instant buy.</info-tooltip>
+          </h3>
+          <div
+            class="text-slate-900 dark:text-white"
             tooltip
-            [tooltipTemplate]="highTooltip"
+            [tooltipTemplate]="highTimeTooltip"
           >
             {{ latestPrices.high | number }}&ngsp;gp
-          </p>
-          <ng-template #highTooltip>
-            <div class="font-semibold">Buy time:</div>
-            <div>{{ latestPrices.highTime | date : 'yyyy/MM/dd,&nbsp;HH:mm:ss' }}</div>
-          </ng-template>
+          </div>
+          <ng-template #highTimeTooltip>Last trade was {{ latestPrices.highTime | timeAgo }}.</ng-template>
         </section>
 
-        <section class="flex justify-between items-center">
-          <h3 class="font-semibold">Low</h3>
-          <p
-            class="flex items-center text-slate-900 dark:text-white"
+        <section class="flex justify-between">
+          <h3 class="flex font-semibold">
+            <div>Sell price</div>
+            <info-tooltip>The price of the latest instant sell.</info-tooltip>
+          </h3>
+          <div
+            class="text-slate-900 dark:text-white"
             tooltip
-            [tooltipTemplate]="lowTooltip"
+            [tooltipTemplate]="lowTimeTooltip"
           >
             {{ latestPrices.low | number }}&ngsp;gp
-          </p>
-          <ng-template #lowTooltip>
-            <div class="font-semibold">Sell time:</div>
-            <div>{{ latestPrices.lowTime | date : 'yyyy/MM/dd,&nbsp;HH:mm:ss' }}</div>
-          </ng-template>
+          </div>
+          <ng-template #lowTimeTooltip>Last trade was {{ latestPrices.lowTime | timeAgo }}.</ng-template>
         </section>
 
-        <section class="flex justify-between items-center">
-          <h3 class="font-semibold">Limit</h3>
-          <p class="flex items-center text-slate-900 dark:text-white">{{ itemDetail.limit | number }}</p>
+        <section class="flex justify-between">
+          <h3 class="flex font-semibold">
+            <div>Limit</div>
+            <info-tooltip>The amount of times the item can be bought every 4 hours.</info-tooltip>
+          </h3>
+          <div class="text-slate-900 dark:text-white">{{ itemDetail.limit | number }}</div>
         </section>
       </div>
     </section>
