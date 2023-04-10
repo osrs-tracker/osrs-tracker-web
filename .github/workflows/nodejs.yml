@@ -32,6 +32,13 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run test:ci
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure() # run this step even if previous step failed
+        with:
+          name: Jest Tests
+          path: reports/junit.xml
+          reporter: jest-junit
 
   build:
     runs-on: ubuntu-latest

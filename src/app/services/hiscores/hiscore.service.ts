@@ -144,8 +144,12 @@ export class HiscoreService {
     return this.parseSkillLine(parser, lines[overallLineNo], overallLineNo);
   }
 
+  // todo: date will be used when we have more parsers
   private getCurrentParser(date?: Date): ParseOrder {
-    // todo: date will be used when we have more parsers
+    const parserDate = date || new Date();
+
+    parserDate; // unused for now, but this removes lint warning
+
     return PO_2023_03_15;
   }
 
