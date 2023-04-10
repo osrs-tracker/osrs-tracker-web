@@ -27,7 +27,9 @@ import { RecentItem } from '../price-tracker.service';
         <ng-template #content>
           <ng-template [ngIf]="unknown">&mdash;</ng-template>
           <ng-template [ngIf]="!unknown">
-            <span [ngClass]="{ negative: trend < 0, positive: trend > 0 }"> {{ trend | number }}&ngsp;gp </span>
+            <span [ngClass]="{ 'negative negative--sign': trend < 0, 'positive positive--sign': trend > 0 }">
+              {{ absTrend | number }}&ngsp;gp
+            </span>
           </ng-template>
         </ng-template>
       </div>
@@ -40,8 +42,12 @@ export class ItemWidgetComponent implements OnInit {
 
   @Input() recentItem: RecentItem;
 
-  trend: number;
   unknown: boolean;
+  trend: number;
+
+  get absTrend(): number {
+    return Math.abs(this.trend);
+  }
 
   constructor(public cdRef: ChangeDetectorRef, private osrsPricesRepo: OsrsPricesRepo) {}
 
