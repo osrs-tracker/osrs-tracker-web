@@ -18,6 +18,7 @@ export class IconDirective implements OnInit, OnChanges {
 
   ngOnInit() {
     this.element.loading = 'lazy';
+    this.element.classList.add('object-contain');
     this.element.style.imageRendering = 'pixelated';
   }
 

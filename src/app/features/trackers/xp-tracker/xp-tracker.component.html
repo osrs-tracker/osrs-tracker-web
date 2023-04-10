@@ -29,9 +29,9 @@
       <div class="grid gap-4">
         <a
           [routerLink]="['/trackers/xp', username]"
-          *ngFor="let username of recentPlayers"
+          *ngFor="let username of recentPlayers; trackBy: trackByUsername"
         >
-          <player-xp-widget [username]="username"></player-xp-widget>
+          <player-widget [username]="username"></player-widget>
         </a>
       </div>
     </section>
@@ -41,9 +41,9 @@
       <div class="grid gap-4">
         <a
           [routerLink]="['/trackers/xp', username]"
-          *ngFor="let username of favoritePlayers"
+          *ngFor="let username of favoritePlayers; trackBy: trackByUsername"
         >
-          <player-xp-widget [username]="username"></player-xp-widget>
+          <player-widget [username]="username"></player-widget>
         </a>
       </div>
     </section>

@@ -25,4 +25,8 @@ export class XpTrackerComponent {
 
     this.router.navigate(['/trackers/xp', username]);
   }
+
+  trackByUsername(_index: number, username: string): string {
+    return username;
+  }
 }

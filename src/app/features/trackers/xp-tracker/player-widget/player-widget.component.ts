@@ -8,7 +8,7 @@ import { OsrsProxyRepo } from 'src/app/services/repositories/osrs-proxy.repo';
 import { OsrsTrackerRepo } from 'src/app/services/repositories/osrs-tracker.repo';
 
 @Component({
-  selector: 'player-xp-widget',
+  selector: 'player-widget',
   template: `
     <article
       class="
@@ -54,7 +54,7 @@ import { OsrsTrackerRepo } from 'src/app/services/repositories/osrs-tracker.repo
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PlayerXpWidgetComponent implements OnInit {
+export class PlayerWidgetComponent implements OnInit {
   readonly PlayerType: typeof PlayerType = PlayerType;
   readonly PlayerStatus: typeof PlayerStatus = PlayerStatus;
   readonly SkillEnum: typeof SkillEnum = SkillEnum;

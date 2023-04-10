@@ -14,6 +14,7 @@ import { ItemDetailComponent } from './item-detail/item-detail.component';
 import { itemDetailResolver } from './item-detail/item-detail.resolver';
 import { itemDetailTitleResolver } from './item-detail/item-detail.title-resolver';
 import { PriceTrackerComponent } from './price-tracker.component';
+import { ItemWidgetComponent } from './item-widget/item-widget.component';
 
 @NgModule({
   imports: [
@@ -42,6 +43,12 @@ import { PriceTrackerComponent } from './price-tracker.component';
     TooltipComponent,
     InfoTooltipComponent,
   ],
-  declarations: [PriceTrackerComponent, ItemAnalyticsComponent, ItemDetailComponent, ItemDetailWidgetComponent],
+  declarations: [
+    PriceTrackerComponent,
+    ItemAnalyticsComponent,
+    ItemDetailComponent,
+    ItemWidgetComponent,
+    ItemDetailWidgetComponent,
+  ],
 })
 export class PriceTrackerModule {}

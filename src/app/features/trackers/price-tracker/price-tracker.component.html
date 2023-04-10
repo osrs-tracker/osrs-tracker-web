@@ -72,12 +72,41 @@
 <div class="container mx-auto mb-8 px-4">
   <div class="mx-auto max-w-xl lg:max-w-5xl grid lg:grid-cols-2 gap-8">
     <section>
-      <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Recent</h2>
-      <p>No items looked up yet.</p>
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4 flex">
+        Recent
+        <info-tooltip>
+          The widget shows the price difference between the last instant-sell price and the 24h average of the previous
+          day (UTC).
+        </info-tooltip>
+        <ng-template #tooltip></ng-template>
+      </h2>
+      <p *ngIf="!recentItems.length">No items looked up yet.</p>
+      <div class="grid gap-4">
+        <a
+          [routerLink]="['/trackers/price', recentItem.id]"
+          *ngFor="let recentItem of recentItems; trackBy: trackById"
+        >
+          <item-widget [recentItem]="recentItem"></item-widget>
+        </a>
+      </div>
     </section>
     <section>
-      <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Favorite</h2>
-      <p>No items favorited yet.</p>
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4 flex">
+        Favorite
+        <info-tooltip>
+          The widget shows the price difference between the last instant-sell price and the 24h average of the previous
+          day (UTC).
+        </info-tooltip>
+      </h2>
+      <p *ngIf="!favoriteItems.length">No items favorited yet.</p>
+      <div class="grid gap-4">
+        <a
+          [routerLink]="['/trackers/price', recentItem.id]"
+          *ngFor="let recentItem of favoriteItems; trackBy: trackById"
+        >
+          <item-widget [recentItem]="recentItem"></item-widget>
+        </a>
+      </div>
     </section>
   </div>
 </div>

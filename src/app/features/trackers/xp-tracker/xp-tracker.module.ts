@@ -6,7 +6,7 @@ import { SpinnerComponent } from 'src/app/standalone/components/spinner/spinner.
 import { IconDirective } from 'src/app/standalone/directives/icon/icon.directive';
 import { CapitalizePipe } from 'src/app/standalone/pipes/capitalize.pipe';
 import { DateOrdinalPipe } from 'src/app/standalone/pipes/date-ordinal.pipe';
-import { PlayerXpWidgetComponent } from './components/player-xp-widget/player-xp-widget.component';
+import { PlayerWidgetComponent } from './player-widget/player-widget.component';
 import { PlayerDetailWidgetComponent } from './player-detail/player-detail-widget/player-detail-widget.component';
 import { PlayerDetailComponent } from './player-detail/player-detail.component';
 import { playerDetailResolver } from './player-detail/player-detail.resolver';
@@ -44,7 +44,7 @@ import { XpTrackerComponent } from './xp-tracker.component';
     PlayerDetailComponent,
     PlayerLogsComponent,
     PlayerDetailWidgetComponent,
-    PlayerXpWidgetComponent,
+    PlayerWidgetComponent,
   ],
 })
 export class XpTrackerModule {}

@@ -15,7 +15,7 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
-import { Subject, Subscription, debounceTime } from 'rxjs';
+import { Subject, debounceTime } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -45,7 +45,6 @@ import { Subject, Subscription, debounceTime } from 'rxjs';
   imports: [CommonModule, OverlayModule],
 })
 export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
-  documentTouchend$: Subscription;
   mousePresent$ = new Subject<boolean>();
 
   isOpen = false;
@@ -111,7 +110,6 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
     this.arrowOverlayRef.dispose();
 
     this.mousePresent$.complete();
-    this.documentTouchend$.unsubscribe();
   }
 
   @HostListener('mouseenter') @HostListener('touchstart') onMouseEnter() {
