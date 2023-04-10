@@ -1,13 +1,17 @@
 {
-  "id": "/",
+  "scope": "./",
+  "start_url": "./",
+  "android_package_name": "com.freekmencke.osrstracker",
+
   "theme_color": "#0F172A",
   "background_color": "#0F172A",
   "display": "standalone",
-  "scope": "/",
-  "start_url": "/",
-  "name": "OSRS Tracker - Track your OSRS progress.",
+
   "short_name": "OSRS Tracker",
+  "name": "OSRS Tracker - Track your OSRS progress.",
+  "categories": ["games", "productivity"],
   "description": "Keep track of everything that matters in Old School Runescape. Track the latest news, item prices, hiscores, and XP gains.",
+
   "icons": [
     {
       "src": "/assets/pwa/icon-192x192.png",
@@ -15,19 +19,21 @@
       "type": "image/png"
     },
     {
-      "src": "/assets/pwa/icon-256x256.png",
-      "sizes": "256x256",
-      "type": "image/png"
-    },
-    {
-      "src": "/assets/pwa/icon-384x384.png",
-      "sizes": "384x384",
-      "type": "image/png"
-    },
-    {
       "src": "/assets/pwa/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    {
+      "src": "/assets/pwa/maskable-icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/pwa/maskable-icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
