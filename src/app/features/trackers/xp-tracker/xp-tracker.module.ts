@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { SpinnerComponent } from 'src/app/standalone/components/spinner/spinner.component';
 import { IconDirective } from 'src/app/standalone/directives/icon/icon.directive';
-import { CapitalizeWordsPipe } from 'src/app/standalone/pipes/capitalize.pipe';
+import { CapitalizePipe } from 'src/app/standalone/pipes/capitalize.pipe';
 import { DateOrdinalPipe } from 'src/app/standalone/pipes/date-ordinal.pipe';
 import { PlayerXpWidgetComponent } from './components/player-xp-widget/player-xp-widget.component';
 import { PlayerDetailWidgetComponent } from './player-detail/player-detail-widget/player-detail-widget.component';
@@ -34,7 +34,7 @@ import { XpTrackerComponent } from './xp-tracker.component';
     ]),
 
     // Standalone
-    CapitalizeWordsPipe,
+    CapitalizePipe,
     DateOrdinalPipe,
     IconDirective,
     SpinnerComponent,

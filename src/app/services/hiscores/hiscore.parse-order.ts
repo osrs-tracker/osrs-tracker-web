@@ -51,8 +51,8 @@ export const PO_2023_03_15: ParseOrder = [
   ClueScrollsEnum.ClueScrollsElite,
   ClueScrollsEnum.ClueScrollsMaster,
 
-  CompetitiveEnum.PvpArena,
   CompetitiveEnum.LastManStanding,
+  CompetitiveEnum.PvpArena,
 
   MiniGameEnum.SoulWarsZeal,
   MiniGameEnum.RiftsClosed,
@@ -83,7 +83,7 @@ export const PO_2023_03_15: ParseOrder = [
   BossEnum.KalphiteQueen,
   BossEnum.KingBlackDragon,
   BossEnum.Kraken,
-  BossEnum.KreeAra,
+  BossEnum.KreeArra,
   BossEnum.KrilTsutsaroth,
   BossEnum.Mimic,
   BossEnum.Nex,
@@ -98,8 +98,8 @@ export const PO_2023_03_15: ParseOrder = [
 
   RaidEnum.TheGauntlet,
   RaidEnum.TheCorruptedGauntlet,
-  RaidEnum.TheathreOfBlood,
-  RaidEnum.TheathreOfBloodHardMode,
+  RaidEnum.TheatreOfBlood,
+  RaidEnum.TheatreOfBloodHardMode,
 
   BossEnum.ThermoNuclearSmokeDevil,
 

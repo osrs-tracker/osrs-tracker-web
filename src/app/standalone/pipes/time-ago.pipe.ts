@@ -5,8 +5,8 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'timeAgo',
 })
 export class TimeAgoPipe implements PipeTransform {
-  transform(value: Date | string | null | undefined): string {
-    if (!value) return '';
+  transform(value: Date | number | string | null | undefined): string | null {
+    if (!value) return null;
 
     const date = new Date(value);
 
@@ -26,7 +26,8 @@ export class TimeAgoPipe implements PipeTransform {
 
     for (const key in intervals) {
       const interval = intervals[key];
-      if (seconds > interval) {
+
+      if (seconds >= interval) {
         const count = Math.floor(seconds / interval);
         return `${count} ${key}${count === 1 ? '' : 's'} ago`;
       }

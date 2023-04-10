@@ -6,7 +6,7 @@ import { Pipe, PipeTransform } from '@angular/core';
   pure: true,
 })
 export class DateOrdinalPipe implements PipeTransform {
-  transform(formattedDate: string | null, value: Date): string | null {
+  transform(formattedDate: string | null | undefined, value: Date): string | null {
     if (!formattedDate) return null;
     return `${formattedDate}${this.getDateOrdinal(value)}`;
   }

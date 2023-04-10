@@ -5,8 +5,8 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'capitalizeWords',
   pure: true,
 })
-export class CapitalizeWordsPipe implements PipeTransform {
-  transform(string: string | null): string | null {
+export class CapitalizePipe implements PipeTransform {
+  transform(string: string | undefined | null): string | null {
     if (string == null) return null;
     return this.capitalise(string);
   }

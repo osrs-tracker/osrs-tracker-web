@@ -27,8 +27,8 @@ export class HiscoreService {
     );
   }
 
-  parseHiscoreString(hiscoreString: string): Omit<Hiscore, keyof HiscoreEntry> {
-    const parser = this.getCurrentParser();
+  parseHiscoreString(hiscoreString: string, date?: Date): Omit<Hiscore, keyof HiscoreEntry> {
+    const parser = this.getCurrentParser(date);
 
     const lines = hiscoreString.split('\n').filter(line => line.length);
 
@@ -135,8 +135,8 @@ export class HiscoreService {
     return this.xpDiff(todayOverall.xp, recentOverall.xp);
   }
 
-  private getSkillFromSourceString(sourceString: string, skill: SkillEnum): Skill {
-    const parser = this.getCurrentParser();
+  private getSkillFromSourceString(sourceString: string, skill: SkillEnum, date?: Date): Skill {
+    const parser = this.getCurrentParser(date);
 
     const lines = sourceString.split('\n').filter(line => line.length);
     const overallLineNo = parser.indexOf(skill);
@@ -144,7 +144,8 @@ export class HiscoreService {
     return this.parseSkillLine(parser, lines[overallLineNo], overallLineNo);
   }
 
-  private getCurrentParser(): ParseOrder {
+  private getCurrentParser(date?: Date): ParseOrder {
+    // todo: date will be used when we have more parsers
     return PO_2023_03_15;
   }
 

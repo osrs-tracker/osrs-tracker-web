@@ -10,8 +10,9 @@ import {
 } from 'src/app/services/hiscores/hiscore.enum';
 
 export const iconMap: { [key: string]: string } = {
-  ['dead']: '/skull.png',
   ['coins']: '/coins.png',
+  ['combat']: '/combat.png',
+  ['dead']: '/skull.png',
 
   [PlayerType.Ironman]: '/player_type/ironman.png',
   [PlayerType.Ultimate]: '/player_type/ultimate.png',
@@ -65,10 +66,10 @@ export const iconMap: { [key: string]: string } = {
 
   [RaidEnum.ChambersOfXeric]: '/raids/game_icon_chambersofxeric.png',
   [RaidEnum.ChambersOfXericChallengeMode]: '/raids/game_icon_chambersofxericchallengemode.png',
-  [RaidEnum.TheGauntlet]: '/raids/game_icon_theatreofblood.png',
-  [RaidEnum.TheCorruptedGauntlet]: '/raids/game_icon_theatreofbloodhardmode.png',
-  [RaidEnum.TheathreOfBlood]: '/raids/game_icon_thecorruptedgauntlet.png',
-  [RaidEnum.TheathreOfBloodHardMode]: '/raids/game_icon_thegauntlet.png',
+  [RaidEnum.TheGauntlet]: '/raids/game_icon_thegauntlet.png',
+  [RaidEnum.TheCorruptedGauntlet]: '/raids/game_icon_thecorruptedgauntlet.png',
+  [RaidEnum.TheatreOfBlood]: '/raids/game_icon_theatreofblood.png',
+  [RaidEnum.TheatreOfBloodHardMode]: '/raids/game_icon_theatreofbloodhardmode.png',
   [RaidEnum.TombsOfAmascut]: '/raids/game_icon_tombsofamascut.png',
   [RaidEnum.TombsOfAmascutExpertMode]: '/raids/game_icon_tombsofamascutexpertmode.png',
 
@@ -94,7 +95,7 @@ export const iconMap: { [key: string]: string } = {
   [BossEnum.KalphiteQueen]: '/bosses/game_icon_kalphitequeen.png',
   [BossEnum.KingBlackDragon]: '/bosses/game_icon_kingblackdragon.png',
   [BossEnum.Kraken]: '/bosses/game_icon_kraken.png',
-  [BossEnum.KreeAra]: '/bosses/game_icon_kreeara.png',
+  [BossEnum.KreeArra]: '/bosses/game_icon_kreearra.png',
   [BossEnum.KrilTsutsaroth]: '/bosses/game_icon_kriltsutsaroth.png',
   [BossEnum.Mimic]: '/bosses/game_icon_mimic.png',
   [BossEnum.Nex]: '/bosses/game_icon_nex.png',
