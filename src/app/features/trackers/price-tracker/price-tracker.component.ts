@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Item } from '@osrs-tracker/models';
 import { trackChanges } from 'src/app/core/decorators/track-changes.decorator';
 import { OsrsTrackerRepo } from 'src/app/services/repositories/osrs-tracker.repo';
+import { MetaService } from 'src/app/services/seo/meta.service';
 import { PriceTrackerService, RecentItem } from './price-tracker.service';
 
 @Component({
@@ -9,7 +10,7 @@ import { PriceTrackerService, RecentItem } from './price-tracker.service';
   templateUrl: './price-tracker.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PriceTrackerComponent {
+export class PriceTrackerComponent implements OnInit {
   @trackChanges loading = false;
 
   query = '';
@@ -25,9 +26,14 @@ export class PriceTrackerComponent {
 
   constructor(
     public cdRef: ChangeDetectorRef,
+    private metaService: MetaService,
     private osrsTrackerRepo: OsrsTrackerRepo,
     private priceTrackerService: PriceTrackerService,
   ) {}
+
+  ngOnInit(): void {
+    this.metaService.setPriceTrackerMeta();
+  }
 
   searchItems(): void {
     if (!this.query) return;

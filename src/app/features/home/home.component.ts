@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { trackChanges } from 'src/app/core/decorators/track-changes.decorator';
 import { OsrsNewsItem } from 'src/app/services/repositories/osrs-proxy.repo';
 import { OsrsTrackerRepo } from 'src/app/services/repositories/osrs-tracker.repo';
+import { MetaService } from 'src/app/services/seo/meta.service';
 
 @Component({
   selector: 'home',
@@ -11,9 +12,11 @@ import { OsrsTrackerRepo } from 'src/app/services/repositories/osrs-tracker.repo
 export class HomeComponent implements OnInit {
   @trackChanges osrsNewsItems: OsrsNewsItem[] = [];
 
-  constructor(public cdRef: ChangeDetectorRef, private osrsTrackerRepo: OsrsTrackerRepo) {}
+  constructor(public cdRef: ChangeDetectorRef, private meta: MetaService, private osrsTrackerRepo: OsrsTrackerRepo) {}
 
   ngOnInit(): void {
+    this.meta.setHomeMeta();
+
     this.osrsTrackerRepo.getLatestOsrsNewsItems().subscribe(osrsNewsItems => this.setNews(osrsNewsItems));
   }
 

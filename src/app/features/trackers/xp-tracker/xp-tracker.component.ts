@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { MetaService } from 'src/app/services/seo/meta.service';
 import { XpTrackerService } from './xp-tracker.service';
 
 @Component({
@@ -7,7 +8,7 @@ import { XpTrackerService } from './xp-tracker.service';
   templateUrl: './xp-tracker.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class XpTrackerComponent {
+export class XpTrackerComponent implements OnInit {
   username: string;
 
   get favoritePlayers(): string[] {
@@ -18,7 +19,11 @@ export class XpTrackerComponent {
     return this.xpTrackerService.getRecentPlayers();
   }
 
-  constructor(private router: Router, private xpTrackerService: XpTrackerService) {}
+  constructor(private router: Router, private metaService: MetaService, private xpTrackerService: XpTrackerService) {}
+
+  ngOnInit(): void {
+    this.metaService.setXpTrackerMeta();
+  }
 
   searchUser(username: string) {
     if (!username) return;

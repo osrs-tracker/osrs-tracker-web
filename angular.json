@@ -27,10 +27,9 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/assets",
-              "src/favicon.png",
-              "src/favicon-dark.png",
+              { "glob": "favicon*.png", "input": "src", "output": "." },
+              { "glob": "sitemap*.xml", "input": "src", "output": "." },
               "src/manifest.webmanifest",
-              "src/sitemap.xml",
               "src/robots.txt"
             ],
             "styles": ["src/styles.scss"],

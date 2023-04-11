@@ -2,6 +2,9 @@
   "root": true,
   "extends": ["prettier"],
   "ignorePatterns": ["projects/**/*"],
+  "parserOptions": {
+    "ecmaVersion": "latest"
+  },
   "overrides": [
     {
       "files": ["*.ts"],
@@ -34,6 +37,13 @@
       "files": ["*.html"],
       "extends": ["plugin:@angular-eslint/template/recommended"],
       "rules": {}
+    },
+    {
+      "files": ["*.js"],
+      "extends": ["eslint:recommended"],
+      "rules": {
+        "no-undef": "off"
+      }
     }
   ]
 }

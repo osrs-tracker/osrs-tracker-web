@@ -10,8 +10,14 @@
       <small>{{ osrsNewsItem.pubDate | date : 'MMMM dd, YYYY' }}</small>
       <small>{{ osrsNewsItem.category }}</small>
     </div>
-    <h3 class="font-semibold mb-2">{{ osrsNewsItem.title }}</h3>
-    <div class="mb-2">{{ osrsNewsItem.description }}</div>
+    <h3
+      class="font-semibold mb-2"
+      [innerHTML]="osrsNewsItem.title"
+    ></h3>
+    <div
+      class="mb-2"
+      [innerHTML]="osrsNewsItem.description"
+    ></div>
     <div class="mt-auto">
       <a
         class="link"

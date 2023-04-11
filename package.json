@@ -23,11 +23,15 @@
     "url": "https://github.com/osrs-tracker/osrs-tracker-web"
   },
   "scripts": {
+    "postinstall": "npm install --prefix ./scripts",
     "build": "ng build",
-    "predeploy": "ng build",
+    "predeploy": "npm run sitemap && ng build",
     "deploy": "npm run deploy:app && npm run deploy:assets",
     "deploy:app": "aws s3 sync --delete --exclude 'assets/*' --exclude '*.js' --exclude '*.css' ./dist/osrs-tracker-web s3://osrs-tracker.freekmencke.com",
     "deploy:assets": "aws s3 sync --delete --size-only ./dist/osrs-tracker-web s3://osrs-tracker.freekmencke.com",
+    "sitemap": "npm run sitemap:index && npm run sitemap:items",
+    "sitemap:index": "node ./scripts/sitemap/sitemap-index.js",
+    "sitemap:items": "node ./scripts/sitemap/sitemap-items.js",
     "lint": "ng lint",
     "prettier": "prettier --write .",
     "prettier:ci": "prettier --check .",
