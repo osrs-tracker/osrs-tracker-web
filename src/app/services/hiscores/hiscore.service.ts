@@ -11,7 +11,8 @@ import {
 } from './hiscore.enum';
 import { Hiscore, MiniGame, Skill } from './hiscore.model';
 
-import { ParseOrder, PO_2023_03_15 } from './hiscore.parse-order';
+import { isAfter, parseISO } from 'date-fns';
+import { PO_DEFAULT, ParseOrder, ParseOrderMap } from './hiscore.parse-order';
 
 @Injectable({
   providedIn: 'root',
@@ -22,12 +23,12 @@ export class HiscoreService {
       hiscoreEntry =>
         ({
           ...hiscoreEntry,
-          ...this.parseHiscoreString(hiscoreEntry.sourceString),
+          ...this.parseHiscoreString(hiscoreEntry.sourceString, hiscoreEntry.date),
         } as Hiscore),
     );
   }
 
-  parseHiscoreString(hiscoreString: string, date?: Date): Omit<Hiscore, keyof HiscoreEntry> {
+  parseHiscoreString(hiscoreString: string, date: Date): Omit<Hiscore, keyof HiscoreEntry> {
     const parser = this.getCurrentParser(date);
 
     const lines = hiscoreString.split('\n').filter(line => line.length);
@@ -114,8 +115,8 @@ export class HiscoreService {
                 miniGameName,
                 {
                   name: miniGameName,
-                  rank: miniGame.rank - (old[hiscoreKey] as { [key: string]: MiniGame })[miniGameName].rank,
-                  score: miniGame.score - (old[hiscoreKey] as { [key: string]: MiniGame })[miniGameName].score,
+                  rank: miniGame.rank - ((old[hiscoreKey] as { [key: string]: MiniGame })[miniGameName]?.rank ?? 0),
+                  score: miniGame.score - ((old[hiscoreKey] as { [key: string]: MiniGame })[miniGameName]?.score ?? 0),
                 },
               ]),
             ),
@@ -129,13 +130,13 @@ export class HiscoreService {
   }
 
   getOverallXpDiff(today: HiscoreEntry, recent: HiscoreEntry): number {
-    const todayOverall = this.getSkillFromSourceString(today.sourceString, SkillEnum.Overall);
-    const recentOverall = this.getSkillFromSourceString(recent.sourceString, SkillEnum.Overall);
+    const todayOverall = this.getSkillFromSourceString(today.sourceString, SkillEnum.Overall, today.date);
+    const recentOverall = this.getSkillFromSourceString(recent.sourceString, SkillEnum.Overall, recent.date);
 
     return this.xpDiff(todayOverall.xp, recentOverall.xp);
   }
 
-  private getSkillFromSourceString(sourceString: string, skill: SkillEnum, date?: Date): Skill {
+  private getSkillFromSourceString(sourceString: string, skill: SkillEnum, date: Date): Skill {
     const parser = this.getCurrentParser(date);
 
     const lines = sourceString.split('\n').filter(line => line.length);
@@ -144,13 +145,11 @@ export class HiscoreService {
     return this.parseSkillLine(parser, lines[overallLineNo], overallLineNo);
   }
 
-  // todo: date will be used when we have more parsers
-  private getCurrentParser(date?: Date): ParseOrder {
-    const parserDate = date || new Date();
-
-    parserDate; // unused for now, but this removes lint warning
-
-    return PO_2023_03_15;
+  private getCurrentParser(dateToParse: Date): ParseOrder {
+    for (const [parseDate, parser] of Object.entries(ParseOrderMap)) {
+      if (isAfter(dateToParse, parseISO(parseDate))) return parser;
+    }
+    return PO_DEFAULT;
   }
 
   /**

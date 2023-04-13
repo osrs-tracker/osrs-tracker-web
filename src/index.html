@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- PWA -->
     <meta
       name="theme-color"
       content="#0F172A"
@@ -9,6 +10,7 @@
       rel="manifest"
       href="manifest.webmanifest"
     />
+    <!-- End PWA -->
 
     <!-- Google tag (gtag.js) -->
     <script
@@ -29,18 +31,20 @@
         ...(location.hostname === 'localhost' ? { debug_mode: true } : {}),
       });
     </script>
-
-    <meta charset="utf-8" />
+    <!-- End Google tag -->
 
     <base href="/" />
-    <title>OSRS Tracker</title>
-    <meta
-      name="description"
-      content="Keep track of everything that matters in Old School Runescape. Track the latest news, item prices, hiscores, and XP gains."
-    />
+    <meta charset="utf-8" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+
+    <title>OSRS Tracker</title>
+
+    <meta
+      name="description"
+      content="Keep track of everything that matters in Old School Runescape. Track the latest news, item prices, hiscores, and XP gains."
     />
 
     <link

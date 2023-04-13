@@ -15,8 +15,10 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Subject, debounceTime } from 'rxjs';
 
+@UntilDestroy()
 @Component({
   standalone: true,
   selector: '[tooltip]',
@@ -83,7 +85,7 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
       }),
     );
 
-    this.mousePresent$.pipe(debounceTime(300)).subscribe(isPresent => {
+    this.mousePresent$.pipe(debounceTime(300), untilDestroyed(this)).subscribe(isPresent => {
       if (this.isOpen === isPresent) return;
       this.isOpen = isPresent;
 
@@ -109,6 +111,7 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
     this.arrowOverlayRef.detach();
     this.arrowOverlayRef.dispose();
 
+    this.mousePresent$.next(false); // emite false to be sure.
     this.mousePresent$.complete();
   }
 

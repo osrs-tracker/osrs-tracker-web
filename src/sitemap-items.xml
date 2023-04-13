@@ -17971,6 +17971,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/23490</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/23499</loc>
     <changefreq>hourly</changefreq>
     <priority>0.7</priority>
@@ -19217,6 +19222,21 @@
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/26235</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/26241</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/26243</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/26245</loc>
     <changefreq>hourly</changefreq>
     <priority>0.7</priority>
   </url>

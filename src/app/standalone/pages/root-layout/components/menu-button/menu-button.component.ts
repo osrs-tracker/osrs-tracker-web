@@ -1,6 +1,8 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 
 @Component({
+  standalone: true,
   selector: 'menu-button',
   template: `
     <button
@@ -41,6 +43,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, HostBinding, Input, O
     </button>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule],
 })
 export class MenuButtonComponent {
   @HostBinding('class') class = 'flex';

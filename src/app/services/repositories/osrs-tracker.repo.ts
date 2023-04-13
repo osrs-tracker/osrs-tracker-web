@@ -1,7 +1,7 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HiscoreEntry, Item, OsrsNewsItem, Player } from '@osrs-tracker/models';
-import { Observable, startWith, tap } from 'rxjs';
+import { Observable, map, startWith, tap } from 'rxjs';
 import { LOADING_INDICATOR } from 'src/app/core/interceptors/loading-indicator.interceptor';
 import { StorageKey } from 'src/app/core/storage/storage';
 
@@ -30,16 +30,39 @@ export class OsrsTrackerRepo {
     username: string,
     options?: { includeLatestHiscoreEntry?: boolean; loadingIndicator?: boolean },
   ): Observable<Player> {
-    return this.httpClient.get<Player>(`/player/${username}`, {
-      context: new HttpContext().set(LOADING_INDICATOR, options?.loadingIndicator),
-      params: { ...(options?.includeLatestHiscoreEntry ? { hiscore: true } : {}) },
-    });
+    return this.httpClient
+      .get<Player>(`/player/${username}`, {
+        context: new HttpContext().set(LOADING_INDICATOR, options?.loadingIndicator),
+        params: { ...(options?.includeLatestHiscoreEntry ? { hiscore: true } : {}) },
+      })
+      .pipe(
+        map(player => ({
+          ...player,
+          hiscoreEntries: player.hiscoreEntries?.map(hiscoreEntry => {
+            return {
+              ...hiscoreEntry,
+              date: new Date(hiscoreEntry.date),
+            };
+          }),
+        })),
+      );
   }
 
   getPlayerHiscores(username: string, scrapingOffset = 0, skip = 0): Observable<HiscoreEntry[]> {
-    return this.httpClient.get<HiscoreEntry[]>(`/player/${username}/hiscores`, {
-      params: { scrapingOffset, skip },
-    });
+    return this.httpClient
+      .get<HiscoreEntry[]>(`/player/${username}/hiscores`, {
+        params: { scrapingOffset, skip },
+      })
+      .pipe(
+        map(hiscoreEntries =>
+          hiscoreEntries.map(hiscoreEntry => {
+            return {
+              ...hiscoreEntry,
+              date: new Date(hiscoreEntry.date),
+            };
+          }),
+        ),
+      );
   }
 
   //

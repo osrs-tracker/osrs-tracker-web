@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 @Injectable({
   providedIn: 'root',
 })
-export class DarkModeService {
+export class ThemeService {
   get isDarkModeEnabled(): boolean {
     // set darkMode as default
     return (localStorage.getItem('darkMode') ?? 'true') === 'true';
@@ -17,10 +17,10 @@ export class DarkModeService {
       dark_mode_enabled: this.isDarkModeEnabled,
     });
 
-    this.loadDarkMode();
+    this.loadTheme();
   }
 
-  loadDarkMode() {
+  loadTheme() {
     gtag('set', {
       'user_properties.theme': this.isDarkModeEnabled ? 'dark' : 'light',
     });

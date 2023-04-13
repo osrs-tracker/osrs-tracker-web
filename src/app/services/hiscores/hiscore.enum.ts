@@ -65,9 +65,11 @@ export enum RaidEnum {
 export enum BossEnum {
   AbyssalSire = 'Abyssal Sire',
   AlchemicalHydra = 'Alchemical Hydra',
+  Artio = 'Alchemical Hydra', // New boss 13/04/2023
   BarrowsChests = 'Barrows Chests',
   Bryophyta = 'Bryophyta',
   Callisto = 'Callisto',
+  Calvarion = "Cal'varion", // New boss 13/04/2023
   Cerberus = 'Cerberus',
   ChaosElemental = 'Chaos Elemental',
   ChaosFanatic = 'Chaos Fanatic',
@@ -96,6 +98,7 @@ export enum BossEnum {
   Sarachnis = 'Sarachnis',
   Scorpia = 'Scorpia',
   Skotizo = 'Skotizo',
+  Spindel = 'Spindel', // New boss 13/04/2023
   Tempoross = 'Tempoross',
   ThermoNuclearSmokeDevil = 'Thermonuclear Smoke Devil',
   TzKalZuk = 'TzKal-Zuk',

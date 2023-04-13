@@ -62,7 +62,7 @@
     <!-- full width loading indicator -->
     <div
       *ngIf="loadingIndicatorService.hasOngoingRequests | async"
-      class="loading-indicator__container absolute top-0 left-0 w-full h-2 overflow-hidden"
+      class="loading-indicator__container fixed top-0 left-0 w-full h-2 overflow-hidden"
     >
       <div class="h-1 bg-emerald-400 animate-pulse"></div>
       <div class="absolute top-0 w-full loading-indicator">

@@ -4,22 +4,25 @@ colors = require('tailwindcss/colors');
 module.exports = {
   content: ['./src/**/*.{html,ts}'],
   darkMode: 'class',
+  future: {
+    removeDeprecatedGapUtilities: true,
+    purgeLayersByDefault: true,
+  },
+  experimental: {
+    darkModeVariant: true,
+  },
   theme: {
     colors: {
+      // general
       transparent: 'transparent',
-      current: 'currentColor',
-
       black: colors.black,
       white: colors.white,
-      neutral: colors.neutral,
+      red: colors.red,
+      green: colors.green,
 
+      // accent
       emerald: colors.emerald,
       slate: colors.slate,
-
-      red: colors.red,
-      orange: colors.orange,
-      yellow: colors.yellow,
-      green: colors.green,
     },
   },
   plugins: [require('@tailwindcss/forms')],

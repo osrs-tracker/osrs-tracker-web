@@ -10,7 +10,8 @@
     "hiscores",
     "items",
     "price-tracker",
-    "xp-tracker"
+    "xp-tracker",
+    "stats"
   ],
   "repository": {
     "type": "git",
@@ -37,6 +38,7 @@
     "prettier:ci": "prettier --check .",
     "start": "ng serve --open",
     "test": "jest --watch",
+    "test:changed": "jest --onlyChanged",
     "test:ci": "JEST_JUNIT_OUTPUT_DIR=reports jest --ci --reporters=default --reporters jest-junit",
     "watch": "ng build --watch --configuration development"
   },
@@ -56,8 +58,10 @@
     "@angular/platform-browser-dynamic": "^15.2.6",
     "@angular/router": "^15.2.6",
     "@angular/service-worker": "^15.2.6",
+    "@ngneat/until-destroy": "^10.0.0-beta.0",
     "commitizen": "^4.3.0",
     "cz-conventional-changelog": "^3.3.0",
+    "date-fns": "^2.29.3",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.12.0"

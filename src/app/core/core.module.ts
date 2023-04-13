@@ -1,19 +1,28 @@
 import { HttpClientModule } from '@angular/common/http';
-import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { GoogleAnalyticsModule } from './google-analytics/google-analytics.module';
+import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
+import { ThemeService } from '../standalone/pages/root-layout/components/dark-mode/dark-mode.service';
+import { GoogleAnalyticsService } from './analytics/google-analytics.service';
+import { CustomErrorHandler } from './error-handling/error-handler';
 import { InterceptorsModule } from './interceptors/interceptor.module';
-import { DarkModeService } from './root-layout/components/dark-mode/dark-mode.service';
-import { RootLayoutModule } from './root-layout/root-layout.module';
 
 @NgModule({
-  imports: [HttpClientModule, InterceptorsModule, RootLayoutModule, GoogleAnalyticsModule],
+  imports: [HttpClientModule, InterceptorsModule],
   providers: [
+    { provide: ErrorHandler, useClass: CustomErrorHandler },
+    // APP_INITIALIZER
     {
-      // load dark mode on app start
       provide: APP_INITIALIZER,
-      useFactory: (darkModeService: DarkModeService) => () => darkModeService.loadDarkMode(),
-      deps: [DarkModeService],
+      useFactory: (themeService: ThemeService) => () => themeService.loadTheme(),
+      deps: [ThemeService],
       multi: true,
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (googleAnalyticsService: GoogleAnalyticsService) => () => {
+        googleAnalyticsService.setupPageAnalytics();
+      },
+      multi: true,
+      deps: [GoogleAnalyticsService],
     },
   ],
 })

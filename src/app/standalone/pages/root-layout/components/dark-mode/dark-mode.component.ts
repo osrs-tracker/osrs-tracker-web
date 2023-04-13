@@ -1,7 +1,9 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { DarkModeService } from './dark-mode.service';
+import { ThemeService } from './dark-mode.service';
 
 @Component({
+  standalone: true,
   selector: 'dark-mode',
   template: `
     <div
@@ -40,7 +42,8 @@ import { DarkModeService } from './dark-mode.service';
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule],
 })
 export class DarkModeComponent {
-  constructor(public darkModeService: DarkModeService) {}
+  constructor(public darkModeService: ThemeService) {}
 }
