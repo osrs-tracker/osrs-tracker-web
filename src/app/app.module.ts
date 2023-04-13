@@ -12,7 +12,7 @@ import { CoreModule } from './core/core.module';
     AppRoutingModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: !isDevMode(),
-      registrationStrategy: 'registerImmediately',
+      registrationStrategy: 'registerWhenStable:3000',
     }),
   ],
   declarations: [AppComponent],
