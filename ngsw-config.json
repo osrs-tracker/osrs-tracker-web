@@ -18,5 +18,8 @@
       }
     }
   ],
-  "navigationUrls": ["/**"]
+  "navigationUrls": [
+    "/**",
+    "!/**/*.*"
+  ]
 }
