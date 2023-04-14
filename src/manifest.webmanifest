@@ -1,6 +1,6 @@
 {
+  "start_url": "https://osrs-tracker.freekmencke.com/",
   "scope": "/",
-  "start_url": "/",
   "android_package_name": "com.freekmencke.osrstracker",
 
   "theme_color": "#0F172A",

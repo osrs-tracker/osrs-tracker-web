@@ -17,12 +17,12 @@ export class GoogleAnalyticsService {
       gtag('event', 'page_view', {
         page_path: routerState.url,
         page_title: this.titleStrategy.buildTitle(routerState),
-        page_location: window.location.href,
+        page_location: location.href,
       });
     });
   }
 
-  trackEvent(action: string, category: string, label: string, value?: number) {
+  trackEvent(action: string, category: string, label: unknown, value: unknown) {
     gtag('event', action, {
       event_category: category,
       event_label: label,
@@ -30,7 +30,7 @@ export class GoogleAnalyticsService {
     });
   }
 
-  trackException(description: string, fatal: boolean) {
+  trackException(description: string, fatal = false) {
     gtag('event', 'exception', {
       description,
       fatal,

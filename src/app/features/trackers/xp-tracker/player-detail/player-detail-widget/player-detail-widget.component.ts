@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { Hiscore } from 'src/app/services/hiscores/hiscore.model';
 import { XpTrackerService } from '../../xp-tracker.service';
+import { GoogleAnalyticsService } from 'src/app/core/analytics/google-analytics.service';
 
 @Component({
   selector: 'player-detail-widget',
@@ -19,9 +20,16 @@ export class PlayerDetailWidgetComponent {
     return this.xpTrackerService.isFavoritePlayer(this.playerDetail.username);
   }
 
-  constructor(private xpTrackerService: XpTrackerService) {}
+  constructor(private googlAnalyticsService: GoogleAnalyticsService, private xpTrackerService: XpTrackerService) {}
 
   toggleFavorite(): void {
     this.xpTrackerService.toggleFavoritePlayer(this.playerDetail.username);
+
+    this.googlAnalyticsService.trackEvent(
+      'toggle_favorite_player',
+      'xp_tracker',
+      this.playerDetail.username,
+      this.isFavorite,
+    );
   }
 }

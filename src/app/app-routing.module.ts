@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { NotFound404Component } from './standalone/pages/not-found-404.component';
-import { RootLayoutComponent } from './standalone/pages/root-layout/root-layout.component';
+import { RootLayoutComponent } from './standalone/root-layout/root-layout.component';
 
 const routes: Routes = [
   {

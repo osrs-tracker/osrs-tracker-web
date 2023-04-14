@@ -4,12 +4,13 @@ import { HiscoreEntry, Item, OsrsNewsItem, Player } from '@osrs-tracker/models';
 import { Observable, map, startWith, tap } from 'rxjs';
 import { LOADING_INDICATOR } from 'src/app/core/interceptors/loading-indicator.interceptor';
 import { StorageKey } from 'src/app/core/storage/storage';
+import { StorageService } from 'src/app/core/storage/storage.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class OsrsTrackerRepo {
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient, private storageService: StorageService) {}
 
   //
   // News
@@ -17,8 +18,8 @@ export class OsrsTrackerRepo {
 
   getLatestOsrsNewsItems(): Observable<OsrsNewsItem[]> {
     return this.httpClient.get<OsrsNewsItem[]>('/news/latest').pipe(
-      tap(osrsNewsItems => localStorage.setItem(StorageKey.OsrsNews, JSON.stringify(osrsNewsItems))),
-      startWith(JSON.parse(localStorage.getItem(StorageKey.OsrsNews) || '[]')),
+      tap(osrsNewsItems => this.storageService.setItem(StorageKey.OsrsNews, JSON.stringify(osrsNewsItems))),
+      startWith(JSON.parse(this.storageService.getItem(StorageKey.OsrsNews) || '[]')),
     );
   }
 

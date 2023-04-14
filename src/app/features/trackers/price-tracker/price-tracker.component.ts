@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Item } from '@osrs-tracker/models';
 import { trackChanges } from 'src/app/core/decorators/track-changes.decorator';
+import { MetaService } from 'src/app/services/meta.service';
 import { OsrsTrackerRepo } from 'src/app/services/repositories/osrs-tracker.repo';
-import { MetaService } from 'src/app/services/seo/meta.service';
 import { PriceTrackerService, RecentItem } from './price-tracker.service';
 
 @Component({

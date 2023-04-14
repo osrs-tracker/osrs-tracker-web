@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { StorageKey } from 'src/app/core/storage/storage';
+import { StorageService } from 'src/app/core/storage/storage.service';
 
 export interface RecentItem {
   id: number;
@@ -13,8 +14,10 @@ export interface RecentItem {
 export class PriceTrackerService {
   readonly MAX_PLAYERS_STORED = 5;
 
+  constructor(private storageService: StorageService) {}
+
   getRecentItems(): RecentItem[] {
-    return JSON.parse(localStorage.getItem(StorageKey.PriceTrackerRecentItems) ?? '[]');
+    return JSON.parse(this.storageService.getItem(StorageKey.PriceTrackerRecentItems) ?? '[]');
   }
 
   pushRecentItem(recentItem: RecentItem): void {
@@ -32,11 +35,11 @@ export class PriceTrackerService {
       recenItems.pop();
     }
 
-    localStorage.setItem(StorageKey.PriceTrackerRecentItems, JSON.stringify(recenItems));
+    this.storageService.setItem(StorageKey.PriceTrackerRecentItems, JSON.stringify(recenItems));
   }
 
   getFavoriteItems(): RecentItem[] {
-    return JSON.parse(localStorage.getItem(StorageKey.PriceTrackerFavoriteItems) ?? '[]');
+    return JSON.parse(this.storageService.getItem(StorageKey.PriceTrackerFavoriteItems) ?? '[]');
   }
 
   isFavoriteItem(id: number): boolean {
@@ -54,6 +57,6 @@ export class PriceTrackerService {
       favoriteItems.unshift(recentItem);
     }
 
-    localStorage.setItem(StorageKey.PriceTrackerFavoriteItems, JSON.stringify(favoriteItems));
+    this.storageService.setItem(StorageKey.PriceTrackerFavoriteItems, JSON.stringify(favoriteItems));
   }
 }

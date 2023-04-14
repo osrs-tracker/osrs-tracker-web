@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { StorageKey } from 'src/app/core/storage/storage';
+import { StorageService } from 'src/app/core/storage/storage.service';
 import { ViewType } from './player-detail/player-logs/player-logs.component';
 
 @Injectable({
@@ -8,8 +9,10 @@ import { ViewType } from './player-detail/player-logs/player-logs.component';
 export class XpTrackerService {
   readonly MAX_PLAYERS_STORED = 5;
 
+  constructor(private storageService: StorageService) {}
+
   getRecentPlayers(): string[] {
-    return JSON.parse(localStorage.getItem(StorageKey.XpTrackerRecentPlayers) ?? '[]');
+    return JSON.parse(this.storageService.getItem(StorageKey.XpTrackerRecentPlayers) ?? '[]');
   }
 
   pushRecentPlayer(username: string): void {
@@ -25,11 +28,11 @@ export class XpTrackerService {
       recentPlayers.pop();
     }
 
-    localStorage.setItem(StorageKey.XpTrackerRecentPlayers, JSON.stringify(recentPlayers));
+    this.storageService.setItem(StorageKey.XpTrackerRecentPlayers, JSON.stringify(recentPlayers));
   }
 
   getFavoritePlayers(): string[] {
-    return JSON.parse(localStorage.getItem(StorageKey.XpTrackerFavoritePlayers) ?? '[]');
+    return JSON.parse(this.storageService.getItem(StorageKey.XpTrackerFavoritePlayers) ?? '[]');
   }
 
   isFavoritePlayer(username: string): boolean {
@@ -45,14 +48,14 @@ export class XpTrackerService {
       favoritePlayers.unshift(username);
     }
 
-    localStorage.setItem(StorageKey.XpTrackerFavoritePlayers, JSON.stringify(favoritePlayers));
+    this.storageService.setItem(StorageKey.XpTrackerFavoritePlayers, JSON.stringify(favoritePlayers));
   }
 
   getViewType(): ViewType {
-    return parseInt(localStorage.getItem(StorageKey.XpTrackerViewType)! ?? ViewType.Skills);
+    return parseInt(this.storageService.getItem(StorageKey.XpTrackerViewType)! ?? ViewType.Skills);
   }
 
   setViewType(viewType: ViewType): void {
-    localStorage.setItem(StorageKey.XpTrackerViewType, viewType.toString());
+    this.storageService.setItem(StorageKey.XpTrackerViewType, viewType.toString());
   }
 }

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Item } from '@osrs-tracker/models';
+import { GoogleAnalyticsService } from 'src/app/core/analytics/google-analytics.service';
 import { LatestPrices } from 'src/app/services/repositories/osrs-prices.repo';
 import { config } from 'src/config/config';
 import { PriceTrackerService } from '../../price-tracker.service';
@@ -22,13 +23,18 @@ export class ItemDetailWidgetComponent {
     return this.priceTrackerService.isFavoriteItem(this.itemDetail.id);
   }
 
-  constructor(private priceTrackerService: PriceTrackerService) {}
+  constructor(
+    private googlAnalyticsService: GoogleAnalyticsService,
+    private priceTrackerService: PriceTrackerService,
+  ) {}
 
   goToWiki() {
     window.open(`${config.wikiBaseUrl}/w/${this.itemDetail.name}`, '_blank');
   }
 
   toggleFavorite(): void {
+    this.googlAnalyticsService.trackEvent('toggle_favorite_item', 'price_tracker', this.itemDetail.id, this.isFavorite);
+
     this.priceTrackerService.toggleFavoriteItem({
       id: this.itemDetail.id,
       name: this.itemDetail.name,

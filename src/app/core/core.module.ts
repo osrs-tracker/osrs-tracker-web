@@ -1,6 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
-import { ThemeService } from '../standalone/pages/root-layout/components/dark-mode/dark-mode.service';
+import { SwUpdate } from '@angular/service-worker';
+import { ThemeService } from '../services/theme.service';
 import { GoogleAnalyticsService } from './analytics/google-analytics.service';
 import { CustomErrorHandler } from './error-handling/error-handler';
 import { InterceptorsModule } from './interceptors/interceptor.module';
@@ -9,20 +10,26 @@ import { InterceptorsModule } from './interceptors/interceptor.module';
   imports: [HttpClientModule, InterceptorsModule],
   providers: [
     { provide: ErrorHandler, useClass: CustomErrorHandler },
-    // APP_INITIALIZER
     {
       provide: APP_INITIALIZER,
-      useFactory: (themeService: ThemeService) => () => themeService.loadTheme(),
-      deps: [ThemeService],
+      deps: [SwUpdate],
+      useFactory: (swUpdate: SwUpdate) => () => {
+        if (!swUpdate.isEnabled) return;
+        swUpdate.checkForUpdate().then(updated => updated && document.location.reload());
+      },
       multi: true,
     },
     {
       provide: APP_INITIALIZER,
-      useFactory: (googleAnalyticsService: GoogleAnalyticsService) => () => {
-        googleAnalyticsService.setupPageAnalytics();
-      },
+      deps: [ThemeService],
+      useFactory: (themeService: ThemeService) => () => themeService.loadTheme(),
       multi: true,
+    },
+    {
+      provide: APP_INITIALIZER,
       deps: [GoogleAnalyticsService],
+      useFactory: (googleAnalyticsService: GoogleAnalyticsService) => () => googleAnalyticsService.setupPageAnalytics(),
+      multi: true,
     },
   ],
 })

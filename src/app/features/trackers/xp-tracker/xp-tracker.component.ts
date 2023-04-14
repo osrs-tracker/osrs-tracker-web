@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { MetaService } from 'src/app/services/seo/meta.service';
+import { MetaService } from 'src/app/services/meta.service';
 import { XpTrackerService } from './xp-tracker.service';
 
 @Component({

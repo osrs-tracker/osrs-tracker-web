@@ -1,10 +1,13 @@
-import { ErrorHandler } from '@angular/core';
+import { ErrorHandler, Injectable } from '@angular/core';
+import { GoogleAnalyticsService } from '../analytics/google-analytics.service';
 
+@Injectable()
 export class CustomErrorHandler implements ErrorHandler {
+  constructor(private googleAnalyticsService: GoogleAnalyticsService) {}
+
   handleError(error: Error) {
-    if (gtag) {
-      gtag('event', 'exception', { description: error.message });
-    }
-    window.console.error(error);
+    this.googleAnalyticsService.trackException(error.message, true);
+    // eslint-disable-next-line no-console
+    console.error(error);
   }
 }

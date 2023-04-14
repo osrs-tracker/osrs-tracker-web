@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { ThemeService } from './dark-mode.service';
+import { ThemeService } from '../../../services/theme.service';
 
 @Component({
   standalone: true,
