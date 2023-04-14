@@ -13,8 +13,9 @@ export class ItemDetailWidgetComponent {
   @Input() itemDetail: Item;
   @Input() latestPrices: LatestPrices;
 
+  // don't transform icon but transform name, ex. bolts have different name (Diamond_bolts_(e)_5.png vs Diamond_bolts_(e)_detail.png)
   get detailIconUrl(): string {
-    return `${config.wikiBaseUrl}/images/${this.itemDetail.icon.replaceAll(/\s/g, '_').replace('.png', '_detail.png')}`;
+    return `${config.wikiBaseUrl}/images/${this.itemDetail.name.replaceAll(/\s/g, '_')}_detail.png`;
   }
 
   get isFavorite(): boolean {
