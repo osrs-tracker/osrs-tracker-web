@@ -14,9 +14,39 @@
       "installMode": "lazy",
       "updateMode": "lazy",
       "resources": {
-        "files": ["/assets/**", "/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"]
+        "files": ["/assets/**", "/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"],
+        "urls": ["https://oldschool.runescape.wiki/images/**"]
       }
     }
   ],
-  "navigationUrls": ["/**", "!/**/*.*"]
+  "navigationUrls": ["/**", "!/**/*.*"],
+  "dataGroups": [
+    {
+      "name": "osrs-tracker-api-proxy",
+      "urls": ["https://runescape-api.freekmencke.com/rs/**"],
+      "cacheConfig": {
+        "maxSize": 10,
+        "maxAge": "1d",
+        "strategy": "freshness"
+      }
+    },
+    {
+      "name": "osrs-tracker-api-item",
+      "urls": ["https://runescape-api.freekmencke.com/item/**"],
+      "cacheConfig": {
+        "maxSize": 10,
+        "maxAge": "1d",
+        "strategy": "freshness"
+      }
+    },
+    {
+      "name": "osrs-tracker-api-player",
+      "urls": ["https://runescape-api.freekmencke.com/player/**"],
+      "cacheConfig": {
+        "maxSize": 10,
+        "maxAge": "1d",
+        "strategy": "freshness"
+      }
+    }
+  ]
 }
