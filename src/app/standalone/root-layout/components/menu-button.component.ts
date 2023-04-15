@@ -7,7 +7,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, HostBinding, Input, O
   template: `
     <button
       type="button"
-      class="lg:hidden link-states--dark"
+      class="button--icon link-states--dark w-6 h-6 lg:hidden"
       (click)="menuCollapsedChange.next((menuCollapsed = !menuCollapsed))"
       aria-label="Menu"
     >
@@ -15,9 +15,8 @@ import { ChangeDetectionStrategy, Component, EventEmitter, HostBinding, Input, O
         *ngIf="!menuCollapsed"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
-        stroke-width="1.5"
+        stroke-width="2"
         stroke="currentColor"
-        class="w-6 h-6"
       >
         <path
           stroke-linecap="round"
@@ -30,9 +29,8 @@ import { ChangeDetectionStrategy, Component, EventEmitter, HostBinding, Input, O
         *ngIf="menuCollapsed"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
-        stroke-width="1.5"
+        stroke-width="2"
         stroke="currentColor"
-        class="w-6 h-6"
       >
         <path
           stroke-linecap="round"

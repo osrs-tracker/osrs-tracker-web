@@ -4,7 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components {
+@layer base {
   body,
   .scroll-bar {
     &::-webkit-scrollbar {
@@ -14,25 +14,29 @@
       @apply rounded-lg border-4 border-solid border-transparent bg-clip-content bg-slate-600;
     }
   }
+}
 
+@layer components {
   .accent {
     @apply text-emerald-500 dark:text-emerald-400;
   }
   .negative {
-    @apply text-red-500 dark:text-red-400;
+    @apply text-red-600 dark:text-red-400;
     &::before {
       content: '-';
     }
   }
   .positive {
-    @apply text-green-500 dark:text-green-400;
+    @apply text-green-600 dark:text-green-400;
     &::before {
       content: '+';
     }
   }
 
   button {
-    @apply text-white font-semibold rounded-lg border border-transparent px-6 py-2;
+    &:not(.button--icon) {
+      @apply text-white font-semibold rounded-lg border border-transparent px-6 py-2;
+    }
 
     &.button--default {
       @apply bg-slate-700 hover:bg-slate-800 active:bg-slate-900 border-slate-600 hover:border-slate-700 active:border-slate-800
@@ -42,6 +46,10 @@
       @apply dark:text-slate-900
         bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 border-emerald-400 hover:border-emerald-500 active:border-emerald-600
         dark:bg-emerald-400 dark:hover:bg-emerald-500 dark:active:bg-emerald-600 dark:border-emerald-300 dark:hover:border-emerald-400 dark:active:border-emerald-500;
+    }
+
+    &.button--rounded {
+      @apply rounded-full;
     }
   }
 

@@ -1,19 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostBinding } from '@angular/core';
 import { ThemeService } from '../../../services/theme.service';
 
 @Component({
   standalone: true,
   selector: 'dark-mode',
   template: `
-    <div
-      class="cursor-pointer link-states--dark w-6 h-6"
-      (click)="darkModeService.toggleDarkMode()"
+    <button
+      type="button"
+      class="button--icon link-states--dark w-6 h-6"
+      (click)="themeService.toggleDarkMode()"
+      aria-label="Dark Mode"
     >
       <svg
-        *ngIf="!darkModeService.isDarkModeEnabled"
+        *ngIf="!themeService.isDarkModeEnabled"
         xmlns="http://www.w3.org/2000/svg"
-        fill="none"
         viewBox="0 0 24 24"
         stroke-width="2"
         stroke="currentColor"
@@ -26,9 +27,8 @@ import { ThemeService } from '../../../services/theme.service';
       </svg>
 
       <svg
-        *ngIf="darkModeService.isDarkModeEnabled"
+        *ngIf="themeService.isDarkModeEnabled"
         xmlns="http://www.w3.org/2000/svg"
-        fill="none"
         viewBox="0 0 24 24"
         stroke-width="2"
         stroke="currentColor"
@@ -39,11 +39,13 @@ import { ThemeService } from '../../../services/theme.service';
           d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"
         />
       </svg>
-    </div>
+    </button>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
 })
 export class DarkModeComponent {
-  constructor(public darkModeService: ThemeService) {}
+  @HostBinding('class') class = 'flex';
+
+  constructor(public themeService: ThemeService) {}
 }

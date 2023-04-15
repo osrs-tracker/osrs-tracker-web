@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HiscoreEntry } from '@osrs-tracker/models';
+import { isAfter, parseISO } from 'date-fns';
+import { GoogleAnalyticsService } from 'src/app/core/analytics/google-analytics.service';
 import {
   BossEnum,
   BountyHunterEnum,
@@ -10,14 +12,14 @@ import {
   SkillEnum,
 } from './hiscore.enum';
 import { Hiscore, MiniGame, Skill } from './hiscore.model';
-
-import { isAfter, parseISO } from 'date-fns';
 import { PO_DEFAULT, ParseOrder, ParseOrderMap } from './hiscore.parse-order';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HiscoreService {
+  constructor(private googleAnalyticsService: GoogleAnalyticsService) {}
+
   parseHiscores(hiscoreEntries: HiscoreEntry[]): Hiscore[] {
     return hiscoreEntries.map(
       hiscoreEntry =>
@@ -70,8 +72,8 @@ export class HiscoreService {
       if (Object.values(MiniGameEnum).includes(miniGame.name as MiniGameEnum))
         return (hiscore.miniGames[miniGame.name as MiniGameEnum] = miniGame);
 
-      // Will be logged if a new minigame is added to the hiscore page
-      throw new Error(`Unknown minigame: "${miniGame.name}"`);
+      // When a new minigame is added to the hiscore page
+      return this.googleAnalyticsService.trackException('Unknown minigame detected.', true);
     });
 
     return hiscore;
@@ -156,8 +158,8 @@ export class HiscoreService {
    *  For some reason for free to play people membership skills can have 0 or -1 exp in the hiscore API.
    *  Default to zero to fix ghost exp in membership skills (+1 exp).
    */
-  private xpDiff(a: string | number, b: string | number): number {
-    return Math.max(Number(a), 0) - Math.max(Number(b), 0);
+  private xpDiff(a: number, b: number): number {
+    return Math.max(a, 0) - Math.max(b, 0);
   }
 
   private parseSkillLine(parseOrder: ParseOrder, line: string, lineNo: number): Skill {

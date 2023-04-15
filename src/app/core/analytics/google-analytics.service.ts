@@ -31,6 +31,9 @@ export class GoogleAnalyticsService {
   }
 
   trackException(description: string, fatal = false) {
+    // eslint-disable-next-line no-console
+    console.error(description);
+
     gtag('event', 'exception', {
       description,
       fatal,

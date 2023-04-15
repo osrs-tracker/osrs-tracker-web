@@ -25,9 +25,9 @@ import { RecentItem } from '../price-tracker.service';
       <div class="flex-1 flex items-center justify-end px-4 py-2">
         <spinner *ngIf="loading; else content"></spinner>
         <ng-template #content>
-          <span [ngClass]="{ negative: (trend ?? 0) < 0, positive: (trend ?? 0) > 0 }">
-            {{ trend === null ? '&mdash;' : (absTrend | number) }}&ngsp;gp
-          </span>
+          <div [ngClass]="{ negative: (trend ?? 0) < 0, positive: (trend ?? 0) > 0 }">
+            {{ trend === null ? '&mdash;' : (absTrend | number) + '&ngsp;gp' }}
+          </div>
         </ng-template>
       </div>
     </article>
@@ -54,7 +54,7 @@ export class ItemWidgetComponent implements OnInit {
     ])
       .pipe(untilDestroyed(this))
       .subscribe(([latest, recent]) => {
-        if (latest.low === null || recent.averagePrices.avgLowPrice === null) this.trend = null;
+        if (latest.low === null || recent.averagePrices?.avgLowPrice == null) this.trend = null;
         else this.trend = latest.low - recent.averagePrices.avgLowPrice;
 
         this.loading = false;

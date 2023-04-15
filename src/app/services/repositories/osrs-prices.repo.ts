@@ -36,7 +36,7 @@ export class OsrsPricesRepo {
   constructor(private httpClient: HttpClient) {}
 
   /** Cache this in memory, because this won't change, and it contains all the items. */
-  getPreviousDayAverage(id: number): Observable<{ averagePrices: AveragePrices; timestamp: Date }> {
+  getPreviousDayAverage(id: number): Observable<{ averagePrices?: AveragePrices; timestamp: Date }> {
     if (!this.previousDayAverage$) {
       const utcStartOfDay = new Date(Date.now() - (Date.now() % (86400 * 10000))); // Round down to the utc start of the day.
 
@@ -54,7 +54,7 @@ export class OsrsPricesRepo {
     return this.mapAveragePriceResponse(id, this.previousDayAverage$);
   }
 
-  getPriceAverage(id: number, timeSpan: TimeSpan): Observable<{ averagePrices: AveragePrices; timestamp: Date }> {
+  getPriceAverage(id: number, timeSpan: TimeSpan): Observable<{ averagePrices?: AveragePrices; timestamp: Date }> {
     const request$ = this.httpClient.get<{ data: { [key: string]: AveragePrices }; timestamp: number }>(
       `${config.pricesBaseUrl}/api/v1/osrs/${timeSpan}`,
       { context: new HttpContext().set(BASE_URL_PREFIX, false) },
@@ -81,9 +81,9 @@ export class OsrsPricesRepo {
 
   private mapAveragePriceResponse(
     id: number,
-    response: Observable<{ data: { [key: string]: AveragePrices }; timestamp: number }>,
-  ): Observable<{ averagePrices: AveragePrices; timestamp: Date }> {
-    return response.pipe(
+    request$: Observable<{ data: { [key: string]: AveragePrices }; timestamp: number }>,
+  ): Observable<{ averagePrices?: AveragePrices; timestamp: Date }> {
+    return request$.pipe(
       map(response => ({ averagePrices: response.data[id], timestamp: fromUnixTime(response.timestamp) })),
     );
   }

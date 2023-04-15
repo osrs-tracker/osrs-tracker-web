@@ -32,4 +32,8 @@ export class RootLayoutComponent {
   menuCollapsed = true;
 
   constructor(public loadingIndicatorService: LoadingIndicatorService<unknown>) {}
+
+  trackByPath(_index: number, route: { path: string }): string {
+    return route.path;
+  }
 }

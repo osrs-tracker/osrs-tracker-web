@@ -15,7 +15,7 @@
       <!-- Desktop menu -->
       <div class="hidden lg:flex items-center">
         <ul class="flex space-x-4 font-semibold">
-          <li *ngFor="let route of routes">
+          <li *ngFor="let route of routes; trackBy: trackByPath">
             <a
               class="link-states--dark"
               [routerLink]="route.path"
@@ -27,27 +27,23 @@
         </ul>
       </div>
 
-      <!-- Mobile menu button -->
       <menu-button [(menuCollapsed)]="menuCollapsed"></menu-button>
-
-      <div class="flex border-l border-slate-300/20 font-bold ml-4 lg:ml-6 pl-4 lg:pl-6">
-        <dark-mode></dark-mode>
-      </div>
+      <dark-mode class="border-l border-slate-300/20 font-bold ml-4 pl-4"></dark-mode>
     </div>
 
     <!-- Mobile menu -->
     <div
-      *ngIf="!menuCollapsed"
-      class="absolute w-full lg:hidden border-b border-slate-300/20"
+      class="absolute w-full lg:hidden"
+      [ngClass]="{ 'hidden lg:flex': menuCollapsed }"
     >
       <div class="bg-slate-800 shadow-2xl">
-        <ul class="container mx-auto flex flex-col font-semibold">
+        <ul class="container mx-auto font-semibold">
           <li
-            *ngFor="let route of routes"
+            *ngFor="let route of routes; trackBy: trackByPath"
             class="border-b last:border-b-0 border-b-slate-700"
           >
             <a
-              class="flex link-states--dark px-4 py-4 bg-slate-800"
+              class="link-states--dark flex px-4 py-4"
               (click)="menuCollapsed = true"
               [routerLink]="route.path"
               routerLinkActive="text-emerald-400"

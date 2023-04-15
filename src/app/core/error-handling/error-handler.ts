@@ -7,7 +7,5 @@ export class CustomErrorHandler implements ErrorHandler {
 
   handleError(error: Error) {
     this.googleAnalyticsService.trackException(error.message, true);
-    // eslint-disable-next-line no-console
-    console.error(error);
   }
 }

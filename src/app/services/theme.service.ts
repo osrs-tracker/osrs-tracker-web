@@ -13,16 +13,16 @@ export class ThemeService {
     return (this.storageService.getItem(StorageKey.DarkMode) ?? 'true') === 'true'; // set darkMode as default
   }
 
-  toggleDarkMode() {
-    this.storageService.setItem(StorageKey.DarkMode, this.isDarkModeEnabled ? 'false' : 'true');
-
-    this.googleAnalyticsService.trackEvent('toggle_dark_mode', 'theming', 'dark_mode', this.isDarkModeEnabled);
+  loadTheme() {
+    this.googleAnalyticsService.trackEvent('load_theme', 'theming', 'theme', this.isDarkModeEnabled ? 'dark' : 'light');
 
     document.documentElement.classList.toggle('dark', this.isDarkModeEnabled);
   }
 
-  loadTheme() {
-    this.googleAnalyticsService.trackEvent('load_theme', 'theming', 'theme', this.isDarkModeEnabled ? 'dark' : 'light');
+  toggleDarkMode() {
+    this.storageService.setItem(StorageKey.DarkMode, this.isDarkModeEnabled ? 'false' : 'true');
+
+    this.googleAnalyticsService.trackEvent('toggle_dark_mode', 'theming', 'dark_mode', this.isDarkModeEnabled);
 
     document.documentElement.classList.toggle('dark', this.isDarkModeEnabled);
   }
