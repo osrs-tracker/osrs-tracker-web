@@ -39,31 +39,17 @@ export class OsrsTrackerRepo {
       .pipe(
         map(player => ({
           ...player,
-          hiscoreEntries: player.hiscoreEntries?.map(hiscoreEntry => {
-            return {
-              ...hiscoreEntry,
-              date: new Date(hiscoreEntry.date),
-            };
-          }),
+          hiscoreEntries: player.hiscoreEntries?.map(entry => ({ ...entry, date: new Date(entry.date) })),
         })),
       );
   }
 
   getPlayerHiscores(username: string, scrapingOffset = 0, skip = 0): Observable<HiscoreEntry[]> {
-    return this.httpClient
-      .get<HiscoreEntry[]>(`/player/${username}/hiscores`, {
+    return this.httpClient // Returns `null` when no hiscores have been scraped yet.
+      .get<HiscoreEntry[] | null>(`/player/${username}/hiscores`, {
         params: { scrapingOffset, skip },
       })
-      .pipe(
-        map(hiscoreEntries =>
-          hiscoreEntries.map(hiscoreEntry => {
-            return {
-              ...hiscoreEntry,
-              date: new Date(hiscoreEntry.date),
-            };
-          }),
-        ),
-      );
+      .pipe(map(hiscoreEntries => (hiscoreEntries ?? []).map(entry => ({ ...entry, date: new Date(entry.date) }))));
   }
 
   //

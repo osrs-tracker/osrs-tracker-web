@@ -24,8 +24,8 @@ export class PlayerLogsComponent implements OnChanges {
 
   @Input() playerDetail: Player;
 
-  @Input() today: Hiscore | null;
-  @Input() history: Hiscore[] | null;
+  @Input() today: Hiscore;
+  @Input() history: Hiscore[];
 
   get isPlayerTracked(): boolean {
     return !!this.playerDetail.scrapingOffsets?.length;
@@ -34,7 +34,7 @@ export class PlayerLogsComponent implements OnChanges {
   constructor(private hiscoreService: HiscoreService, private xpTrackerService: XpTrackerService) {}
 
   ngOnChanges({ history }: SimpleChanges): void {
-    if (history?.currentValue.length) this.calculateHiscoreDiffs();
+    if (history?.currentValue) this.calculateHiscoreDiffs();
   }
 
   skills(hiscore: Hiscore): Skill[] {
@@ -63,8 +63,6 @@ export class PlayerLogsComponent implements OnChanges {
   }
 
   private calculateHiscoreDiffs(): void {
-    if (!this.today || !this.history) return;
-
     let previousHiscore = this.today;
 
     this.hiscoreDiffs = this.history.map(hiscore => {

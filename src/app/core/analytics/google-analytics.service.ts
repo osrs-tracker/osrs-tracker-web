@@ -30,9 +30,9 @@ export class GoogleAnalyticsService {
     });
   }
 
-  trackException(description: string, fatal = false) {
+  trackException(description: string, fatal = false, error?: Error) {
     // eslint-disable-next-line no-console
-    console.error(description);
+    console.error(error ?? description);
 
     gtag('event', 'exception', {
       description,

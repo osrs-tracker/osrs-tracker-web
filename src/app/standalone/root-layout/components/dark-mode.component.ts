@@ -8,7 +8,7 @@ import { ThemeService } from '../../../services/theme.service';
   template: `
     <button
       type="button"
-      class="button--icon link-states--dark w-6 h-6"
+      class="link-states--dark w-6 h-6"
       (click)="themeService.toggleDarkMode()"
       aria-label="Dark Mode"
     >

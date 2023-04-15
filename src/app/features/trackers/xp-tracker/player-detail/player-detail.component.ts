@@ -16,7 +16,7 @@ import { XpTrackerService } from '../xp-tracker.service';
 })
 export class PlayerDetailComponent implements OnInit {
   @trackChanges today: Hiscore;
-  @trackChanges history: Hiscore[] = [];
+  @trackChanges history: Hiscore[];
 
   get playerDetail(): Player {
     return this.activatedRoute.snapshot.data['player'];
@@ -44,7 +44,7 @@ export class PlayerDetailComponent implements OnInit {
       this.osrsTrackerRepo.getPlayerHiscores(this.playerDetail!.username, scrapingOffset, skip), // scraped Hiscores
     ]).subscribe(([currentHiscore, scrapedHiscores]) => {
       this.today = this.hiscoreService.parseHiscores([currentHiscore])[0];
-      this.history = this.hiscoreService.parseHiscores(scrapedHiscores ?? []);
+      this.history = this.hiscoreService.parseHiscores(scrapedHiscores);
     });
   }
 }

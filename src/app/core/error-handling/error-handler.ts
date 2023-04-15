@@ -6,6 +6,6 @@ export class CustomErrorHandler implements ErrorHandler {
   constructor(private googleAnalyticsService: GoogleAnalyticsService) {}
 
   handleError(error: Error) {
-    this.googleAnalyticsService.trackException(error.message, true);
+    this.googleAnalyticsService.trackException(error.message, true, error);
   }
 }

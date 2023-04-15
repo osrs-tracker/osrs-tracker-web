@@ -10,20 +10,10 @@
       <small>{{ osrsNewsItem.pubDate | date : 'MMMM dd, YYYY' }}</small>
       <small>{{ osrsNewsItem.category }}</small>
     </div>
-    <h3
-      class="font-semibold mb-2"
-      [innerHTML]="osrsNewsItem.title"
-    ></h3>
-    <div
-      class="mb-2"
-      [innerHTML]="osrsNewsItem.description"
-    ></div>
+    <h3 class="font-semibold mb-2" [innerHTML]="osrsNewsItem.title"></h3>
+    <div class="mb-2" [innerHTML]="osrsNewsItem.description"></div>
     <div class="mt-auto">
-      <a
-        class="link"
-        [href]="osrsNewsItem.link"
-        target="_blank"
-      >
+      <a class="link" [href]="osrsNewsItem.link" target="_blank">
         Read more
         <span class="absolute overflow-hidden w-px h-px">&ngsp;about "{{ osrsNewsItem.title }}".</span>
       </a>

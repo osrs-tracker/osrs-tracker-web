@@ -2,12 +2,7 @@
   <nav class="sticky top-0 z-50 text-white bg-slate-900 border-b border-slate-300/20">
     <div class="relative container mx-auto flex items-center px-4 py-4">
       <!-- Logo -->
-      <a
-        class="link-states--dark font-bold text-lg"
-        routerLink="/"
-      >
-        OSRS Tracker
-      </a>
+      <a class="link-states--dark font-bold text-lg" routerLink="/"> OSRS Tracker </a>
 
       <!-- Spacer -->
       <div class="flex-grow"></div>
@@ -32,16 +27,10 @@
     </div>
 
     <!-- Mobile menu -->
-    <div
-      class="absolute w-full lg:hidden"
-      [ngClass]="{ 'hidden lg:flex': menuCollapsed }"
-    >
+    <div class="absolute w-full lg:hidden" [ngClass]="{ 'hidden lg:flex': menuCollapsed }">
       <div class="bg-slate-800 shadow-2xl">
         <ul class="container mx-auto font-semibold">
-          <li
-            *ngFor="let route of routes; trackBy: trackByPath"
-            class="border-b last:border-b-0 border-b-slate-700"
-          >
+          <li *ngFor="let route of routes; trackBy: trackByPath" class="border-b last:border-b-0 border-b-slate-700">
             <a
               class="link-states--dark flex px-4 py-4"
               (click)="menuCollapsed = true"
@@ -80,20 +69,12 @@
     <div class="border-slate-300/20 lg:border-r lg:mr-6 lg:pr-6 py-2 lg:py-0">
       This content is not endorsed by or affiliated with Jagex.
     </div>
+
     <div>
-      <a
-        class="active:text-slate-200 hover:text-slate-300 mr-6"
-        routerLink="/about/privacy"
-      >
-        Privacy
-      </a>
-      <a
-        class="active:text-slate-200 hover:text-slate-300"
-        routerLink="/about/terms"
-      >
-        Terms
-      </a>
+      <a class="active:text-slate-200 hover:text-slate-300 mr-6" routerLink="/about/privacy"> Privacy </a>
+      <a class="active:text-slate-200 hover:text-slate-300" routerLink="/about/terms"> Terms </a>
     </div>
+
     <div class="sa-b"><!-- spacing for safe-area-inset --></div>
   </footer>
 </div>

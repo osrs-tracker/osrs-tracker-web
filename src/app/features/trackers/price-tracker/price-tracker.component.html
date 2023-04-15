@@ -10,11 +10,7 @@
         [(ngModel)]="query"
         autocomplete="hidden"
       />
-      <button
-        type="submit"
-        class="z-20 absolute right-0 button--primary button--rounded"
-        (click)="searchItems()"
-      >
+      <button type="submit" class="z-20 absolute right-0 button--primary button--rounded" (click)="searchItems()">
         <span [class.invisible]="loading">Search</span>
 
         <spinner
@@ -35,11 +31,7 @@
                 [routerLink]="['/trackers/price', item.id]"
               >
                 <div class="w-8 h-8 mr-3 flex justify-center items-center">
-                  <img
-                    icon
-                    [name]="item.icon"
-                    [wiki]="true"
-                  />
+                  <img icon [name]="item.icon" [wiki]="true" />
                 </div>
                 <div class="flex-grow text-left text-lg">
                   {{ item.name }}
@@ -53,11 +45,7 @@
                     stroke="currentColor"
                     class="w-6 h-6"
                   >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M8.25 4.5l7.5 7.5-7.5 7.5"
-                    />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                   </svg>
                 </div>
               </a>
@@ -82,11 +70,8 @@
       </h2>
       <p *ngIf="!recentItems.length">No items looked up yet.</p>
       <div class="grid gap-4">
-        <a
-          [routerLink]="['/trackers/price', recentItem.id]"
-          *ngFor="let recentItem of recentItems; trackBy: trackById"
-        >
-          <item-widget [recentItem]="recentItem"></item-widget>
+        <a *ngFor="let item of recentItems; trackBy: trackById" [routerLink]="['/trackers/price', item.id]">
+          <item-widget [recentItem]="item"></item-widget>
         </a>
       </div>
     </section>
@@ -100,11 +85,8 @@
       </h2>
       <p *ngIf="!favoriteItems.length">No items favorited yet.</p>
       <div class="grid gap-4">
-        <a
-          [routerLink]="['/trackers/price', recentItem.id]"
-          *ngFor="let recentItem of favoriteItems; trackBy: trackById"
-        >
-          <item-widget [recentItem]="recentItem"></item-widget>
+        <a *ngFor="let item of favoriteItems; trackBy: trackById" [routerLink]="['/trackers/price', item.id]">
+          <item-widget [recentItem]="item"></item-widget>
         </a>
       </div>
     </section>

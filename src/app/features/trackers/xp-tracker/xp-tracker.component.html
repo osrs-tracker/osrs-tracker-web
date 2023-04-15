@@ -10,11 +10,7 @@
         [(ngModel)]="username"
         autocomplete="hidden"
       />
-      <button
-        type="submit"
-        class="absolute right-0 button--primary button--rounded"
-        (click)="searchUser(username)"
-      >
+      <button type="submit" class="absolute right-0 button--primary button--rounded" (click)="searchUser(username)">
         Search
       </button>
     </form>
@@ -27,10 +23,7 @@
       <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Recent</h2>
       <p *ngIf="!recentPlayers?.length">No players looked up yet.</p>
       <div class="grid gap-4">
-        <a
-          [routerLink]="['/trackers/xp', username]"
-          *ngFor="let username of recentPlayers; trackBy: trackByUsername"
-        >
+        <a *ngFor="let username of recentPlayers; trackBy: trackByUsername" [routerLink]="['/trackers/xp', username]">
           <player-widget [username]="username"></player-widget>
         </a>
       </div>
@@ -39,10 +32,7 @@
       <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Favorite</h2>
       <p *ngIf="!favoritePlayers?.length">No players favorited yet.</p>
       <div class="grid gap-4">
-        <a
-          [routerLink]="['/trackers/xp', username]"
-          *ngFor="let username of favoritePlayers; trackBy: trackByUsername"
-        >
+        <a *ngFor="let username of favoritePlayers; trackBy: trackByUsername" [routerLink]="['/trackers/xp', username]">
           <player-widget [username]="username"></player-widget>
         </a>
       </div>

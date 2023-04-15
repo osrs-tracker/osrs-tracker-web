@@ -5,13 +5,7 @@ import { TooltipComponent } from './tooltip.component';
   standalone: true,
   selector: 'info-tooltip',
   template: `
-    <div
-      class="text-xs ml-1 h-4"
-      tooltip
-      [tooltipTemplate]="tooltipTemplate"
-    >
-      ?
-    </div>
+    <div class="text-xs ml-1 h-4" tooltip [tooltipTemplate]="tooltipTemplate">?</div>
     <ng-template #tooltipTemplate><ng-content></ng-content></ng-template>
   `,
   styleUrls: [],

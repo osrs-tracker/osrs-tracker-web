@@ -34,7 +34,8 @@
   }
 
   button {
-    &:not(.button--icon) {
+    &.button--default,
+    &.button--primary {
       @apply text-white font-semibold rounded-lg border border-transparent px-6 py-2;
     }
 

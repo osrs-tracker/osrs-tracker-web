@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { CardComponent } from 'src/app/standalone/components/card/card.component';
 import { SpinnerComponent } from 'src/app/standalone/components/spinner/spinner.component';
 import { InfoTooltipComponent } from 'src/app/standalone/components/tooltip/info-tooltip.component';
 import { TooltipComponent } from 'src/app/standalone/components/tooltip/tooltip.component';
@@ -13,8 +14,8 @@ import { ItemDetailWidgetComponent } from './item-detail/item-detail-widget/item
 import { ItemDetailComponent } from './item-detail/item-detail.component';
 import { itemDetailResolver } from './item-detail/item-detail.resolver';
 import { itemDetailTitleResolver } from './item-detail/item-detail.title-resolver';
-import { PriceTrackerComponent } from './price-tracker.component';
 import { ItemWidgetComponent } from './item-widget/item-widget.component';
+import { PriceTrackerComponent } from './price-tracker.component';
 
 @NgModule({
   imports: [
@@ -37,6 +38,7 @@ import { ItemWidgetComponent } from './item-widget/item-widget.component';
     ]),
 
     // Standalone
+    CardComponent,
     IconDirective,
     SpinnerComponent,
     TimeAgoPipe,

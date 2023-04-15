@@ -18,22 +18,14 @@ import { OsrsTrackerRepo } from 'src/app/services/repositories/osrs-tracker.repo
     >
       <div class="flex-1 flex items-center justify-between  rounded-l bg-slate-300 dark:bg-slate-700 px-4 py-2">
         <h3>{{ username | capitalizeWords }}</h3>
-        <div
-          *ngIf="playerDetails"
-          class="relative flex items-center rounded-full gap-2"
-        >
+        <div *ngIf="playerDetails" class="relative flex items-center rounded-full gap-2">
           <img
             *ngIf="playerDetails.type !== PlayerType.Normal"
             icon
             [name]="playerDetails.status === PlayerStatus.Default ? playerDetails.type : playerDetails.status"
             class="h-6 w-6"
           />
-          <img
-            *ngIf="playerDetails.diedAsHardcore"
-            icon
-            name="dead"
-            class="h-6 w-6"
-          />
+          <img *ngIf="playerDetails.diedAsHardcore" icon name="dead" class="h-6 w-6" />
         </div>
       </div>
       <div class="flex-1 flex items-center justify-end px-4 py-2">
@@ -42,11 +34,7 @@ import { OsrsTrackerRepo } from 'src/app/services/repositories/osrs-tracker.repo
           <div *ngIf="overallDiff === null; else diff">&mdash;</div>
           <ng-template #diff>
             <div>+&nbsp;{{ overallDiff | number }}&nbsp;XP</div>
-            <img
-              icon
-              [name]="SkillEnum.Overall"
-              class="w-5 h-5 ml-2 mb-1"
-            />
+            <img icon [name]="SkillEnum.Overall" class="w-5 h-5 ml-2 mb-1" />
           </ng-template>
         </ng-template>
       </div>

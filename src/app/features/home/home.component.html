@@ -13,9 +13,6 @@
 
   <div class="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
     <div *ngIf="osrsNewsItems.length === 0">Loading news...</div>
-    <osrs-news-card
-      *ngFor="let newsItem of osrsNewsItems"
-      [osrsNewsItem]="newsItem"
-    ></osrs-news-card>
+    <osrs-news-card *ngFor="let newsItem of osrsNewsItems" [osrsNewsItem]="newsItem"></osrs-news-card>
   </div>
 </section>

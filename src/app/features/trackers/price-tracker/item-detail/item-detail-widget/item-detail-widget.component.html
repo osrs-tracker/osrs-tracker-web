@@ -5,11 +5,7 @@
 
   <div class="shadow-lg rounded-lg bg-slate-100 dark:bg-slate-800 p-4 flex flex-col gap-4">
     <picture class="flex justify-center py-4">
-      <img
-        class="w-40 h-40 object-contain"
-        [src]="detailIconUrl"
-        [alt]="itemDetail.name + ' icon'"
-      />
+      <img class="w-40 h-40 object-contain" [src]="detailIconUrl" [alt]="itemDetail.name + ' icon'" />
     </picture>
 
     <section class="text-lg">
@@ -47,11 +43,7 @@
             <div>Buy price</div>
             <info-tooltip>The price of the latest instant buy.</info-tooltip>
           </h3>
-          <div
-            class="text-slate-900 dark:text-white"
-            tooltip
-            [tooltipTemplate]="highTimeTooltip"
-          >
+          <div class="text-slate-900 dark:text-white" tooltip [tooltipTemplate]="highTimeTooltip">
             {{ latestPrices.high | number }}&ngsp;gp
           </div>
           <ng-template #highTimeTooltip>Last trade was {{ latestPrices.highTime | timeAgo }}.</ng-template>
@@ -62,11 +54,7 @@
             <div>Sell price</div>
             <info-tooltip>The price of the latest instant sell.</info-tooltip>
           </h3>
-          <div
-            class="text-slate-900 dark:text-white"
-            tooltip
-            [tooltipTemplate]="lowTimeTooltip"
-          >
+          <div class="text-slate-900 dark:text-white" tooltip [tooltipTemplate]="lowTimeTooltip">
             {{ latestPrices.low | number }}&ngsp;gp
           </div>
           <ng-template #lowTimeTooltip>Last trade was {{ latestPrices.lowTime | timeAgo }}.</ng-template>
@@ -83,10 +71,7 @@
     </section>
   </div>
 
-  <button
-    class="button--default flex items-center justify-between"
-    (click)="goToWiki()"
-  >
+  <button class="button--default flex items-center justify-between" (click)="goToWiki()">
     <div class="w-6"></div>
 
     <div>OSRS Wiki</div>
@@ -107,10 +92,7 @@
     </svg>
   </button>
 
-  <button
-    class="button--primary flex items-center justify-between"
-    (click)="toggleFavorite()"
-  >
+  <button class="button--primary flex items-center justify-between" (click)="toggleFavorite()">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       [attr.fill]="isFavorite ? 'currentColor' : 'none'"
