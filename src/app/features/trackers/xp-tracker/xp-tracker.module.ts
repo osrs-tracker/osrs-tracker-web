@@ -2,11 +2,11 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { CardComponent } from 'src/app/standalone/components/card/card.component';
-import { SpinnerComponent } from 'src/app/standalone/components/spinner/spinner.component';
+import { CardComponent } from 'src/app/standalone/components/card.component';
+import { SpinnerComponent } from 'src/app/standalone/components/spinner.component';
 import { IconDirective } from 'src/app/standalone/directives/icon/icon.directive';
 import { CapitalizePipe } from 'src/app/standalone/pipes/capitalize.pipe';
-import { DateFnsPipe } from 'src/app/standalone/pipes/date-fns.pipe';
+import { ShortDatePipe } from 'src/app/standalone/pipes/date-fns.pipe';
 import { PlayerDetailWidgetComponent } from './player-detail/player-detail-widget/player-detail-widget.component';
 import { PlayerDetailComponent } from './player-detail/player-detail.component';
 import { playerDetailResolver } from './player-detail/player-detail.resolver';
@@ -37,7 +37,7 @@ import { XpTrackerComponent } from './xp-tracker.component';
     // Standalone
     CapitalizePipe,
     CardComponent,
-    DateFnsPipe,
+    ShortDatePipe,
     IconDirective,
     SpinnerComponent,
   ],

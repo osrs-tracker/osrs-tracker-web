@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, HostBinding } from '@angular/core';
-import { ThemeService } from '../../../services/theme.service';
+import { ThemeService } from 'src/app/services/theme.service';
 
 @Component({
   standalone: true,

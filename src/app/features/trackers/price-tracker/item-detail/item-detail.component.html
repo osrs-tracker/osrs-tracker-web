@@ -1,5 +1,9 @@
 <div class="container mx-auto my-8 px-4 grid lg:grid-cols-3 2xl:grid-cols-4 gap-8">
   <item-detail-widget [itemDetail]="itemDetail" [latestPrices]="latestPrices"></item-detail-widget>
 
-  <item-analytics class="lg:col-span-2 2xl:col-span-3" [itemDetail]="itemDetail"></item-analytics>
+  <item-analytics
+    class="lg:col-span-2 2xl:col-span-3"
+    [itemDetail]="itemDetail"
+    [latestPrices]="latestPrices"
+  ></item-analytics>
 </div>

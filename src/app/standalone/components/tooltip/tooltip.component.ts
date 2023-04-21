@@ -39,6 +39,8 @@ import { Subject, debounceTime } from 'rxjs';
       <div class="relative mb-2">
         <div
           class="before:content-[''] before:absolute before:border-8 before:border-transparent before:border-t-slate-100 before:left-1/2 before:-translate-x-1/2 before:top-full"
+          (mouseenter)="onMouseEnter()"
+          (mouseleave)="onMouseLeave()"
         ></div>
       </div>
     </ng-template>
@@ -124,7 +126,14 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   @HostListener('document:touchend', ['$event.target']) onDocumentTouchend(target: HTMLElement) {
-    if (this.elementRef.nativeElement.contains(target) || this.containerOverlayRef.hostElement.contains(target)) return;
+    const found = [
+      this.elementRef.nativeElement,
+      this.containerOverlayRef.hostElement,
+      this.arrowOverlayRef.hostElement,
+    ].some(el => el.contains(target));
+
+    if (found) return;
+
     this.mousePresent$.next(false);
   }
 }

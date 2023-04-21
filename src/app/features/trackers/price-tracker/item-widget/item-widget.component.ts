@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { subDays } from 'date-fns';
 import { forkJoin } from 'rxjs';
 import { trackChanges } from 'src/app/core/decorators/track-changes.decorator';
-import { OsrsPricesRepo } from 'src/app/services/repositories/osrs-prices.repo';
+import { utcStartOfDay } from 'src/app/core/helpers/date.helper';
+import { OsrsPricesRepo, TimeSpan } from 'src/app/services/repositories/osrs-prices.repo';
 import { RecentItem } from '../price-tracker.service';
 
 @UntilDestroy()
@@ -19,11 +21,7 @@ import { RecentItem } from '../price-tracker.service';
       </div>
       <div class="flex-1 flex items-center justify-end px-4 py-2">
         <spinner *ngIf="loading; else content"></spinner>
-        <ng-template #content>
-          <div [ngClass]="{ negative: (trend ?? 0) < 0, positive: (trend ?? 0) > 0 }">
-            {{ trend === null ? '&mdash;' : (absTrend | number) + '&ngsp;gp' }}
-          </div>
-        </ng-template>
+        <ng-template #content><colored-value [value]="trend" suffix="gp"></colored-value></ng-template>
       </div>
     </article>
   `,
@@ -36,16 +34,16 @@ export class ItemWidgetComponent implements OnInit {
 
   trend: number | null;
 
-  get absTrend(): number {
-    return Math.abs(this.trend!);
-  }
-
   constructor(public cdRef: ChangeDetectorRef, private osrsPricesRepo: OsrsPricesRepo) {}
 
   ngOnInit(): void {
     forkJoin([
       this.osrsPricesRepo.getLatestPrices(this.recentItem.id),
-      this.osrsPricesRepo.getPreviousDayAverage(this.recentItem.id),
+      this.osrsPricesRepo.getCachedPriceAverage(
+        this.recentItem.id,
+        TimeSpan.DAY,
+        utcStartOfDay(subDays(new Date(), 1)),
+      ),
     ])
       .pipe(untilDestroyed(this))
       .subscribe(([latest, recent]) => {

@@ -3,9 +3,9 @@ import { format, isToday, isYesterday } from 'date-fns';
 
 @Pipe({
   standalone: true,
-  name: 'dateFns',
+  name: 'shortDate',
 })
-export class DateFnsPipe implements PipeTransform {
+export class ShortDatePipe implements PipeTransform {
   transform(date: Date | string | number | null | undefined): string {
     if (!date) return '';
 

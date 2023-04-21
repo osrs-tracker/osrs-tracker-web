@@ -45,7 +45,8 @@ const routes: Routes = [
       {
         path: '**',
         title: '404 Not Found - OSRS Tracker',
-        loadComponent: () => import('./standalone/pages/not-found-404.component').then(c => c.NotFound404Component),
+        loadComponent: () =>
+          import('./standalone/components/not-found-404/not-found-404.component').then(c => c.NotFound404Component),
       },
     ],
   },

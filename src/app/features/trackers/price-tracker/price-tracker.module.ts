@@ -3,8 +3,9 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { CardComponent } from 'src/app/standalone/components/card/card.component';
-import { SpinnerComponent } from 'src/app/standalone/components/spinner/spinner.component';
+import { CardComponent } from 'src/app/standalone/components/card.component';
+import { ColoredValueComponent } from 'src/app/standalone/components/colored-value.component';
+import { SpinnerComponent } from 'src/app/standalone/components/spinner.component';
 import { InfoTooltipComponent } from 'src/app/standalone/components/tooltip/info-tooltip.component';
 import { TooltipComponent } from 'src/app/standalone/components/tooltip/tooltip.component';
 import { IconDirective } from 'src/app/standalone/directives/icon/icon.directive';
@@ -44,6 +45,7 @@ import { PriceTrackerComponent } from './price-tracker.component';
     TimeAgoPipe,
     TooltipComponent,
     InfoTooltipComponent,
+    ColoredValueComponent,
   ],
   declarations: [
     PriceTrackerComponent,
