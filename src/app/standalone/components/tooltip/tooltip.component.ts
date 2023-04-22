@@ -84,6 +84,7 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
               overlayY: 'bottom',
             },
           ]),
+        scrollStrategy: this.overlay.scrollStrategies.reposition(),
       }),
     );
 
