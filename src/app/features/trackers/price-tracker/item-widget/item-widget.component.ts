@@ -38,7 +38,7 @@ export class ItemWidgetComponent implements OnInit {
 
   ngOnInit(): void {
     forkJoin([
-      this.osrsPricesRepo.getLatestPrices(this.recentItem.id),
+      this.osrsPricesRepo.getLatestPrices(this.recentItem.id, { fetchAll: true }), // fetch all to share the request with other widgets due to the share-request.interceptor
       this.osrsPricesRepo.getCachedPriceAverage(
         this.recentItem.id,
         TimeSpan.DAY,

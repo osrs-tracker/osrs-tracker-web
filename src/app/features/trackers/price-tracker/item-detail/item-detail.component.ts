@@ -18,6 +18,10 @@ export class ItemDetailComponent implements OnInit {
     return this.activatedRoute.snapshot.data['item'][1];
   }
 
+  get dailyVolume(): number {
+    return this.activatedRoute.snapshot.data['item'][2];
+  }
+
   constructor(private activatedRoute: ActivatedRoute, private priceTrackerService: PriceTrackerService) {}
 
   ngOnInit(): void {

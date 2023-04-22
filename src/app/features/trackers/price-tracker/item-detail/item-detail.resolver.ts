@@ -7,7 +7,7 @@ import { catchError, forkJoin } from 'rxjs';
 import { LatestPrices, OsrsPricesRepo } from 'src/app/services/repositories/osrs-prices.repo';
 import { OsrsTrackerRepo } from 'src/app/services/repositories/osrs-tracker.repo';
 
-export const itemDetailResolver: ResolveFn<[Item, LatestPrices] | null> = (route: ActivatedRouteSnapshot) => {
+export const itemDetailResolver: ResolveFn<[Item, LatestPrices, number] | null> = (route: ActivatedRouteSnapshot) => {
   const loc = inject(Location);
   const router = inject(Router);
   const osrsTrackerRepo = inject(OsrsTrackerRepo);
@@ -16,6 +16,7 @@ export const itemDetailResolver: ResolveFn<[Item, LatestPrices] | null> = (route
   return forkJoin([
     osrsTrackerRepo.getItemInfo(route.params['id'], { loadingIndicator: true }),
     osrsPricesRepo.getLatestPrices(route.params['id'], { loadingIndicator: true }),
+    osrsPricesRepo.getVolume(route.params['id'], { loadingIndicator: true }),
   ]).pipe(
     catchError((err: HttpErrorResponse) => {
       if (err.status === 404) {

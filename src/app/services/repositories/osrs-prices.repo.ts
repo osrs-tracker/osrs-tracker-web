@@ -39,6 +39,31 @@ export class OsrsPricesRepo {
 
   constructor(private httpClient: HttpClient) {}
 
+  getVolume(id: number, options?: { loadingIndicator?: boolean }): Observable<number> {
+    return this.httpClient
+      .get<{ data: { [key: string]: number } }>(`${config.pricesBaseUrl}/api/v1/osrs/volumes`, {
+        context: new HttpContext().set(BASE_URL_PREFIX, false).set(LOADING_INDICATOR, options?.loadingIndicator),
+      })
+      .pipe(map(response => response.data[id]));
+  }
+
+  getLatestPrices(id: number, options?: { fetchAll?: boolean; loadingIndicator?: boolean }): Observable<LatestPrices> {
+    return this.httpClient
+      .get<{ data: { [key: string]: { [key: string]: number } } }>(`${config.pricesBaseUrl}/api/v1/osrs/latest`, {
+        ...(!options?.fetchAll && { params: { id } }),
+        context: new HttpContext().set(BASE_URL_PREFIX, false).set(LOADING_INDICATOR, options?.loadingIndicator),
+      })
+      .pipe(
+        map(response => response.data[id]),
+        map(({ high, low, highTime, lowTime }) => ({
+          high: high,
+          low: low,
+          highTime: fromUnixTime(highTime),
+          lowTime: fromUnixTime(lowTime),
+        })),
+      );
+  }
+
   getPriceAverage(
     id: number,
     timeSpan: TimeSpan,
@@ -59,23 +84,6 @@ export class OsrsPricesRepo {
     this.averagePriceCache[timeSpan][getUnixTime(timestamp)] = request$;
 
     return this.mapAveragePriceResponse(id, request$);
-  }
-
-  getLatestPrices(id: number, options?: { loadingIndicator: boolean }): Observable<LatestPrices> {
-    return this.httpClient
-      .get<{ data: { [key: string]: { [key: string]: number } } }>(`${config.pricesBaseUrl}/api/v1/osrs/latest`, {
-        params: { id },
-        context: new HttpContext().set(BASE_URL_PREFIX, false).set(LOADING_INDICATOR, options?.loadingIndicator),
-      })
-      .pipe(
-        map(response => response.data[id]),
-        map(({ high, low, highTime, lowTime }) => ({
-          high: high,
-          low: low,
-          highTime: fromUnixTime(highTime),
-          lowTime: fromUnixTime(lowTime),
-        })),
-      );
   }
 
   private fetchAveragePrice(

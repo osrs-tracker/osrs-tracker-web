@@ -1,6 +1,9 @@
 <section class="flex flex-col gap-4">
-  <header>
-    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ itemDetail.name }}</h2>
+  <header class="flex items-baseline">
+    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">
+      <span>{{ itemDetail.name }}</span>
+    </h2>
+    <div class="ml-2 opacity-70 text-xs">ID: {{ itemDetail.id }}</div>
   </header>
 
   <div class="shadow-lg rounded-lg bg-slate-100 dark:bg-slate-800 p-4 flex flex-col gap-4">
@@ -58,6 +61,14 @@
             {{ latestPrices.low | number }}&ngsp;gp
           </div>
           <ng-template #lowTimeTooltip>Last trade was {{ latestPrices.lowTime | timeAgo }}.</ng-template>
+        </section>
+
+        <section class="flex justify-between mt-2">
+          <h3 class="flex font-semibold">
+            <div>Daily volume</div>
+            <info-tooltip>The number of times the item has been traded within the last 24 hours.</info-tooltip>
+          </h3>
+          <div class="text-slate-900 dark:text-white">{{ dailyVolume | number }}</div>
         </section>
 
         <section class="flex justify-between">

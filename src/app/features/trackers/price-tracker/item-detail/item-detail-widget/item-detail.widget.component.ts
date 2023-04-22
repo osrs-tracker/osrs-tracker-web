@@ -13,6 +13,7 @@ import { PriceTrackerService } from '../../price-tracker.service';
 export class ItemDetailWidgetComponent {
   @Input() itemDetail: Item;
   @Input() latestPrices: LatestPrices;
+  @Input() dailyVolume: number;
 
   // don't transform icon but transform name, ex. bolts have different name (Diamond_bolts_(e)_5.png vs Diamond_bolts_(e)_detail.png)
   get detailIconUrl(): string {
