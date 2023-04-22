@@ -15,7 +15,13 @@ import { InterceptorsModule } from './interceptors/interceptor.module';
       deps: [SwUpdate],
       useFactory: (swUpdate: SwUpdate) => () => {
         if (!swUpdate.isEnabled) return;
+
         swUpdate.checkForUpdate().then(updated => updated && document.location.reload());
+
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible')
+            swUpdate.checkForUpdate().then(updated => updated && document.location.reload());
+        });
       },
       multi: true,
     },
