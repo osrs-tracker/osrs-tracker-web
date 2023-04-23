@@ -10,13 +10,10 @@ export class ThemeService {
   constructor(private googleAnalyticsService: GoogleAnalyticsService, private storageService: StorageService) {}
 
   get isDarkModeEnabled(): boolean {
-    return (this.storageService.getItem(StorageKey.DarkMode) ?? 'true') === 'true'; // set darkMode as default
-  }
+    const darkModeSetting = localStorage.getItem(StorageKey.DarkMode);
 
-  loadTheme() {
-    this.googleAnalyticsService.trackEvent('load_theme', 'theming', 'theme', this.isDarkModeEnabled ? 'dark' : 'light');
-
-    document.documentElement.classList.toggle('dark', this.isDarkModeEnabled);
+    if (!darkModeSetting) return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    else return darkModeSetting === 'true';
   }
 
   toggleDarkMode() {

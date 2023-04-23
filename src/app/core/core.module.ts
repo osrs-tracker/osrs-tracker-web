@@ -1,7 +1,6 @@
 import { HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
-import { ThemeService } from '../services/theme.service';
 import { GoogleAnalyticsService } from './analytics/google-analytics.service';
 import { CustomErrorHandler } from './error-handling/error-handler';
 import { InterceptorsModule } from './interceptors/interceptor.module';
@@ -23,12 +22,6 @@ import { InterceptorsModule } from './interceptors/interceptor.module';
             swUpdate.checkForUpdate().then(updated => updated && document.location.reload());
         });
       },
-      multi: true,
-    },
-    {
-      provide: APP_INITIALIZER,
-      deps: [ThemeService],
-      useFactory: (themeService: ThemeService) => () => themeService.loadTheme(),
       multi: true,
     },
     {
