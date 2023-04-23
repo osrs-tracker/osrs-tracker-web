@@ -1,5 +1,6 @@
-import { NgModule } from '@angular/core';
+import { NgModule, inject } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { MetaService } from './services/meta.service';
 import { RootLayoutComponent } from './standalone/root-layout/root-layout.component';
 
 const routes: Routes = [
@@ -11,6 +12,7 @@ const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
+        resolve: { metaDescription: () => inject(MetaService).setDefaultMeta() },
         loadChildren: () => import('./features/home/home.module').then(m => m.HomeModule),
       },
       {
@@ -19,11 +21,13 @@ const routes: Routes = [
         children: [
           {
             path: 'price',
+            resolve: { metaDescription: () => inject(MetaService).setPriceTrackerMeta() },
             loadChildren: () =>
               import('./features/trackers/price-tracker/price-tracker.module').then(m => m.PriceTrackerModule),
           },
           {
             path: 'xp',
+            resolve: { metaDescription: () => inject(MetaService).setXpTrackerMeta() },
             loadChildren: () => import('./features/trackers/xp-tracker/xp-tracker.module').then(m => m.XpTrackerModule),
           },
         ],
@@ -31,6 +35,7 @@ const routes: Routes = [
       {
         path: 'about',
         pathMatch: 'prefix',
+        resolve: { metaDescription: () => inject(MetaService).setDefaultMeta() },
         children: [
           {
             path: 'privacy',
@@ -45,6 +50,7 @@ const routes: Routes = [
       {
         path: '**',
         title: '404 Not Found - OSRS Tracker',
+        resolve: { metaDescription: () => inject(MetaService).setDefaultMeta() },
         loadComponent: () =>
           import('./standalone/components/not-found-404/not-found-404.component').then(c => c.NotFound404Component),
       },
