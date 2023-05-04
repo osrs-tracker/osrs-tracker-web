@@ -1,4 +1,4 @@
-import { DecimalPipe, NgIf, NgTemplateOutlet } from '@angular/common';
+import { DecimalPipe, NgIf, NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Item } from '@osrs-tracker/models';
 import { InfoTooltipComponent } from 'src/app/common/components/tooltip/info-tooltip.component';
@@ -14,7 +14,7 @@ import { PriceTrackerService } from '../../price-tracker.service';
   selector: 'item-detail-widget',
   templateUrl: './item-detail-widget.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgIf, NgTemplateOutlet, DecimalPipe, TimeAgoPipe, InfoTooltipComponent, TooltipComponent],
+  imports: [NgIf, NgTemplateOutlet, NgOptimizedImage, DecimalPipe, TimeAgoPipe, InfoTooltipComponent, TooltipComponent],
 })
 export class ItemDetailWidgetComponent {
   @Input() itemDetail: Item;

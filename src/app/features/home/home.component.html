@@ -11,7 +11,7 @@
 <section class="container mx-auto mb-8 px-4">
   <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Latest OSRS News</h2>
 
-  <div class="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
+  <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
     <div *ngIf="!osrsNewsItems()?.length">Loading news...</div>
     <osrs-news-card *ngFor="let newsItem of osrsNewsItems()" [osrsNewsItem]="newsItem" />
   </div>
