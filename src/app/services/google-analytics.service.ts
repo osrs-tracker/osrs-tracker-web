@@ -6,8 +6,6 @@ import { filter } from 'rxjs';
   providedIn: 'root',
 })
 export class GoogleAnalyticsService {
-  private readonly GTAG_ID = 'G-PSQN8ELKNJ';
-
   constructor(private router: Router, private titleStrategy: DefaultTitleStrategy) {}
 
   setupPageAnalytics() {

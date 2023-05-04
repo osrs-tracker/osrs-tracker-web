@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { StorageKey } from 'src/app/core/storage/storage';
-import { StorageService } from 'src/app/core/storage/storage.service';
+import { StorageKey } from 'src/app/services/storage/storage';
+import { StorageService } from 'src/app/services/storage/storage.service';
 
 export interface RecentItem {
   id: number;

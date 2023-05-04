@@ -1,5 +1,12 @@
-import { HttpContextToken, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import {
+  HttpContextToken,
+  HttpEvent,
+  HttpHandler,
+  HttpHandlerFn,
+  HttpInterceptor,
+  HttpRequest,
+} from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, finalize, map } from 'rxjs';
 
 @Injectable({
@@ -27,19 +34,17 @@ export class LoadingIndicatorService<T> {
 
 export const LOADING_INDICATOR = new HttpContextToken<boolean>(() => false);
 
-@Injectable()
-export class LoadingIndicatorInterceptor<T> implements HttpInterceptor {
-  constructor(private loadingIndicatorService: LoadingIndicatorService<T>) {}
+export const loadingIndicatorInterceptor = (
+  request: HttpRequest<unknown>,
+  next: HttpHandlerFn,
+): Observable<HttpEvent<unknown>> => {
+  if (!request.context.get(LOADING_INDICATOR)) return next(request);
 
-  intercept(request: HttpRequest<T>, next: HttpHandler): Observable<HttpEvent<T>> {
-    if (!request.context.get(LOADING_INDICATOR)) return next.handle(request);
+  const loadingIndicatorService = inject(LoadingIndicatorService);
 
-    const requestId = crypto.randomUUID();
-    const ongoingRequest = next
-      .handle(request)
-      .pipe(finalize(() => this.loadingIndicatorService.removeRequest(requestId)));
-    this.loadingIndicatorService.addRequest(requestId, ongoingRequest);
+  const requestId = crypto.randomUUID();
+  const ongoingRequest = next(request).pipe(finalize(() => loadingIndicatorService.removeRequest(requestId)));
+  loadingIndicatorService.addRequest(requestId, ongoingRequest);
 
-    return ongoingRequest;
-  }
-}
+  return ongoingRequest;
+};

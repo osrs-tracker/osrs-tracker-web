@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { GoogleAnalyticsService } from 'src/app/core/analytics/google-analytics.service';
-import { StorageKey } from 'src/app/core/storage/storage';
-import { StorageService } from 'src/app/core/storage/storage.service';
+import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
+import { StorageKey } from 'src/app/services/storage/storage';
+import { StorageService } from 'src/app/services/storage/storage.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +10,7 @@ export class ThemeService {
   constructor(private googleAnalyticsService: GoogleAnalyticsService, private storageService: StorageService) {}
 
   get isDarkModeEnabled(): boolean {
-    const darkModeSetting = localStorage.getItem(StorageKey.DarkMode);
+    const darkModeSetting = this.storageService.getItem(StorageKey.DarkMode);
 
     if (!darkModeSetting) return window.matchMedia('(prefers-color-scheme: dark)').matches;
     else return darkModeSetting === 'true';

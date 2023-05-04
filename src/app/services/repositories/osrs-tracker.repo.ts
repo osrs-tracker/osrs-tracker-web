@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { HiscoreEntry, Item, OsrsNewsItem, Player } from '@osrs-tracker/models';
 import { Observable, map, startWith, tap } from 'rxjs';
 import { LOADING_INDICATOR } from 'src/app/core/interceptors/loading-indicator.interceptor';
-import { StorageKey } from 'src/app/core/storage/storage';
-import { StorageService } from 'src/app/core/storage/storage.service';
+import { StorageKey } from 'src/app/services/storage/storage';
+import { StorageService } from 'src/app/services/storage/storage.service';
 
 @Injectable({
   providedIn: 'root',

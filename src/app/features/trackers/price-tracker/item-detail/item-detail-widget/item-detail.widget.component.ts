@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Item } from '@osrs-tracker/models';
-import { GoogleAnalyticsService } from 'src/app/core/analytics/google-analytics.service';
+import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 import { LatestPrices } from 'src/app/services/repositories/osrs-prices.repo';
 import { config } from 'src/config/config';
 import { PriceTrackerService } from '../../price-tracker.service';

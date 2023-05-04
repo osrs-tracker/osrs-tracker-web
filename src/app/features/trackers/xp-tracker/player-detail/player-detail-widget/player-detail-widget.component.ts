@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
+import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 import { Hiscore } from 'src/app/services/hiscores/hiscore.model';
 import { XpTrackerService } from '../../xp-tracker.service';
-import { GoogleAnalyticsService } from 'src/app/core/analytics/google-analytics.service';
 
 @Component({
   selector: 'player-detail-widget',

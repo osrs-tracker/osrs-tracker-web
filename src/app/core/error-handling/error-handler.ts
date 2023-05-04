@@ -1,5 +1,5 @@
 import { ErrorHandler, Injectable } from '@angular/core';
-import { GoogleAnalyticsService } from '../analytics/google-analytics.service';
+import { GoogleAnalyticsService } from '../../services/google-analytics.service';
 
 @Injectable()
 export class CustomErrorHandler implements ErrorHandler {

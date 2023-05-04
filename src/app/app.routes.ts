@@ -1,9 +1,9 @@
-import { NgModule, inject } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { inject } from '@angular/core';
 import { MetaService } from './services/meta.service';
 import { RootLayoutComponent } from './standalone/root-layout/root-layout.component';
+import { Route } from '@angular/router';
 
-const routes: Routes = [
+export default [
   {
     path: '',
     pathMatch: 'prefix',
@@ -56,10 +56,4 @@ const routes: Routes = [
       },
     ],
   },
-];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule],
-})
-export class AppRoutingModule {}
+] as Route[];
