@@ -70,6 +70,7 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isOpen = isPresent;
 
       if (isPresent) {
+        this.ensureOverlayRefs();
         this.containerOverlayRef.attach(this.containerTemplatePortal);
         this.arrowOverlayRef.attach(this.arrowTemplatePortal);
       } else {
@@ -81,24 +82,6 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.elementRef.nativeElement.classList.add('border-b', 'border-dashed', '-mb-px');
-
-    // seprate overlay for arrow and container so that arrow can be positioned relative to the component
-    [this.arrowOverlayRef, this.containerOverlayRef] = [this.arrowOverlayRef, this.containerOverlayRef].map(() =>
-      this.overlay.create({
-        positionStrategy: this.overlay
-          .position()
-          .flexibleConnectedTo(this.elementRef)
-          .withPositions([
-            {
-              originX: 'center',
-              originY: 'top',
-              overlayX: 'center',
-              overlayY: 'bottom',
-            },
-          ]),
-        scrollStrategy: this.overlay.scrollStrategies.reposition(),
-      }),
-    );
   }
 
   ngAfterViewInit(): void {
@@ -132,8 +115,27 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
       this.arrowOverlayRef.hostElement,
     ].some(el => el.contains(target));
 
-    if (found) return;
+    if (!found) this.mousePresent$.next(false);
+  }
 
-    this.mousePresent$.next(false);
+  private ensureOverlayRefs() {
+    if (this.arrowOverlayRef && this.containerOverlayRef) return;
+
+    [this.arrowOverlayRef, this.containerOverlayRef] = [this.arrowOverlayRef, this.containerOverlayRef].map(() =>
+      this.overlay.create({
+        positionStrategy: this.overlay
+          .position()
+          .flexibleConnectedTo(this.elementRef)
+          .withPositions([
+            {
+              originX: 'center',
+              originY: 'top',
+              overlayX: 'center',
+              overlayY: 'bottom',
+            },
+          ]),
+        scrollStrategy: this.overlay.scrollStrategies.reposition(),
+      }),
+    );
   }
 }
