@@ -1,6 +1,6 @@
-import { CommonModule } from '@angular/common';
+import { NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, HostBinding } from '@angular/core';
-import { ThemeService } from 'src/app/services/theme.service';
+import { ThemeService } from 'src/app/common/services/theme.service';
 
 @Component({
   standalone: true,
@@ -42,7 +42,7 @@ import { ThemeService } from 'src/app/services/theme.service';
     </button>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [NgIf],
 })
 export class DarkModeComponent {
   @HostBinding('class') class = 'flex';

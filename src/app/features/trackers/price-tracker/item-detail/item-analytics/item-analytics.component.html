@@ -13,10 +13,10 @@
             <h2 class="mb-1 text-xl font-normal">Quarter</h2>
             <info-tooltip>
               Compared to the 24-hour average 90 days ago (UTC), which was
-              <span class="font-semibold">{{ trend?.quarterValue | number }}&nbsp;gp</span>.
+              <span class="font-semibold">{{ trend()?.quarterValue | number }}&nbsp;gp</span>.
             </info-tooltip>
           </div>
-          <colored-value [value]="trend?.quarter" suffix="%"></colored-value>
+          <colored-value [value]="trend()?.quarter" suffix="%"></colored-value>
         </section>
 
         <section class="py-4 flex flex-col items-center justify-center">
@@ -24,10 +24,10 @@
             <h2 class="mb-1 text-xl font-normal">Month</h2>
             <info-tooltip>
               Compared to the 24-hour average 30 days ago (UTC), which was
-              <span class="font-semibold">{{ trend?.monthValue | number }}&nbsp;gp</span>.
+              <span class="font-semibold">{{ trend()?.monthValue | number }}&nbsp;gp</span>.
             </info-tooltip>
           </div>
-          <colored-value [value]="trend?.month" suffix="%"></colored-value>
+          <colored-value [value]="trend()?.month" suffix="%"></colored-value>
         </section>
 
         <section class="py-4 flex flex-col items-center justify-center">
@@ -35,10 +35,10 @@
             <h2 class="mb-1 text-xl font-normal">Week</h2>
             <info-tooltip>
               Compared to the 24-hour average of 7 days ago (UTC), which was
-              <span class="font-semibold">{{ trend?.weekValue | number }}&nbsp;gp</span>.
+              <span class="font-semibold">{{ trend()?.weekValue | number }}&nbsp;gp</span>.
             </info-tooltip>
           </div>
-          <colored-value [value]="trend?.week" suffix="%"></colored-value>
+          <colored-value [value]="trend()?.week" suffix="%"></colored-value>
         </section>
 
         <section class="py-4 flex flex-col items-center justify-center">
@@ -46,10 +46,10 @@
             <h2 class="mb-1 text-xl font-normal">Today</h2>
             <info-tooltip>
               Compared to the 24-hour average of yesterday (UTC), which was
-              <span class="font-semibold">{{ trend?.todayValue | number }}&nbsp;gp</span>.
+              <span class="font-semibold">{{ trend()?.todayValue | number }}&nbsp;gp</span>.
             </info-tooltip>
           </div>
-          <colored-value [value]="trend?.today" suffix="%"></colored-value>
+          <colored-value [value]="trend()?.today" suffix="%"></colored-value>
         </section>
       </div>
     </article>

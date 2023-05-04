@@ -11,21 +11,21 @@
         autocomplete="hidden"
       />
       <button type="submit" class="z-20 absolute right-0 button--primary button--rounded" (click)="searchItems()">
-        <span [class.invisible]="loading">Search</span>
+        <span [class.invisible]="loading()">Search</span>
 
         <spinner
           class="absolute block top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-          *ngIf="loading"
+          *ngIf="loading()"
         ></spinner>
       </button>
 
       <div
-        *ngIf="results?.length"
+        *ngIf="results()?.length"
         class="z-10 absolute rounded-3xl bg-white dark:bg-slate-800 border border-slate-400 dark:border-slate-700 shadow-2xl top-0 w-full overflow-hidden"
       >
         <div class="mt-10 pt-px max-h-60 overflow-y-auto scroll-bar">
           <ul>
-            <li *ngFor="let item of results">
+            <li *ngFor="let item of results()">
               <a
                 class="group flex items-center px-4 py-2 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white rounded-r-full"
                 [routerLink]="['/trackers/price', item.id]"

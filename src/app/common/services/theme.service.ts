@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
-import { StorageKey } from 'src/app/services/storage/storage';
-import { StorageService } from 'src/app/services/storage/storage.service';
+import { GoogleAnalyticsService } from 'src/app/common/services/google-analytics.service';
+import { StorageKey } from 'src/app/common/services/storage/storage';
+import { StorageService } from 'src/app/common/services/storage/storage.service';
 
 @Injectable({
   providedIn: 'root',

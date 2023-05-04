@@ -2,9 +2,9 @@ import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HiscoreEntry, Item, OsrsNewsItem, Player } from '@osrs-tracker/models';
 import { Observable, map, startWith, tap } from 'rxjs';
+import { StorageKey } from 'src/app/common/services/storage/storage';
+import { StorageService } from 'src/app/common/services/storage/storage.service';
 import { LOADING_INDICATOR } from 'src/app/core/interceptors/loading-indicator.interceptor';
-import { StorageKey } from 'src/app/services/storage/storage';
-import { StorageService } from 'src/app/services/storage/storage.service';
 
 @Injectable({
   providedIn: 'root',

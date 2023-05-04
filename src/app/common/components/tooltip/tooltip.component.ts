@@ -1,6 +1,6 @@
 import { Overlay, OverlayModule, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
-import { CommonModule } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -15,15 +15,14 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, debounceTime } from 'rxjs';
 
-@UntilDestroy()
 @Component({
   standalone: true,
   selector: '[tooltip]',
   template: `
-    <ng-content></ng-content>
+    <ng-content />
 
     <ng-template #tooltipTemplateContainer>
       <div
@@ -31,7 +30,7 @@ import { Subject, debounceTime } from 'rxjs';
         (mouseenter)="onMouseEnter()"
         (mouseleave)="onMouseLeave()"
       >
-        <ng-template [ngTemplateOutlet]="tooltipTemplate"></ng-template>
+        <ng-template [ngTemplateOutlet]="tooltipTemplate" />
       </div>
     </ng-template>
 
@@ -46,7 +45,7 @@ import { Subject, debounceTime } from 'rxjs';
     </ng-template>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, OverlayModule],
+  imports: [NgTemplateOutlet, OverlayModule],
 })
 export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
   mousePresent$ = new Subject<boolean>();
@@ -65,7 +64,20 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('tooltipTemplateArrow') tooltipTemplateArrow: TemplateRef<unknown>;
   @ViewChild('tooltipTemplateContainer') tooltipTemplateContainer: TemplateRef<unknown>;
 
-  constructor(private elementRef: ElementRef, private overlay: Overlay, private viewContainerRef: ViewContainerRef) {}
+  constructor(private elementRef: ElementRef, private overlay: Overlay, private viewContainerRef: ViewContainerRef) {
+    this.mousePresent$.pipe(debounceTime(300), takeUntilDestroyed()).subscribe(isPresent => {
+      if (this.isOpen === isPresent) return;
+      this.isOpen = isPresent;
+
+      if (isPresent) {
+        this.containerOverlayRef.attach(this.containerTemplatePortal);
+        this.arrowOverlayRef.attach(this.arrowTemplatePortal);
+      } else {
+        this.containerOverlayRef.detach();
+        this.arrowOverlayRef.detach();
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.elementRef.nativeElement.classList.add('border-b', 'border-dashed', '-mb-px');
@@ -87,19 +99,6 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
         scrollStrategy: this.overlay.scrollStrategies.reposition(),
       }),
     );
-
-    this.mousePresent$.pipe(debounceTime(300), untilDestroyed(this)).subscribe(isPresent => {
-      if (this.isOpen === isPresent) return;
-      this.isOpen = isPresent;
-
-      if (isPresent) {
-        this.containerOverlayRef.attach(this.containerTemplatePortal);
-        this.arrowOverlayRef.attach(this.arrowTemplatePortal);
-      } else {
-        this.containerOverlayRef.detach();
-        this.arrowOverlayRef.detach();
-      }
-    });
   }
 
   ngAfterViewInit(): void {

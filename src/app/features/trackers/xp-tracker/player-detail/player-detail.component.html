@@ -1,10 +1,10 @@
 <div class="container mx-auto my-8 px-4 grid lg:grid-cols-3 2xl:grid-cols-4 gap-8">
-  <player-detail-widget [playerDetail]="playerDetail" [today]="today"></player-detail-widget>
+  <player-detail-widget [playerDetail]="playerDetail" [today]="today()" />
 
   <player-logs
     class="lg:col-span-2 2xl:col-span-3"
     [playerDetail]="playerDetail"
-    [today]="today"
-    [history]="history"
-  ></player-logs>
+    [today]="today()"
+    [history]="history()"
+  />
 </div>

@@ -43,11 +43,4 @@ jobs:
           node-version: '18.x'
           cache: 'npm'
       - run: npm ci
-      - run: npm run test:ci
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure() # run this step even if previous step failed
-        with:
-          name: test report
-          path: reports/junit.xml
-          reporter: jest-junit
+      - run: npm run test

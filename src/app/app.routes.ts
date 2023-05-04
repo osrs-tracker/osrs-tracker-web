@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
-import { MetaService } from './services/meta.service';
-import { RootLayoutComponent } from './standalone/root-layout/root-layout.component';
 import { Route } from '@angular/router';
+import { RootLayoutComponent } from './common/root-layout/root-layout.component';
+import { MetaService } from './common/services/meta.service';
 
 export default [
   {
@@ -12,47 +12,26 @@ export default [
       {
         path: '',
         pathMatch: 'full',
+        title: 'Home - OSRS Tracker',
         resolve: { metaDescription: () => inject(MetaService).setDefaultMeta() },
-        loadChildren: () => import('./features/home/home.module').then(m => m.HomeModule),
+        loadComponent: () => import('./features/home/home.component'),
       },
       {
         path: 'trackers',
         pathMatch: 'prefix',
-        children: [
-          {
-            path: 'price',
-            resolve: { metaDescription: () => inject(MetaService).setPriceTrackerMeta() },
-            loadChildren: () =>
-              import('./features/trackers/price-tracker/price-tracker.module').then(m => m.PriceTrackerModule),
-          },
-          {
-            path: 'xp',
-            resolve: { metaDescription: () => inject(MetaService).setXpTrackerMeta() },
-            loadChildren: () => import('./features/trackers/xp-tracker/xp-tracker.module').then(m => m.XpTrackerModule),
-          },
-        ],
+        loadChildren: () => import('./features/trackers/trackers.routes'),
       },
       {
         path: 'about',
         pathMatch: 'prefix',
         resolve: { metaDescription: () => inject(MetaService).setDefaultMeta() },
-        children: [
-          {
-            path: 'privacy',
-            loadChildren: () => import('./features/about/privacy/privacy.module').then(m => m.PrivacyModule),
-          },
-          {
-            path: 'terms',
-            loadChildren: () => import('./features/about/terms/terms.module').then(m => m.TermsModule),
-          },
-        ],
+        loadChildren: () => import('./features/about/about.routes'),
       },
       {
         path: '**',
         title: '404 Not Found - OSRS Tracker',
         resolve: { metaDescription: () => inject(MetaService).setDefaultMeta() },
-        loadComponent: () =>
-          import('./standalone/components/not-found-404/not-found-404.component').then(c => c.NotFound404Component),
+        loadComponent: () => import('./features/not-found/not-found.component').then(c => c.NotFoundComponent),
       },
     ],
   },

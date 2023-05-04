@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { DecimalPipe, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges } from '@angular/core';
 
 @Component({
@@ -12,7 +12,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges } from
     <ng-template [ngIf]="!value">&mdash;</ng-template>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [NgIf, DecimalPipe],
 })
 export class ColoredValueComponent implements OnChanges {
   @Input() value: number | null | undefined;

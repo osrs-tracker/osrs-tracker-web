@@ -7,7 +7,7 @@ import {
   MiniGameEnum,
   RaidEnum,
   SkillEnum,
-} from 'src/app/services/hiscores/hiscore.enum';
+} from 'src/app/common/services/hiscores/hiscore.enum';
 
 export const iconMap: { [key: string]: string } = {
   ['coins']: '/coins.png',

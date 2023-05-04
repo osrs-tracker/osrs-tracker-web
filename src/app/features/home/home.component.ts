@@ -1,23 +1,24 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { trackChanges } from 'src/app/core/decorators/track-changes.decorator';
-import { OsrsNewsItem } from 'src/app/services/repositories/osrs-proxy.repo';
-import { OsrsTrackerRepo } from 'src/app/services/repositories/osrs-tracker.repo';
+import { NgFor, NgIf } from '@angular/common';
+import { ChangeDetectionStrategy, Component, Signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
+import { OsrsNewsItem } from 'src/app/common/services/repositories/osrs-proxy.repo';
+import { OsrsTrackerRepo } from 'src/app/common/services/repositories/osrs-tracker.repo';
+import OsrsNewsCardComponent from './osrs-news-card/osrs-news-card.component';
 
 @Component({
+  standalone: true,
   selector: 'home',
   templateUrl: './home.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgIf, NgFor, OsrsNewsCardComponent],
 })
-export class HomeComponent implements OnInit {
-  @trackChanges osrsNewsItems: OsrsNewsItem[] = [];
+export default class HomeComponent {
+  osrsNewsItems: Signal<OsrsNewsItem[] | undefined>;
 
-  constructor(public cdRef: ChangeDetectorRef, private osrsTrackerRepo: OsrsTrackerRepo) {}
-
-  ngOnInit(): void {
-    this.osrsTrackerRepo.getLatestOsrsNewsItems().subscribe(osrsNewsItems => this.setNews(osrsNewsItems));
-  }
-
-  private setNews(osrsNewsItems: OsrsNewsItem[]): void {
-    this.osrsNewsItems = osrsNewsItems.slice(0, 4);
+  constructor(private osrsTrackerRepo: OsrsTrackerRepo) {
+    this.osrsNewsItems = toSignal(
+      this.osrsTrackerRepo.getLatestOsrsNewsItems().pipe(map(osrsNewsItems => osrsNewsItems.slice(0, 4))),
+    );
   }
 }

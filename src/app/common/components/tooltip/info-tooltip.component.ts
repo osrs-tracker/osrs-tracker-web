@@ -6,7 +6,7 @@ import { TooltipComponent } from './tooltip.component';
   selector: 'info-tooltip',
   template: `
     <div class="text-xs ml-1 h-4" tooltip [tooltipTemplate]="tooltipTemplate">?</div>
-    <ng-template #tooltipTemplate><ng-content></ng-content></ng-template>
+    <ng-template #tooltipTemplate><ng-content /></ng-template>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TooltipComponent],

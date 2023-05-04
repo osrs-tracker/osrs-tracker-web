@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HiscoreEntry } from '@osrs-tracker/models';
 import { isAfter, parseISO } from 'date-fns';
-import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
+import { GoogleAnalyticsService } from 'src/app/common/services/google-analytics.service';
 import {
   BossEnum,
   BountyHunterEnum,
