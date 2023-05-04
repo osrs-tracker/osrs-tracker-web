@@ -1,13 +1,18 @@
+import { NgFor, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { PlayerWidgetComponent } from './player-widget/player-widget.component';
 import { XpTrackerService } from './xp-tracker.service';
 
 @Component({
+  standalone: true,
   selector: 'xp-tracker',
   templateUrl: './xp-tracker.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgIf, NgFor, FormsModule, RouterLink, PlayerWidgetComponent],
 })
-export class XpTrackerComponent {
+export default class XpTrackerComponent {
   username: string;
 
   get favoritePlayers(): string[] {
@@ -18,13 +23,7 @@ export class XpTrackerComponent {
     return this.xpTrackerService.getRecentPlayers();
   }
 
-  constructor(private router: Router, private xpTrackerService: XpTrackerService) {}
-
-  searchUser(username: string) {
-    if (!username) return;
-
-    this.router.navigate(['/trackers/xp', username]);
-  }
+  constructor(private xpTrackerService: XpTrackerService) {}
 
   trackByUsername(_index: number, username: string): string {
     return username;

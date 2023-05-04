@@ -4,7 +4,7 @@ import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn, Router } from '@angular/router';
 import { Player } from '@osrs-tracker/models';
 import { catchError } from 'rxjs';
-import { OsrsTrackerRepo } from 'src/app/services/repositories/osrs-tracker.repo';
+import { OsrsTrackerRepo } from 'src/app/common/services/repositories/osrs-tracker.repo';
 
 export const playerDetailResolver: ResolveFn<Player | null> = (route: ActivatedRouteSnapshot) => {
   const loc = inject(Location);

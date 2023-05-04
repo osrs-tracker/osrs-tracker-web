@@ -1,7 +1,12 @@
+import { DecimalPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Player } from '@osrs-tracker/models';
-import { Hiscore, MiniGame, Skill } from 'src/app/services/hiscores/hiscore.model';
-import { HiscoreService } from 'src/app/services/hiscores/hiscore.service';
+import { CardComponent } from 'src/app/common/components/card.component';
+import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
+import { CapitalizePipe } from 'src/app/common/pipes/capitalize.pipe';
+import { ShortDatePipe } from 'src/app/common/pipes/date-fns.pipe';
+import { Hiscore, MiniGame, Skill } from 'src/app/common/services/hiscores/hiscore.model';
+import { HiscoreService } from 'src/app/common/services/hiscores/hiscore.service';
 import { XpTrackerService } from '../../xp-tracker.service';
 
 export enum ViewType {
@@ -10,9 +15,21 @@ export enum ViewType {
 }
 
 @Component({
+  standalone: true,
   selector: 'player-logs',
   templateUrl: './player-logs.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    NgClass,
+    NgIf,
+    NgFor,
+    NgTemplateOutlet,
+    CapitalizePipe,
+    CardComponent,
+    DecimalPipe,
+    IconDirective,
+    ShortDatePipe,
+  ],
 })
 export class PlayerLogsComponent implements OnChanges {
   readonly ViewType: typeof ViewType = ViewType;
@@ -24,8 +41,8 @@ export class PlayerLogsComponent implements OnChanges {
 
   @Input() playerDetail: Player;
 
-  @Input() today: Hiscore;
-  @Input() history: Hiscore[];
+  @Input() today?: Hiscore;
+  @Input() history?: Hiscore[];
 
   get isPlayerTracked(): boolean {
     return !!this.playerDetail.scrapingOffsets?.length;
@@ -65,8 +82,8 @@ export class PlayerLogsComponent implements OnChanges {
   private calculateHiscoreDiffs(): void {
     let previousHiscore = this.today;
 
-    this.hiscoreDiffs = this.history.map(hiscore => {
-      const diff = this.hiscoreService.hiscoreDiff(previousHiscore, hiscore);
+    this.hiscoreDiffs = this.history!.map(hiscore => {
+      const diff = this.hiscoreService.hiscoreDiff(previousHiscore!, hiscore);
       previousHiscore = hiscore;
       return diff;
     });

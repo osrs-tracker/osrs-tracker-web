@@ -1,14 +1,20 @@
+import { DecimalPipe, NgIf, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Item } from '@osrs-tracker/models';
-import { GoogleAnalyticsService } from 'src/app/core/analytics/google-analytics.service';
-import { LatestPrices } from 'src/app/services/repositories/osrs-prices.repo';
+import { InfoTooltipComponent } from 'src/app/common/components/tooltip/info-tooltip.component';
+import { TooltipComponent } from 'src/app/common/components/tooltip/tooltip.component';
+import { TimeAgoPipe } from 'src/app/common/pipes/time-ago.pipe';
+import { GoogleAnalyticsService } from 'src/app/common/services/google-analytics.service';
+import { LatestPrices } from 'src/app/common/services/repositories/osrs-prices.repo';
 import { config } from 'src/config/config';
 import { PriceTrackerService } from '../../price-tracker.service';
 
 @Component({
+  standalone: true,
   selector: 'item-detail-widget',
   templateUrl: './item-detail-widget.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgIf, NgTemplateOutlet, DecimalPipe, TimeAgoPipe, InfoTooltipComponent, TooltipComponent],
 })
 export class ItemDetailWidgetComponent {
   @Input() itemDetail: Item;

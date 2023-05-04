@@ -1,30 +1,30 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ChangeDetectionStrategy, Component, DestroyRef, Input, OnInit, WritableSignal, signal } from '@angular/core';
 import { Player } from '@osrs-tracker/models';
 import { forkJoin } from 'rxjs';
-import { trackChanges } from 'src/app/core/decorators/track-changes.decorator';
-import { Hiscore } from 'src/app/services/hiscores/hiscore.model';
-import { HiscoreService } from 'src/app/services/hiscores/hiscore.service';
-import { OsrsProxyRepo } from 'src/app/services/repositories/osrs-proxy.repo';
-import { OsrsTrackerRepo } from 'src/app/services/repositories/osrs-tracker.repo';
+import { Hiscore } from 'src/app/common/services/hiscores/hiscore.model';
+import { HiscoreService } from 'src/app/common/services/hiscores/hiscore.service';
+import { OsrsProxyRepo } from 'src/app/common/services/repositories/osrs-proxy.repo';
+import { OsrsTrackerRepo } from 'src/app/common/services/repositories/osrs-tracker.repo';
 import { XpTrackerService } from '../xp-tracker.service';
+import { PlayerDetailWidgetComponent } from './player-detail-widget/player-detail-widget.component';
+import { PlayerLogsComponent } from './player-logs/player-logs.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
+  standalone: true,
   selector: 'player-detail',
   templateUrl: './player-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [PlayerDetailWidgetComponent, PlayerLogsComponent],
 })
-export class PlayerDetailComponent implements OnInit {
-  @trackChanges today: Hiscore;
-  @trackChanges history: Hiscore[];
+export default class PlayerDetailComponent implements OnInit {
+  today: WritableSignal<Hiscore | undefined> = signal(undefined);
+  history: WritableSignal<Hiscore[] | undefined> = signal(undefined);
 
-  get playerDetail(): Player {
-    return this.activatedRoute.snapshot.data['player'];
-  }
+  @Input('player') playerDetail: Player;
 
   constructor(
-    private activatedRoute: ActivatedRoute,
-    public cdRef: ChangeDetectorRef,
+    private destroyRef: DestroyRef,
     private hiscoreService: HiscoreService,
     private osrsProxyRepo: OsrsProxyRepo,
     private osrsTrackerRepo: OsrsTrackerRepo,
@@ -42,9 +42,11 @@ export class PlayerDetailComponent implements OnInit {
     forkJoin([
       this.osrsProxyRepo.getPlayerHiscore(this.playerDetail!.username), // current hiscore
       this.osrsTrackerRepo.getPlayerHiscores(this.playerDetail!.username, scrapingOffset, skip), // scraped Hiscores
-    ]).subscribe(([currentHiscore, scrapedHiscores]) => {
-      this.today = this.hiscoreService.parseHiscores([currentHiscore])[0];
-      this.history = this.hiscoreService.parseHiscores(scrapedHiscores);
-    });
+    ])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(([currentHiscore, scrapedHiscores]) => {
+        this.today.set(this.hiscoreService.parseHiscores([currentHiscore])[0]);
+        this.history.set(this.hiscoreService.parseHiscores(scrapedHiscores));
+      });
   }
 }

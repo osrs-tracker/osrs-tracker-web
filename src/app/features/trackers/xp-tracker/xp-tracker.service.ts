@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { StorageKey } from 'src/app/core/storage/storage';
-import { StorageService } from 'src/app/core/storage/storage.service';
+import { StorageKey } from 'src/app/common/services/storage/storage';
+import { StorageService } from 'src/app/common/services/storage/storage.service';
 import { ViewType } from './player-detail/player-logs/player-logs.component';
 
 @Injectable({
