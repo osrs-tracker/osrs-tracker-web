@@ -99,7 +99,7 @@ export class HiscoreService {
                   name: skillName,
                   rank: skill.rank - old.skills[skillName as SkillEnum].rank,
                   level: skill.level - old.skills[skillName as SkillEnum].level,
-                  xp: this.xpDiff(skill.xp, old.skills[skillName as SkillEnum].xp),
+                  xp: this.diff(skill.xp, old.skills[skillName as SkillEnum].xp),
                 },
               ]),
             ),
@@ -118,7 +118,10 @@ export class HiscoreService {
                 {
                   name: miniGameName,
                   rank: miniGame.rank - ((old[hiscoreKey] as { [key: string]: MiniGame })[miniGameName]?.rank ?? 0),
-                  score: miniGame.score - ((old[hiscoreKey] as { [key: string]: MiniGame })[miniGameName]?.score ?? 0),
+                  score: this.diff(
+                    miniGame.score,
+                    (old[hiscoreKey] as { [key: string]: MiniGame })[miniGameName]?.score ?? 0,
+                  ),
                 },
               ]),
             ),
@@ -135,7 +138,7 @@ export class HiscoreService {
     const todayOverall = this.getSkillFromSourceString(today.sourceString, SkillEnum.Overall, today.date);
     const recentOverall = this.getSkillFromSourceString(recent.sourceString, SkillEnum.Overall, recent.date);
 
-    return this.xpDiff(todayOverall.xp, recentOverall.xp);
+    return this.diff(todayOverall.xp, recentOverall.xp);
   }
 
   private getSkillFromSourceString(sourceString: string, skill: SkillEnum, date: Date): Skill {
@@ -157,8 +160,10 @@ export class HiscoreService {
   /**
    *  For some reason for free to play people membership skills can have 0 or -1 exp in the hiscore API.
    *  Default to zero to fix ghost exp in membership skills (+1 exp).
+   *
+   *  Also used for minigames, where the score can be -1 when unranked.
    */
-  private xpDiff(a: number, b: number): number {
+  private diff(a: number, b: number): number {
     return Math.max(a, 0) - Math.max(b, 0);
   }
 
