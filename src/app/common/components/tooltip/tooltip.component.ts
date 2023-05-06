@@ -52,10 +52,10 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isOpen = false;
 
-  arrowOverlayRef: OverlayRef;
+  arrowOverlayRef?: OverlayRef;
   arrowTemplatePortal: TemplatePortal;
 
-  containerOverlayRef: OverlayRef;
+  containerOverlayRef?: OverlayRef;
   containerTemplatePortal: TemplatePortal;
 
   @HostBinding('class.cursor-help') cursorHelp = true;
@@ -71,11 +71,11 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
 
       if (isPresent) {
         this.ensureOverlayRefs();
-        this.containerOverlayRef.attach(this.containerTemplatePortal);
-        this.arrowOverlayRef.attach(this.arrowTemplatePortal);
+        this.containerOverlayRef!.attach(this.containerTemplatePortal);
+        this.arrowOverlayRef!.attach(this.arrowTemplatePortal);
       } else {
-        this.containerOverlayRef.detach();
-        this.arrowOverlayRef.detach();
+        this.containerOverlayRef?.detach();
+        this.arrowOverlayRef?.detach();
       }
     });
   }
@@ -90,11 +90,7 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.containerOverlayRef.detach();
-    this.containerOverlayRef.dispose();
-
-    this.arrowOverlayRef.detach();
-    this.arrowOverlayRef.dispose();
+    [this.arrowOverlayRef, this.containerOverlayRef].forEach(ref => (ref?.detach(), ref?.dispose()));
 
     this.mousePresent$.next(false); // emite false to be sure.
     this.mousePresent$.complete();
@@ -111,8 +107,8 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener('document:touchend', ['$event.target']) onDocumentTouchend(target: HTMLElement) {
     const found = [
       this.elementRef.nativeElement,
-      this.containerOverlayRef.hostElement,
-      this.arrowOverlayRef.hostElement,
+      this.containerOverlayRef?.hostElement,
+      this.arrowOverlayRef?.hostElement,
     ].some(el => el.contains(target));
 
     if (!found) this.mousePresent$.next(false);
