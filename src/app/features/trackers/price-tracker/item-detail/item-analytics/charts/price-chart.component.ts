@@ -46,7 +46,7 @@ export class PriceChartComponent implements OnInit, OnDestroy {
     this.createPriceChart();
 
     effect(() => this.updatePriceChart(this.timeSeries()), { injector: this.injector });
-    effect(() => this.themeService.darkMode() && this.priceChart.update(), { injector: this.injector });
+    effect(() => (this.themeService.darkMode(), this.priceChart.update()), { injector: this.injector });
   }
 
   ngOnDestroy(): void {

@@ -46,7 +46,7 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
     this.createPriceChart();
 
     effect(() => this.updatePriceChart(this.timeSeries()), { injector: this.injector });
-    effect(() => this.themeService.darkMode() && this.volumeChart.update(), { injector: this.injector });
+    effect(() => (this.themeService.darkMode(), this.volumeChart.update('none')), { injector: this.injector });
   }
 
   ngOnDestroy(): void {
