@@ -3,6 +3,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  HostBinding,
+  HostListener,
   Injector,
   Input,
   OnDestroy,
@@ -21,10 +23,12 @@ import { config } from 'src/config/config';
 @Component({
   standalone: true,
   selector: 'volume-chart',
-  template: '<canvas #volumeChart class="h-44 max-w-full"></canvas>',
+  template: '<canvas #volumeChart></canvas>',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VolumeChartComponent implements OnInit, OnDestroy {
+  @HostBinding('class') class = 'block h-44 max-w-full';
+
   volumeChart: Chart;
   @ViewChild('volumeChart', { static: true }) volumeChartCanvas: ElementRef<HTMLCanvasElement>;
 
@@ -49,6 +53,12 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
     this.volumeChart?.destroy();
 
     Chart.unregister(BarController, BarElement, LinearScale, TimeSeriesScale, Tooltip);
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.volumeChart?.resize(1, 1);
+    window.requestAnimationFrame(() => this.volumeChart?.resize());
   }
 
   private createPriceChart(): void {

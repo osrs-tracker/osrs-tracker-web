@@ -3,6 +3,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  HostBinding,
+  HostListener,
   Injector,
   Input,
   OnDestroy,
@@ -21,10 +23,12 @@ import { config } from 'src/config/config';
 @Component({
   standalone: true,
   selector: 'price-chart',
-  template: '<canvas #priceChart class="h-44 max-w-full"></canvas>',
+  template: '<canvas #priceChart></canvas>',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PriceChartComponent implements OnInit, OnDestroy {
+  @HostBinding('class') class = 'block h-44 max-w-full';
+
   priceChart: Chart;
   @ViewChild('priceChart', { static: true }) priceChartCanvas: ElementRef<HTMLCanvasElement>;
 
@@ -49,6 +53,12 @@ export class PriceChartComponent implements OnInit, OnDestroy {
     this.priceChart?.destroy();
 
     Chart.unregister(LineController, LineElement, PointElement, LinearScale, TimeSeriesScale, Tooltip);
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.priceChart?.resize(1, 1);
+    window.requestAnimationFrame(() => this.priceChart?.resize());
   }
 
   private createPriceChart(): void {
