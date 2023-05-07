@@ -8,7 +8,7 @@
       <h2 title>Trend</h2>
 
       <div class="grid grid-cols-2 lg:grid-cols-4 text-2xl font-semibold">
-        <section class="py-2 flex flex-col items-center justify-center">
+        <section class="py-1 flex flex-col items-center justify-center">
           <div class="flex">
             <h2 class="mb-1 text-xl font-normal">Quarter</h2>
             <info-tooltip>
@@ -19,7 +19,7 @@
           <colored-value [value]="trend()?.quarter" suffix="%"></colored-value>
         </section>
 
-        <section class="py-4 flex flex-col items-center justify-center">
+        <section class="py-1 flex flex-col items-center justify-center">
           <div class="flex">
             <h2 class="mb-1 text-xl font-normal">Month</h2>
             <info-tooltip>
@@ -30,7 +30,7 @@
           <colored-value [value]="trend()?.month" suffix="%"></colored-value>
         </section>
 
-        <section class="py-4 flex flex-col items-center justify-center">
+        <section class="py-1 flex flex-col items-center justify-center">
           <div class="flex">
             <h2 class="mb-1 text-xl font-normal">Week</h2>
             <info-tooltip>
@@ -41,7 +41,7 @@
           <colored-value [value]="trend()?.week" suffix="%"></colored-value>
         </section>
 
-        <section class="py-4 flex flex-col items-center justify-center">
+        <section class="py-1 flex flex-col items-center justify-center">
           <div class="flex">
             <h2 class="mb-1 text-xl font-normal">Today</h2>
             <info-tooltip>
@@ -57,15 +57,13 @@
     <article card>
       <h2 title>Price</h2>
 
-      <div>
-        <canvas #priceChart class="h-56 max-w-full"></canvas>
-      </div>
+      <price-chart [timeSeries]="timeSeries"></price-chart>
     </article>
 
     <article card>
       <h2 title>Volume</h2>
 
-      <div>Work in progress...</div>
+      <volume-chart [timeSeries]="timeSeries"></volume-chart>
     </article>
   </div>
 </section>
