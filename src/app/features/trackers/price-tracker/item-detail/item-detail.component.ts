@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { Item } from '@osrs-tracker/models';
-import { LatestPrices } from 'src/app/common/services/repositories/osrs-prices.repo';
+import { LatestPrices } from 'src/app/repositories/osrs-prices.repo';
 import { PriceTrackerService } from '../price-tracker.service';
 import { ItemAnalyticsComponent } from './item-analytics/item-analytics.component';
 import { ItemDetailWidgetComponent } from './item-detail-widget/item-detail.widget.component';

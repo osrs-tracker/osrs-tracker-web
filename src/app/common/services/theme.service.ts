@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Signal, WritableSignal, computed, signal } from '@angular/core';
 import { GoogleAnalyticsService } from 'src/app/common/services/google-analytics.service';
 import { StorageKey } from 'src/app/common/services/storage/storage';
 import { StorageService } from 'src/app/common/services/storage/storage.service';
@@ -7,20 +7,23 @@ import { StorageService } from 'src/app/common/services/storage/storage.service'
   providedIn: 'root',
 })
 export class ThemeService {
-  constructor(private googleAnalyticsService: GoogleAnalyticsService, private storageService: StorageService) {}
+  #darkMode: WritableSignal<boolean> = signal(true);
+  darkMode: Signal<boolean> = computed(this.#darkMode);
 
-  get isDarkModeEnabled(): boolean {
+  constructor(private googleAnalyticsService: GoogleAnalyticsService, private storageService: StorageService) {
     const darkModeSetting = this.storageService.getItem(StorageKey.DarkMode);
 
-    if (!darkModeSetting) return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    else return darkModeSetting === 'true';
+    if (!darkModeSetting) this.#darkMode.set(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    else this.#darkMode.set(darkModeSetting === 'true');
   }
 
   toggleDarkMode() {
-    this.storageService.setItem(StorageKey.DarkMode, this.isDarkModeEnabled ? 'false' : 'true');
+    this.#darkMode.set(!this.darkMode());
 
-    this.googleAnalyticsService.trackEvent('toggle_dark_mode', 'theming', 'dark_mode', this.isDarkModeEnabled);
+    this.storageService.setItem(StorageKey.DarkMode, JSON.stringify(this.darkMode()));
 
-    document.documentElement.classList.toggle('dark', this.isDarkModeEnabled);
+    this.googleAnalyticsService.trackEvent('toggle_dark_mode', 'theming', 'dark_mode', this.darkMode());
+
+    document.documentElement.classList.toggle('dark', this.darkMode());
   }
 }

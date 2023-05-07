@@ -109,7 +109,7 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
       this.elementRef.nativeElement,
       this.containerOverlayRef?.hostElement,
       this.arrowOverlayRef?.hostElement,
-    ].some(el => el.contains(target));
+    ].some(el => el?.contains(target));
 
     if (!found) this.mousePresent$.next(false);
   }

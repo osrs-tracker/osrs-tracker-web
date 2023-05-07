@@ -6,7 +6,7 @@ import { Item } from '@osrs-tracker/models';
 import { SpinnerComponent } from 'src/app/common/components/spinner.component';
 import { InfoTooltipComponent } from 'src/app/common/components/tooltip/info-tooltip.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
-import { OsrsTrackerRepo } from 'src/app/common/services/repositories/osrs-tracker.repo';
+import { OsrsTrackerRepo } from 'src/app/repositories/osrs-tracker.repo';
 import { ItemWidgetComponent } from './item-widget/item-widget.component';
 import { PriceTrackerService, RecentItem } from './price-tracker.service';
 

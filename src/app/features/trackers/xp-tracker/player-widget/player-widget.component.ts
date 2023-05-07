@@ -7,8 +7,8 @@ import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { CapitalizePipe } from 'src/app/common/pipes/capitalize.pipe';
 import { SkillEnum } from 'src/app/common/services/hiscores/hiscore.enum';
 import { HiscoreService } from 'src/app/common/services/hiscores/hiscore.service';
-import { OsrsProxyRepo } from 'src/app/common/services/repositories/osrs-proxy.repo';
-import { OsrsTrackerRepo } from 'src/app/common/services/repositories/osrs-tracker.repo';
+import { OsrsProxyRepo } from 'src/app/repositories/osrs-proxy.repo';
+import { OsrsTrackerRepo } from 'src/app/repositories/osrs-tracker.repo';
 
 @Component({
   standalone: true,

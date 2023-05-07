@@ -13,7 +13,7 @@ import { ThemeService } from 'src/app/common/services/theme.service';
       aria-label="Dark Mode"
     >
       <svg
-        *ngIf="!themeService.isDarkModeEnabled"
+        *ngIf="!themeService.darkMode()"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         stroke-width="2"
@@ -27,7 +27,7 @@ import { ThemeService } from 'src/app/common/services/theme.service';
       </svg>
 
       <svg
-        *ngIf="themeService.isDarkModeEnabled"
+        *ngIf="themeService.darkMode()"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         stroke-width="2"

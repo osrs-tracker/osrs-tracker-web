@@ -40,7 +40,7 @@
 
     <!-- content -->
     <article card *ngFor="let diff of hiscoreDiffs">
-      <div title>{{ diff.date | shortDate }}</div>
+      <h2 title>{{ diff.date | shortDate }}</h2>
 
       <!-- hiscore diffs -->
       <div
@@ -82,7 +82,7 @@
 
     <!-- content -->
     <article card *ngFor="let diff of hiscoreDiffs; let i = index">
-      <div title>{{ diff.date | shortDate }}</div>
+      <h2 title>{{ diff.date | shortDate }}</h2>
 
       <!-- other diffs -->
       <section *ngFor="let otherKey of filteredOtherKeys(diff)" class="flex flex-col gap-1 mb-4 last:mb-0">

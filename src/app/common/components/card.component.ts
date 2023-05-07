@@ -4,9 +4,13 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   standalone: true,
   selector: 'article[card]',
   template: `
-    <h2 class="font-semibold rounded-t-lg bg-slate-300 dark:bg-slate-700 px-4 py-2">
-      <ng-content select="[title]" />
-    </h2>
+    <div class="flex justify-between rounded-t-lg bg-slate-300 dark:bg-slate-700 px-4 py-2">
+      <div class="font-semibold">
+        <ng-content select="[title]" />
+      </div>
+
+      <ng-content select="[actions]" />
+    </div>
 
     <div class="p-4">
       <ng-content />

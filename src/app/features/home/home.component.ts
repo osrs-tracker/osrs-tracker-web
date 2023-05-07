@@ -2,8 +2,8 @@ import { NgFor, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { OsrsNewsItem } from 'src/app/common/services/repositories/osrs-proxy.repo';
-import { OsrsTrackerRepo } from 'src/app/common/services/repositories/osrs-tracker.repo';
+import { OsrsNewsItem } from 'src/app/repositories/osrs-proxy.repo';
+import { OsrsTrackerRepo } from 'src/app/repositories/osrs-tracker.repo';
 import OsrsNewsCardComponent from './osrs-news-card/osrs-news-card.component';
 
 @Component({

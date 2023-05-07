@@ -5,10 +5,10 @@
 
   <div class="flex flex-col gap-8">
     <article card>
-      <div title>Trend</div>
+      <h2 title>Trend</h2>
 
       <div class="grid grid-cols-2 lg:grid-cols-4 text-2xl font-semibold">
-        <section class="py-4 flex flex-col items-center justify-center">
+        <section class="py-2 flex flex-col items-center justify-center">
           <div class="flex">
             <h2 class="mb-1 text-xl font-normal">Quarter</h2>
             <info-tooltip>
@@ -55,13 +55,15 @@
     </article>
 
     <article card>
-      <div title>Price</div>
+      <h2 title>Price</h2>
 
-      <div>Work in progress...</div>
+      <div>
+        <canvas #priceChart class="h-56 max-w-full"></canvas>
+      </div>
     </article>
 
     <article card>
-      <div title>Volume</div>
+      <h2 title>Volume</h2>
 
       <div>Work in progress...</div>
     </article>

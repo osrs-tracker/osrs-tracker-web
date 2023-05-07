@@ -27,6 +27,10 @@ export interface AveragePrices {
   lowPriceVolume: number;
 }
 
+export interface AveragePricesAtTime extends AveragePrices {
+  timestamp: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -38,14 +42,6 @@ export class OsrsPricesRepo {
   } = { [TimeSpan.FIVE_MINUTES]: {}, [TimeSpan.HOUR]: {}, [TimeSpan.SIX_HOURS]: {}, [TimeSpan.DAY]: {} };
 
   constructor(private httpClient: HttpClient) {}
-
-  getVolume(id: number, options?: { loadingIndicator?: boolean }): Observable<number> {
-    return this.httpClient
-      .get<{ data: { [key: string]: number } }>(`${config.pricesBaseUrl}/api/v1/osrs/volumes`, {
-        context: new HttpContext().set(BASE_URL_PREFIX, false).set(LOADING_INDICATOR, options?.loadingIndicator),
-      })
-      .pipe(map(response => response.data[id]));
-  }
 
   getLatestPrices(id: number, options?: { fetchAll?: boolean; loadingIndicator?: boolean }): Observable<LatestPrices> {
     return this.httpClient
@@ -62,6 +58,23 @@ export class OsrsPricesRepo {
           lowTime: fromUnixTime(lowTime),
         })),
       );
+  }
+
+  getVolume(id: number, options?: { loadingIndicator?: boolean }): Observable<number> {
+    return this.httpClient
+      .get<{ data: { [key: string]: number } }>(`${config.pricesBaseUrl}/api/v1/osrs/volumes`, {
+        context: new HttpContext().set(BASE_URL_PREFIX, false).set(LOADING_INDICATOR, options?.loadingIndicator),
+      })
+      .pipe(map(response => response.data[id]));
+  }
+
+  getPriceTimeSeries(id: number, timeSpan: TimeSpan): Observable<AveragePricesAtTime[]> {
+    return this.httpClient
+      .get<{ data: AveragePricesAtTime[]; itemId: string }>(`${config.pricesBaseUrl}/api/v1/osrs/timeseries`, {
+        params: { id, timestep: timeSpan },
+        context: new HttpContext().set(BASE_URL_PREFIX, false),
+      })
+      .pipe(map(response => response.data));
   }
 
   getPriceAverage(

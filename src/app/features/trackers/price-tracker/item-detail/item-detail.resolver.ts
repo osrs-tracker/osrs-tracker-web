@@ -4,8 +4,8 @@ import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn, Router } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
 import { catchError, forkJoin } from 'rxjs';
-import { LatestPrices, OsrsPricesRepo } from 'src/app/common/services/repositories/osrs-prices.repo';
-import { OsrsTrackerRepo } from 'src/app/common/services/repositories/osrs-tracker.repo';
+import { LatestPrices, OsrsPricesRepo } from 'src/app/repositories/osrs-prices.repo';
+import { OsrsTrackerRepo } from 'src/app/repositories/osrs-tracker.repo';
 
 export const itemDetailResolver: ResolveFn<[Item, LatestPrices, number] | null> = (route: ActivatedRouteSnapshot) => {
   const loc = inject(Location);

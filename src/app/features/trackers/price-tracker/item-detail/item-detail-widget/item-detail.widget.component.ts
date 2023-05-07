@@ -5,7 +5,7 @@ import { InfoTooltipComponent } from 'src/app/common/components/tooltip/info-too
 import { TooltipComponent } from 'src/app/common/components/tooltip/tooltip.component';
 import { TimeAgoPipe } from 'src/app/common/pipes/time-ago.pipe';
 import { GoogleAnalyticsService } from 'src/app/common/services/google-analytics.service';
-import { LatestPrices } from 'src/app/common/services/repositories/osrs-prices.repo';
+import { LatestPrices } from 'src/app/repositories/osrs-prices.repo';
 import { config } from 'src/config/config';
 import { PriceTrackerService } from '../../price-tracker.service';
 
