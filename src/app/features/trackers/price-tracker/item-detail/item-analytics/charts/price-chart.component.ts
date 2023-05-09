@@ -2,6 +2,7 @@ import { formatNumber } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  EffectRef,
   ElementRef,
   HostBinding,
   HostListener,
@@ -13,6 +14,7 @@ import {
   ViewChild,
   computed,
   effect,
+  runInInjectionContext,
 } from '@angular/core';
 import { Chart, LineController, LineElement, LinearScale, PointElement, TimeSeriesScale, Tooltip } from 'chart.js';
 import Annotation from 'chartjs-plugin-annotation';
@@ -49,9 +51,10 @@ export class PriceChartComponent implements OnInit, OnDestroy {
         .slice(-1)[0],
   );
 
-  get chartConfig() {
-    return this.themeService.darkMode() ? config.chart.dark : config.chart.light;
-  }
+  chartConfig = computed(() => (this.themeService.darkMode() ? config.chart.dark : config.chart.light));
+
+  timeSeriesEffect: EffectRef;
+  themeEffect: EffectRef;
 
   constructor(private injector: Injector, private themeService: ThemeService) {}
 
@@ -60,12 +63,17 @@ export class PriceChartComponent implements OnInit, OnDestroy {
 
     this.createPriceChart();
 
-    effect(() => this.updatePriceChart(this.timeSeries()), { injector: this.injector });
-    effect(() => (this.themeService.darkMode(), this.priceChart.update()), { injector: this.injector });
+    runInInjectionContext(this.injector, () => {
+      this.timeSeriesEffect = effect(() => this.updatePriceChart(this.timeSeries()));
+      this.themeEffect = effect(() => (this.themeService.darkMode(), this.priceChart.update('none')));
+    });
   }
 
   ngOnDestroy(): void {
-    this.priceChart?.destroy();
+    this.timeSeriesEffect.destroy();
+    this.themeEffect.destroy();
+
+    this.priceChart.destroy();
 
     Chart.unregister(
       LineController,
@@ -82,8 +90,8 @@ export class PriceChartComponent implements OnInit, OnDestroy {
   // Workaround for chart.js not updating when the size of the canvas shrinks
   @HostListener('window:resize')
   onResize(): void {
-    this.priceChart?.resize(1, 1);
-    window.requestAnimationFrame(() => this.priceChart?.resize());
+    this.priceChart.resize(1, 1);
+    window.requestAnimationFrame(() => this.priceChart.resize());
   }
 
   // Workaround for chart.js not closing tooltips when tapping outside the canvas (iOS)
@@ -122,23 +130,23 @@ export class PriceChartComponent implements OnInit, OnDestroy {
               tooltipFormat: 'MMMM do - HH:mm',
             },
             ticks: {
-              color: () => this.chartConfig.tickColor,
+              color: () => this.chartConfig().tickColor,
               source: 'data',
               maxRotation: 0,
               includeBounds: false,
               stepSize: 3,
             },
-            grid: { color: () => this.chartConfig.gridColor },
+            grid: { color: () => this.chartConfig().gridColor },
           },
           y: {
             type: 'linear',
             ticks: {
-              color: () => this.chartConfig.tickColor,
+              color: () => this.chartConfig().tickColor,
               autoSkipPadding: 20,
               includeBounds: false,
               callback: value => formatNumberLegible(Number(value), 3),
             },
-            grid: { color: () => this.chartConfig.gridColor },
+            grid: { color: () => this.chartConfig().gridColor },
           },
         },
         hover: {
@@ -186,8 +194,8 @@ export class PriceChartComponent implements OnInit, OnDestroy {
           x: fromUnixTime(price.timestamp).getTime(),
           y: price.avgHighPrice,
         })),
-        borderColor: this.chartConfig.buyColor,
-        backgroundColor: this.chartConfig.buyColor,
+        borderColor: this.chartConfig().buyColor,
+        backgroundColor: this.chartConfig().buyColor,
       },
       {
         label: 'Sell price',
@@ -195,8 +203,8 @@ export class PriceChartComponent implements OnInit, OnDestroy {
           x: fromUnixTime(price.timestamp).getTime(),
           y: price.avgLowPrice,
         })),
-        borderColor: this.chartConfig.sellColor,
-        backgroundColor: this.chartConfig.sellColor,
+        borderColor: this.chartConfig().sellColor,
+        backgroundColor: this.chartConfig().sellColor,
       },
     ];
 
@@ -206,7 +214,7 @@ export class PriceChartComponent implements OnInit, OnDestroy {
           type: 'line',
           yMin: this.latestHighPrice()?.avgHighPrice,
           yMax: this.latestHighPrice()?.avgHighPrice,
-          borderColor: this.chartConfig.buyColor,
+          borderColor: this.chartConfig().buyColor,
           borderDash: [5, 5],
           borderDashOffset: 2,
           borderWidth: 1,
@@ -215,7 +223,7 @@ export class PriceChartComponent implements OnInit, OnDestroy {
           type: 'line',
           yMin: this.latestLowPrice()?.avgLowPrice,
           yMax: this.latestLowPrice()?.avgLowPrice,
-          borderColor: this.chartConfig.sellColor,
+          borderColor: this.chartConfig().sellColor,
           borderDash: [5, 5],
           borderDashOffset: 2,
           borderWidth: 1,

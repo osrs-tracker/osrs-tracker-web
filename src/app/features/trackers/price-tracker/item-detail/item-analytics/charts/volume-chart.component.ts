@@ -2,6 +2,7 @@ import { formatNumber } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  EffectRef,
   ElementRef,
   HostBinding,
   HostListener,
@@ -11,7 +12,9 @@ import {
   OnInit,
   Signal,
   ViewChild,
+  computed,
   effect,
+  runInInjectionContext,
 } from '@angular/core';
 import { BarController, BarElement, Chart, LinearScale, TimeSeriesScale, Tooltip } from 'chart.js';
 import Zoom from 'chartjs-plugin-zoom';
@@ -35,9 +38,10 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
 
   @Input({ required: true }) timeSeries: Signal<AveragePricesAtTime[]>;
 
-  get chartConfig() {
-    return this.themeService.darkMode() ? config.chart.dark : config.chart.light;
-  }
+  chartConfig = computed(() => (this.themeService.darkMode() ? config.chart.dark : config.chart.light));
+
+  timeSeriesEffect: EffectRef;
+  themeEffect: EffectRef;
 
   constructor(private injector: Injector, private themeService: ThemeService) {}
 
@@ -46,12 +50,17 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
 
     this.createPriceChart();
 
-    effect(() => this.updatePriceChart(this.timeSeries()), { injector: this.injector });
-    effect(() => (this.themeService.darkMode(), this.volumeChart.update('none')), { injector: this.injector });
+    runInInjectionContext(this.injector, () => {
+      this.timeSeriesEffect = effect(() => this.updatePriceChart(this.timeSeries()));
+      this.themeEffect = effect(() => (this.themeService.darkMode(), this.volumeChart.update('none')));
+    });
   }
 
   ngOnDestroy(): void {
-    this.volumeChart?.destroy();
+    this.timeSeriesEffect.destroy();
+    this.themeEffect.destroy();
+
+    this.volumeChart.destroy();
 
     Chart.unregister(BarController, BarElement, LinearScale, TimeSeriesScale, Tooltip, Zoom);
   }
@@ -59,8 +68,8 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
   // Workaround for chart.js not updating when the size of the canvas shrinks
   @HostListener('window:resize')
   onResize(): void {
-    this.volumeChart?.resize(1, 1);
-    window.requestAnimationFrame(() => this.volumeChart?.resize());
+    this.volumeChart.resize(1, 1);
+    window.requestAnimationFrame(() => this.volumeChart.resize());
   }
 
   // Workaround for chart.js not closing tooltips when tapping outside the canvas (iOS)
@@ -92,20 +101,20 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
               tooltipFormat: 'MMMM do - HH:mm',
             },
             ticks: {
-              color: () => this.chartConfig.tickColor,
+              color: () => this.chartConfig().tickColor,
               source: 'data',
               maxRotation: 0,
               includeBounds: false,
               stepSize: 3,
             },
-            grid: { color: () => this.chartConfig.gridColor, lineWidth: 1 },
+            grid: { color: () => this.chartConfig().gridColor, lineWidth: 1 },
           },
           y: {
             type: 'linear',
             stacked: true,
             beginAtZero: true,
             ticks: {
-              color: () => this.chartConfig.tickColor,
+              color: () => this.chartConfig().tickColor,
               autoSkip: false,
               includeBounds: false,
               callback: (value, index, array) => {
@@ -114,7 +123,7 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
                 return rest === index % 2 ? formatNumberLegible(Math.abs(Number(value)), 3) : '';
               },
             },
-            grid: { color: () => this.chartConfig.gridColor },
+            grid: { color: () => this.chartConfig().gridColor },
           },
         },
         hover: {
@@ -162,8 +171,8 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
           x: fromUnixTime(price.timestamp).getTime(),
           y: price.highPriceVolume,
         })),
-        borderColor: this.chartConfig.buyColor,
-        backgroundColor: this.chartConfig.buyColor,
+        borderColor: this.chartConfig().buyColor,
+        backgroundColor: this.chartConfig().buyColor,
         stack: 'stack',
       },
       {
@@ -172,8 +181,8 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
           x: fromUnixTime(price.timestamp).getTime(),
           y: -price.lowPriceVolume,
         })),
-        borderColor: this.chartConfig.sellColor,
-        backgroundColor: this.chartConfig.sellColor,
+        borderColor: this.chartConfig().sellColor,
+        backgroundColor: this.chartConfig().sellColor,
         stack: 'stack',
       },
     ];
