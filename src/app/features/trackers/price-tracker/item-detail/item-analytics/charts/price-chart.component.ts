@@ -79,10 +79,19 @@ export class PriceChartComponent implements OnInit, OnDestroy {
     );
   }
 
+  // Workaround for chart.js not updating when the size of the canvas shrinks
   @HostListener('window:resize')
   onResize(): void {
     this.priceChart?.resize(1, 1);
     window.requestAnimationFrame(() => this.priceChart?.resize());
+  }
+
+  // Workaround for chart.js not closing tooltips when tapping outside the canvas (iOS)
+  @HostListener('document:touchend', ['$event.target'])
+  hideTooltip(target: HTMLElement): void {
+    if (target !== this.priceChartCanvas.nativeElement) {
+      this.priceChartCanvas.nativeElement.dispatchEvent(new Event('mouseout'));
+    }
   }
 
   private createPriceChart(): void {
@@ -143,6 +152,7 @@ export class PriceChartComponent implements OnInit, OnDestroy {
             mode: 'index',
             intersect: false,
             usePointStyle: true,
+
             callbacks: {
               label: context => ` ${context.dataset.label}: ${formatNumber(context.parsed.y, 'en-US', '1.0-0')} gp`,
             },

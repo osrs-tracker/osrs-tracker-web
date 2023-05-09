@@ -56,10 +56,19 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
     Chart.unregister(BarController, BarElement, LinearScale, TimeSeriesScale, Tooltip, Zoom);
   }
 
+  // Workaround for chart.js not updating when the size of the canvas shrinks
   @HostListener('window:resize')
   onResize(): void {
     this.volumeChart?.resize(1, 1);
     window.requestAnimationFrame(() => this.volumeChart?.resize());
+  }
+
+  // Workaround for chart.js not closing tooltips when tapping outside the canvas (iOS)
+  @HostListener('document:touchend', ['$event.target'])
+  hideTooltip(target: HTMLElement): void {
+    if (target !== this.volumeChartCanvas.nativeElement) {
+      this.volumeChartCanvas.nativeElement.dispatchEvent(new Event('mouseout'));
+    }
   }
 
   private createPriceChart(): void {
