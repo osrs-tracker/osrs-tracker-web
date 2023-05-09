@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { Item } from '@osrs-tracker/models';
-import { LatestPrices } from 'src/app/repositories/osrs-prices.repo';
+import { AveragePricesAtTime, LatestPrices } from 'src/app/repositories/osrs-prices.repo';
 import { PriceTrackerService } from '../price-tracker.service';
 import { ItemAnalyticsComponent } from './item-analytics/item-analytics.component';
 import { ItemDetailWidgetComponent } from './item-detail-widget/item-detail.widget.component';
@@ -25,7 +25,11 @@ export default class ItemDetailComponent implements OnInit {
     return this.item[2];
   }
 
-  @Input('item') item: [Item, LatestPrices, number];
+  get timeSeriesToday(): AveragePricesAtTime[] {
+    return this.item[3];
+  }
+
+  @Input('item') item: [Item, LatestPrices, number, AveragePricesAtTime[]];
 
   constructor(private priceTrackerService: PriceTrackerService) {}
 

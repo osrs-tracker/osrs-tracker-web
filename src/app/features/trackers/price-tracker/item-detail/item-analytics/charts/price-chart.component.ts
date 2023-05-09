@@ -11,9 +11,12 @@ import {
   OnInit,
   Signal,
   ViewChild,
+  computed,
   effect,
 } from '@angular/core';
 import { Chart, LineController, LineElement, LinearScale, PointElement, TimeSeriesScale, Tooltip } from 'chart.js';
+import Annotation from 'chartjs-plugin-annotation';
+import Zoom from 'chartjs-plugin-zoom';
 import { fromUnixTime } from 'date-fns';
 import { formatNumberLegible } from 'src/app/common/helpers/number.helper';
 import { ThemeService } from 'src/app/common/services/theme.service';
@@ -27,12 +30,24 @@ import { config } from 'src/config/config';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PriceChartComponent implements OnInit, OnDestroy {
-  @HostBinding('class') class = 'block h-44 max-w-full';
+  @HostBinding('class') class = 'block h-60 max-w-full';
 
   priceChart: Chart;
   @ViewChild('priceChart', { static: true }) priceChartCanvas: ElementRef<HTMLCanvasElement>;
 
   @Input({ required: true }) timeSeries: Signal<AveragePricesAtTime[]>;
+  latestHighPrice: Signal<AveragePricesAtTime> = computed(
+    () =>
+      this.timeSeries()
+        .filter(v => v.avgHighPrice)
+        .slice(-1)[0],
+  );
+  latestLowPrice: Signal<AveragePricesAtTime> = computed(
+    () =>
+      this.timeSeries()
+        .filter(v => v.avgLowPrice)
+        .slice(-1)[0],
+  );
 
   get chartConfig() {
     return this.themeService.darkMode() ? config.chart.dark : config.chart.light;
@@ -41,7 +56,7 @@ export class PriceChartComponent implements OnInit, OnDestroy {
   constructor(private injector: Injector, private themeService: ThemeService) {}
 
   ngOnInit(): void {
-    Chart.register(LineController, LineElement, PointElement, LinearScale, TimeSeriesScale, Tooltip);
+    Chart.register(LineController, LineElement, PointElement, LinearScale, TimeSeriesScale, Tooltip, Annotation, Zoom);
 
     this.createPriceChart();
 
@@ -52,7 +67,16 @@ export class PriceChartComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.priceChart?.destroy();
 
-    Chart.unregister(LineController, LineElement, PointElement, LinearScale, TimeSeriesScale, Tooltip);
+    Chart.unregister(
+      LineController,
+      LineElement,
+      PointElement,
+      LinearScale,
+      TimeSeriesScale,
+      Tooltip,
+      Annotation,
+      Zoom,
+    );
   }
 
   @HostListener('window:resize')
@@ -123,6 +147,22 @@ export class PriceChartComponent implements OnInit, OnDestroy {
               label: context => ` ${context.dataset.label}: ${formatNumber(context.parsed.y, 'en-US', '1.0-0')} gp`,
             },
           },
+          zoom: {
+            limits: {
+              x: { min: 'original', max: 'original' },
+              y: { min: 'original', max: 'original' },
+            },
+            pan: {
+              enabled: true,
+              threshold: 10,
+              mode: 'x',
+            },
+            zoom: {
+              wheel: { enabled: true },
+              pinch: { enabled: true },
+              mode: 'x',
+            },
+          },
         },
       },
     });
@@ -150,6 +190,30 @@ export class PriceChartComponent implements OnInit, OnDestroy {
       },
     ];
 
+    this.priceChart.options.plugins!.annotation = {
+      annotations: {
+        latestBuy: {
+          type: 'line',
+          yMin: this.latestHighPrice()?.avgHighPrice,
+          yMax: this.latestHighPrice()?.avgHighPrice,
+          borderColor: this.chartConfig.buyColor,
+          borderDash: [5, 5],
+          borderDashOffset: 2,
+          borderWidth: 1,
+        },
+        latestSell: {
+          type: 'line',
+          yMin: this.latestLowPrice()?.avgLowPrice,
+          yMax: this.latestLowPrice()?.avgLowPrice,
+          borderColor: this.chartConfig.sellColor,
+          borderDash: [5, 5],
+          borderDashOffset: 2,
+          borderWidth: 1,
+        },
+      },
+    };
+
     this.priceChart.update();
+    this.priceChart.resetZoom();
   }
 }

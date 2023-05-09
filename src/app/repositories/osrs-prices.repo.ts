@@ -68,11 +68,15 @@ export class OsrsPricesRepo {
       .pipe(map(response => response.data[id]));
   }
 
-  getPriceTimeSeries(id: number, timeSpan: TimeSpan): Observable<AveragePricesAtTime[]> {
+  getPriceTimeSeries(
+    id: number,
+    timeSpan: TimeSpan,
+    options?: { loadingIndicator?: boolean },
+  ): Observable<AveragePricesAtTime[]> {
     return this.httpClient
       .get<{ data: AveragePricesAtTime[]; itemId: string }>(`${config.pricesBaseUrl}/api/v1/osrs/timeseries`, {
         params: { id, timestep: timeSpan },
-        context: new HttpContext().set(BASE_URL_PREFIX, false),
+        context: new HttpContext().set(BASE_URL_PREFIX, false).set(LOADING_INDICATOR, options?.loadingIndicator),
       })
       .pipe(map(response => response.data));
   }

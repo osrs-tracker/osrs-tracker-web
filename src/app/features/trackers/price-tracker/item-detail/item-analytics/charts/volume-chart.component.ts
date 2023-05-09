@@ -14,6 +14,7 @@ import {
   effect,
 } from '@angular/core';
 import { BarController, BarElement, Chart, LinearScale, TimeSeriesScale, Tooltip } from 'chart.js';
+import Zoom from 'chartjs-plugin-zoom';
 import { fromUnixTime } from 'date-fns';
 import { formatNumberLegible } from 'src/app/common/helpers/number.helper';
 import { ThemeService } from 'src/app/common/services/theme.service';
@@ -27,7 +28,7 @@ import { config } from 'src/config/config';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VolumeChartComponent implements OnInit, OnDestroy {
-  @HostBinding('class') class = 'block h-44 max-w-full';
+  @HostBinding('class') class = 'block h-60 max-w-full';
 
   volumeChart: Chart;
   @ViewChild('volumeChart', { static: true }) volumeChartCanvas: ElementRef<HTMLCanvasElement>;
@@ -41,7 +42,7 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
   constructor(private injector: Injector, private themeService: ThemeService) {}
 
   ngOnInit(): void {
-    Chart.register(BarController, BarElement, LinearScale, TimeSeriesScale, Tooltip);
+    Chart.register(BarController, BarElement, LinearScale, TimeSeriesScale, Tooltip, Zoom);
 
     this.createPriceChart();
 
@@ -52,7 +53,7 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.volumeChart?.destroy();
 
-    Chart.unregister(BarController, BarElement, LinearScale, TimeSeriesScale, Tooltip);
+    Chart.unregister(BarController, BarElement, LinearScale, TimeSeriesScale, Tooltip, Zoom);
   }
 
   @HostListener('window:resize')
@@ -68,9 +69,6 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        datasets: {
-          bar: { barThickness: 2 },
-        },
         scales: {
           x: {
             type: 'timeseries',
@@ -91,7 +89,7 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
               includeBounds: false,
               stepSize: 3,
             },
-            grid: { color: () => this.chartConfig.gridColor },
+            grid: { color: () => this.chartConfig.gridColor, lineWidth: 1 },
           },
           y: {
             type: 'linear',
@@ -104,7 +102,7 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
               callback: (value, index, array) => {
                 const indexOfZero = array.findIndex(v => v.value === 0);
                 const rest = indexOfZero % 2;
-                return rest === index % 2 ? formatNumberLegible(Number(value), 3) : '';
+                return rest === index % 2 ? formatNumberLegible(Math.abs(Number(value)), 3) : '';
               },
             },
             grid: { color: () => this.chartConfig.gridColor },
@@ -124,6 +122,22 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
             callbacks: {
               label: context =>
                 ` ${context.dataset.label}: ${formatNumber(Math.abs(context.parsed.y), 'en-US', '1.0-0')}`,
+            },
+          },
+          zoom: {
+            limits: {
+              x: { min: 'original', max: 'original' },
+              y: { min: 'original', max: 'original' },
+            },
+            pan: {
+              enabled: true,
+              threshold: 10,
+              mode: 'x',
+            },
+            zoom: {
+              wheel: { enabled: true },
+              pinch: { enabled: true },
+              mode: 'x',
             },
           },
         },
@@ -156,5 +170,6 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
     ];
 
     this.volumeChart.update();
+    this.volumeChart.resetZoom();
   }
 }

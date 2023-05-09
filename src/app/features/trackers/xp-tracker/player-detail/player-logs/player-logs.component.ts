@@ -1,4 +1,4 @@
-import { DecimalPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { DecimalPipe, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Player } from '@osrs-tracker/models';
 import { CardComponent } from 'src/app/common/components/card.component';
@@ -19,17 +19,7 @@ export enum ViewType {
   selector: 'player-logs',
   templateUrl: './player-logs.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    NgClass,
-    NgIf,
-    NgFor,
-    NgTemplateOutlet,
-    CapitalizePipe,
-    CardComponent,
-    DecimalPipe,
-    IconDirective,
-    ShortDatePipe,
-  ],
+  imports: [NgIf, NgFor, NgTemplateOutlet, CapitalizePipe, CardComponent, DecimalPipe, IconDirective, ShortDatePipe],
 })
 export class PlayerLogsComponent implements OnChanges {
   readonly ViewType: typeof ViewType = ViewType;

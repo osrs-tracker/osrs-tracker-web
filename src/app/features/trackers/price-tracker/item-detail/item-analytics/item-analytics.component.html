@@ -57,13 +57,35 @@
     <article card>
       <h2 title>Price</h2>
 
-      <price-chart [timeSeries]="timeSeries"></price-chart>
+      <div actions class="button-group">
+        <button [class.active]="priceTimeSpan === TimeSpan.DAY" (click)="updatePrice(TimeSpan.DAY)">Year</button>
+        <button [class.active]="priceTimeSpan === TimeSpan.SIX_HOURS" (click)="updatePrice(TimeSpan.SIX_HOURS)">
+          Quarter
+        </button>
+        <button [class.active]="priceTimeSpan === TimeSpan.HOUR" (click)="updatePrice(TimeSpan.HOUR)">Week</button>
+        <button [class.active]="priceTimeSpan === TimeSpan.FIVE_MINUTES" (click)="updatePrice(TimeSpan.FIVE_MINUTES)">
+          Day
+        </button>
+      </div>
+
+      <price-chart [timeSeries]="priceTimeSeries"></price-chart>
     </article>
 
     <article card>
       <h2 title>Volume</h2>
 
-      <volume-chart [timeSeries]="timeSeries"></volume-chart>
+      <div actions class="button-group">
+        <button [class.active]="volumeTimeSpan === TimeSpan.DAY" (click)="updateVolume(TimeSpan.DAY)">Year</button>
+        <button [class.active]="volumeTimeSpan === TimeSpan.SIX_HOURS" (click)="updateVolume(TimeSpan.SIX_HOURS)">
+          Quarter
+        </button>
+        <button [class.active]="volumeTimeSpan === TimeSpan.HOUR" (click)="updateVolume(TimeSpan.HOUR)">Week</button>
+        <button [class.active]="volumeTimeSpan === TimeSpan.FIVE_MINUTES" (click)="updateVolume(TimeSpan.FIVE_MINUTES)">
+          Day
+        </button>
+      </div>
+
+      <volume-chart [timeSeries]="volumeTimeSeries"></volume-chart>
     </article>
   </div>
 </section>

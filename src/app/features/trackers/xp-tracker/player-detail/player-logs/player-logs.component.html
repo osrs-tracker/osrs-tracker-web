@@ -2,21 +2,9 @@
   <header class="flex items-center justify-between">
     <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Logs</h1>
 
-    <div class="text-lg font-semibold flex rounded-lg bg-slate-300 dark:bg-slate-800">
-      <button
-        class="w-20 rounded-lg px-3 py-0.5"
-        [ngClass]="{ 'bg-emerald-400 text-white dark:text-slate-900': viewType === ViewType.Skills }"
-        (click)="setView(ViewType.Skills)"
-      >
-        Skills
-      </button>
-      <button
-        class="w-20 rounded-lg px-3 py-0.5"
-        [ngClass]="{ 'bg-emerald-400 text-white dark:text-slate-900': viewType === ViewType.Other }"
-        (click)="setView(ViewType.Other)"
-      >
-        Other
-      </button>
+    <div class="button-group">
+      <button [class.active]="viewType === ViewType.Skills" (click)="setView(ViewType.Skills)">Skills</button>
+      <button [class.active]="viewType === ViewType.Other" (click)="setView(ViewType.Other)">Other</button>
     </div>
   </header>
 

@@ -5,11 +5,11 @@ import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges } from
   standalone: true,
   selector: 'colored-value',
   template: `
-    <ng-template [ngIf]="value">
+    <ng-template [ngIf]="value != null">
       {{ absValue | number : '1.1-1' }}
       <ng-template [ngIf]="suffix">{{ suffix }}</ng-template>
     </ng-template>
-    <ng-template [ngIf]="!value">&mdash;</ng-template>
+    <ng-template [ngIf]="value == null">&mdash;</ng-template>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgIf, DecimalPipe],

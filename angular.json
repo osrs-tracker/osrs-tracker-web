@@ -32,7 +32,7 @@
               "src/manifest.webmanifest",
               "src/robots.txt"
             ],
-            "styles": ["src/styles.scss"],
+            "styles": ["src/styles/index.scss"],
             "scripts": [],
             "allowedCommonJsDependencies": [],
             "serviceWorker": true,

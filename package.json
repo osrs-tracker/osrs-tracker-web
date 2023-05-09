@@ -59,6 +59,8 @@
     "@angular/service-worker": "^16.0.0",
     "chart.js": "^4.3.0",
     "chartjs-adapter-date-fns": "^3.0.0",
+    "chartjs-plugin-annotation": "^2.2.1",
+    "chartjs-plugin-zoom": "^2.0.1",
     "commitizen": "^4.3.0",
     "cz-conventional-changelog": "^3.3.0",
     "date-fns": "^2.30.0",

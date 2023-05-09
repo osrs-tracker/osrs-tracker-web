@@ -1,35 +1,13 @@
-@import '@angular/cdk/overlay-prebuilt.css';
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer base {
-  body,
-  .scroll-bar {
-    &::-webkit-scrollbar {
-      @apply dark:w-4;
-    }
-    &::-webkit-scrollbar-thumb {
-      @apply rounded-lg border-4 border-solid border-transparent bg-clip-content bg-slate-600;
-    }
-  }
-}
-
 @layer components {
-  .accent {
-    @apply text-emerald-500 dark:text-emerald-400;
-  }
-  .negative {
-    @apply text-red-600 dark:text-red-400;
-    &::before {
-      content: '-';
-    }
-  }
-  .positive {
-    @apply text-green-600 dark:text-green-400;
-    &::before {
-      content: '+';
+  .button-group {
+    @apply text-base font-semibold flex rounded-lg bg-slate-100 dark:bg-slate-800;
+
+    button {
+      @apply min-w-[64px] rounded-lg px-3 py-0.5;
+
+      &.active {
+        @apply bg-emerald-500 dark:bg-emerald-400 text-white dark:text-slate-900;
+      }
     }
   }
 
@@ -69,20 +47,5 @@
 
   .input--default {
     @apply rounded-full w-full px-6 dark:bg-slate-800 focus:ring-emerald-500 focus:border-emerald-500 dark:focus:ring-emerald-400 dark:focus:border-emerald-400;
-  }
-}
-
-@layer utilities {
-  .sa-t {
-    padding-top: env(safe-area-inset-top);
-  }
-  .sa-l {
-    padding-left: env(safe-area-inset-left);
-  }
-  .sa-r {
-    padding-right: env(safe-area-inset-right);
-  }
-  .sa-b {
-    padding-bottom: env(safe-area-inset-bottom);
   }
 }
