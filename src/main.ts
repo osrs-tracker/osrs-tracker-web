@@ -1,5 +1,5 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { APP_INITIALIZER, isDevMode, provideZoneChangeDetection } from '@angular/core';
+import { APP_INITIALIZER, ErrorHandler, isDevMode, provideZoneChangeDetection } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { SwUpdate, provideServiceWorker } from '@angular/service-worker';
@@ -10,6 +10,7 @@ import { GoogleAnalyticsService } from './app/common/services/google-analytics.s
 import { baseUrlInterceptor } from './app/core/interceptors/base-url.interceptors';
 import { loadingIndicatorInterceptor } from './app/core/interceptors/loading-indicator.interceptor';
 import { shareRequestInterceptor } from './app/core/interceptors/share-request.interceptors';
+import { CustomErrorHandler } from './app/core/error-handling/error-handler';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -21,7 +22,7 @@ bootstrapApplication(AppComponent, {
     }),
     provideZoneChangeDetection({ eventCoalescing: true, runCoalescing: true }),
 
-    // { provide: ErrorHandler, useClass: CustomErrorHandler },
+    { provide: ErrorHandler, useClass: CustomErrorHandler },
 
     {
       provide: APP_INITIALIZER,
