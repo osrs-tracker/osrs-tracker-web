@@ -52,6 +52,8 @@ export const iconMap: { [key: string]: string } = {
 
   [BountyHunterEnum.BountyHunter]: '/minigames/game_icon_bountyhunterhunter.png',
   [BountyHunterEnum.BountyHunterRogues]: '/minigames/game_icon_bountyhunterrogue.png',
+  [BountyHunterEnum.BountyHunterLegacy]: '/minigames/game_icon_bountyhunterhunter.png',
+  [BountyHunterEnum.BountyHunterLegacyRogues]: '/minigames/game_icon_bountyhunterrogue.png',
 
   [MiniGameEnum.SoulWarsZeal]: '/minigames/game_icon_soulwarszeal.png',
   [MiniGameEnum.RiftsClosed]: '/minigames/game_icon_riftsclosed.png',

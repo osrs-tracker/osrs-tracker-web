@@ -2,7 +2,6 @@ import { formatNumber } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  EffectRef,
   ElementRef,
   HostBinding,
   HostListener,
@@ -53,9 +52,6 @@ export class PriceChartComponent implements OnInit, OnDestroy {
 
   chartConfig = computed(() => (this.themeService.darkMode() ? config.chart.dark : config.chart.light));
 
-  timeSeriesEffect: EffectRef;
-  themeEffect: EffectRef;
-
   constructor(private injector: Injector, private themeService: ThemeService) {}
 
   ngOnInit(): void {
@@ -64,15 +60,12 @@ export class PriceChartComponent implements OnInit, OnDestroy {
     this.createPriceChart();
 
     runInInjectionContext(this.injector, () => {
-      this.timeSeriesEffect = effect(() => this.updatePriceChart(this.timeSeries()));
-      this.themeEffect = effect(() => (this.themeService.darkMode(), this.priceChart.update('none')));
+      effect(() => this.updatePriceChart(this.timeSeries()));
+      effect(() => (console.log('test'), this.themeService.darkMode(), this.priceChart.update('none')));
     });
   }
 
   ngOnDestroy(): void {
-    this.timeSeriesEffect.destroy();
-    this.themeEffect.destroy();
-
     this.priceChart.destroy();
 
     Chart.unregister(

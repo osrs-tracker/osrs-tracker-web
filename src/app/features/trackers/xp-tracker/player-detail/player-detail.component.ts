@@ -38,10 +38,10 @@ export default class PlayerDetailComponent implements OnInit {
     this.xpTrackerService.pushRecentPlayer(this.playerDetail.username);
   }
 
-  getPlayerHiscores(scrapingOffset?: number, skip?: number): void {
+  getPlayerHiscores(scrapingOffset?: number, size?: number, skip?: number): void {
     forkJoin([
       this.osrsProxyRepo.getPlayerHiscore(this.playerDetail!.username), // current hiscore
-      this.osrsTrackerRepo.getPlayerHiscores(this.playerDetail!.username, scrapingOffset, skip), // scraped Hiscores
+      this.osrsTrackerRepo.getPlayerHiscores(this.playerDetail!.username, scrapingOffset, size, skip), // scraped Hiscores
     ])
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(([currentHiscore, scrapedHiscores]) => {

@@ -34,6 +34,8 @@ export enum CompetitiveEnum {
 export enum BountyHunterEnum {
   BountyHunter = 'Bounty Hunter - Hunter',
   BountyHunterRogues = 'Bounty Hunter - Rogues',
+  BountyHunterLegacy = 'Bounty Hunter (Legacy) - Hunter',
+  BountyHunterLegacyRogues = 'Bounty Hunter (Legacy) - Rogues',
 }
 
 export enum ClueScrollsEnum {

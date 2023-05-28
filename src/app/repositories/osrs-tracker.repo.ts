@@ -44,10 +44,10 @@ export class OsrsTrackerRepo {
       );
   }
 
-  getPlayerHiscores(username: string, scrapingOffset = 0, skip = 0): Observable<HiscoreEntry[]> {
+  getPlayerHiscores(username: string, scrapingOffset = 0, size = 14, skip = 0): Observable<HiscoreEntry[]> {
     return this.httpClient // Returns `null` when no hiscores have been scraped yet.
       .get<HiscoreEntry[] | null>(`/player/${username}/hiscores`, {
-        params: { scrapingOffset, skip },
+        params: { scrapingOffset, size, skip },
       })
       .pipe(map(hiscoreEntries => (hiscoreEntries ?? []).map(entry => ({ ...entry, date: new Date(entry.date) }))));
   }
