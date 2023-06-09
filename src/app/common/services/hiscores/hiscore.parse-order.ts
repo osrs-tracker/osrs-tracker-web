@@ -225,7 +225,7 @@ export const PO_2023_04_13: ParseOrder = [
 ];
 
 /** Parse Order as of 2023-05-24 (legacy bounty hunter) */
-export const PO_2023_05_24: ParseOrder = [
+export const PO_2023_05_25: ParseOrder = [
   SkillEnum.Overall,
   SkillEnum.Attack,
   SkillEnum.Defence,
@@ -336,7 +336,7 @@ export const PO_2023_05_24: ParseOrder = [
 
 /** Newest to olders for easy use */
 export const ParseOrderMap: { [date: string]: ParseOrder } = {
-  '2023-05-24': PO_2023_05_24,
+  '2023-05-25': PO_2023_05_25,
   '2023-04-13': PO_2023_04_13,
   '2023-03-15': PO_DEFAULT,
 };

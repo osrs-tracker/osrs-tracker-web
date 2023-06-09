@@ -1,0 +1,11 @@
+@tailwind base;
+
+@layer base {
+  body,
+  .scroll-bar::-webkit-scrollbar {
+    @apply dark:w-4;
+  }
+  .scroll-bar::-webkit-scrollbar-thumb {
+    @apply rounded-lg border-4 border-solid border-transparent bg-clip-content bg-slate-600;
+  }
+}
