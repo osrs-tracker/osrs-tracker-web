@@ -61,7 +61,7 @@ export class PriceChartComponent implements OnInit, OnDestroy {
 
     runInInjectionContext(this.injector, () => {
       effect(() => this.updatePriceChart(this.timeSeries()));
-      effect(() => (console.log('test'), this.themeService.darkMode(), this.priceChart.update('none')));
+      effect(() => (this.themeService.darkMode(), this.priceChart.update('none')));
     });
   }
 

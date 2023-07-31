@@ -82,6 +82,7 @@ export enum BossEnum {
   DagannothRex = 'Dagannoth Rex',
   DagannothSupreme = 'Dagannoth Supreme',
   DerangedArchaeologist = 'Deranged Archaeologist',
+  DukeSucellus = 'Duke Sucellus', // New boss 31/07/2023
   GeneralGraardor = 'General Graardor',
   GiantMole = 'Giant Mole',
   GrotesqueGuardians = 'Grotesque Guardians',
@@ -102,9 +103,12 @@ export enum BossEnum {
   Skotizo = 'Skotizo',
   Spindel = 'Spindel', // New boss 13/04/2023
   Tempoross = 'Tempoross',
+  TheLeviathan = 'The Leviathan', // New boss 31/07/2023
+  TheWhisperer = 'The Whisperer', // New boss 31/07/2023
   ThermoNuclearSmokeDevil = 'Thermonuclear Smoke Devil',
   TzKalZuk = 'TzKal-Zuk',
   TzTokJad = 'TzTok-Jad',
+  Vardorvis = 'Vardorvis', // New boss 31/07/2023
   Venenatis = 'Venenatis',
   Vetion = "Vet'ion",
   Vorkath = 'Vorkath',

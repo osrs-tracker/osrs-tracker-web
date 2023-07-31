@@ -73,7 +73,7 @@ export class HiscoreService {
         return (hiscore.miniGames[miniGame.name as MiniGameEnum] = miniGame);
 
       // When a new minigame is added to the hiscore page
-      return this.googleAnalyticsService.trackException('Unknown minigame detected.', true);
+      return this.googleAnalyticsService.trackException('Unknown minigame detected:' + miniGame.name, true);
     });
 
     return hiscore;
@@ -127,7 +127,8 @@ export class HiscoreService {
             ),
           ];
         default:
-          throw new Error('Unknown hiscore key: ' + hiscoreKey);
+          this.googleAnalyticsService.trackException('Unknown hiscore key: ' + hiscoreKey, true);
+          return [];
       }
     });
 
