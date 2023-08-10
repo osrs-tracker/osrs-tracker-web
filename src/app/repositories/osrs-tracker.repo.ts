@@ -10,7 +10,10 @@ import { LOADING_INDICATOR } from 'src/app/core/interceptors/loading-indicator.i
   providedIn: 'root',
 })
 export class OsrsTrackerRepo {
-  constructor(private httpClient: HttpClient, private storageService: StorageService) {}
+  constructor(
+    private httpClient: HttpClient,
+    private storageService: StorageService,
+  ) {}
 
   //
   // News

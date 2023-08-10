@@ -26,7 +26,7 @@ export class HiscoreService {
         ({
           ...hiscoreEntry,
           ...this.parseHiscoreString(hiscoreEntry.sourceString, hiscoreEntry.date),
-        } as Hiscore),
+        }) as Hiscore,
     );
   }
 

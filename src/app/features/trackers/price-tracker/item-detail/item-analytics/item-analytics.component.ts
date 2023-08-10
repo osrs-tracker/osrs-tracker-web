@@ -52,7 +52,10 @@ export class ItemAnalyticsComponent implements OnInit {
 
   trend: Signal<Trend | undefined>;
 
-  constructor(private injector: Injector, private osrsPricesRepo: OsrsPricesRepo) {}
+  constructor(
+    private injector: Injector,
+    private osrsPricesRepo: OsrsPricesRepo,
+  ) {}
 
   ngOnInit(): void {
     this.timeSeriesMap$ = {

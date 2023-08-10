@@ -52,7 +52,10 @@ export class PriceChartComponent implements OnInit, OnDestroy {
 
   chartConfig = computed(() => (this.themeService.darkMode() ? config.chart.dark : config.chart.light));
 
-  constructor(private injector: Injector, private themeService: ThemeService) {}
+  constructor(
+    private injector: Injector,
+    private themeService: ThemeService,
+  ) {}
 
   ngOnInit(): void {
     Chart.register(LineController, LineElement, PointElement, LinearScale, TimeSeriesScale, Tooltip, Annotation, Zoom);

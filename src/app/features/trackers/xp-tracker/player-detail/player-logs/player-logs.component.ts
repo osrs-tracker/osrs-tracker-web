@@ -38,7 +38,10 @@ export class PlayerLogsComponent implements OnChanges {
     return !!this.playerDetail.scrapingOffsets?.length;
   }
 
-  constructor(private hiscoreService: HiscoreService, private xpTrackerService: XpTrackerService) {}
+  constructor(
+    private hiscoreService: HiscoreService,
+    private xpTrackerService: XpTrackerService,
+  ) {}
 
   ngOnChanges({ history }: SimpleChanges): void {
     if (history?.currentValue) this.calculateHiscoreDiffs();

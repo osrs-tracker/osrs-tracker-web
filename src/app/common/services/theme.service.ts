@@ -10,7 +10,10 @@ export class ThemeService {
   #darkMode: WritableSignal<boolean> = signal(true);
   darkMode: Signal<boolean> = computed(this.#darkMode);
 
-  constructor(private googleAnalyticsService: GoogleAnalyticsService, private storageService: StorageService) {
+  constructor(
+    private googleAnalyticsService: GoogleAnalyticsService,
+    private storageService: StorageService,
+  ) {
     const darkModeSetting = this.storageService.getItem(StorageKey.DarkMode);
 
     if (!darkModeSetting) this.#darkMode.set(window.matchMedia('(prefers-color-scheme: dark)').matches);

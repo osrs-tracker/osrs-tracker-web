@@ -40,7 +40,10 @@ export default class PriceTrackerComponent {
     return this.priceTrackerService.getRecentItems();
   }
 
-  constructor(private osrsTrackerRepo: OsrsTrackerRepo, private priceTrackerService: PriceTrackerService) {}
+  constructor(
+    private osrsTrackerRepo: OsrsTrackerRepo,
+    private priceTrackerService: PriceTrackerService,
+  ) {}
 
   searchItems(): void {
     if (!this.query) return;

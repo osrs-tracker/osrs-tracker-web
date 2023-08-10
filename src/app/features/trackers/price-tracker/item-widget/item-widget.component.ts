@@ -46,7 +46,10 @@ export class ItemWidgetComponent implements OnInit {
 
   @Input() recentItem: RecentItem;
 
-  constructor(private injector: Injector, private osrsPricesRepo: OsrsPricesRepo) {}
+  constructor(
+    private injector: Injector,
+    private osrsPricesRepo: OsrsPricesRepo,
+  ) {}
 
   ngOnInit(): void {
     this.trend = toSignal<number | undefined>(

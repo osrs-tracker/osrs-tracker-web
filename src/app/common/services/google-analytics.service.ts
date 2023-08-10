@@ -6,7 +6,10 @@ import { filter } from 'rxjs';
   providedIn: 'root',
 })
 export class GoogleAnalyticsService {
-  constructor(private router: Router, private titleStrategy: DefaultTitleStrategy) {}
+  constructor(
+    private router: Router,
+    private titleStrategy: DefaultTitleStrategy,
+  ) {}
 
   setupPageAnalytics() {
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {

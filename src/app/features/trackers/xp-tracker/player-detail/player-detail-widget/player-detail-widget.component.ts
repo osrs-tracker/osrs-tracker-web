@@ -25,7 +25,10 @@ export class PlayerDetailWidgetComponent {
     return this.xpTrackerService.isFavoritePlayer(this.playerDetail.username);
   }
 
-  constructor(private googlAnalyticsService: GoogleAnalyticsService, private xpTrackerService: XpTrackerService) {}
+  constructor(
+    private googlAnalyticsService: GoogleAnalyticsService,
+    private xpTrackerService: XpTrackerService,
+  ) {}
 
   toggleFavorite(): void {
     this.xpTrackerService.toggleFavoritePlayer(this.playerDetail.username);

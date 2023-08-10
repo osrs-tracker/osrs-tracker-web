@@ -64,7 +64,11 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('tooltipTemplateArrow') tooltipTemplateArrow: TemplateRef<unknown>;
   @ViewChild('tooltipTemplateContainer') tooltipTemplateContainer: TemplateRef<unknown>;
 
-  constructor(private elementRef: ElementRef, private overlay: Overlay, private viewContainerRef: ViewContainerRef) {
+  constructor(
+    private elementRef: ElementRef,
+    private overlay: Overlay,
+    private viewContainerRef: ViewContainerRef,
+  ) {
     this.mousePresent$.pipe(debounceTime(300), takeUntilDestroyed()).subscribe(isPresent => {
       if (this.isOpen === isPresent) return;
       this.isOpen = isPresent;
