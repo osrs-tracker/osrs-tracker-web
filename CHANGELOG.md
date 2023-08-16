@@ -1,6 +1,6 @@
 ## 2023/08/16
 
-## Added repo + twitter link
+### Added repo + twitter link
 
 Added a link to the GitHub repo and twitter account in the upper right of the header.
 
