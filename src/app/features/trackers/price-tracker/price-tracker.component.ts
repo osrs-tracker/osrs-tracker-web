@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, WritableSignal, signal } from '@ang
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
+import { PageHeaderComponent } from 'src/app/common/components/page-header.component';
 import { SpinnerComponent } from 'src/app/common/components/spinner.component';
 import { InfoTooltipComponent } from 'src/app/common/components/tooltip/info-tooltip.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
@@ -22,6 +23,7 @@ import { PriceTrackerService, RecentItem } from './price-tracker.service';
     FormsModule,
     IconDirective,
     InfoTooltipComponent,
+    PageHeaderComponent,
     SpinnerComponent,
     ItemWidgetComponent,
   ],

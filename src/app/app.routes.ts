@@ -28,6 +28,12 @@ export default [
         loadChildren: () => import('./features/about/about.routes'),
       },
       {
+        path: 'changelog',
+        pathMatch: 'prefix',
+        resolve: { metaDescription: () => inject(MetaService).setDefaultMeta() },
+        loadComponent: () => import('./features/changelog/changelog.component'),
+      },
+      {
         path: '**',
         title: '404 Not Found - OSRS Tracker',
         resolve: { metaDescription: () => inject(MetaService).setDefaultMeta() },

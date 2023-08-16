@@ -1,25 +1,23 @@
-<header class="container mx-auto pt-20 pb-16 md:pt-24 md:pb-20 text-center">
-  <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 dark:text-white">XP Tracker</h1>
-  <div class="mt-12 flex justify-center">
-    <form class="relative max-w-md w-full mx-4">
-      <input
-        type="text"
-        class="w-full input--default"
-        placeholder="Enter username"
-        name="username"
-        [(ngModel)]="username"
-        autocomplete="hidden"
-      />
-      <button
-        type="submit"
-        class="absolute right-0 button--primary button--rounded"
-        [routerLink]="username ? ['/trackers/xp', username] : '.'"
-      >
-        Search
-      </button>
-    </form>
-  </div>
-</header>
+<page-header title="XP Tracker">
+  <form class="relative max-w-md w-full mx-4">
+    <input
+      type="text"
+      class="w-full input--default"
+      placeholder="Enter username"
+      name="username"
+      [(ngModel)]="username"
+      autocomplete="hidden"
+    />
+
+    <button
+      type="submit"
+      class="absolute right-0 button--primary button--rounded"
+      [routerLink]="username ? ['/trackers/xp', username] : '.'"
+    >
+      Search
+    </button>
+  </form>
+</page-header>
 
 <div class="container mx-auto mb-8 px-4">
   <div class="mx-auto max-w-xl lg:max-w-5xl grid lg:grid-cols-2 gap-8">

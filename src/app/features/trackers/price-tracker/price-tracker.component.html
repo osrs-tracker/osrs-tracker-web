@@ -1,61 +1,57 @@
-<header class="container mx-auto pt-20 pb-16 md:pt-24 md:pb-20 text-center">
-  <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 dark:text-white">Price Tracker</h1>
-  <div class="mt-12 flex justify-center">
-    <form class="relative max-w-md w-full mx-4">
-      <input
-        type="text"
-        class="z-20 relative w-full input--default"
-        placeholder="Enter search term"
-        name="query"
-        [(ngModel)]="query"
-        autocomplete="hidden"
-      />
-      <button type="submit" class="z-20 absolute right-0 button--primary button--rounded" (click)="searchItems()">
-        <span [class.invisible]="loading()">Search</span>
+<page-header title="Price Tracker">
+  <form class="relative max-w-md w-full mx-4">
+    <input
+      type="text"
+      class="z-20 relative w-full input--default"
+      placeholder="Enter search term"
+      name="query"
+      [(ngModel)]="query"
+      autocomplete="hidden"
+    />
 
-        <spinner
-          class="absolute block top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-          *ngIf="loading()"
-        ></spinner>
-      </button>
+    <button type="submit" class="z-20 absolute right-0 button--primary button--rounded" (click)="searchItems()">
+      <span [class.invisible]="loading()">Search</span>
 
-      <div
-        *ngIf="results()?.length"
-        class="z-10 absolute rounded-3xl bg-white dark:bg-slate-800 border border-slate-400 dark:border-slate-700 shadow-2xl top-0 w-full overflow-hidden"
-      >
-        <div class="mt-10 pt-px max-h-60 overflow-y-auto scroll-bar">
-          <ul>
-            <li *ngFor="let item of results()">
-              <a
-                class="group flex items-center px-4 py-2 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white rounded-r-full"
-                [routerLink]="['/trackers/price', item.id]"
-              >
-                <div class="w-8 h-8 mr-3 flex justify-center items-center">
-                  <img icon [name]="item.icon" [wiki]="true" />
-                </div>
-                <div class="flex-grow text-left text-lg">
-                  {{ item.name }}
-                </div>
-                <div class="hidden group-hover:block">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    class="w-6 h-6"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                  </svg>
-                </div>
-              </a>
-            </li>
-          </ul>
-        </div>
+      <spinner
+        class="absolute block top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+        *ngIf="loading()"
+      ></spinner>
+    </button>
+
+    <div
+      *ngIf="results()?.length"
+      class="z-10 absolute rounded-3xl bg-white dark:bg-slate-800 border border-slate-400 dark:border-slate-700 shadow-2xl top-0 w-full overflow-hidden"
+    >
+      <div class="mt-10 pt-px max-h-60 overflow-y-auto scroll-bar">
+        <ul>
+          <li *ngFor="let item of results()">
+            <a
+              class="group flex items-center px-4 py-2 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white rounded-r-full"
+              [routerLink]="['/trackers/price', item.id]"
+            >
+              <div class="w-8 h-8 mr-3 flex justify-center items-center">
+                <img icon [name]="item.icon" [wiki]="true" />
+              </div>
+              <div class="flex-grow text-left text-lg">{{ item.name }}</div>
+              <div class="hidden group-hover:block">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  class="w-6 h-6"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                </svg>
+              </div>
+            </a>
+          </li>
+        </ul>
       </div>
-    </form>
-  </div>
-</header>
+    </div>
+  </form>
+</page-header>
 
 <div class="container mx-auto mb-8 px-4">
   <div class="mx-auto max-w-xl lg:max-w-5xl grid lg:grid-cols-2 gap-8">
