@@ -1,8 +1,7 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HiscoreEntry, Item, OsrsNewsItem, Player } from '@osrs-tracker/models';
-import { Observable, map, startWith, tap } from 'rxjs';
-import { StorageKey } from 'src/app/common/services/storage/storage';
+import { Observable, map } from 'rxjs';
 import { StorageService } from 'src/app/common/services/storage/storage.service';
 import { LOADING_INDICATOR } from 'src/app/core/interceptors/loading-indicator.interceptor';
 
@@ -20,10 +19,7 @@ export class OsrsTrackerRepo {
   //
 
   getLatestOsrsNewsItems(): Observable<OsrsNewsItem[]> {
-    return this.httpClient.get<OsrsNewsItem[]>('/news/latest').pipe(
-      tap(osrsNewsItems => this.storageService.setItem(StorageKey.OsrsNews, JSON.stringify(osrsNewsItems))),
-      startWith(JSON.parse(this.storageService.getItem(StorageKey.OsrsNews) || '[]')),
-    );
+    return this.httpClient.get<OsrsNewsItem[]>('/news/latest');
   }
 
   //

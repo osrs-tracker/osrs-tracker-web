@@ -4,6 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { OsrsNewsItem } from 'src/app/repositories/osrs-proxy.repo';
 import { OsrsTrackerRepo } from 'src/app/repositories/osrs-tracker.repo';
+import { OsrsNewsCardSkeletonComponent } from './osrs-news-card/osrs-news-card-skeleton.component';
 import OsrsNewsCardComponent from './osrs-news-card/osrs-news-card.component';
 
 @Component({
@@ -11,7 +12,7 @@ import OsrsNewsCardComponent from './osrs-news-card/osrs-news-card.component';
   selector: 'home',
   templateUrl: './home.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgIf, NgFor, OsrsNewsCardComponent],
+  imports: [NgIf, NgFor, OsrsNewsCardComponent, OsrsNewsCardSkeletonComponent],
 })
 export default class HomeComponent {
   osrsNewsItems: Signal<OsrsNewsItem[] | undefined>;

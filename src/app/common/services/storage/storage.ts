@@ -1,6 +1,5 @@
 export const enum StorageKey {
   DarkMode = 'dark-mode',
-  OsrsNews = 'osrs-news',
 
   XpTrackerRecentPlayers = 'xp-tracker-recent-players',
   XpTrackerFavoritePlayers = 'xp-tracker-favorite-players',
