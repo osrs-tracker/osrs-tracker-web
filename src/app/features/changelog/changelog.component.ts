@@ -11,7 +11,7 @@ import { BASE_URL_PREFIX } from 'src/app/core/interceptors/base-url.interceptors
   selector: 'changelog',
   template: `
     <information-page title="Changelog">
-      <div [innerHTML]="markdown()"></div>
+      <div class="prose dark:prose-invert" [innerHTML]="markdown()"></div>
     </information-page>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
