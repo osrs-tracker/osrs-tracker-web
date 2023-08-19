@@ -1,4 +1,3 @@
-import { PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import {
   BossEnum,
   BountyHunterEnum,
@@ -7,7 +6,8 @@ import {
   MiniGameEnum,
   RaidEnum,
   SkillEnum,
-} from 'src/app/common/services/hiscores/hiscore.enum';
+} from '@osrs-tracker/hiscores';
+import { PlayerStatus, PlayerType } from '@osrs-tracker/models';
 
 export const iconMap: { [key: string]: string } = {
   ['coins']: '/coins.png',

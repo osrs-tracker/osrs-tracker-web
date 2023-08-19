@@ -1,12 +1,11 @@
 import { DecimalPipe, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnInit, WritableSignal, signal } from '@angular/core';
+import { SkillEnum, getOverallXpDiff } from '@osrs-tracker/hiscores';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { forkJoin } from 'rxjs';
 import { SpinnerComponent } from 'src/app/common/components/spinner.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { CapitalizePipe } from 'src/app/common/pipes/capitalize.pipe';
-import { SkillEnum } from 'src/app/common/services/hiscores/hiscore.enum';
-import { HiscoreService } from 'src/app/common/services/hiscores/hiscore.service';
 import { OsrsProxyRepo } from 'src/app/repositories/osrs-proxy.repo';
 import { OsrsTrackerRepo } from 'src/app/repositories/osrs-tracker.repo';
 
@@ -60,7 +59,6 @@ export class PlayerWidgetComponent implements OnInit {
   @Input() username: string;
 
   constructor(
-    private hiscoreService: HiscoreService,
     private osrsProxyRepo: OsrsProxyRepo,
     private osrsTrackerRepo: OsrsTrackerRepo,
   ) {}
@@ -73,7 +71,7 @@ export class PlayerWidgetComponent implements OnInit {
       this.playerDetails.set(player);
 
       if (player.hiscoreEntries?.length) {
-        this.overallDiff.set(this.hiscoreService.getOverallXpDiff(hiscore, player.hiscoreEntries[0]));
+        this.overallDiff.set(getOverallXpDiff(hiscore, player.hiscoreEntries[0]));
       }
 
       this.loading.set(false);

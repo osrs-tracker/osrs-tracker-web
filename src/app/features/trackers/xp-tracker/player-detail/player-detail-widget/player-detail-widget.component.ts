@@ -1,10 +1,10 @@
 import { DatePipe, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { Hiscore } from '@osrs-tracker/hiscores';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { CapitalizePipe } from 'src/app/common/pipes/capitalize.pipe';
 import { GoogleAnalyticsService } from 'src/app/common/services/google-analytics.service';
-import { Hiscore } from 'src/app/common/services/hiscores/hiscore.model';
 import { XpTrackerService } from '../../xp-tracker.service';
 
 @Component({

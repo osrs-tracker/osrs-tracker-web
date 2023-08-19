@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { PlayerType } from '@osrs-tracker/models';
 import {
   BossEnum,
   BountyHunterEnum,
@@ -10,7 +9,8 @@ import {
   MiniGameEnum,
   RaidEnum,
   SkillEnum,
-} from 'src/app/common/services/hiscores/hiscore.enum';
+} from '@osrs-tracker/hiscores';
+import { PlayerType } from '@osrs-tracker/models';
 import { IconDirective } from './icon.directive';
 
 @Component({

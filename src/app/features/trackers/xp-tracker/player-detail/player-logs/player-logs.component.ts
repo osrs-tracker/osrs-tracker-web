@@ -1,12 +1,11 @@
 import { DecimalPipe, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Hiscore, MiniGame, Skill, hiscoreDiff } from '@osrs-tracker/hiscores';
 import { Player } from '@osrs-tracker/models';
 import { CardComponent } from 'src/app/common/components/card.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { CapitalizePipe } from 'src/app/common/pipes/capitalize.pipe';
 import { ShortDatePipe } from 'src/app/common/pipes/date-fns.pipe';
-import { Hiscore, MiniGame, Skill } from 'src/app/common/services/hiscores/hiscore.model';
-import { HiscoreService } from 'src/app/common/services/hiscores/hiscore.service';
 import { XpTrackerService } from '../../xp-tracker.service';
 
 export enum ViewType {
@@ -38,10 +37,7 @@ export class PlayerLogsComponent implements OnChanges {
     return !!this.playerDetail.scrapingOffsets?.length;
   }
 
-  constructor(
-    private hiscoreService: HiscoreService,
-    private xpTrackerService: XpTrackerService,
-  ) {}
+  constructor(private xpTrackerService: XpTrackerService) {}
 
   ngOnChanges({ history }: SimpleChanges): void {
     if (history?.currentValue) this.calculateHiscoreDiffs();
@@ -76,7 +72,7 @@ export class PlayerLogsComponent implements OnChanges {
     let previousHiscore = this.today;
 
     this.hiscoreDiffs = this.history!.map(hiscore => {
-      const diff = this.hiscoreService.hiscoreDiff(previousHiscore!, hiscore);
+      const diff = hiscoreDiff(previousHiscore!, hiscore);
       previousHiscore = hiscore;
       return diff;
     });
