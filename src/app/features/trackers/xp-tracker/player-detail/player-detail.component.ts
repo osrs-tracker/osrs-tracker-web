@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, Input, OnInit, WritableSignal, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Hiscore, parseHiscores } from '@osrs-tracker/hiscores';
 import { Player } from '@osrs-tracker/models';
 import { forkJoin } from 'rxjs';
 import { OsrsProxyRepo } from 'src/app/repositories/osrs-proxy.repo';
@@ -7,7 +8,6 @@ import { OsrsTrackerRepo } from 'src/app/repositories/osrs-tracker.repo';
 import { XpTrackerService } from '../xp-tracker.service';
 import { PlayerDetailWidgetComponent } from './player-detail-widget/player-detail-widget.component';
 import { PlayerLogsComponent } from './player-logs/player-logs.component';
-import { Hiscore, parseHiscores } from '@osrs-tracker/hiscores';
 
 @Component({
   standalone: true,
