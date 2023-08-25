@@ -33,7 +33,7 @@ const wrapXml = content => {
     lineSeparator: '\n',
   });
 
-  if (xml === await readFile('src/sitemap-items.xml', 'utf8')) {
+  if (xml === (await readFile('src/sitemap-items.xml', 'utf8'))) {
     console.log('File content is identical, skipping write.');
     return;
   }
