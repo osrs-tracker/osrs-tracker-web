@@ -1,3 +1,7 @@
+## 2023/08/25
+
+- Sitemap index now uses the time the file was last modified as `lastmod`.
+
 ## 2023/08/24
 
 - Updated changelogs for previous days because I forgot to do so.
