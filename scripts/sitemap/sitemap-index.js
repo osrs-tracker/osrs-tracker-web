@@ -1,4 +1,4 @@
-const { writeFile } = require('fs').promises;
+const { writeFile, stat } = require('fs').promises;
 
 (async () => {
   const sitemapIndex = `
@@ -6,11 +6,11 @@ const { writeFile } = require('fs').promises;
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
    <sitemap>
       <loc>https://osrs-tracker.freekmencke.com/sitemap-site.xml</loc>
-      <lastmod>${new Date().toISOString()}</lastmod>
+      <lastmod>${(await stat('src/sitemap-site.xml')).mtime.toISOString()}</lastmod>
    </sitemap>
    <sitemap>
       <loc>https://osrs-tracker.freekmencke.com/sitemap-items.xml</loc>
-      <lastmod>${new Date().toISOString()}</lastmod>
+      <lastmod>${(await stat('src/sitemap-items.xml')).mtime.toISOString()}</lastmod>
    </sitemap>
 </sitemapindex>`;
 

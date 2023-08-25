@@ -1,5 +1,5 @@
 const xmlFormatter = require('xml-formatter');
-const { writeFile } = require('fs').promises;
+const { writeFile, readFile } = require('fs').promises;
 
 const wrapXml = content => {
   return [
@@ -32,6 +32,11 @@ const wrapXml = content => {
     collapseContent: true,
     lineSeparator: '\n',
   });
+
+  if (xml === await readFile('src/sitemap-items.xml', 'utf8')) {
+    console.log('File content is identical, skipping write.');
+    return;
+  }
 
   await writeFile('src/sitemap-items.xml', xml, 'utf8');
 })();

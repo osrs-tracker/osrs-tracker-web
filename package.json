@@ -30,7 +30,7 @@
     "deploy": "npm run deploy:app && npm run deploy:assets",
     "deploy:app": "aws s3 sync --delete --exclude 'assets/*' --exclude '*.js' --exclude '*.css' ./dist/osrs-tracker-web s3://osrs-tracker.freekmencke.com",
     "deploy:assets": "aws s3 sync --delete --size-only ./dist/osrs-tracker-web s3://osrs-tracker.freekmencke.com",
-    "sitemap": "npm run sitemap:index && npm run sitemap:items",
+    "sitemap": "npm run sitemap:items && npm run sitemap:index",
     "sitemap:index": "node ./scripts/sitemap/sitemap-index.js",
     "sitemap:items": "node ./scripts/sitemap/sitemap-items.js",
     "lint": "ng lint",
