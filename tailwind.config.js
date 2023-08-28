@@ -10,6 +10,7 @@ module.exports = {
   },
   experimental: {
     darkModeVariant: true,
+    optimizeUniversalDefaults: true,
   },
   theme: {
     colors: {
@@ -17,13 +18,17 @@ module.exports = {
       transparent: 'transparent',
       black: colors.black,
       white: colors.white,
-      red: colors.red,
-      green: colors.green,
+      green: colors.green,  // positive
+      red: colors.red,      // negative
 
       // accent
       amber: colors.amber,
       emerald: colors.emerald,
       slate: colors.slate,
+    },
+    fontFamily: { sans: ['SOLIX'] },
+    extend: {
+      maxHeight: { '18': '72px' },
     },
   },
   plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography')],

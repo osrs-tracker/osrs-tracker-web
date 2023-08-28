@@ -2,9 +2,10 @@
 
 @layer components {
   .button-group {
-    @apply text-base font-semibold flex rounded-lg bg-slate-100 dark:bg-slate-800;
+    @apply text-base font-bold flex rounded-lg bg-slate-100 dark:bg-slate-800;
   }
   .button-group button {
+    line-height: 18px;
     @apply min-w-[64px] rounded-lg px-3 py-0.5;
   }
   .button-group button.active {
@@ -13,7 +14,8 @@
 
   button.button--default,
   button.button--primary {
-    @apply text-white font-semibold rounded-lg border border-transparent px-6 py-2;
+    line-height: 18px;
+    @apply text-white font-bold rounded-lg border border-transparent px-6 py-2.5;
   }
 
   button.button--default {
@@ -30,7 +32,7 @@
   }
 
   .link {
-    @apply font-semibold active:text-emerald-700 hover:text-emerald-600 text-emerald-500 dark:active:text-emerald-600 dark:hover:text-emerald-500 dark:text-emerald-400;
+    @apply font-bold active:text-emerald-700 hover:text-emerald-600 text-emerald-500 dark:active:text-emerald-600 dark:hover:text-emerald-500 dark:text-emerald-400;
   }
 
   .link-states--light {
@@ -41,6 +43,7 @@
   }
 
   .input--default {
-    @apply rounded-full w-full px-6 dark:bg-slate-800 focus:ring-emerald-500 focus:border-emerald-500 dark:focus:ring-emerald-400 dark:focus:border-emerald-400;
+    line-height: 18px;
+    @apply rounded-full w-full px-6 py-2.5 dark:bg-slate-800 focus:ring-emerald-500 focus:border-emerald-500 dark:focus:ring-emerald-400 dark:focus:border-emerald-400;
   }
 }

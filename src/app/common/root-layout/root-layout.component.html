@@ -9,7 +9,7 @@
 
       <!-- Desktop menu -->
       <div class="hidden lg:flex items-center">
-        <ul class="flex space-x-4 font-semibold">
+        <ul class="flex space-x-4 font-bold">
           <li *ngFor="let route of routes; trackBy: trackByPath">
             <a
               class="link-states--dark w-6 h-6"
@@ -52,7 +52,7 @@
     <!-- Mobile menu -->
     <div class="absolute w-full lg:hidden" [ngClass]="{ 'hidden lg:flex': menuCollapsed }">
       <div class="bg-slate-800 shadow-2xl">
-        <ul class="container mx-auto font-semibold">
+        <ul class="container mx-auto font-bold">
           <li *ngFor="let route of routes; trackBy: trackByPath" class="border-b last:border-b-0 border-b-slate-700">
             <a
               class="link-states--dark flex px-4 py-4"
@@ -87,7 +87,7 @@
   <footer
     class="flex flex-col lg:flex-row items-center justify-center text-slate-400 bg-slate-900 border-t border-slate-300/20 text-sm mt-auto px-4 py-2"
   >
-    <div class="border-slate-300/20 font-semibold lg:border-r lg:mr-6 lg:pr-6">&copy; OSRS Tracker 2023</div>
+    <div class="border-slate-300/20 font-bold lg:border-r lg:mr-6 lg:pr-6">&copy; OSRS Tracker 2023</div>
 
     <div class="border-slate-300/20 lg:border-r lg:mr-6 lg:pr-6 py-2 lg:py-0">
       This content is not endorsed by or affiliated with Jagex.

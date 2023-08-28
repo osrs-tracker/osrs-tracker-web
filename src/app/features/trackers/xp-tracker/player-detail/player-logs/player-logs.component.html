@@ -1,5 +1,5 @@
 <section class="flex flex-col gap-4">
-  <header class="flex items-center justify-between">
+  <header class="flex justify-between">
     <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Logs</h1>
 
     <div class="button-group">
@@ -41,7 +41,7 @@
               <img icon [name]="skill.name" class="w-4 h-4" />
               <span>{{ skill.name }}</span>
             </div>
-            <div class="font-semibold text-slate-900 dark:text-white ml-2">+&nbsp;{{ skill.xp | number }}&nbsp;XP</div>
+            <div class="font-bold text-slate-900 dark:text-white ml-2">+&nbsp;{{ skill.xp | number }}&nbsp;XP</div>
           </div>
         </ng-container>
       </div>
@@ -74,14 +74,14 @@
 
       <!-- other diffs -->
       <section *ngFor="let otherKey of filteredOtherKeys(diff)" class="flex flex-col gap-1 mb-4 last:mb-0">
-        <h3 class="font-semibold bg-slate-100 dark:bg-slate-800 col-span-full">{{ otherKey | capitalizeWords }}</h3>
+        <h3 class="font-bold bg-slate-100 dark:bg-slate-800 col-span-full">{{ otherKey | capitalizeWords }}</h3>
 
         <ng-container *ngFor="let miniGame of miniGames(otherKey, diff)">
           <ng-template [ngIf]="miniGame.score">
             <div class="flex items-center gap-2">
               <img icon [name]="$any(miniGame).name" class="w-4 h-4" />
               <div>{{ miniGame.name }}:</div>
-              <div class="font-semibold text-slate-900 dark:text-white">{{ miniGame.score | number }}</div>
+              <div class="font-bold text-slate-900 dark:text-white">{{ miniGame.score | number }}</div>
             </div>
           </ng-template>
         </ng-container>

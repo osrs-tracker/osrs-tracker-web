@@ -5,7 +5,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   selector: 'article[card]',
   template: `
     <div class="flex justify-between rounded-t-lg bg-slate-300 dark:bg-slate-700 px-4 py-2">
-      <div class="font-semibold">
+      <div class="font-bold">
         <ng-content select="[title]" />
       </div>
 

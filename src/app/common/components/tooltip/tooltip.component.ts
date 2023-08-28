@@ -26,7 +26,7 @@ import { Subject, debounceTime } from 'rxjs';
 
     <ng-template #tooltipTemplateContainer>
       <div
-        class="max-w-xs shadow-lg text-slate-900 bg-slate-100 py-1 px-2 rounded-lg mb-2"
+        class="max-w-xs shadow-lg text-slate-900 bg-slate-100 py-1 px-2 rounded-lg mb-2 "
         (mouseenter)="onMouseEnter()"
         (mouseleave)="onMouseLeave()"
       >
@@ -85,7 +85,7 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.elementRef.nativeElement.classList.add('border-b', 'border-dashed', '-mb-px');
+    this.elementRef.nativeElement.classList.add('underline', 'underline-offset-[6px]', 'decoration-dotted');
   }
 
   ngAfterViewInit(): void {
