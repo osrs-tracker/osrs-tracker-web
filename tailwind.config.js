@@ -18,8 +18,8 @@ module.exports = {
       transparent: 'transparent',
       black: colors.black,
       white: colors.white,
-      green: colors.green,  // positive
-      red: colors.red,      // negative
+      green: colors.green, // positive
+      red: colors.red, // negative
 
       // accent
       amber: colors.amber,
@@ -28,7 +28,7 @@ module.exports = {
     },
     fontFamily: { sans: ['SOLIX'] },
     extend: {
-      maxHeight: { '18': '72px' },
+      maxHeight: { 18: '72px' },
     },
   },
   plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography')],
