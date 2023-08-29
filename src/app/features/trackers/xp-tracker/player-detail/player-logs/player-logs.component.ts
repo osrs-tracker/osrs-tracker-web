@@ -6,7 +6,7 @@ import { CardComponent } from 'src/app/common/components/card.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { CapitalizePipe } from 'src/app/common/pipes/capitalize.pipe';
 import { ShortDatePipe } from 'src/app/common/pipes/date-fns.pipe';
-import { XpTrackerService } from '../../xp-tracker.service';
+import { XpTrackerStorageService } from '../../xp-tracker-storage.service';
 
 export enum ViewType {
   Other,
@@ -22,7 +22,7 @@ export enum ViewType {
 })
 export class PlayerLogsComponent implements OnChanges {
   readonly ViewType: typeof ViewType = ViewType;
-  viewType: ViewType = this.xpTrackerService.getViewType();
+  viewType: ViewType = this.xpTrackerStorageService.getViewType();
 
   hiscoreDiffs: Hiscore[];
 
@@ -37,7 +37,7 @@ export class PlayerLogsComponent implements OnChanges {
     return !!this.playerDetail.scrapingOffsets?.length;
   }
 
-  constructor(private xpTrackerService: XpTrackerService) {}
+  constructor(private xpTrackerStorageService: XpTrackerStorageService) {}
 
   ngOnChanges({ history }: SimpleChanges): void {
     if (history?.currentValue) this.calculateHiscoreDiffs();
@@ -65,7 +65,7 @@ export class PlayerLogsComponent implements OnChanges {
 
   setView(viewType: ViewType): void {
     this.viewType = viewType;
-    this.xpTrackerService.setViewType(viewType);
+    this.xpTrackerStorageService.setViewType(viewType);
   }
 
   private calculateHiscoreDiffs(): void {

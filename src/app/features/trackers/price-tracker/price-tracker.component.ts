@@ -9,7 +9,7 @@ import { InfoTooltipComponent } from 'src/app/common/components/tooltip/info-too
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { OsrsTrackerRepo } from 'src/app/repositories/osrs-tracker.repo';
 import { ItemWidgetComponent } from './item-widget/item-widget.component';
-import { PriceTrackerService, RecentItem } from './price-tracker.service';
+import { PriceTrackerStorageService, RecentItem } from './price-tracker-storage.service';
 
 @Component({
   standalone: true,
@@ -35,16 +35,16 @@ export default class PriceTrackerComponent {
   results: WritableSignal<Item[]> = signal([]);
 
   get favoriteItems(): RecentItem[] {
-    return this.priceTrackerService.getFavoriteItems();
+    return this.priceTrackerStorageService.getFavoriteItems();
   }
 
   get recentItems(): RecentItem[] {
-    return this.priceTrackerService.getRecentItems();
+    return this.priceTrackerStorageService.getRecentItems();
   }
 
   constructor(
     private osrsTrackerRepo: OsrsTrackerRepo,
-    private priceTrackerService: PriceTrackerService,
+    private priceTrackerStorageService: PriceTrackerStorageService,
   ) {}
 
   searchItems(): void {

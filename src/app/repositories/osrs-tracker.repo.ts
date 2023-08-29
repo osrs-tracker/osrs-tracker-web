@@ -28,12 +28,16 @@ export class OsrsTrackerRepo {
 
   getPlayerInfo(
     username: string,
+    scrapingOffset: number,
     options?: { includeLatestHiscoreEntry?: boolean; loadingIndicator?: boolean },
   ): Observable<Player> {
     return this.httpClient
       .get<Player>(`/player/${username}`, {
         context: new HttpContext().set(LOADING_INDICATOR, options?.loadingIndicator),
-        params: { ...(options?.includeLatestHiscoreEntry ? { hiscore: true } : {}) },
+        params: {
+          scrapingOffset,
+          ...(options?.includeLatestHiscoreEntry ? { hiscore: true } : {}),
+        },
       })
       .pipe(
         map(player => ({

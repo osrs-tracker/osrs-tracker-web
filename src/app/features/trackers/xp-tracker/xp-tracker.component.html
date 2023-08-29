@@ -1,4 +1,4 @@
-<page-header title="XP Tracker">
+<page-header headerText="XP Tracker">
   <form class="relative max-w-md w-full mx-4">
     <input
       type="text"
@@ -17,6 +17,33 @@
       Search
     </button>
   </form>
+
+  <div class="absolute top-16 mt-2">
+    <div class="flex gap-4 items-center">
+      <div class="whitespace-nowrap flex text-xs">
+        <span tooltip [tooltipTemplate]="scrapingOffsetTooltip">Scraping offset: </span>
+        <ng-template #scrapingOffsetTooltip>
+          <div class="pb-1">
+            The scraping offset indicates which set of scraped hiscores is shown: an offset of +02:00 UTC will only show
+            hiscores that were scraped at 02:00 UTC.
+          </div>
+          <div>
+            Since we only start scraping a player the first time they are looked up, it's possible that there are no
+            hiscores yet for a selected offset.
+          </div>
+        </ng-template>
+      </div>
+      <select
+        class="input--default input--small"
+        [ngModel]="scrapingOffset()"
+        (ngModelChange)="updateScrapingOffset($event)"
+      >
+        <option class="font-mono" *ngFor="let offset of SCRAPING_OFFSETS" [ngValue]="offset">
+          {{ offset === 0 ? '&nbsp;' : offset > 0 ? '+' : '' }}{{ offset | number: '2.0-0' }}:00 UTC
+        </option>
+      </select>
+    </div>
+  </div>
 </page-header>
 
 <div class="container mx-auto mb-8 px-4">
@@ -26,7 +53,7 @@
       <p *ngIf="!recentPlayers?.length">No players looked up yet.</p>
       <div class="grid gap-4">
         <a *ngFor="let username of recentPlayers; trackBy: trackByUsername" [routerLink]="['/trackers/xp', username]">
-          <player-widget [username]="username" />
+          <player-widget [username]="username" [scrapingOffset]="scrapingOffset()" />
         </a>
       </div>
     </section>
@@ -35,7 +62,7 @@
       <p *ngIf="!favoritePlayers?.length">No players favorited yet.</p>
       <div class="grid gap-4">
         <a *ngFor="let username of favoritePlayers; trackBy: trackByUsername" [routerLink]="['/trackers/xp', username]">
-          <player-widget [username]="username" />
+          <player-widget [username]="username" [scrapingOffset]="scrapingOffset()" />
         </a>
       </div>
     </section>

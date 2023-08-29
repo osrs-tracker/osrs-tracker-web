@@ -1,4 +1,5 @@
-colors = require('tailwindcss/colors');
+const defaultTheme = require('tailwindcss/defaultTheme');
+const colors = require('tailwindcss/colors');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -16,17 +17,18 @@ module.exports = {
     colors: {
       // general
       transparent: 'transparent',
-      black: colors.black,
       white: colors.white,
-      green: colors.green, // positive
-      red: colors.red, // negative
+      positive: colors.green,
+      negative: colors.red,
 
       // accent
-      amber: colors.amber,
       emerald: colors.emerald,
       slate: colors.slate,
     },
-    fontFamily: { sans: ['SOLIX'] },
+    fontFamily: {
+      sans: ['SOLIX'],
+      mono: defaultTheme.fontFamily.mono,
+    },
     extend: {
       maxHeight: { 18: '72px' },
     },

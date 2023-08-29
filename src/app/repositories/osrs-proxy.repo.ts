@@ -27,14 +27,14 @@ export class OsrsProxyRepo {
   // Players
   //
 
-  getPlayerHiscore(username: string): Observable<HiscoreEntry> {
+  getPlayerHiscore(username: string, scrapingOffset: number): Observable<HiscoreEntry> {
     return this.httpClient
       .get(`/rs/m=hiscore_oldschool/index_lite.ws?player=${username}`, { responseType: 'text' })
       .pipe(
         map(hiscoreString => ({
           sourceString: hiscoreString,
           date: new Date(),
-          scrapingOffset: 0,
+          scrapingOffset,
         })),
       );
   }

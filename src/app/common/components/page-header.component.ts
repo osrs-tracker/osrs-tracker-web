@@ -6,8 +6,8 @@ import { ChangeDetectionStrategy, Component, ContentChild, Input, TemplateRef } 
   selector: 'page-header',
   template: `
     <header class="container mx-auto pt-20 pb-16 md:pt-24 md:pb-20 text-center">
-      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 dark:text-white">{{ title }}</h1>
-      <p class="mt-12 flex justify-center">
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 dark:text-white">{{ headerText }}</h1>
+      <p class="mt-12 flex flex-col items-center relative">
         <ng-content />
       </p>
     </header>
@@ -16,6 +16,6 @@ import { ChangeDetectionStrategy, Component, ContentChild, Input, TemplateRef } 
   imports: [NgIf],
 })
 export class PageHeaderComponent {
-  @Input() title: string;
+  @Input() headerText: string;
   @ContentChild(TemplateRef) content: TemplateRef<any>;
 }

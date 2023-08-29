@@ -7,7 +7,7 @@ import { TimeAgoPipe } from 'src/app/common/pipes/time-ago.pipe';
 import { GoogleAnalyticsService } from 'src/app/common/services/google-analytics.service';
 import { LatestPrices } from 'src/app/repositories/osrs-prices.repo';
 import { config } from 'src/config/config';
-import { PriceTrackerService } from '../../price-tracker.service';
+import { PriceTrackerStorageService } from '../../price-tracker-storage.service';
 
 @Component({
   standalone: true,
@@ -27,12 +27,12 @@ export class ItemDetailWidgetComponent {
   }
 
   get isFavorite(): boolean {
-    return this.priceTrackerService.isFavoriteItem(this.itemDetail.id);
+    return this.priceTrackerStorageService.isFavoriteItem(this.itemDetail.id);
   }
 
   constructor(
     private googlAnalyticsService: GoogleAnalyticsService,
-    private priceTrackerService: PriceTrackerService,
+    private priceTrackerStorageService: PriceTrackerStorageService,
   ) {}
 
   goToWiki() {
@@ -42,7 +42,7 @@ export class ItemDetailWidgetComponent {
   toggleFavorite(): void {
     this.googlAnalyticsService.trackEvent('toggle_favorite_item', 'price_tracker', this.itemDetail.id, this.isFavorite);
 
-    this.priceTrackerService.toggleFavoriteItem({
+    this.priceTrackerStorageService.toggleFavoriteItem({
       id: this.itemDetail.id,
       name: this.itemDetail.name,
       icon: this.itemDetail.icon,

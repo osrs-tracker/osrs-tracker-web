@@ -6,10 +6,18 @@ import { ViewType } from './player-detail/player-logs/player-logs.component';
 @Injectable({
   providedIn: 'root',
 })
-export class XpTrackerService {
+export class XpTrackerStorageService {
   readonly MAX_PLAYERS_STORED = 5;
 
   constructor(private storageService: StorageService) {}
+
+  getScrapingOffset(): number {
+    return Number(this.storageService.getItem(StorageKey.XpTrackerScrapingOffset) ?? '0');
+  }
+
+  setScrapingOffset(offset: number): void {
+    this.storageService.setItem(StorageKey.XpTrackerScrapingOffset, String(offset));
+  }
 
   getRecentPlayers(): string[] {
     return JSON.parse(this.storageService.getItem(StorageKey.XpTrackerRecentPlayers) ?? '[]');

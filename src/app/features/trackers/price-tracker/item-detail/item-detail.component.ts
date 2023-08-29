@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { Item } from '@osrs-tracker/models';
 import { AveragePricesAtTime, LatestPrices } from 'src/app/repositories/osrs-prices.repo';
-import { PriceTrackerService } from '../price-tracker.service';
+import { PriceTrackerStorageService } from '../price-tracker-storage.service';
 import { ItemAnalyticsComponent } from './item-analytics/item-analytics.component';
 import { ItemDetailWidgetComponent } from './item-detail-widget/item-detail.widget.component';
 
@@ -31,10 +31,10 @@ export default class ItemDetailComponent implements OnInit {
 
   @Input('item') item: [Item, LatestPrices, number, AveragePricesAtTime[]];
 
-  constructor(private priceTrackerService: PriceTrackerService) {}
+  constructor(private priceTrackerStorageService: PriceTrackerStorageService) {}
 
   ngOnInit(): void {
-    this.priceTrackerService.pushRecentItem({
+    this.priceTrackerStorageService.pushRecentItem({
       id: this.itemDetail.id,
       name: this.itemDetail.name,
       icon: this.itemDetail.icon,

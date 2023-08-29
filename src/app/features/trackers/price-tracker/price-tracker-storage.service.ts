@@ -11,7 +11,7 @@ export interface RecentItem {
 @Injectable({
   providedIn: 'root',
 })
-export class PriceTrackerService {
+export class PriceTrackerStorageService {
   readonly MAX_PLAYERS_STORED = 5;
 
   constructor(private storageService: StorageService) {}

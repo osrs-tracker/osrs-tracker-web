@@ -5,7 +5,7 @@ import { Player } from '@osrs-tracker/models';
 import { forkJoin } from 'rxjs';
 import { OsrsProxyRepo } from 'src/app/repositories/osrs-proxy.repo';
 import { OsrsTrackerRepo } from 'src/app/repositories/osrs-tracker.repo';
-import { XpTrackerService } from '../xp-tracker.service';
+import { XpTrackerStorageService } from '../xp-tracker-storage.service';
 import { PlayerDetailWidgetComponent } from './player-detail-widget/player-detail-widget.component';
 import { PlayerLogsComponent } from './player-logs/player-logs.component';
 
@@ -26,19 +26,19 @@ export default class PlayerDetailComponent implements OnInit {
     private destroyRef: DestroyRef,
     private osrsProxyRepo: OsrsProxyRepo,
     private osrsTrackerRepo: OsrsTrackerRepo,
-    private xpTrackerService: XpTrackerService,
+    private xpTrackerStorageService: XpTrackerStorageService,
   ) {}
 
   ngOnInit(): void {
     if (!this.playerDetail) return;
 
-    this.getPlayerHiscores();
-    this.xpTrackerService.pushRecentPlayer(this.playerDetail.username);
+    this.getPlayerHiscores(this.xpTrackerStorageService.getScrapingOffset());
+    this.xpTrackerStorageService.pushRecentPlayer(this.playerDetail.username);
   }
 
-  getPlayerHiscores(scrapingOffset?: number, size?: number, skip?: number): void {
+  getPlayerHiscores(scrapingOffset: number, size?: number, skip?: number): void {
     forkJoin([
-      this.osrsProxyRepo.getPlayerHiscore(this.playerDetail!.username), // current hiscore
+      this.osrsProxyRepo.getPlayerHiscore(this.playerDetail!.username, scrapingOffset), // current hiscore
       this.osrsTrackerRepo.getPlayerHiscores(this.playerDetail!.username, scrapingOffset, size, skip), // scraped Hiscores
     ])
       .pipe(takeUntilDestroyed(this.destroyRef))

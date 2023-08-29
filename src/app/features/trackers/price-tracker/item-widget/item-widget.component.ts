@@ -17,7 +17,7 @@ import { SpinnerComponent } from 'src/app/common/components/spinner.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { utcStartOfDay } from 'src/app/common/helpers/date.helper';
 import { OsrsPricesRepo, TimeSpan } from 'src/app/repositories/osrs-prices.repo';
-import { RecentItem } from '../price-tracker.service';
+import { RecentItem } from '../price-tracker-storage.service';
 
 @Component({
   standalone: true,

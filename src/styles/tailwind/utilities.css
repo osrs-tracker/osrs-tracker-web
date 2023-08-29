@@ -6,13 +6,13 @@
     @apply text-emerald-500 dark:text-emerald-400;
   }
   .negative {
-    @apply text-red-600 dark:text-red-400;
+    @apply text-negative-600 dark:text-negative-400;
   }
   .negative::before {
     content: '-';
   }
   .positive {
-    @apply text-green-600 dark:text-green-400;
+    @apply text-positive-600 dark:text-positive-400;
   }
   .positive::before {
     content: '+';

@@ -15,6 +15,7 @@
     font-style: normal;
     font-weight: 300;
     font-display: swap;
+    descent-override: 10%;
     src: url(/assets/fonts/solix_light.woff2) format('woff2');
   }
 
@@ -23,6 +24,7 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
+    descent-override: 10%;
     src: url(/assets/fonts/solix.woff2) format('woff2');
   }
 
@@ -31,6 +33,7 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
+    descent-override: 10%;
     src: url(/assets/fonts/solix_bold.woff2) format('woff2');
   }
 }

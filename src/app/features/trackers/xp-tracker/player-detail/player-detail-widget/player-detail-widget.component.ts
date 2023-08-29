@@ -5,7 +5,7 @@ import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { CapitalizePipe } from 'src/app/common/pipes/capitalize.pipe';
 import { GoogleAnalyticsService } from 'src/app/common/services/google-analytics.service';
-import { XpTrackerService } from '../../xp-tracker.service';
+import { XpTrackerStorageService } from '../../xp-tracker-storage.service';
 
 @Component({
   standalone: true,
@@ -22,16 +22,16 @@ export class PlayerDetailWidgetComponent {
   @Input() today?: Hiscore;
 
   get isFavorite(): boolean {
-    return this.xpTrackerService.isFavoritePlayer(this.playerDetail.username);
+    return this.xpTrackerStorageService.isFavoritePlayer(this.playerDetail.username);
   }
 
   constructor(
     private googlAnalyticsService: GoogleAnalyticsService,
-    private xpTrackerService: XpTrackerService,
+    private xpTrackerStorageService: XpTrackerStorageService,
   ) {}
 
   toggleFavorite(): void {
-    this.xpTrackerService.toggleFavoritePlayer(this.playerDetail.username);
+    this.xpTrackerStorageService.toggleFavoritePlayer(this.playerDetail.username);
 
     this.googlAnalyticsService.trackEvent(
       'toggle_favorite_player',

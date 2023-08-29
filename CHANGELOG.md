@@ -1,5 +1,10 @@
 ### 2023/08/29
 
+- **It's now possible to select a custom XP scraping offset in the XP Tracker!**
+- Improved SOLIX custom font styling.
+
+### 2023/08/28
+
 - Use SOLIX custom font for OSRS Tracker.
 - Clamped OSRS news articles to 1 line for title, and 3 lines for body.
 

@@ -1,5 +1,5 @@
 import { DecimalPipe, NgIf } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnInit, WritableSignal, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, WritableSignal, signal } from '@angular/core';
 import { SkillEnum, getOverallXpDiff } from '@osrs-tracker/hiscores';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { forkJoin } from 'rxjs';
@@ -46,7 +46,7 @@ import { OsrsTrackerRepo } from 'src/app/repositories/osrs-tracker.repo';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgIf, CapitalizePipe, DecimalPipe, IconDirective, SpinnerComponent],
 })
-export class PlayerWidgetComponent implements OnInit {
+export class PlayerWidgetComponent implements OnChanges {
   readonly PlayerType: typeof PlayerType = PlayerType;
   readonly PlayerStatus: typeof PlayerStatus = PlayerStatus;
   readonly SkillEnum: typeof SkillEnum = SkillEnum;
@@ -57,16 +57,19 @@ export class PlayerWidgetComponent implements OnInit {
   overallDiff: WritableSignal<number | null> = signal(null);
 
   @Input() username: string;
+  @Input() scrapingOffset: number;
 
   constructor(
     private osrsProxyRepo: OsrsProxyRepo,
     private osrsTrackerRepo: OsrsTrackerRepo,
   ) {}
 
-  ngOnInit(): void {
+  ngOnChanges(): void {
+    this.loading.set(true);
+
     forkJoin([
-      this.osrsProxyRepo.getPlayerHiscore(this.username),
-      this.osrsTrackerRepo.getPlayerInfo(this.username, { includeLatestHiscoreEntry: true }),
+      this.osrsProxyRepo.getPlayerHiscore(this.username, this.scrapingOffset),
+      this.osrsTrackerRepo.getPlayerInfo(this.username, this.scrapingOffset, { includeLatestHiscoreEntry: true }),
     ]).subscribe(([hiscore, player]) => {
       this.playerDetails.set(player);
 
