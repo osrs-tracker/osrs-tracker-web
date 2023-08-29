@@ -1,3 +1,8 @@
+### 2023/08/29
+
+- Use SOLIX custom font for OSRS Tracker.
+- Clamped OSRS news articles to 1 line for title, and 3 lines for body.
+
 ### 2023/08/25
 
 - Sitemap index now uses the time the file was last modified as `lastmod`.
