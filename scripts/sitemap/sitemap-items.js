@@ -21,7 +21,7 @@ const wrapXml = content => {
       return [
         '<url>',
         `<loc>https://osrs-tracker.freekmencke.com/trackers/price/${id}</loc>`,
-        '<changefreq>hourly</changefreq>',
+        '<changefreq>daily</changefreq>',
         '<priority>0.7</priority>',
         '</url>',
       ].join('');
