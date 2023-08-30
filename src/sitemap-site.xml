@@ -4,19 +4,23 @@
     <loc>https://osrs-tracker.freekmencke.com/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <lastmod>2023-08-30</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price</loc>
     <priority>0.9</priority>
+    <lastmod>2023-08-30</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/xp</loc>
     <priority>0.9</priority>
+    <lastmod>2023-08-30</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/changelog</loc>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
+    <lastmod>2023-08-30</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/about/privacy</loc>
