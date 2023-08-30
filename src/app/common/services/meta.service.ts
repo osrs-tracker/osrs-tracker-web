@@ -19,7 +19,7 @@ export class MetaService {
     this.meta.updateTag({
       name: 'description',
       content:
-        'Keep track of real-time prices in Old School Runescape with the OSRS Price Tracker. Stay ahead of the market and make smart decisions with the latest pricing information.',
+        'Keep track of real-time prices and market trends in Old School Runescape with the OSRS Price Tracker. Stay ahead of the market and make smart decisions with the latest pricing information.',
     });
   }
 

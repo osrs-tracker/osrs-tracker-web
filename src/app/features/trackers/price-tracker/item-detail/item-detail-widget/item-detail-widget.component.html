@@ -89,7 +89,7 @@
     </section>
   </div>
 
-  <button class="button--default flex items-center justify-between" (click)="goToWiki()">
+  <a class="button--default flex items-center justify-between" [href]="wikiUrl" target="_blank">
     <div class="w-6"></div>
 
     <div>OSRS Wiki</div>
@@ -108,7 +108,7 @@
         d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
       />
     </svg>
-  </button>
+  </a>
 
   <button class="button--primary flex items-center justify-between" (click)="toggleFavorite()">
     <svg

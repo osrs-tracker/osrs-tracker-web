@@ -1,3 +1,9 @@
+### 2023/08/30
+
+- Added short description of features on home page.
+- Made button styling not specific to button elements. This way it can be used for links as well.
+- Made Wiki link on item page an `<a>` element instead of a `<button>` element. This way crawlers can follow the link.
+
 ### 2023/08/29
 
 - **It's now possible to select a custom XP scraping offset in the XP Tracker!**

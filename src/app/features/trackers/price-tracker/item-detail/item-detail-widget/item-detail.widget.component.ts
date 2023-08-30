@@ -1,5 +1,5 @@
 import { DecimalPipe, NgIf, NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { Item } from '@osrs-tracker/models';
 import { InfoTooltipComponent } from 'src/app/common/components/tooltip/info-tooltip.component';
 import { TooltipComponent } from 'src/app/common/components/tooltip/tooltip.component';
@@ -16,7 +16,7 @@ import { PriceTrackerStorageService } from '../../price-tracker-storage.service'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgIf, NgTemplateOutlet, NgOptimizedImage, DecimalPipe, TimeAgoPipe, InfoTooltipComponent, TooltipComponent],
 })
-export class ItemDetailWidgetComponent {
+export class ItemDetailWidgetComponent implements OnInit {
   @Input() itemDetail: Item;
   @Input() latestPrices: LatestPrices;
   @Input() dailyVolume: number;
@@ -30,13 +30,15 @@ export class ItemDetailWidgetComponent {
     return this.priceTrackerStorageService.isFavoriteItem(this.itemDetail.id);
   }
 
+  wikiUrl: string;
+
   constructor(
     private googlAnalyticsService: GoogleAnalyticsService,
     private priceTrackerStorageService: PriceTrackerStorageService,
   ) {}
 
-  goToWiki() {
-    window.open(`${config.wikiBaseUrl}/w/${this.itemDetail.name}`, '_blank');
+  ngOnInit(): void {
+    this.wikiUrl = `${config.wikiBaseUrl}/w/${this.itemDetail.name.replaceAll(/\s/g, '_')}`;
   }
 
   toggleFavorite(): void {

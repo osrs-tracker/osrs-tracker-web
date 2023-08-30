@@ -21,15 +21,15 @@
   <div class="absolute top-16 mt-2">
     <div class="flex gap-4 items-center">
       <div class="whitespace-nowrap flex text-xs">
-        <span tooltip [tooltipTemplate]="scrapingOffsetTooltip">Scraping offset: </span>
+        <span tooltip [tooltipTemplate]="scrapingOffsetTooltip">Tracking offset:</span>
         <ng-template #scrapingOffsetTooltip>
           <div class="pb-1">
-            The scraping offset indicates which set of scraped hiscores is shown: an offset of +02:00 UTC will only show
-            hiscores that were scraped at 02:00 UTC.
+            The tracking offset indicates which set of hiscores is being shown: a tracking offset of +02:00 UTC will
+            only show hiscores that were tracked at 02:00 UTC.
           </div>
           <div>
-            Since we only start scraping a player the first time they are looked up, it's possible that there are no
-            hiscores yet for a selected offset.
+            Since we only start tracking a player the first time they are looked up, it's possible that there are no
+            hiscores yet for a selected tracking offset.
           </div>
         </ng-template>
       </div>
