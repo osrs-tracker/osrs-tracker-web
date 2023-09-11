@@ -19,11 +19,7 @@ const { writeFile, stat } = require('fs').promises;
     indentation: '  ',
     collapseContent: true,
     lineSeparator: '\n',
-  })
+  });
 
-  await writeFile(
-    'src/sitemap.xml',
-    xml,
-    'utf8',
-  );
+  await writeFile('src/sitemap.xml', xml, 'utf8');
 })();
