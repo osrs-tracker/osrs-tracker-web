@@ -57,7 +57,7 @@
     "@angular/platform-browser-dynamic": "^16.2.1",
     "@angular/router": "^16.2.1",
     "@angular/service-worker": "^16.2.1",
-    "@osrs-tracker/hiscores": "^0.1.1",
+    "@osrs-tracker/hiscores": "^0.1.2",
     "chart.js": "^4.3.3",
     "chartjs-adapter-date-fns": "^3.0.0",
     "chartjs-plugin-annotation": "^3.0.1",

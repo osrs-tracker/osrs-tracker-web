@@ -1,3 +1,7 @@
+### 2023/09/11
+
+- Fix problem with hiscore when parsing DT2 bosses.
+
 ### 2023/08/30
 
 - Added short description of features on home page.
