@@ -12,10 +12,7 @@
     <button type="submit" class="z-20 absolute right-0 button--primary button--rounded" (click)="searchItems()">
       <span [class.invisible]="loading()">Search</span>
 
-      <spinner
-        class="absolute block top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-        *ngIf="loading()"
-      ></spinner>
+      <spinner class="absolute top-0 left-0 w-full h-full flex items-center justify-center" *ngIf="loading()"></spinner>
     </button>
 
     <div
