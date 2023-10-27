@@ -1,10 +1,6 @@
 <p align="center">
-  <a href="https://github.com/osrs-tracker/osrs-tracker-web/actions/workflows/nodejs.yml">
-    <img src="https://github.com/osrs-tracker/osrs-tracker-web/actions/workflows/nodejs.yml/badge.svg">
-  </a>&nbsp;
-  <a href="https://github.com/osrs-tracker/osrs-tracker-web/issues">
-    <img src="https://img.shields.io/github/issues/osrs-tracker/osrs-tracker-web.svg" />
-  </a>&nbsp;
+  <a href="https://github.com/osrs-tracker/osrs-tracker-web/actions/workflows/nodejs.yml"><img src="https://github.com/osrs-tracker/osrs-tracker-web/actions/workflows/nodejs.yml/badge.svg" /></a>
+  <a href="https://github.com/osrs-tracker/osrs-tracker-web/issues"><img src="https://img.shields.io/github/issues/osrs-tracker/osrs-tracker-web.svg" /></a>
 </p>
 
 <div align="center">
