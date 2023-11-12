@@ -1,13 +1,12 @@
 import { inject } from '@angular/core';
 import { Route } from '@angular/router';
-import { RootLayoutComponent } from './common/root-layout/root-layout.component';
 import { MetaService } from './common/services/meta.service';
 
 export default [
   {
     path: '',
     pathMatch: 'prefix',
-    component: RootLayoutComponent,
+    loadComponent: () => import('./common/root-layout/root-layout.component'),
     children: [
       {
         path: '',
@@ -37,7 +36,7 @@ export default [
         path: '**',
         title: '404 Not Found - OSRS Tracker',
         resolve: { metaDescription: () => inject(MetaService).setDefaultMeta() },
-        loadComponent: () => import('./features/not-found/not-found.component').then(c => c.NotFoundComponent),
+        loadComponent: () => import('./features/not-found/not-found.component'),
       },
     ],
   },

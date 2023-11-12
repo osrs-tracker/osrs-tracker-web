@@ -3,13 +3,15 @@
     <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ playerDetail.username | capitalizeWords }}</h2>
 
     <div class="relative flex gap-2 mb-0.5">
+      @if (playerDetail.type !== PlayerType.Normal) {
       <img
-        *ngIf="playerDetail.type !== PlayerType.Normal"
         icon
         [name]="playerDetail.status === PlayerStatus.Default ? playerDetail.type : playerDetail.status"
         class="h-6 w-6"
       />
-      <img *ngIf="playerDetail.diedAsHardcore" icon name="dead" class="h-6 w-6" />
+      } @if (playerDetail.diedAsHardcore) {
+      <img icon name="dead" class="h-6 w-6" />
+      }
     </div>
   </header>
 
@@ -18,35 +20,34 @@
       <div>Username:</div>
       <div>Combat level:</div>
       <div>Mode:</div>
-      <div *ngIf="playerDetail.type === PlayerType.Hardcore">Hardcore status:</div>
-      <div
-        *ngIf="
-          playerDetail.type !== PlayerType.Normal &&
-          (playerDetail.diedAsHardcore || playerDetail.status !== PlayerStatus.Default)
-        "
-      >
-        Ironman status:
-      </div>
-      <div *ngIf="playerDetail.type !== PlayerType.Normal">Last checked:</div>
+      @if (playerDetail.type === PlayerType.Hardcore) {
+      <div>Hardcore status:</div>
+      } @if (playerDetail.type !== PlayerType.Normal && (playerDetail.diedAsHardcore || playerDetail.status !==
+      PlayerStatus.Default)) {
+      <div>Ironman status:</div>
+      } @if(playerDetail.type !== PlayerType.Normal) {
+      <div>Last checked:</div>
+      }
     </div>
     <div class="flex flex-col flex-1 font-bold gap-y-1">
       <div>{{ playerDetail.username | capitalizeWords }}</div>
       <div>{{ playerDetail.combatLevel }}</div>
       <div>{{ playerDetail.type }}</div>
-      <div *ngIf="playerDetail.type === PlayerType.Hardcore">
-        <span *ngIf="playerDetail.diedAsHardcore" class="text-negative-400"> dead </span>
-        <span *ngIf="!playerDetail.diedAsHardcore" class="text-positive-400"> alive </span>
+      @if (playerDetail.type === PlayerType.Hardcore) {
+      <div>
+        @if (playerDetail.diedAsHardcore) {
+        <span class="text-negative-400"> dead </span>
+        } @else {
+        <span class="text-positive-400"> alive </span>
+        }
       </div>
-      <div *ngIf="playerDetail.diedAsHardcore">{{ playerDetail.status }}</div>
-      <div
-        *ngIf="playerDetail.type !== PlayerType.Normal && playerDetail.status !== PlayerStatus.Default"
-        class="text-negative-500"
-      >
-        {{ playerDetail.status }}
-      </div>
-      <div *ngIf="playerDetail.type !== PlayerType.Normal">
-        {{ playerDetail.lastModified | date: 'MMMM dd, HH:mm' }}
-      </div>
+      } @if (playerDetail.diedAsHardcore) {
+      <div>{{ playerDetail.status }}</div>
+      } @if (playerDetail.type !== PlayerType.Normal && playerDetail.status !== PlayerStatus.Default) {
+      <div class="text-negative-500">{{ playerDetail.status }}</div>
+      } @if (playerDetail.type !== PlayerType.Normal) {
+      <div>{{ playerDetail.lastModified | date: 'MMMM dd, HH:mm' }}</div>
+      }
     </div>
   </div>
 
@@ -66,8 +67,11 @@
       />
     </svg>
 
-    <div *ngIf="isFavorite">Remove favorite</div>
-    <div *ngIf="!isFavorite">Add favorite</div>
+    @if (isFavorite) {
+    <div>Remove favorite</div>
+    } @else {
+    <div>Add favorite</div>
+    }
 
     <div class="w-6"></div>
   </button>

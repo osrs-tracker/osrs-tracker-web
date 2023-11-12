@@ -1,4 +1,3 @@
-import { NgFor, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, WritableSignal, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -17,8 +16,6 @@ import { PriceTrackerStorageService, RecentItem } from './price-tracker-storage.
   templateUrl: './price-tracker.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgIf,
-    NgFor,
     RouterLink,
     FormsModule,
     IconDirective,
@@ -53,7 +50,7 @@ export default class PriceTrackerComponent {
     this.loading.set(true);
 
     this.osrsTrackerRepo.searchItems(this.query).subscribe(items => {
-      this.results.set(items);
+      this.results.set(items ?? []);
       this.loading.set(false);
     });
   }

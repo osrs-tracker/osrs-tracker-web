@@ -1,4 +1,3 @@
-import { NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { ShortDatePipe } from '../pipes/date-fns.pipe';
 
@@ -8,7 +7,10 @@ import { ShortDatePipe } from '../pipes/date-fns.pipe';
   template: `
     <div class="container mx-auto px-4 py-8">
       <h1 class="text-3xl font-bold mb-4">{{ title }}</h1>
-      <p *ngIf="lastUpdated" class="font-bold mb-4">Last updated: {{ lastUpdated }}</p>
+
+      @if (lastUpdated) {
+      <p class="font-bold mb-4">Last updated: {{ lastUpdated }}</p>
+      }
 
       <div class="bg-slate-300 dark:bg-slate-700 shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <ng-content />
@@ -16,7 +18,7 @@ import { ShortDatePipe } from '../pipes/date-fns.pipe';
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgIf, ShortDatePipe],
+  imports: [ShortDatePipe],
 })
 export class InformationPageComponent {
   @Input() title: string;

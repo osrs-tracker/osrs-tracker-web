@@ -1,4 +1,4 @@
-import { DatePipe, NgIf } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Hiscore } from '@osrs-tracker/hiscores';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
@@ -12,7 +12,7 @@ import { XpTrackerStorageService } from '../../xp-tracker-storage.service';
   selector: 'player-detail-widget',
   templateUrl: './player-detail-widget.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgIf, CapitalizePipe, DatePipe, IconDirective],
+  imports: [CapitalizePipe, DatePipe, IconDirective],
 })
 export class PlayerDetailWidgetComponent {
   readonly PlayerType: typeof PlayerType = PlayerType;

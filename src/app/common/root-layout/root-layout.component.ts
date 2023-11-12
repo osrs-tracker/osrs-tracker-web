@@ -1,4 +1,4 @@
-import { AsyncPipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe, NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { LoadingIndicatorService } from 'src/app/core/interceptors/loading-indicator.interceptor';
@@ -11,19 +11,9 @@ import { MenuButtonComponent } from './components/menu-button.component';
   templateUrl: './root-layout.component.html',
   styleUrls: ['./root-layout.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    AsyncPipe,
-    NgClass,
-    NgIf,
-    NgFor,
-    RouterLink,
-    RouterLinkActive,
-    RouterOutlet,
-    DarkModeComponent,
-    MenuButtonComponent,
-  ],
+  imports: [AsyncPipe, NgClass, RouterLink, RouterLinkActive, RouterOutlet, DarkModeComponent, MenuButtonComponent],
 })
-export class RootLayoutComponent {
+export default class RootLayoutComponent {
   routes = [
     {
       path: '/',

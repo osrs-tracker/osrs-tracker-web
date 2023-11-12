@@ -1,4 +1,3 @@
-import { NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ContentChild, Input, TemplateRef } from '@angular/core';
 
 @Component({
@@ -13,7 +12,6 @@ import { ChangeDetectionStrategy, Component, ContentChild, Input, TemplateRef } 
     </header>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgIf],
 })
 export class PageHeaderComponent {
   @Input() headerText: string;

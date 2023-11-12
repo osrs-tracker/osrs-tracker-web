@@ -126,8 +126,11 @@
       />
     </svg>
 
-    <div *ngIf="isFavorite">Remove favorite</div>
-    <div *ngIf="!isFavorite">Add favorite</div>
+    @if (isFavorite) {
+    <div>Remove favorite</div>
+    } @else {
+    <div>Add favorite</div>
+    }
 
     <div class="w-6"></div>
   </button>

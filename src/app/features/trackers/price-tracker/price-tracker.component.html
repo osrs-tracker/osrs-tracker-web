@@ -12,16 +12,19 @@
     <button type="submit" class="z-20 absolute right-0 button--primary button--rounded" (click)="searchItems()">
       <span [class.invisible]="loading()">Search</span>
 
-      <spinner class="absolute top-0 left-0 w-full h-full flex items-center justify-center" *ngIf="loading()"></spinner>
+      @if (loading()) {
+      <spinner class="absolute top-0 left-0 w-full h-full flex items-center justify-center"></spinner>
+      }
     </button>
 
+    @if (results().length) {
     <div
-      *ngIf="results()?.length"
       class="z-10 absolute rounded-3xl bg-white dark:bg-slate-800 border border-slate-400 dark:border-slate-700 shadow-2xl top-0 w-full overflow-hidden"
     >
       <div class="mt-10 pt-px max-h-60 overflow-y-auto scroll-bar">
         <ul>
-          <li *ngFor="let item of results()">
+          @for (item of results(); track item.id) {
+          <li>
             <a
               class="group flex items-center px-4 py-2 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white rounded-r-full"
               [routerLink]="['/trackers/price', item.id]"
@@ -44,9 +47,11 @@
               </div>
             </a>
           </li>
+          }
         </ul>
       </div>
     </div>
+    }
   </form>
 </page-header>
 
@@ -59,13 +64,16 @@
           The widget shows the price difference between the last instant-sell price and the 24h average of the previous
           day (UTC).
         </info-tooltip>
-        <ng-template #tooltip></ng-template>
       </h2>
-      <p *ngIf="!recentItems.length">No items looked up yet.</p>
+
       <div class="grid gap-4">
-        <a *ngFor="let item of recentItems; trackBy: trackById" [routerLink]="['/trackers/price', item.id]">
+        @for (item of recentItems; track item.id) {
+        <a [routerLink]="['/trackers/price', item.id]">
           <item-widget [recentItem]="item"></item-widget>
         </a>
+        } @empty {
+        <p>No items looked up yet.</p>
+        }
       </div>
     </section>
     <section>
@@ -76,11 +84,15 @@
           day (UTC).
         </info-tooltip>
       </h2>
-      <p *ngIf="!favoriteItems.length">No items favorited yet.</p>
+
       <div class="grid gap-4">
-        <a *ngFor="let item of favoriteItems; trackBy: trackById" [routerLink]="['/trackers/price', item.id]">
+        @for (item of favoriteItems; track item.id) {
+        <a [routerLink]="['/trackers/price', item.id]">
           <item-widget [recentItem]="item"></item-widget>
         </a>
+        } @empty {
+        <p>No items favorited yet.</p>
+        }
       </div>
     </section>
   </div>
