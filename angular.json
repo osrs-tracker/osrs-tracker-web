@@ -62,10 +62,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "osrs-tracker-web:build:production"
+              "buildTarget": "osrs-tracker-web:build:production"
             },
             "development": {
-              "browserTarget": "osrs-tracker-web:build:development"
+              "buildTarget": "osrs-tracker-web:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -80,7 +80,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "osrs-tracker-web:build"
+            "buildTarget": "osrs-tracker-web:build"
           }
         },
         "lint": {
