@@ -1,3 +1,9 @@
+## 2023/11/12
+
+- Update @angular to `v17.0.2`.
+  - Refactored all `NgIf` and `NgFor` instances to the new control flow.
+- Updated all other dependencies to their latest versions. No breaking changes.
+
 ### 2023/09/11
 
 - Fix problem with hiscore when parsing DT2 bosses.
