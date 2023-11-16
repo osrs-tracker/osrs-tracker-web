@@ -13,12 +13,12 @@
 
   <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
     @for (newsItem of osrsNewsItems(); track newsItem.link) {
-    <osrs-news-card [osrsNewsItem]="newsItem" />
+      <osrs-news-card [osrsNewsItem]="newsItem" />
     } @empty {
-    <osrs-news-card-skeleton />
-    <osrs-news-card-skeleton />
-    <osrs-news-card-skeleton />
-    <osrs-news-card-skeleton />
+      <osrs-news-card-skeleton />
+      <osrs-news-card-skeleton />
+      <osrs-news-card-skeleton />
+      <osrs-news-card-skeleton />
     }
   </div>
 </section>

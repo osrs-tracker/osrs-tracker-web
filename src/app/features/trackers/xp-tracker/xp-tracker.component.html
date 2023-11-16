@@ -38,10 +38,10 @@
         [ngModel]="scrapingOffset()"
         (ngModelChange)="updateScrapingOffset($event)"
       >
-        @for(offset of SCRAPING_OFFSETS; track offset) {
-        <option class="font-mono" [ngValue]="offset">
-          {{ offset === 0 ? '&nbsp;' : offset > 0 ? '+' : '' }}{{ offset | number: '2.0-0' }}:00 UTC
-        </option>
+        @for (offset of SCRAPING_OFFSETS; track offset) {
+          <option class="font-mono" [ngValue]="offset">
+            {{ offset === 0 ? '&nbsp;' : offset > 0 ? '+' : '' }}{{ offset | number: '2.0-0' }}:00 UTC
+          </option>
         }
       </select>
     </div>
@@ -53,24 +53,24 @@
     <section>
       <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Recent</h2>
       <div class="grid gap-4">
-        @for(username of recentPlayers; track username) {
-        <a [routerLink]="['/trackers/xp', username]">
-          <player-widget [username]="username" [scrapingOffset]="scrapingOffset()" />
-        </a>
+        @for (username of recentPlayers; track username) {
+          <a [routerLink]="['/trackers/xp', username]">
+            <player-widget [username]="username" [scrapingOffset]="scrapingOffset()" />
+          </a>
         } @empty {
-        <p>No players looked up yet.</p>
+          <p>No players looked up yet.</p>
         }
       </div>
     </section>
     <section>
       <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Favorite</h2>
       <div class="grid gap-4">
-        @for(username of favoritePlayers; track username) {
-        <a [routerLink]="['/trackers/xp', username]">
-          <player-widget [username]="username" [scrapingOffset]="scrapingOffset()" />
-        </a>
+        @for (username of favoritePlayers; track username) {
+          <a [routerLink]="['/trackers/xp', username]">
+            <player-widget [username]="username" [scrapingOffset]="scrapingOffset()" />
+          </a>
         } @empty {
-        <p>No players favorited yet.</p>
+          <p>No players favorited yet.</p>
         }
       </div>
     </section>

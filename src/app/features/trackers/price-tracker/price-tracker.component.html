@@ -13,44 +13,44 @@
       <span [class.invisible]="loading()">Search</span>
 
       @if (loading()) {
-      <spinner class="absolute top-0 left-0 w-full h-full flex items-center justify-center"></spinner>
+        <spinner class="absolute top-0 left-0 w-full h-full flex items-center justify-center"></spinner>
       }
     </button>
 
     @if (results().length) {
-    <div
-      class="z-10 absolute rounded-3xl bg-white dark:bg-slate-800 border border-slate-400 dark:border-slate-700 shadow-2xl top-0 w-full overflow-hidden"
-    >
-      <div class="mt-10 pt-px max-h-60 overflow-y-auto scroll-bar">
-        <ul>
-          @for (item of results(); track item.id) {
-          <li>
-            <a
-              class="group flex items-center px-4 py-2 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white rounded-r-full"
-              [routerLink]="['/trackers/price', item.id]"
-            >
-              <div class="w-8 h-8 mr-3 flex justify-center items-center">
-                <img icon [name]="item.icon" [wiki]="true" />
-              </div>
-              <div class="flex-grow text-left text-lg">{{ item.name }}</div>
-              <div class="hidden group-hover:block">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                  class="w-6 h-6"
+      <div
+        class="z-10 absolute rounded-3xl bg-white dark:bg-slate-800 border border-slate-400 dark:border-slate-700 shadow-2xl top-0 w-full overflow-hidden"
+      >
+        <div class="mt-10 pt-px max-h-60 overflow-y-auto scroll-bar">
+          <ul>
+            @for (item of results(); track item.id) {
+              <li>
+                <a
+                  class="group flex items-center px-4 py-2 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white rounded-r-full"
+                  [routerLink]="['/trackers/price', item.id]"
                 >
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                </svg>
-              </div>
-            </a>
-          </li>
-          }
-        </ul>
+                  <div class="w-8 h-8 mr-3 flex justify-center items-center">
+                    <img icon [name]="item.icon" [wiki]="true" />
+                  </div>
+                  <div class="flex-grow text-left text-lg">{{ item.name }}</div>
+                  <div class="hidden group-hover:block">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      class="w-6 h-6"
+                    >
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                  </div>
+                </a>
+              </li>
+            }
+          </ul>
+        </div>
       </div>
-    </div>
     }
   </form>
 </page-header>
@@ -68,11 +68,11 @@
 
       <div class="grid gap-4">
         @for (item of recentItems; track item.id) {
-        <a [routerLink]="['/trackers/price', item.id]">
-          <item-widget [recentItem]="item"></item-widget>
-        </a>
+          <a [routerLink]="['/trackers/price', item.id]">
+            <item-widget [recentItem]="item"></item-widget>
+          </a>
         } @empty {
-        <p>No items looked up yet.</p>
+          <p>No items looked up yet.</p>
         }
       </div>
     </section>
@@ -87,11 +87,11 @@
 
       <div class="grid gap-4">
         @for (item of favoriteItems; track item.id) {
-        <a [routerLink]="['/trackers/price', item.id]">
-          <item-widget [recentItem]="item"></item-widget>
-        </a>
+          <a [routerLink]="['/trackers/price', item.id]">
+            <item-widget [recentItem]="item"></item-widget>
+          </a>
         } @empty {
-        <p>No items favorited yet.</p>
+          <p>No items favorited yet.</p>
         }
       </div>
     </section>

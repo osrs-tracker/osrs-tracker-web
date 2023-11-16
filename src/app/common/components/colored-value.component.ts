@@ -6,10 +6,13 @@ import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges } from
   selector: 'colored-value',
   template: `
     @if (value != null) {
-    {{ absValue | number: '1.1-1' }}
-    @if (suffix) {
-    {{ suffix }}
-    } } @else { &mdash; }
+      {{ absValue | number: '1.1-1' }}
+      @if (suffix) {
+        {{ suffix }}
+      }
+    } @else {
+      &mdash;
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [DecimalPipe],

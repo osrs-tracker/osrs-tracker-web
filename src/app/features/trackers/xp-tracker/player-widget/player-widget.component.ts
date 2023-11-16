@@ -22,26 +22,33 @@ import { OsrsTrackerRepo } from 'src/app/repositories/osrs-tracker.repo';
       <div class="flex-1 flex items-center justify-between  rounded-l bg-slate-300 dark:bg-slate-700 px-4 py-2">
         <h3>{{ username | capitalizeWords }}</h3>
         @if (playerDetails()) {
-        <div class="relative flex items-center rounded-full gap-2">
-          @if (playerDetails()!.type !== PlayerType.Normal) {
-          <img
-            icon
-            [name]="playerDetails()!.status === PlayerStatus.Default ? playerDetails()!.type : playerDetails()!.status"
-            class="h-6 w-6"
-          />
-          } @if (playerDetails()!.diedAsHardcore) {
-          <img icon name="dead" class="h-6 w-6" />
-          }
-        </div>
+          <div class="relative flex items-center rounded-full gap-2">
+            @if (playerDetails()!.type !== PlayerType.Normal) {
+              <img
+                icon
+                [name]="
+                  playerDetails()!.status === PlayerStatus.Default ? playerDetails()!.type : playerDetails()!.status
+                "
+                class="h-6 w-6"
+              />
+            }
+            @if (playerDetails()!.diedAsHardcore) {
+              <img icon name="dead" class="h-6 w-6" />
+            }
+          </div>
         }
       </div>
       <div class="flex-1 flex items-center justify-end px-4 py-2">
         @if (loading()) {
-        <spinner />
-        } @else { @if (overallDiff() === null) { &mdash; } @else {
-        <div>+&nbsp;{{ overallDiff() | number }}&nbsp;XP</div>
-        <img icon [name]="SkillEnum.Overall" class="w-5 h-5 ml-2 mb-1" />
-        } }
+          <spinner />
+        } @else {
+          @if (overallDiff() === null) {
+            &mdash;
+          } @else {
+            <div>+&nbsp;{{ overallDiff() | number }}&nbsp;XP</div>
+            <img icon [name]="SkillEnum.Overall" class="w-5 h-5 ml-2 mb-1" />
+          }
+        }
       </div>
     </article>
   `,

@@ -9,86 +9,99 @@
   </header>
 
   <!-- XP view -->
-  @if (isPlayerTracked && viewType === ViewType.Skills) { @for (diff of hiscoreDiffs; track diff.date) {
-  <article card>
-    <h2 title>{{ diff.date | shortDate }}</h2>
+  @if (isPlayerTracked && viewType === ViewType.Skills) {
+    @for (diff of hiscoreDiffs; track diff.date) {
+      <article card>
+        <h2 title>{{ diff.date | shortDate }}</h2>
 
-    <!-- hiscore diffs -->
-    @if (hasXpDiff(diff)) {
-    <div class="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-2">
-      @for (skill of skills(diff); track skill.name) { @if (skill.xp) {
-      <div>
-        <div class="flex items-center gap-2">
-          <img icon [name]="skill.name" class="w-4 h-4" />
-          <span>{{ skill.name }}</span>
-        </div>
-        <div class="font-bold text-slate-900 dark:text-white ml-2">+&nbsp;{{ skill.xp | number }}&nbsp;XP</div>
-      </div>
-      } }
-    </div>
-    } @else {
-    <p class="text-base opacity-70">Nothing interesting happened.</p>
-    }
-  </article>
-  } @empty {
-  <!-- skeleton loader -->
-  @for(skills of [].constructor(7); track i; let i = $index) {
-  <article card>
-    <div title class="rounded-t-lg bg-slate-300 dark:bg-slate-700">
-      <div class="animate-pulse h-5 w-20 my-1 rounded-xl bg-slate-200 dark:bg-slate-600"></div>
-    </div>
+        <!-- hiscore diffs -->
+        @if (hasXpDiff(diff)) {
+          <div class="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-2">
+            @for (skill of skills(diff); track skill.name) {
+              @if (skill.xp) {
+                <div>
+                  <div class="flex items-center gap-2">
+                    <img icon [name]="skill.name" class="w-4 h-4" />
+                    <span>{{ skill.name }}</span>
+                  </div>
+                  <div class="font-bold text-slate-900 dark:text-white ml-2">
+                    +&nbsp;{{ skill.xp | number }}&nbsp;XP
+                  </div>
+                </div>
+              }
+            }
+          </div>
+        } @else {
+          <p class="text-base opacity-70">Nothing interesting happened.</p>
+        }
+      </article>
+    } @empty {
+      <!-- skeleton loader -->
+      @for (skills of [].constructor(7); track i; let i = $index) {
+        <article card>
+          <div title class="rounded-t-lg bg-slate-300 dark:bg-slate-700">
+            <div class="animate-pulse h-5 w-20 my-1 rounded-xl bg-slate-200 dark:bg-slate-600"></div>
+          </div>
 
-    <div class="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-2">
-      @for (skills of [].constructor(((i * 3) % 9) + 6); track $index) {
-      <div>
-        <div class="animate-pulse h-4 w-20 my-2 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
-        <div class="animate-pulse h-4 w-28 my-2 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
-      </div>
+          <div class="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-2">
+            @for (skills of [].constructor(((i * 3) % 9) + 6); track $index) {
+              <div>
+                <div class="animate-pulse h-4 w-20 my-2 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
+                <div class="animate-pulse h-4 w-28 my-2 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
+              </div>
+            }
+          </div>
+        </article>
       }
-    </div>
-  </article>
-  } } }
+    }
+  }
 
   <!-- Other view -->
-  @if (isPlayerTracked && viewType === ViewType.Other) { @for (diff of hiscoreDiffs; track diff.date; let i = $index) {
-  <article card>
-    <h2 title>{{ diff.date | shortDate }}</h2>
+  @if (isPlayerTracked && viewType === ViewType.Other) {
+    @for (diff of hiscoreDiffs; track diff.date; let i = $index) {
+      <article card>
+        <h2 title>{{ diff.date | shortDate }}</h2>
 
-    <!-- other diffs -->
-    @for(otherKey of filteredOtherKeys(diff); track otherKey) {
-    <section class="flex flex-col gap-1 mb-4 last:mb-0">
-      <h3 class="font-bold bg-slate-100 dark:bg-slate-800 col-span-full">{{ otherKey | capitalizeWords }}</h3>
+        <!-- other diffs -->
+        @for (otherKey of filteredOtherKeys(diff); track otherKey) {
+          <section class="flex flex-col gap-1 mb-4 last:mb-0">
+            <h3 class="font-bold bg-slate-100 dark:bg-slate-800 col-span-full">{{ otherKey | capitalizeWords }}</h3>
 
-      @for(miniGame of miniGames(otherKey, diff); track miniGames.name) { @if (miniGame.score) {
-      <div class="flex items-center gap-2">
-        <img icon [name]="$any(miniGame).name" class="w-4 h-4" />
-        <div>{{ miniGame.name }}:</div>
-        <div class="font-bold text-slate-900 dark:text-white">{{ miniGame.score | number }}</div>
-      </div>
-      } }
-    </section>
-    } @if (filteredOtherKeys(diff).length === 0) {
-    <p class="text-base opacity-70">Nothing interesting happened.</p>
-    }
-  </article>
-  } @empty {
-  <!-- skeleton loader -->
-  @for(skills of [].constructor(7); track i; let i = $index) {
-  <article card>
-    <div title class="rounded-t-lg bg-slate-300 dark:bg-slate-700">
-      <div class="animate-pulse h-5 w-24 my-1 rounded-xl bg-slate-200 dark:bg-slate-600"></div>
-    </div>
+            @for (miniGame of miniGames(otherKey, diff); track miniGames.name) {
+              @if (miniGame.score) {
+                <div class="flex items-center gap-2">
+                  <img icon [name]="$any(miniGame).name" class="w-4 h-4" />
+                  <div>{{ miniGame.name }}:</div>
+                  <div class="font-bold text-slate-900 dark:text-white">{{ miniGame.score | number }}</div>
+                </div>
+              }
+            }
+          </section>
+        }
+        @if (filteredOtherKeys(diff).length === 0) {
+          <p class="text-base opacity-70">Nothing interesting happened.</p>
+        }
+      </article>
+    } @empty {
+      <!-- skeleton loader -->
+      @for (skills of [].constructor(7); track i; let i = $index) {
+        <article card>
+          <div title class="rounded-t-lg bg-slate-300 dark:bg-slate-700">
+            <div class="animate-pulse h-5 w-24 my-1 rounded-xl bg-slate-200 dark:bg-slate-600"></div>
+          </div>
 
-    <div class="flex flex-col gap-2">
-      @for (skills of [].constructor((i % 3) + 1); track $index) {
-      <div>
-        <div class="animate-pulse h-4 w-20 mt-1.5 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
-        <div class="animate-pulse h-4 w-48 my-4 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
-        <div class="animate-pulse h-4 w-32 my-4 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
-        <div class="animate-pulse h-4 w-40 mb-1.5 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
-      </div>
+          <div class="flex flex-col gap-2">
+            @for (skills of [].constructor((i % 3) + 1); track $index) {
+              <div>
+                <div class="animate-pulse h-4 w-20 mt-1.5 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
+                <div class="animate-pulse h-4 w-48 my-4 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
+                <div class="animate-pulse h-4 w-32 my-4 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
+                <div class="animate-pulse h-4 w-40 mb-1.5 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
+              </div>
+            }
+          </div>
+        </article>
       }
-    </div>
-  </article>
-  } } }
+    }
+  }
 </section>

@@ -32,9 +32,9 @@ import { RecentItem } from '../price-tracker-storage.service';
       </div>
       <div class="flex-1 flex items-center justify-end px-4 py-2">
         @if (loading()) {
-        <spinner></spinner>
+          <spinner></spinner>
         } @else {
-        <colored-value [value]="trend()" suffix="gp"></colored-value>
+          <colored-value [value]="trend()" suffix="gp"></colored-value>
         }
       </div>
     </article>
