@@ -28,12 +28,12 @@ export default [
       },
       {
         path: 'changelog',
-        pathMatch: 'prefix',
-        resolve: { metaDescription: () => inject(MetaService).setDefaultMeta() },
-        loadComponent: () => import('./features/changelog/changelog.component'),
+        pathMatch: 'full',
+        redirectTo: '/about/changelog',
       },
       {
         path: '**',
+        pathMatch: 'full',
         title: '404 Not Found - OSRS Tracker',
         resolve: { metaDescription: () => inject(MetaService).setDefaultMeta() },
         loadComponent: () => import('./features/not-found/not-found.component'),

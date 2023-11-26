@@ -1,6 +1,6 @@
 ## 2023/11/12
 
-- Update @angular to `v17.0.2`.
+- Update @angular to `v17.0.4`.
   - Refactored all `NgIf` and `NgFor` instances to the new control flow.
 - Updated all other dependencies to their latest versions. No breaking changes.
 
