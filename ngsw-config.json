@@ -22,6 +22,15 @@
   "navigationUrls": ["/**", "!/**/*.*"],
   "dataGroups": [
     {
+      "name": "osrs-tracker-api-news",
+      "urls": ["https://runescape-api.freekmencke.com/news/**"],
+      "cacheConfig": {
+        "maxSize": 5,
+        "maxAge": "1d",
+        "strategy": "freshness"
+      }
+    },
+    {
       "name": "osrs-tracker-api-proxy",
       "urls": ["https://runescape-api.freekmencke.com/rs/**"],
       "cacheConfig": {

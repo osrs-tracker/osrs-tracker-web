@@ -1,18 +1,21 @@
-import { DecimalPipe, NgIf } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges } from '@angular/core';
 
 @Component({
   standalone: true,
   selector: 'colored-value',
   template: `
-    <ng-template [ngIf]="value != null">
+    @if (value != null) {
       {{ absValue | number: '1.1-1' }}
-      <ng-template [ngIf]="suffix">{{ suffix }}</ng-template>
-    </ng-template>
-    <ng-template [ngIf]="value == null">&mdash;</ng-template>
+      @if (suffix) {
+        {{ suffix }}
+      }
+    } @else {
+      &mdash;
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgIf, DecimalPipe],
+  imports: [DecimalPipe],
 })
 export class ColoredValueComponent implements OnChanges {
   @Input() value: number | null | undefined;

@@ -10,15 +10,17 @@
       <!-- Desktop menu -->
       <div class="hidden lg:flex items-center">
         <ul class="flex space-x-4 font-bold">
-          <li *ngFor="let route of routes; trackBy: trackByPath">
-            <a
-              class="link-states--dark w-6 h-6"
-              [routerLink]="route.path"
-              routerLinkActive="text-emerald-400"
-              [routerLinkActiveOptions]="{ exact: route.path === '/' }"
-              >{{ route.name }}</a
-            >
-          </li>
+          @for (route of routes; track route.path) {
+            <li>
+              <a
+                class="link-states--dark w-6 h-6"
+                [routerLink]="route.path"
+                routerLinkActive="text-emerald-400"
+                [routerLinkActiveOptions]="{ exact: route.path === '/' }"
+                >{{ route.name }}</a
+              >
+            </li>
+          }
         </ul>
       </div>
 
@@ -53,30 +55,31 @@
     <div class="absolute w-full lg:hidden" [ngClass]="{ 'hidden lg:flex': menuCollapsed }">
       <div class="bg-slate-800 shadow-2xl">
         <ul class="container mx-auto font-bold">
-          <li *ngFor="let route of routes; trackBy: trackByPath" class="border-b last:border-b-0 border-b-slate-700">
-            <a
-              class="link-states--dark flex px-4 py-4"
-              (click)="menuCollapsed = true"
-              [routerLink]="route.path"
-              routerLinkActive="text-emerald-400"
-              [routerLinkActiveOptions]="{ exact: route.path === '/' }"
-              >{{ route.name }}</a
-            >
-          </li>
+          @for (route of routes; track route.path) {
+            <li class="border-b last:border-b-0 border-b-slate-700">
+              <a
+                class="link-states--dark flex px-4 py-4"
+                (click)="menuCollapsed = true"
+                [routerLink]="route.path"
+                routerLinkActive="text-emerald-400"
+                [routerLinkActiveOptions]="{ exact: route.path === '/' }"
+                >{{ route.name }}</a
+              >
+            </li>
+          }
         </ul>
       </div>
     </div>
 
     <!-- full width loading indicator -->
-    <div
-      *ngIf="loadingIndicatorService.hasOngoingRequests | async"
-      class="loading-indicator__container absolute top-0 left-0 w-full h-2 overflow-hidden"
-    >
-      <div class="h-1 bg-emerald-400 animate-pulse"></div>
-      <div class="absolute top-0 w-full loading-indicator">
-        <div class="loading-indicator__knob h-1 bg-emerald-400"></div>
+    @if (loadingIndicatorService.hasOngoingRequests | async) {
+      <div class="loading-indicator__container absolute top-0 left-0 w-full h-2 overflow-hidden">
+        <div class="h-1 bg-emerald-400 animate-pulse"></div>
+        <div class="absolute top-0 w-full loading-indicator">
+          <div class="loading-indicator__knob h-1 bg-emerald-400"></div>
+        </div>
       </div>
-    </div>
+    }
   </nav>
 
   <main class="relative">

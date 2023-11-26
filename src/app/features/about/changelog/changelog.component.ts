@@ -22,12 +22,12 @@ export default class ChangelogComponent {
 
   markdown: Signal<string>;
 
-  constructor(private httpClient: HttpClient) {
+  constructor(httpClient: HttpClient) {
     this.markdown = toSignal(
-      this.httpClient
+      httpClient
         .get(this.CHANGELOG_URL, { responseType: 'text', context: new HttpContext().set(BASE_URL_PREFIX, false) })
         .pipe(map(data => marked(data))),
-      { initialValue: 'Loading...' },
+      { initialValue: marked('### Loading...') },
     );
   }
 }

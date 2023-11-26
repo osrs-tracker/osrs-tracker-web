@@ -59,7 +59,7 @@ export class OsrsTrackerRepo {
   // Items
   //
 
-  searchItems(query: string): Observable<Item[]> {
+  searchItems(query: string): Observable<Item[] | void> {
     return this.httpClient.get<Item[]>(`/item/search/${query}`);
   }
 

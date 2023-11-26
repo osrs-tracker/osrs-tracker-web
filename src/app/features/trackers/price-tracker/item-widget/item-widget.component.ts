@@ -1,4 +1,3 @@
-import { NgIf } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -32,13 +31,16 @@ import { RecentItem } from '../price-tracker-storage.service';
         <h3>{{ recentItem.name }}</h3>
       </div>
       <div class="flex-1 flex items-center justify-end px-4 py-2">
-        <spinner *ngIf="loading(); else content"></spinner>
-        <ng-template #content><colored-value [value]="trend()" suffix="gp"></colored-value></ng-template>
+        @if (loading()) {
+          <spinner></spinner>
+        } @else {
+          <colored-value [value]="trend()" suffix="gp"></colored-value>
+        }
       </div>
     </article>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgIf, IconDirective, ColoredValueComponent, SpinnerComponent],
+  imports: [IconDirective, ColoredValueComponent, SpinnerComponent],
 })
 export class ItemWidgetComponent implements OnInit {
   loading: WritableSignal<boolean> = signal(true);
