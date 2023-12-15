@@ -1,11 +1,4 @@
-import {
-  HttpContextToken,
-  HttpEvent,
-  HttpHandler,
-  HttpHandlerFn,
-  HttpInterceptor,
-  HttpRequest,
-} from '@angular/common/http';
+import { HttpContextToken, HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, finalize, map } from 'rxjs';
 
