@@ -31,7 +31,7 @@
         anonymize_ip: true,
         cookie_flags: 'SameSite=None;Secure',
         ...(location.hostname === 'localhost' ? { debug_mode: true } : {}),
-        ...(localStorage.getItem('traffic_type') ? { traffic_type: 'internal' } : {}),
+        ...(localStorage.getItem('traffic_type') ? { traffic_type: localStorage.getItem('traffic_type') } : {}),
       });
     </script>
     <!-- End Google tag -->

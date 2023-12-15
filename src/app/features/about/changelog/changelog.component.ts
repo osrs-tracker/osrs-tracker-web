@@ -26,8 +26,8 @@ export default class ChangelogComponent {
     this.markdown = toSignal(
       httpClient
         .get(this.CHANGELOG_URL, { responseType: 'text', context: new HttpContext().set(BASE_URL_PREFIX, false) })
-        .pipe(map(data => marked(data))),
-      { initialValue: marked('### Loading...') },
+        .pipe(map(data => marked(data) as string)),
+      { initialValue: marked('### Loading...') as string },
     );
   }
 }
