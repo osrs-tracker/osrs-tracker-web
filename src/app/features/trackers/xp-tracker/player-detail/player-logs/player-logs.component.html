@@ -23,6 +23,9 @@
                   <div class="flex items-center gap-2">
                     <img icon [name]="skill.name" class="w-4 h-4" />
                     <span>{{ skill.name }}</span>
+                    @if (skill.level) {
+                      <span class="font-bold positive-value">{{ skill.level }}</span>
+                    }
                   </div>
                   <div class="font-bold text-slate-900 dark:text-white ml-2">
                     +&nbsp;{{ skill.xp | number }}&nbsp;XP

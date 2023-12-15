@@ -1,15 +1,17 @@
 import { DecimalPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, WritableSignal, computed, signal } from '@angular/core';
 
 @Component({
   standalone: true,
   selector: 'colored-value',
   template: `
-    @if (value != null) {
-      {{ absValue | number: '1.1-1' }}
-      @if (suffix) {
-        {{ suffix }}
-      }
+    @if (_value != null) {
+      <span [class.positive-value]="isPositive()" [class.negative-value]="isNegative()"
+        >{{ absValue() | number: '1.1-1' }}
+        @if (suffix) {
+          {{ suffix }}
+        }
+      </span>
     } @else {
       &mdash;
     }
@@ -17,17 +19,14 @@ import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges } from
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [DecimalPipe],
 })
-export class ColoredValueComponent implements OnChanges {
-  @Input() value: number | null | undefined;
+export class ColoredValueComponent {
+  _value: WritableSignal<number | null | undefined> = signal(null);
+  @Input() set value(value: number | null | undefined) {
+    this._value.set(value);
+  }
   @Input() suffix?: string;
 
-  get absValue(): number {
-    return Math.abs(this.value!);
-  }
-  constructor(private elementRef: ElementRef) {}
-
-  ngOnChanges(): void {
-    this.elementRef.nativeElement.classList.toggle('positive', !!this.value && this.value > 0);
-    this.elementRef.nativeElement.classList.toggle('negative', !!this.value && this.value < 0);
-  }
+  absValue = computed(() => Math.abs(this._value() ?? 0));
+  isPositive = computed(() => (this._value() ?? 0) > 0);
+  isNegative = computed(() => (this._value() ?? 0) < 0);
 }

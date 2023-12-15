@@ -41,9 +41,9 @@
       @if (playerDetail.type === PlayerType.Hardcore) {
         <div>
           @if (playerDetail.diedAsHardcore) {
-            <span class="text-negative-400"> dead </span>
+            <span class="negative"> dead </span>
           } @else {
-            <span class="text-positive-400"> alive </span>
+            <span class="positive"> alive </span>
           }
         </div>
       }
@@ -51,7 +51,7 @@
         <div>{{ playerDetail.status }}</div>
       }
       @if (playerDetail.type !== PlayerType.Normal && playerDetail.status !== PlayerStatus.Default) {
-        <div class="text-negative-500">{{ playerDetail.status }}</div>
+        <div class="negative">{{ playerDetail.status }}</div>
       }
       @if (playerDetail.type !== PlayerType.Normal) {
         <div>{{ playerDetail.lastModified | date: 'MMMM dd, HH:mm' }}</div>

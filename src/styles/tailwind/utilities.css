@@ -5,17 +5,19 @@
   .accent {
     @apply text-emerald-500 dark:text-emerald-400;
   }
-  .negative {
-    @apply text-negative-600 dark:text-negative-400;
-  }
-  .negative::before {
-    content: '-';
-  }
-  .positive {
+  .positive,
+  .positive-value {
     @apply text-positive-600 dark:text-positive-400;
   }
-  .positive::before {
+  .positive-value::before {
     content: '+';
+  }
+  .negative,
+  .negative-value {
+    @apply text-negative-600 dark:text-negative-400;
+  }
+  .negative-value::before {
+    content: '-';
   }
 
   /* safe-area-inset */

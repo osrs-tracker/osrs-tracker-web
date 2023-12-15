@@ -1,5 +1,6 @@
 ## 2023/12/15
 
+- Show which skills have leveled up in the XP Tracker.
 - Add optional localStorage setting `traffic_type` that will be used to determine the traffic type for the Google
   Analytics tracker.
 - updated `@angular` to `v17.0.7` and other dependencies as well.
