@@ -1,10 +1,17 @@
 <div class="container mx-auto my-8 px-4 grid lg:grid-cols-3 2xl:grid-cols-4 gap-8">
   <player-detail-widget [playerDetail]="playerDetail" [today]="today()" />
 
-  <player-logs
-    class="lg:col-span-2 2xl:col-span-3"
-    [playerDetail]="playerDetail"
-    [today]="today()"
-    [history]="history()"
-  />
+  <section class="lg:col-span-2 2xl:col-span-3">
+    <player-logs [playerDetail]="playerDetail" [today]="today()" [history]="history()" />
+
+    @if (hasMoreEntries()) {
+      <footer class="flex justify-center mt-4">
+        @if (loadingMore()) {
+          <spinner class="mt-2.5 mb-3" />
+        } @else {
+          <button class="button--default button--rounded px-16" (click)="loadMore()">Load more data</button>
+        }
+      </footer>
+    }
+  </section>
 </div>

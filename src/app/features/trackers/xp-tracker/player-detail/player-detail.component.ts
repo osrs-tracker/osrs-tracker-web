@@ -1,8 +1,19 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, Input, OnInit, WritableSignal, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  Input,
+  OnInit,
+  Signal,
+  WritableSignal,
+  computed,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Hiscore, parseHiscores } from '@osrs-tracker/hiscores';
 import { Player } from '@osrs-tracker/models';
-import { forkJoin } from 'rxjs';
+import { finalize, forkJoin } from 'rxjs';
+import { SpinnerComponent } from 'src/app/common/components/spinner.component';
 import { OsrsProxyRepo } from 'src/app/repositories/osrs-proxy.repo';
 import { OsrsTrackerRepo } from 'src/app/repositories/osrs-tracker.repo';
 import { XpTrackerStorageService } from '../xp-tracker-storage.service';
@@ -14,11 +25,19 @@ import { PlayerLogsComponent } from './player-logs/player-logs.component';
   selector: 'player-detail',
   templateUrl: './player-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [PlayerDetailWidgetComponent, PlayerLogsComponent],
+  imports: [PlayerDetailWidgetComponent, PlayerLogsComponent, SpinnerComponent],
 })
 export default class PlayerDetailComponent implements OnInit {
+  #DEFAULT_SIZE = 14;
+  #MORE_SIZE = 7;
+
+  #historyEntries: WritableSignal<Hiscore[][]> = signal([]);
+
   today: WritableSignal<Hiscore | undefined> = signal(undefined);
-  history: WritableSignal<Hiscore[] | undefined> = signal(undefined);
+  history: Signal<Hiscore[]> = computed(() => this.#historyEntries().flat());
+
+  loadingMore: WritableSignal<boolean> = signal(false);
+  hasMoreEntries: WritableSignal<boolean> = signal(false);
 
   @Input('player') playerDetail: Player;
 
@@ -32,19 +51,49 @@ export default class PlayerDetailComponent implements OnInit {
   ngOnInit(): void {
     if (!this.playerDetail) return;
 
-    this.getPlayerHiscores(this.xpTrackerStorageService.getScrapingOffset());
+    this.loadInitialHiscores();
     this.xpTrackerStorageService.pushRecentPlayer(this.playerDetail.username);
   }
 
-  getPlayerHiscores(scrapingOffset: number, size?: number, skip?: number): void {
+  loadInitialHiscores(): void {
     forkJoin([
-      this.osrsProxyRepo.getPlayerHiscore(this.playerDetail!.username, scrapingOffset), // current hiscore
-      this.osrsTrackerRepo.getPlayerHiscores(this.playerDetail!.username, scrapingOffset, size, skip), // scraped Hiscores
+      this.osrsProxyRepo.getPlayerHiscore(
+        this.playerDetail!.username,
+        this.xpTrackerStorageService.getScrapingOffset(),
+      ), // current hiscore
+      this.osrsTrackerRepo.getPlayerHiscores(
+        this.playerDetail!.username,
+        this.xpTrackerStorageService.getScrapingOffset(),
+        this.#DEFAULT_SIZE,
+        0,
+      ), // scraped Hiscores
     ])
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(([currentHiscore, scrapedHiscores]) => {
         this.today.set(parseHiscores([currentHiscore])[0]);
-        this.history.set(parseHiscores(scrapedHiscores));
+        this.#historyEntries.update(entries => [...entries, parseHiscores(scrapedHiscores)]);
+
+        this.hasMoreEntries.set(scrapedHiscores.length === this.#DEFAULT_SIZE);
+      });
+  }
+
+  loadMore(): void {
+    this.loadingMore.set(true);
+
+    this.osrsTrackerRepo
+      .getPlayerHiscores(
+        this.playerDetail!.username,
+        this.xpTrackerStorageService.getScrapingOffset(),
+        this.#MORE_SIZE,
+        this.history().flat().length,
+      )
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.loadingMore.set(false)),
+      )
+      .subscribe(scrapedHiscores => {
+        this.#historyEntries.update(entries => [...entries, parseHiscores(scrapedHiscores)]),
+          this.hasMoreEntries.set(scrapedHiscores.length === this.#MORE_SIZE);
       });
   }
 }
