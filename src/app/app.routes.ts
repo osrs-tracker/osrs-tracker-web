@@ -6,7 +6,7 @@ export default [
   {
     path: '',
     pathMatch: 'prefix',
-    loadComponent: () => import('./common/root-layout/root-layout.component'),
+    loadComponent: () => import('./common/components/layout/root-layout/root-layout.component'),
     children: [
       {
         path: '',

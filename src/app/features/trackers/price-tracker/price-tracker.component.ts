@@ -2,11 +2,11 @@ import { ChangeDetectionStrategy, Component, WritableSignal, signal } from '@ang
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
-import { PageHeaderComponent } from 'src/app/common/components/page-header.component';
-import { SpinnerComponent } from 'src/app/common/components/spinner.component';
-import { InfoTooltipComponent } from 'src/app/common/components/tooltip/info-tooltip.component';
+import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
+import { InfoTooltipComponent } from 'src/app/common/components/general/tooltip/info-tooltip.component';
+import { PageHeaderComponent } from 'src/app/common/components/layout/page-header.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
-import { OsrsTrackerRepo } from 'src/app/repositories/osrs-tracker.repo';
+import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
 import { ItemWidgetComponent } from './item-widget/item-widget.component';
 import { PriceTrackerStorageService, RecentItem } from './price-tracker-storage.service';
 

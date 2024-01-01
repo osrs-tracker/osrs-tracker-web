@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { Item } from '@osrs-tracker/models';
-import { AveragePricesAtTime, LatestPrices } from 'src/app/repositories/osrs-prices.repo';
+import { AveragePricesAtTime, LatestPrices } from 'src/app/common/repositories/osrs-prices.repo';
 import { PriceTrackerStorageService } from '../price-tracker-storage.service';
 import { ItemAnalyticsComponent } from './item-analytics/item-analytics.component';
 import { ItemDetailWidgetComponent } from './item-detail-widget/item-detail.widget.component';

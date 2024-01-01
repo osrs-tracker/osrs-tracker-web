@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { marked } from 'marked';
 import { map } from 'rxjs';
-import { InformationPageComponent } from 'src/app/common/components/information-page.component';
+import { InformationPageComponent } from 'src/app/common/components/layout/information-page.component';
 import { BASE_URL_PREFIX } from 'src/app/core/interceptors/base-url.interceptors';
 
 @Component({

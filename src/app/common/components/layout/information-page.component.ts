@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { ShortDatePipe } from '../pipes/date-fns.pipe';
+import { ShortDatePipe } from '../../pipes/date-fns.pipe';
 
 @Component({
   standalone: true,

@@ -14,11 +14,16 @@ import { Item } from '@osrs-tracker/models';
 import 'chartjs-adapter-date-fns';
 import { subDays } from 'date-fns';
 import { Observable, forkJoin, map, of, shareReplay } from 'rxjs';
-import { CardComponent } from 'src/app/common/components/card.component';
-import { ColoredValueComponent } from 'src/app/common/components/colored-value.component';
-import { InfoTooltipComponent } from 'src/app/common/components/tooltip/info-tooltip.component';
+import { CardComponent } from 'src/app/common/components/general/card.component';
+import { ColoredValueComponent } from 'src/app/common/components/general/colored-value.component';
+import { InfoTooltipComponent } from 'src/app/common/components/general/tooltip/info-tooltip.component';
 import { utcStartOfDay } from 'src/app/common/helpers/date.helper';
-import { AveragePricesAtTime, LatestPrices, OsrsPricesRepo, TimeSpan } from 'src/app/repositories/osrs-prices.repo';
+import {
+  AveragePricesAtTime,
+  LatestPrices,
+  OsrsPricesRepo,
+  TimeSpan,
+} from 'src/app/common/repositories/osrs-prices.repo';
 import { PriceChartComponent } from './charts/price-chart.component';
 import { VolumeChartComponent } from './charts/volume-chart.component';
 import { Trend } from './item-analytics.model';

@@ -19,8 +19,8 @@ import { BarController, BarElement, Chart, LinearScale, TimeSeriesScale, Tooltip
 import Zoom from 'chartjs-plugin-zoom';
 import { fromUnixTime } from 'date-fns';
 import { formatNumberLegible } from 'src/app/common/helpers/number.helper';
+import { AveragePricesAtTime } from 'src/app/common/repositories/osrs-prices.repo';
 import { ThemeService } from 'src/app/common/services/theme.service';
-import { AveragePricesAtTime } from 'src/app/repositories/osrs-prices.repo';
 import { config } from 'src/config/config';
 
 @Component({

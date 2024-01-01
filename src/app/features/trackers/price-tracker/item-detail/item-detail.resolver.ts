@@ -4,8 +4,13 @@ import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn, Router } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
 import { catchError, forkJoin } from 'rxjs';
-import { AveragePricesAtTime, LatestPrices, OsrsPricesRepo, TimeSpan } from 'src/app/repositories/osrs-prices.repo';
-import { OsrsTrackerRepo } from 'src/app/repositories/osrs-tracker.repo';
+import {
+  AveragePricesAtTime,
+  LatestPrices,
+  OsrsPricesRepo,
+  TimeSpan,
+} from 'src/app/common/repositories/osrs-prices.repo';
+import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
 
 export const itemDetailResolver: ResolveFn<[Item, LatestPrices, number, AveragePricesAtTime[]] | null> = (
   route: ActivatedRouteSnapshot,

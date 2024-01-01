@@ -3,11 +3,11 @@ import { ChangeDetectionStrategy, Component, Input, OnChanges, WritableSignal, s
 import { SkillEnum, getOverallXpDiff } from '@osrs-tracker/hiscores';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { forkJoin } from 'rxjs';
-import { SpinnerComponent } from 'src/app/common/components/spinner.component';
+import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { CapitalizePipe } from 'src/app/common/pipes/capitalize.pipe';
-import { OsrsProxyRepo } from 'src/app/repositories/osrs-proxy.repo';
-import { OsrsTrackerRepo } from 'src/app/repositories/osrs-tracker.repo';
+import { OsrsProxyRepo } from 'src/app/common/repositories/osrs-proxy.repo';
+import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
 
 @Component({
   standalone: true,

@@ -2,7 +2,7 @@ import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Hiscore, MiniGame, Skill, hiscoreDiff } from '@osrs-tracker/hiscores';
 import { Player } from '@osrs-tracker/models';
-import { CardComponent } from 'src/app/common/components/card.component';
+import { CardComponent } from 'src/app/common/components/general/card.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { CapitalizePipe } from 'src/app/common/pipes/capitalize.pipe';
 import { ShortDatePipe } from 'src/app/common/pipes/date-fns.pipe';

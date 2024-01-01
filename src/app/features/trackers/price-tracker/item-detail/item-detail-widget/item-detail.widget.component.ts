@@ -1,11 +1,11 @@
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { Item } from '@osrs-tracker/models';
-import { InfoTooltipComponent } from 'src/app/common/components/tooltip/info-tooltip.component';
-import { TooltipComponent } from 'src/app/common/components/tooltip/tooltip.component';
+import { InfoTooltipComponent } from 'src/app/common/components/general/tooltip/info-tooltip.component';
+import { TooltipComponent } from 'src/app/common/components/general/tooltip/tooltip.component';
 import { TimeAgoPipe } from 'src/app/common/pipes/time-ago.pipe';
+import { LatestPrices } from 'src/app/common/repositories/osrs-prices.repo';
 import { GoogleAnalyticsService } from 'src/app/common/services/google-analytics.service';
-import { LatestPrices } from 'src/app/repositories/osrs-prices.repo';
 import { config } from 'src/config/config';
 import { PriceTrackerStorageService } from '../../price-tracker-storage.service';
 

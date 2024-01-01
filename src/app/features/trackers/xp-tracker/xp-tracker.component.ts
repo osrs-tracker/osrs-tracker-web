@@ -2,9 +2,9 @@ import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, WritableSignal, effect, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { PageHeaderComponent } from 'src/app/common/components/page-header.component';
-import { InfoTooltipComponent } from 'src/app/common/components/tooltip/info-tooltip.component';
-import { TooltipComponent } from 'src/app/common/components/tooltip/tooltip.component';
+import { InfoTooltipComponent } from 'src/app/common/components/general/tooltip/info-tooltip.component';
+import { TooltipComponent } from 'src/app/common/components/general/tooltip/tooltip.component';
+import { PageHeaderComponent } from 'src/app/common/components/layout/page-header.component';
 import { PlayerWidgetComponent } from './player-widget/player-widget.component';
 import { XpTrackerStorageService } from './xp-tracker-storage.service';
 

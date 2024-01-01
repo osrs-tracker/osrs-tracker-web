@@ -10,7 +10,6 @@ module.exports = {
     purgeLayersByDefault: true,
   },
   experimental: {
-    darkModeVariant: true,
     optimizeUniversalDefaults: true,
   },
   theme: {

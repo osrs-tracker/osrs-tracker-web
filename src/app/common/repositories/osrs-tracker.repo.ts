@@ -2,17 +2,13 @@ import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HiscoreEntry, Item, OsrsNewsItem, Player } from '@osrs-tracker/models';
 import { Observable, map } from 'rxjs';
-import { StorageService } from 'src/app/common/services/storage/storage.service';
 import { LOADING_INDICATOR } from 'src/app/core/interceptors/loading-indicator.interceptor';
 
 @Injectable({
   providedIn: 'root',
 })
 export class OsrsTrackerRepo {
-  constructor(
-    private httpClient: HttpClient,
-    private storageService: StorageService,
-  ) {}
+  constructor(private httpClient: HttpClient) {}
 
   //
   // News
@@ -49,9 +45,7 @@ export class OsrsTrackerRepo {
 
   getPlayerHiscores(username: string, scrapingOffset: number, size: number, skip: number): Observable<HiscoreEntry[]> {
     return this.httpClient // Returns `null` when no hiscores have been scraped yet.
-      .get<HiscoreEntry[] | null>(`/player/${username}/hiscores`, {
-        params: { scrapingOffset, size, skip },
-      })
+      .get<HiscoreEntry[] | null>(`/player/${username}/hiscores`, { params: { scrapingOffset, size, skip } })
       .pipe(map(hiscoreEntries => (hiscoreEntries ?? []).map(entry => ({ ...entry, date: new Date(entry.date) }))));
   }
 

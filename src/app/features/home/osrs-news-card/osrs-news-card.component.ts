@@ -1,6 +1,6 @@
 import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { OsrsNewsItem } from 'src/app/repositories/osrs-proxy.repo';
+import { OsrsNewsItem } from 'src/app/common/repositories/osrs-proxy.repo';
 
 @Component({
   standalone: true,
