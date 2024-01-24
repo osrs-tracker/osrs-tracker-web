@@ -1,3 +1,7 @@
+## 2024/01/24
+
+- Fix scurrius being added breaking hiscores
+
 ## 2023/12/16
 
 - Add "Load more data" button to the XP Tracker if you want to see older data. By default only max `60` days of data is
