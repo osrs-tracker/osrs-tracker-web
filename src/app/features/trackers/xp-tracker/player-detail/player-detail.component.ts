@@ -14,6 +14,7 @@ import { Hiscore, parseHiscores } from '@osrs-tracker/hiscores';
 import { Player } from '@osrs-tracker/models';
 import { finalize, forkJoin } from 'rxjs';
 import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
+import { PlayerSkillsWidgetComponent } from 'src/app/common/components/player/player-skills.component';
 import { OsrsProxyRepo } from 'src/app/common/repositories/osrs-proxy.repo';
 import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
 import { XpTrackerStorageService } from '../xp-tracker-storage.service';
@@ -25,7 +26,7 @@ import { PlayerLogsComponent } from './player-logs/player-logs.component';
   selector: 'player-detail',
   templateUrl: './player-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [PlayerDetailWidgetComponent, PlayerLogsComponent, SpinnerComponent],
+  imports: [PlayerSkillsWidgetComponent, PlayerDetailWidgetComponent, PlayerLogsComponent, SpinnerComponent],
 })
 export default class PlayerDetailComponent implements OnInit {
   #DEFAULT_SIZE = 14;
