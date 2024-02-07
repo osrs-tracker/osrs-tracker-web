@@ -1,3 +1,7 @@
+## 2024/02/07
+
+- skill overview in xp tracker
+
 ## 2024/01/24
 
 - Fix scurrius being added breaking hiscores
