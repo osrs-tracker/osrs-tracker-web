@@ -1,13 +1,24 @@
 import { DecimalPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnChanges, WritableSignal, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnChanges,
+  WritableSignal,
+  signal,
+} from '@angular/core';
 import { SkillEnum, getOverallXpDiff } from '@osrs-tracker/hiscores';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
-import { forkJoin } from 'rxjs';
+import { EMPTY, catchError, forkJoin } from 'rxjs';
 import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { CapitalizePipe } from 'src/app/common/pipes/capitalize.pipe';
 import { OsrsProxyRepo } from 'src/app/common/repositories/osrs-proxy.repo';
 import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
+import { GoogleAnalyticsService } from 'src/app/common/services/google-analytics.service';
+import { XpTrackerStorageService } from '../xp-tracker-storage.service';
 
 @Component({
   standalone: true,
@@ -69,8 +80,11 @@ export class PlayerWidgetComponent implements OnChanges {
   @Input() scrapingOffset: number;
 
   constructor(
+    private changeDetectorRef: ChangeDetectorRef,
+    private googlAnalyticsService: GoogleAnalyticsService,
     private osrsProxyRepo: OsrsProxyRepo,
     private osrsTrackerRepo: OsrsTrackerRepo,
+    private xpTrackerStorageService: XpTrackerStorageService,
   ) {}
 
   ngOnChanges(): void {
@@ -79,14 +93,37 @@ export class PlayerWidgetComponent implements OnChanges {
     forkJoin([
       this.osrsProxyRepo.getPlayerHiscore(this.username, this.scrapingOffset),
       this.osrsTrackerRepo.getPlayerInfo(this.username, this.scrapingOffset, { includeLatestHiscoreEntry: true }),
-    ]).subscribe(([hiscore, player]) => {
-      this.playerDetails.set(player);
+    ])
+      .pipe(
+        catchError(err => {
+          if (err instanceof HttpErrorResponse && err.status === 404) {
+            this.removeMissingPlayer();
+          }
+          return EMPTY;
+        }),
+      )
+      .subscribe(([hiscore, player]) => {
+        this.playerDetails.set(player);
 
-      if (player.hiscoreEntries?.length) {
-        this.overallDiff.set(getOverallXpDiff(hiscore, player.hiscoreEntries[0]));
-      }
+        if (player.hiscoreEntries?.length) {
+          this.overallDiff.set(getOverallXpDiff(hiscore, player.hiscoreEntries[0]));
+        }
 
-      this.loading.set(false);
-    });
+        this.loading.set(false);
+      });
+  }
+
+  private removeMissingPlayer(): void {
+    if (this.xpTrackerStorageService.getRecentPlayers().includes(this.username)) {
+      this.xpTrackerStorageService.removeRecentPlayer(this.username);
+    }
+
+    if (this.xpTrackerStorageService.getFavoritePlayers().includes(this.username)) {
+      this.xpTrackerStorageService.toggleFavoritePlayer(this.username);
+    }
+
+    this.googlAnalyticsService.trackEvent('remove-missing-player', 'xp-tracker', this.username, true);
+
+    this.changeDetectorRef.markForCheck();
   }
 }

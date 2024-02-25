@@ -1,3 +1,7 @@
+## 2024/02/25
+
+- remove players that are missing from the hiscores from the xp tracker (name change, banned, etc)
+
 ## 2024/02/07
 
 - skill overview in xp tracker

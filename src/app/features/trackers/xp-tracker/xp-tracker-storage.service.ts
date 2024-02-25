@@ -39,6 +39,16 @@ export class XpTrackerStorageService {
     this.storageService.setItem(StorageKey.XpTrackerRecentPlayers, JSON.stringify(recentPlayers));
   }
 
+  removeRecentPlayer(username: string): void {
+    const recentPlayers = this.getRecentPlayers();
+
+    if (recentPlayers.includes(username)) {
+      recentPlayers.splice(recentPlayers.indexOf(username), 1);
+    }
+
+    this.storageService.setItem(StorageKey.XpTrackerRecentPlayers, JSON.stringify(recentPlayers));
+  }
+
   getFavoritePlayers(): string[] {
     return JSON.parse(this.storageService.getItem(StorageKey.XpTrackerFavoritePlayers) ?? '[]');
   }
