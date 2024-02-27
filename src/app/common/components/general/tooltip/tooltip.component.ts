@@ -105,7 +105,7 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   @HostListener('mouseleave') onMouseLeave() {
-    this.mousePresent$.next(false);
+    // this.mousePresent$.next(false);
   }
 
   @HostListener('document:touchend', ['$event.target']) onDocumentTouchend(target: HTMLElement) {

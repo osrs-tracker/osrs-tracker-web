@@ -32,12 +32,7 @@
               "src/manifest.webmanifest",
               "src/robots.txt"
             ],
-            "styles": [
-              "src/styles/index.scss",
-              "src/styles/tailwind/base.css",
-              "src/styles/tailwind/components.css",
-              "src/styles/tailwind/utilities.css"
-            ],
+            "styles": ["src/styles/tailwind/index.scss", "src/styles/index.scss"],
             "scripts": [],
             "allowedCommonJsDependencies": ["hammerjs"],
             "serviceWorker": true,

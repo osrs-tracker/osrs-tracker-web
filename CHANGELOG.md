@@ -1,3 +1,8 @@
+## 2024/02/27
+
+- updated dependencies
+- fixed issue where tooltip arrows would be misaligned a bit.
+
 ## 2024/02/25
 
 - remove players that are missing from the hiscores from the xp tracker (name change, banned, etc)
