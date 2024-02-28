@@ -1,6 +1,6 @@
 import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, InputSignal, input } from '@angular/core';
-import { Skill, calculateXPForSkillLevel, calculateXPToNextLevel } from '@osrs-tracker/hiscores';
+import { Skill, SkillEnum, calculateXPForSkillLevel, calculateXPToNextLevel } from '@osrs-tracker/hiscores';
 import { IconDirective } from '../../directives/icon/icon.directive';
 import { TooltipComponent } from '../general/tooltip/tooltip.component';
 
@@ -26,13 +26,17 @@ import { TooltipComponent } from '../general/tooltip/tooltip.component';
       <div class="flex justify-between gap-4">
         <div>
           <div>{{ skill()?.name }} XP:</div>
-          <div>Next Level at:</div>
-          <div>Remaining XP:</div>
+          @if (skill()?.name !== SkillEnum.Overall) {
+            <div>Next Level at:</div>
+            <div>Remaining XP:</div>
+          }
         </div>
         <div class="text-right">
           <div>{{ skill()?.xp | number }}</div>
-          <div>{{ xpForNextLevel | number }}</div>
-          <div>{{ xpToNextLevel | number }}</div>
+          @if (skill()?.name !== SkillEnum.Overall) {
+            <div>{{ xpForNextLevel | number }}</div>
+            <div>{{ xpToNextLevel | number }}</div>
+          }
         </div>
       </div>
     </ng-template>
@@ -41,6 +45,8 @@ import { TooltipComponent } from '../general/tooltip/tooltip.component';
   imports: [IconDirective, TooltipComponent, DecimalPipe],
 })
 export class PlayerSkillWidgetComponent {
+  readonly SkillEnum: typeof SkillEnum = SkillEnum;
+
   skill: InputSignal<Skill | undefined> = input();
 
   get xpToNextLevel(): number {
