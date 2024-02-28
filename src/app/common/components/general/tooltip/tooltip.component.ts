@@ -6,7 +6,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  HostBinding,
   HostListener,
   Input,
   OnDestroy,
@@ -57,8 +56,6 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
 
   containerOverlayRef?: OverlayRef;
   containerTemplatePortal: TemplatePortal;
-
-  @HostBinding('class.cursor-help') cursorHelp = true;
 
   @Input() tooltipTemplate: TemplateRef<unknown>;
   @Input() tooltipUnderline: boolean = true;
