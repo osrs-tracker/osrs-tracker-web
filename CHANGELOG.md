@@ -1,3 +1,7 @@
+## 2024/02/28
+
+- Added xp tooltips to the skills overview in xp tracker
+
 ## 2024/02/27
 
 - updated dependencies

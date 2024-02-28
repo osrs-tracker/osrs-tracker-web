@@ -61,6 +61,7 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostBinding('class.cursor-help') cursorHelp = true;
 
   @Input() tooltipTemplate: TemplateRef<unknown>;
+  @Input() tooltipUnderline: boolean = true;
   @ViewChild('tooltipTemplateArrow') tooltipTemplateArrow: TemplateRef<unknown>;
   @ViewChild('tooltipTemplateContainer') tooltipTemplateContainer: TemplateRef<unknown>;
 
@@ -85,7 +86,9 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.elementRef.nativeElement.classList.add('underline', 'underline-offset-[6px]', 'decoration-dotted');
+    if (this.tooltipUnderline) {
+      this.elementRef.nativeElement.classList.add('underline', 'underline-offset-[6px]', 'decoration-dotted');
+    }
   }
 
   ngAfterViewInit(): void {
