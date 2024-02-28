@@ -26,14 +26,14 @@ import { TooltipComponent } from '../general/tooltip/tooltip.component';
       <div class="flex justify-between gap-4">
         <div>
           <div>{{ skill()?.name }} XP:</div>
-          @if (skill()?.name !== SkillEnum.Overall) {
+          @if (showXpDetails) {
             <div>Next Level at:</div>
             <div>Remaining XP:</div>
           }
         </div>
         <div class="text-right">
           <div>{{ skill()?.xp | number }}</div>
-          @if (skill()?.name !== SkillEnum.Overall) {
+          @if (showXpDetails) {
             <div>{{ xpForNextLevel | number }}</div>
             <div>{{ xpToNextLevel | number }}</div>
           }
@@ -55,5 +55,9 @@ export class PlayerSkillWidgetComponent {
 
   get xpForNextLevel(): number {
     return calculateXPForSkillLevel((this.skill()?.level ?? 1) + 1);
+  }
+
+  get showXpDetails(): boolean {
+    return this.skill()?.name !== SkillEnum.Overall && this.skill()?.level !== 99;
   }
 }
