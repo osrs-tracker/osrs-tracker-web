@@ -57,6 +57,7 @@ export const iconMap: { [key: string]: string } = {
 
   [MiniGameEnum.SoulWarsZeal]: '/minigames/game_icon_soulwarszeal.png',
   [MiniGameEnum.RiftsClosed]: '/minigames/game_icon_riftsclosed.png',
+  [MiniGameEnum.ColosseumGlory]: '/minigames/game_icon_colosseumglory.png',
 
   [ClueScrollsEnum.ClueScrollsAll]: '/cluescrolls/game_icon_cluescrollsall.png',
   [ClueScrollsEnum.ClueScrollsBeginner]: '/cluescrolls/game_icon_cluescrollsbeginner.png',
@@ -102,6 +103,7 @@ export const iconMap: { [key: string]: string } = {
   [BossEnum.Kraken]: '/bosses/game_icon_kraken.png',
   [BossEnum.KreeArra]: '/bosses/game_icon_kreearra.png',
   [BossEnum.KrilTsutsaroth]: '/bosses/game_icon_kriltsutsaroth.png',
+  [BossEnum.LunarChests]: '/bosses/game_icon_lunarchests.png',
   [BossEnum.Mimic]: '/bosses/game_icon_mimic.png',
   [BossEnum.Nex]: '/bosses/game_icon_nex.png',
   [BossEnum.Nightmare]: '/bosses/game_icon_nightmare.png',
@@ -112,6 +114,7 @@ export const iconMap: { [key: string]: string } = {
   [BossEnum.Scorpia]: '/bosses/game_icon_scorpia.png',
   [BossEnum.Scurrius]: '/bosses/game_icon_scurrius.png',
   [BossEnum.Skotizo]: '/bosses/game_icon_skotizo.png',
+  [BossEnum.SolHeredit]: '/bosses/game_icon_solheredit.png',
   [BossEnum.Spindel]: '/bosses/game_icon_spindel.png',
   [BossEnum.Tempoross]: '/bosses/game_icon_tempoross.png',
   [BossEnum.TheLeviathan]: '/bosses/game_icon_theleviathan.png',
