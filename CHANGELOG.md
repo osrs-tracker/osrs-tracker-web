@@ -1,3 +1,11 @@
+## 2024/04/06
+
+- Add missing colliseum glory icon
+
+## 2024/03/20
+
+- Varlamore p1 support
+
 ## 2024/02/28
 
 - Added xp tooltips to the skills overview in xp tracker
