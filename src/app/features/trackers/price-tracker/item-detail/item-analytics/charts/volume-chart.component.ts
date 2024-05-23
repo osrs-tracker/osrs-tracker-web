@@ -1,19 +1,19 @@
 import { formatNumber } from '@angular/common';
 import {
-  ChangeDetectionStrategy,
   Component,
   ElementRef,
   HostBinding,
   HostListener,
   Injector,
-  Input,
+  InputSignal,
   OnDestroy,
   OnInit,
   Signal,
-  ViewChild,
   computed,
   effect,
+  input,
   runInInjectionContext,
+  viewChild,
 } from '@angular/core';
 import { BarController, BarElement, Chart, LinearScale, TimeSeriesScale, Tooltip } from 'chart.js';
 import Zoom from 'chartjs-plugin-zoom';
@@ -27,15 +27,14 @@ import { config } from 'src/config/config';
   standalone: true,
   selector: 'volume-chart',
   template: '<canvas #volumeChart></canvas>',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VolumeChartComponent implements OnInit, OnDestroy {
   @HostBinding('class') class = 'block h-60 max-w-full';
 
   volumeChart: Chart;
-  @ViewChild('volumeChart', { static: true }) volumeChartCanvas: ElementRef<HTMLCanvasElement>;
+  volumeChartCanvas: Signal<ElementRef<HTMLCanvasElement>> = viewChild.required('volumeChart');
 
-  @Input({ required: true }) timeSeries: Signal<AveragePricesAtTime[]>;
+  timeSeries: InputSignal<AveragePricesAtTime[]> = input.required();
 
   chartConfig = computed(() => (this.themeService.darkMode() ? config.chart.dark : config.chart.light));
 
@@ -71,13 +70,13 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
   // Workaround for chart.js not closing tooltips when tapping outside the canvas (iOS)
   @HostListener('document:touchend', ['$event.target'])
   hideTooltip(target: HTMLElement): void {
-    if (target !== this.volumeChartCanvas.nativeElement) {
-      this.volumeChartCanvas.nativeElement.dispatchEvent(new Event('mouseout'));
+    if (target !== this.volumeChartCanvas().nativeElement) {
+      this.volumeChartCanvas().nativeElement.dispatchEvent(new Event('mouseout'));
     }
   }
 
   private createPriceChart(): void {
-    this.volumeChart = new Chart(this.volumeChartCanvas.nativeElement, {
+    this.volumeChart = new Chart(this.volumeChartCanvas().nativeElement, {
       type: 'bar',
       data: { datasets: [] },
       options: {

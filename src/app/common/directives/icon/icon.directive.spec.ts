@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, InputSignal, input, provideExperimentalZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import {
@@ -14,24 +14,26 @@ import { PlayerType } from '@osrs-tracker/models';
 import { IconDirective } from './icon.directive';
 
 @Component({
-  template: '<img icon [name]="name" [wiki]="wiki">',
+  template: '<img icon [name]="name()" [wiki]="wiki()">',
 })
 class TestComponent {
-  @Input() name: string;
-  @Input() wiki: boolean;
+  name: InputSignal<string> = input('coins');
+  wiki: InputSignal<boolean> = input(false);
 }
 
 describe('IconDirective', () => {
   let fixture: ComponentFixture<TestComponent>;
   let img: HTMLImageElement;
 
-  beforeEach(() => {
-    fixture = TestBed.configureTestingModule({
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
       imports: [IconDirective],
       declarations: [TestComponent],
-    }).createComponent(TestComponent);
+      providers: [provideExperimentalZonelessChangeDetection()],
+    });
 
-    fixture.detectChanges(); // initial binding
+    fixture = TestBed.createComponent(TestComponent);
+    await fixture.whenStable();
 
     img = fixture.debugElement.query(By.directive(IconDirective)).nativeElement;
   });
@@ -41,88 +43,99 @@ describe('IconDirective', () => {
     expect(img.style.imageRendering).toBe('pixelated');
   });
 
-  it('should map "coins" to icon', () => {
-    fixture.componentInstance.name = 'coins';
-    fixture.detectChanges();
+  it('should map "coins" to icon', async () => {
+    fixture.componentRef.setInput('name', 'coins');
+    await fixture.whenStable();
+
     expect(img.src).toContain('/coins.png');
     expect(img.alt).toBe('coins icon');
   });
 
-  it('should map "combat" to icon', () => {
-    fixture.componentInstance.name = 'combat';
-    fixture.detectChanges();
+  it('should map "combat" to icon', async () => {
+    fixture.componentRef.setInput('name', 'combat');
+    await fixture.whenStable();
+
     expect(img.src).toContain('/combat.png');
     expect(img.alt).toBe('combat icon');
   });
 
-  it('should map "dead" to icon', () => {
-    fixture.componentInstance.name = 'dead';
-    fixture.detectChanges();
+  it('should map "dead" to icon', async () => {
+    fixture.componentRef.setInput('name', 'dead');
+    await fixture.whenStable();
+
     expect(img.src).toContain('/skull.png');
     expect(img.alt).toBe('dead icon');
   });
 
-  it('should map PlayerTypeEnum to icon', () => {
-    fixture.componentInstance.name = PlayerType.Ironman;
-    fixture.detectChanges();
+  it('should map PlayerTypeEnum to icon', async () => {
+    fixture.componentRef.setInput('name', PlayerType.Ironman);
+    await fixture.whenStable();
+
     expect(img.src).toContain('/player_type/ironman.png');
     expect(img.alt).toBe(`${PlayerType.Ironman} icon`);
   });
 
-  it('should map SkillEnum to icon', () => {
-    fixture.componentInstance.name = SkillEnum.Firemaking;
-    fixture.detectChanges();
+  it('should map SkillEnum to icon', async () => {
+    fixture.componentRef.setInput('name', SkillEnum.Firemaking);
+    await fixture.whenStable();
+
     expect(img.src).toContain('/skills/skill_icon_firemaking1.gif');
     expect(img.alt).toBe(`${SkillEnum.Firemaking} icon`);
   });
 
-  it('should map ClueScrollEnum to icon', () => {
-    fixture.componentInstance.name = ClueScrollsEnum.ClueScrollsHard;
-    fixture.detectChanges();
+  it('should map ClueScrollEnum to icon', async () => {
+    fixture.componentRef.setInput('name', ClueScrollsEnum.ClueScrollsHard);
+    await fixture.whenStable();
+
     expect(img.src).toContain('/cluescrolls/game_icon_cluescrollshard.png');
     expect(img.alt).toBe(`${ClueScrollsEnum.ClueScrollsHard} icon`);
   });
 
-  it('should map MiniGameEnum to icon', () => {
-    fixture.componentInstance.name = MiniGameEnum.SoulWarsZeal;
-    fixture.detectChanges();
+  it('should map MiniGameEnum to icon', async () => {
+    fixture.componentRef.setInput('name', MiniGameEnum.SoulWarsZeal);
+    await fixture.whenStable();
+
     expect(img.src).toContain('/minigames/game_icon_soulwarszeal.png');
     expect(img.alt).toBe(`${MiniGameEnum.SoulWarsZeal} icon`);
   });
 
-  it('should map BountyHunterEnum to icon', () => {
-    fixture.componentInstance.name = BountyHunterEnum.BountyHunterRogues;
-    fixture.detectChanges();
+  it('should map BountyHunterEnum to icon', async () => {
+    fixture.componentRef.setInput('name', BountyHunterEnum.BountyHunterRogues);
+    await fixture.whenStable();
+
     expect(img.src).toContain('/minigames/game_icon_bountyhunterrogue.png');
     expect(img.alt).toBe(`${BountyHunterEnum.BountyHunterRogues} icon`);
   });
 
-  it('should map CompetitiveEnum to icon', () => {
-    fixture.componentInstance.name = CompetitiveEnum.LastManStanding;
-    fixture.detectChanges();
+  it('should map CompetitiveEnum to icon', async () => {
+    fixture.componentRef.setInput('name', CompetitiveEnum.LastManStanding);
+    await fixture.whenStable();
+
     expect(img.src).toContain('/minigames/game_icon_lmsrank.png');
     expect(img.alt).toBe(`${CompetitiveEnum.LastManStanding} icon`);
   });
 
-  it('should map BossEnum to icon', () => {
-    fixture.componentInstance.name = BossEnum.KreeArra;
-    fixture.detectChanges();
+  it('should map BossEnum to icon', async () => {
+    fixture.componentRef.setInput('name', BossEnum.KreeArra);
+    await fixture.whenStable();
+
     expect(img.src).toContain('/bosses/game_icon_kreearra.png');
     expect(img.alt).toBe(`${BossEnum.KreeArra} icon`);
   });
 
-  it('should map RaidEnum to icon', () => {
-    fixture.componentInstance.name = RaidEnum.TheGauntlet;
-    fixture.detectChanges();
+  it('should map RaidEnum to icon', async () => {
+    fixture.componentRef.setInput('name', RaidEnum.TheGauntlet);
+    await fixture.whenStable();
+
     expect(img.src).toContain('/raids/game_icon_thegauntlet.png');
     expect(img.alt).toBe(`${RaidEnum.TheGauntlet} icon`);
   });
 
-  it('should map Wiki item names to wiki image url', () => {
-    fixture.componentInstance.name = 'Abyssal whip.png';
-    fixture.componentInstance.wiki = true;
+  it('should map Wiki item names to wiki image url', async () => {
+    fixture.componentRef.setInput('name', 'Abyssal whip.png');
+    fixture.componentRef.setInput('wiki', true);
+    await fixture.whenStable();
 
-    fixture.detectChanges();
     expect(img.src).toBe('https://oldschool.runescape.wiki/images/Abyssal_whip.png');
     expect(img.alt).toBe('Abyssal whip icon');
   });

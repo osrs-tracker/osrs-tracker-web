@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, InputSignal, Signal, computed, input } from '@angular/core';
+import { Component, InputSignal, Signal, computed, input } from '@angular/core';
 import { Hiscore } from '@osrs-tracker/hiscores';
 import { IconDirective } from '../../directives/icon/icon.directive';
 import { PlayerSkillWidgetComponent } from './player-skill.component';
@@ -54,7 +54,6 @@ import { PlayerSkillWidgetComponent } from './player-skill.component';
       </div>
     </section>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IconDirective, PlayerSkillWidgetComponent],
 })
 export class PlayerSkillsWidgetComponent {

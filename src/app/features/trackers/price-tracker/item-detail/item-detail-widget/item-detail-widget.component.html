@@ -1,9 +1,9 @@
 <section class="flex flex-col gap-4">
   <header class="flex items-baseline">
     <h2 class="text-2xl font-bold text-slate-900 dark:text-white truncate">
-      <span>{{ itemDetail.name }}</span>
+      <span>{{ itemDetail().name }}</span>
     </h2>
-    <div class="ml-2 opacity-70 text-xs whitespace-nowrap">ID: {{ itemDetail.id }}</div>
+    <div class="ml-2 opacity-70 text-xs whitespace-nowrap">ID: {{ itemDetail().id }}</div>
   </header>
 
   <div class="shadow-lg rounded-lg bg-slate-100 dark:bg-slate-800 p-4 flex flex-col gap-4">
@@ -14,13 +14,13 @@
         [width]="160"
         [height]="160"
         [priority]="true"
-        [alt]="itemDetail.name + ' icon'"
+        [alt]="itemDetail().name + ' icon'"
       />
     </picture>
 
     <section class="text-lg">
       <h3 class="font-bold">Examine:</h3>
-      <p class="text-slate-900 dark:text-white">{{ itemDetail.examine }}</p>
+      <p class="text-slate-900 dark:text-white">{{ itemDetail().examine }}</p>
     </section>
 
     <section>
@@ -29,17 +29,17 @@
       <div class="flex flex-col gap-1">
         <section class="flex justify-between">
           <h3 class="font-bold">Value</h3>
-          <div class="text-slate-900 dark:text-white">{{ itemDetail.value | number }}&ngsp;gp</div>
+          <div class="text-slate-900 dark:text-white">{{ itemDetail().value | number }}&ngsp;gp</div>
         </section>
 
         <section class="flex justify-between">
           <h3 class="font-bold">High alc</h3>
-          <div class="text-slate-900 dark:text-white">{{ itemDetail.highalch | number }}&ngsp;gp</div>
+          <div class="text-slate-900 dark:text-white">{{ itemDetail().highalch | number }}&ngsp;gp</div>
         </section>
 
         <section class="flex justify-between">
           <h3 class="font-bold">Low alc</h3>
-          <div class="text-slate-900 dark:text-white">{{ itemDetail.lowalch | number }}&ngsp;gp</div>
+          <div class="text-slate-900 dark:text-white">{{ itemDetail().lowalch | number }}&ngsp;gp</div>
         </section>
       </div>
     </section>
@@ -54,9 +54,9 @@
             <info-tooltip>The price of the latest instant buy.</info-tooltip>
           </h3>
           <div class="text-slate-900 dark:text-white" tooltip [tooltipTemplate]="highTimeTooltip">
-            {{ latestPrices.high | number }}&ngsp;gp
+            {{ latestPrices().high | number }}&ngsp;gp
           </div>
-          <ng-template #highTimeTooltip>Last trade was {{ latestPrices.highTime | timeAgo }}.</ng-template>
+          <ng-template #highTimeTooltip>Last trade was {{ latestPrices().highTime | timeAgo }}.</ng-template>
         </section>
 
         <section class="flex justify-between">
@@ -65,9 +65,9 @@
             <info-tooltip>The price of the latest instant sell.</info-tooltip>
           </h3>
           <div class="text-slate-900 dark:text-white" tooltip [tooltipTemplate]="lowTimeTooltip">
-            {{ latestPrices.low | number }}&ngsp;gp
+            {{ latestPrices().low | number }}&ngsp;gp
           </div>
-          <ng-template #lowTimeTooltip>Last trade was {{ latestPrices.lowTime | timeAgo }}.</ng-template>
+          <ng-template #lowTimeTooltip>Last trade was {{ latestPrices().lowTime | timeAgo }}.</ng-template>
         </section>
 
         <section class="flex justify-between">
@@ -75,7 +75,7 @@
             <div>Daily volume</div>
             <info-tooltip>The number of times the item has been traded within the last 24 hours.</info-tooltip>
           </h3>
-          <div class="text-slate-900 dark:text-white">{{ dailyVolume | number }}</div>
+          <div class="text-slate-900 dark:text-white">{{ dailyVolume() | number }}</div>
         </section>
 
         <section class="flex justify-between">
@@ -83,7 +83,7 @@
             <div>Limit</div>
             <info-tooltip>The amount of times the item can be bought every 4 hours.</info-tooltip>
           </h3>
-          <div class="text-slate-900 dark:text-white">{{ itemDetail.limit | number }}</div>
+          <div class="text-slate-900 dark:text-white">{{ itemDetail().limit | number }}</div>
         </section>
       </div>
     </section>

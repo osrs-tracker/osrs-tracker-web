@@ -3,16 +3,17 @@ import { TemplatePortal } from '@angular/cdk/portal';
 import { NgTemplateOutlet } from '@angular/common';
 import {
   AfterViewInit,
-  ChangeDetectionStrategy,
   Component,
   ElementRef,
   HostListener,
-  Input,
+  InputSignal,
   OnDestroy,
   OnInit,
+  Signal,
   TemplateRef,
-  ViewChild,
   ViewContainerRef,
+  input,
+  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, debounceTime } from 'rxjs';
@@ -29,7 +30,7 @@ import { Subject, debounceTime } from 'rxjs';
         (mouseenter)="onMouseEnter()"
         (mouseleave)="onMouseLeave()"
       >
-        <ng-template [ngTemplateOutlet]="tooltipTemplate" />
+        <ng-template [ngTemplateOutlet]="tooltipTemplate()" />
       </div>
     </ng-template>
 
@@ -43,7 +44,6 @@ import { Subject, debounceTime } from 'rxjs';
       </div>
     </ng-template>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgTemplateOutlet, OverlayModule],
 })
 export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -57,10 +57,11 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
   containerOverlayRef?: OverlayRef;
   containerTemplatePortal: TemplatePortal;
 
-  @Input() tooltipTemplate: TemplateRef<unknown>;
-  @Input() tooltipUnderline: boolean = true;
-  @ViewChild('tooltipTemplateArrow') tooltipTemplateArrow: TemplateRef<unknown>;
-  @ViewChild('tooltipTemplateContainer') tooltipTemplateContainer: TemplateRef<unknown>;
+  tooltipTemplate: InputSignal<TemplateRef<unknown>> = input.required();
+  tooltipUnderline: InputSignal<boolean> = input(true);
+
+  tooltipTemplateArrow: Signal<TemplateRef<unknown>> = viewChild.required('tooltipTemplateArrow');
+  tooltipTemplateContainer: Signal<TemplateRef<unknown>> = viewChild.required('tooltipTemplateContainer');
 
   constructor(
     private elementRef: ElementRef,
@@ -83,14 +84,14 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if (this.tooltipUnderline) {
+    if (this.tooltipUnderline()) {
       this.elementRef.nativeElement.classList.add('underline', 'underline-offset-[6px]', 'decoration-dotted');
     }
   }
 
   ngAfterViewInit(): void {
-    this.containerTemplatePortal = new TemplatePortal(this.tooltipTemplateContainer, this.viewContainerRef);
-    this.arrowTemplatePortal = new TemplatePortal(this.tooltipTemplateArrow, this.viewContainerRef);
+    this.containerTemplatePortal = new TemplatePortal(this.tooltipTemplateContainer(), this.viewContainerRef);
+    this.arrowTemplatePortal = new TemplatePortal(this.tooltipTemplateArrow(), this.viewContainerRef);
   }
 
   ngOnDestroy(): void {

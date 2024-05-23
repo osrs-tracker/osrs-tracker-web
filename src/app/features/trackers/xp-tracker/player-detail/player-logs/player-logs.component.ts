@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, InputSignal, Signal, computed, input } from '@angular/core';
 import { Hiscore, MiniGame, Skill, hiscoreDiff } from '@osrs-tracker/hiscores';
 import { Player } from '@osrs-tracker/models';
 import { CardComponent } from 'src/app/common/components/general/card.component';
@@ -17,31 +17,34 @@ export enum ViewType {
   standalone: true,
   selector: 'player-logs',
   templateUrl: './player-logs.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CapitalizePipe, CardComponent, DecimalPipe, IconDirective, ShortDatePipe],
 })
-export class PlayerLogsComponent implements OnChanges {
+export class PlayerLogsComponent {
   readonly ViewType: typeof ViewType = ViewType;
   viewType: ViewType = this.xpTrackerStorageService.getViewType();
 
-  hiscoreDiffs: Hiscore[];
-
   otherKeys: (keyof Hiscore)[] = ['bountyHunter', 'clueScrolls', 'competitive', 'miniGames', 'bosses', 'raids'];
 
-  @Input() playerDetail: Player;
-
-  @Input() today?: Hiscore;
-  @Input() history?: Hiscore[];
+  playerDetail: InputSignal<Player> = input.required();
 
   get isPlayerTracked(): boolean {
-    return !!this.playerDetail.scrapingOffsets?.length;
+    return !!this.playerDetail().scrapingOffsets?.length;
   }
+
+  today: InputSignal<Hiscore | undefined> = input();
+  history: InputSignal<Hiscore[] | undefined> = input();
+
+  hiscoreDiffs: Signal<Hiscore[]> = computed(() => {
+    let previousHiscore = this.today();
+
+    return this.history()!.map(hiscore => {
+      const diff = hiscoreDiff(previousHiscore!, hiscore);
+      previousHiscore = hiscore;
+      return diff;
+    });
+  });
 
   constructor(private xpTrackerStorageService: XpTrackerStorageService) {}
-
-  ngOnChanges({ history }: SimpleChanges): void {
-    if (history?.currentValue) this.calculateHiscoreDiffs();
-  }
 
   skills(hiscore: Hiscore): Skill[] {
     return Object.values(hiscore.skills);
@@ -66,15 +69,5 @@ export class PlayerLogsComponent implements OnChanges {
   setView(viewType: ViewType): void {
     this.viewType = viewType;
     this.xpTrackerStorageService.setViewType(viewType);
-  }
-
-  private calculateHiscoreDiffs(): void {
-    let previousHiscore = this.today;
-
-    this.hiscoreDiffs = this.history!.map(hiscore => {
-      const diff = hiscoreDiff(previousHiscore!, hiscore);
-      previousHiscore = hiscore;
-      return diff;
-    });
   }
 }

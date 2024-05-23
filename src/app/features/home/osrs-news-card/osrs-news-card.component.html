@@ -1,24 +1,24 @@
 <article class="flex flex-col h-full shadow-lg rounded-lg bg-slate-100 dark:bg-slate-800">
   <img
     class="rounded-t-lg cursor-pointer"
-    [ngSrc]="osrsNewsItem.enclosure.url"
-    [alt]="osrsNewsItem.title"
+    [ngSrc]="osrsNewsItem().enclosure.url"
+    [alt]="osrsNewsItem().title"
     [width]="628"
     [height]="354"
     [priority]="true"
-    (click)="openLink(osrsNewsItem.link)"
+    (click)="openLink(osrsNewsItem().link)"
   />
   <div class="flex flex-col flex-grow p-4">
     <div class="flex justify-between text-slate-500 dark:text-slate-400 mb-2 font-light">
-      <small>{{ osrsNewsItem.pubDate | date: 'MMMM dd, YYYY' }}</small>
-      <small>{{ osrsNewsItem.category }}</small>
+      <small>{{ osrsNewsItem().pubDate | date: 'MMMM dd, YYYY' }}</small>
+      <small>{{ osrsNewsItem().category }}</small>
     </div>
-    <h3 class="font-bold mb-2 truncate" [innerHTML]="osrsNewsItem.title"></h3>
-    <div class="line-clamp-2 mb-2" [innerHTML]="osrsNewsItem.description"></div>
+    <h3 class="font-bold mb-2 truncate" [innerHTML]="osrsNewsItem().title"></h3>
+    <div class="line-clamp-2 mb-2" [innerHTML]="osrsNewsItem().description"></div>
     <div class="mt-auto">
-      <a class="link" [href]="osrsNewsItem.link" target="_blank">
+      <a class="link" [href]="osrsNewsItem().link" target="_blank">
         Read more
-        <span class="absolute overflow-hidden w-px h-px">&ngsp;about "{{ osrsNewsItem.title }}".</span>
+        <span class="absolute overflow-hidden w-px h-px">&ngsp;about "{{ osrsNewsItem().title }}".</span>
       </a>
     </div>
   </div>

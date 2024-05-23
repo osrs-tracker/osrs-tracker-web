@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Item } from '@osrs-tracker/models';
 import { AveragePricesAtTime, LatestPrices } from 'src/app/common/repositories/osrs-prices.repo';
 import { PriceTrackerStorageService } from '../price-tracker-storage.service';
@@ -9,7 +9,6 @@ import { ItemDetailWidgetComponent } from './item-detail-widget/item-detail.widg
   standalone: true,
   selector: 'item-detail',
   templateUrl: './item-detail.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ItemAnalyticsComponent, ItemDetailWidgetComponent],
 })
 export default class ItemDetailComponent implements OnInit {

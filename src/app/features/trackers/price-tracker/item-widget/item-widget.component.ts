@@ -1,13 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Injector,
-  Input,
-  OnInit,
-  Signal,
-  WritableSignal,
-  signal,
-} from '@angular/core';
+import { Component, Injector, Input, InputSignal, OnInit, Signal, WritableSignal, input, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { subDays } from 'date-fns';
 import { forkJoin, map, tap } from 'rxjs';
@@ -27,8 +18,8 @@ import { RecentItem } from '../price-tracker-storage.service';
         cursor-pointer ring-2 ring-transparent hover:ring-emerald-500 dark:hover:ring-emerald-400"
     >
       <div class="flex-1 flex gap-3 items-center rounded-l bg-slate-300 dark:bg-slate-700 px-4 py-2">
-        <img icon [name]="recentItem.icon" [wiki]="true" class="w-7 h-7" />
-        <h3>{{ recentItem.name }}</h3>
+        <img icon [name]="recentItem().icon" [wiki]="true" class="w-7 h-7" />
+        <h3>{{ recentItem().name }}</h3>
       </div>
       <div class="flex-1 flex items-center justify-end px-4 py-2">
         @if (loading()) {
@@ -39,14 +30,13 @@ import { RecentItem } from '../price-tracker-storage.service';
       </div>
     </article>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IconDirective, ColoredValueComponent, SpinnerComponent],
 })
 export class ItemWidgetComponent implements OnInit {
   loading: WritableSignal<boolean> = signal(true);
   trend: Signal<number | undefined>;
 
-  @Input() recentItem: RecentItem;
+  recentItem: InputSignal<RecentItem> = input.required();
 
   constructor(
     private injector: Injector,
@@ -56,9 +46,9 @@ export class ItemWidgetComponent implements OnInit {
   ngOnInit(): void {
     this.trend = toSignal<number | undefined>(
       forkJoin([
-        this.osrsPricesRepo.getLatestPrices(this.recentItem.id, { fetchAll: true }), // fetch all to share the request with other widgets due to the share-request.interceptor
+        this.osrsPricesRepo.getLatestPrices(this.recentItem().id, { fetchAll: true }), // fetch all to share the request with other widgets due to the share-request.interceptor
         this.osrsPricesRepo.getCachedPriceAverage(
-          this.recentItem.id,
+          this.recentItem().id,
           TimeSpan.DAY,
           utcStartOfDay(subDays(new Date(), 1)),
         ),

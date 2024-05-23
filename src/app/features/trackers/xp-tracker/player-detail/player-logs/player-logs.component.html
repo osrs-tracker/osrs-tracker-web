@@ -10,7 +10,7 @@
 
   <!-- XP view -->
   @if (isPlayerTracked && viewType === ViewType.Skills) {
-    @for (diff of hiscoreDiffs; track diff.date) {
+    @for (diff of hiscoreDiffs(); track diff.date) {
       <article card>
         <h2 title>{{ diff.date | shortDate }}</h2>
 
@@ -61,7 +61,7 @@
 
   <!-- Other view -->
   @if (isPlayerTracked && viewType === ViewType.Other) {
-    @for (diff of hiscoreDiffs; track diff.date; let i = $index) {
+    @for (diff of hiscoreDiffs(); track diff.date; let i = $index) {
       <article card>
         <h2 title>{{ diff.date | shortDate }}</h2>
 

@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, WritableSignal, effect, signal } from '@angular/core';
+import { Component, WritableSignal, effect, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { InfoTooltipComponent } from 'src/app/common/components/general/tooltip/info-tooltip.component';
@@ -12,7 +12,6 @@ import { XpTrackerStorageService } from './xp-tracker-storage.service';
   standalone: true,
   selector: 'xp-tracker',
   templateUrl: './xp-tracker.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DecimalPipe,
     FormsModule,

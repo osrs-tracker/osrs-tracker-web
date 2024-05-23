@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostBinding } from '@angular/core';
+import { Component, HostBinding } from '@angular/core';
 import { ThemeService } from 'src/app/common/services/theme.service';
 
 @Component({
@@ -30,7 +30,6 @@ import { ThemeService } from 'src/app/common/services/theme.service';
       }
     </button>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DarkModeComponent {
   @HostBinding('class') class = 'flex';

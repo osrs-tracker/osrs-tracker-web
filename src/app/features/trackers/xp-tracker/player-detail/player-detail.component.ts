@@ -1,14 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  Input,
-  OnInit,
-  Signal,
-  WritableSignal,
-  computed,
-  signal,
-} from '@angular/core';
+import { Component, DestroyRef, Input, OnInit, Signal, WritableSignal, computed, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Hiscore, parseHiscores } from '@osrs-tracker/hiscores';
 import { Player } from '@osrs-tracker/models';
@@ -25,7 +15,6 @@ import { PlayerLogsComponent } from './player-logs/player-logs.component';
   standalone: true,
   selector: 'player-detail',
   templateUrl: './player-detail.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [PlayerSkillsWidgetComponent, PlayerDetailWidgetComponent, PlayerLogsComponent, SpinnerComponent],
 })
 export default class PlayerDetailComponent implements OnInit {

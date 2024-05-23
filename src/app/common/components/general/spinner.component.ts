@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   standalone: true,
@@ -13,6 +13,5 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
       ></path>
     </svg>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SpinnerComponent {}

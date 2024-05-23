@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Signal, computed } from '@angular/core';
+import { Component, Signal, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { map } from 'rxjs';
@@ -13,7 +13,6 @@ import OsrsNewsCardComponent from './osrs-news-card/osrs-news-card.component';
   standalone: true,
   selector: 'home',
   templateUrl: './home.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgOptimizedImage, RouterLink, OsrsNewsCardComponent, OsrsNewsCardSkeletonComponent],
 })
 export default class HomeComponent {

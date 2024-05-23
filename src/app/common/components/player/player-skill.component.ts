@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, InputSignal, input } from '@angular/core';
+import { Component, InputSignal, input } from '@angular/core';
 import { Skill, SkillEnum, calculateXPForSkillLevel, calculateXPToNextLevel } from '@osrs-tracker/hiscores';
 import { IconDirective } from '../../directives/icon/icon.directive';
 import { TooltipComponent } from '../general/tooltip/tooltip.component';
@@ -41,7 +41,6 @@ import { TooltipComponent } from '../general/tooltip/tooltip.component';
       </div>
     </ng-template>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IconDirective, TooltipComponent, DecimalPipe],
 })
 export class PlayerSkillWidgetComponent {

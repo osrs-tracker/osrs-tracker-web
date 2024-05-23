@@ -1,14 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Injector,
-  Input,
-  OnInit,
-  Signal,
-  WritableSignal,
-  signal,
-} from '@angular/core';
+import { Component, Injector, InputSignal, OnInit, Signal, WritableSignal, input, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Item } from '@osrs-tracker/models';
 import 'chartjs-adapter-date-fns';
@@ -32,7 +23,6 @@ import { Trend } from './item-analytics.model';
   standalone: true,
   selector: 'item-analytics',
   templateUrl: './item-analytics.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DecimalPipe,
     CardComponent,
@@ -51,9 +41,9 @@ export class ItemAnalyticsComponent implements OnInit {
   volumeTimeSpan: TimeSpan = TimeSpan.FIVE_MINUTES;
   volumeTimeSeries: WritableSignal<AveragePricesAtTime[]> = signal([]);
 
-  @Input() itemDetail: Item;
-  @Input() latestPrices: LatestPrices;
-  @Input() timeSeriesToday: AveragePricesAtTime[];
+  itemDetail: InputSignal<Item> = input.required();
+  latestPrices: InputSignal<LatestPrices> = input.required();
+  timeSeriesToday: InputSignal<AveragePricesAtTime[]> = input.required();
 
   trend: Signal<Trend | undefined>;
 
@@ -64,12 +54,12 @@ export class ItemAnalyticsComponent implements OnInit {
 
   ngOnInit(): void {
     this.timeSeriesMap$ = {
-      [TimeSpan.FIVE_MINUTES]: of(this.timeSeriesToday),
-      [TimeSpan.HOUR]: this.osrsPricesRepo.getPriceTimeSeries(this.itemDetail.id, TimeSpan.HOUR).pipe(shareReplay(1)),
+      [TimeSpan.FIVE_MINUTES]: of(this.timeSeriesToday()),
+      [TimeSpan.HOUR]: this.osrsPricesRepo.getPriceTimeSeries(this.itemDetail().id, TimeSpan.HOUR).pipe(shareReplay(1)),
       [TimeSpan.SIX_HOURS]: this.osrsPricesRepo
-        .getPriceTimeSeries(this.itemDetail.id, TimeSpan.SIX_HOURS)
+        .getPriceTimeSeries(this.itemDetail().id, TimeSpan.SIX_HOURS)
         .pipe(shareReplay(1)),
-      [TimeSpan.DAY]: this.osrsPricesRepo.getPriceTimeSeries(this.itemDetail.id, TimeSpan.DAY).pipe(shareReplay(1)),
+      [TimeSpan.DAY]: this.osrsPricesRepo.getPriceTimeSeries(this.itemDetail().id, TimeSpan.DAY).pipe(shareReplay(1)),
     };
 
     this.initTrends();
@@ -82,23 +72,23 @@ export class ItemAnalyticsComponent implements OnInit {
       forkJoin(
         [90, 30, 7, 1].map(days =>
           this.osrsPricesRepo.getCachedPriceAverage(
-            this.itemDetail.id,
+            this.itemDetail().id,
             TimeSpan.DAY,
             utcStartOfDay(subDays(new Date(), days)),
           ),
         ),
       ).pipe(
         map(([quarter, month, week, day]) => ({
-          quarter: this.trendDiff(this.latestPrices.low, quarter.averagePrices?.avgLowPrice),
+          quarter: this.trendDiff(this.latestPrices().low, quarter.averagePrices?.avgLowPrice),
           quarterValue: quarter.averagePrices?.avgLowPrice,
 
-          month: this.trendDiff(this.latestPrices.low, month.averagePrices?.avgLowPrice),
+          month: this.trendDiff(this.latestPrices().low, month.averagePrices?.avgLowPrice),
           monthValue: month.averagePrices?.avgLowPrice,
 
-          week: this.trendDiff(this.latestPrices.low, week.averagePrices?.avgLowPrice),
+          week: this.trendDiff(this.latestPrices().low, week.averagePrices?.avgLowPrice),
           weekValue: week.averagePrices?.avgLowPrice,
 
-          today: this.trendDiff(this.latestPrices.low, day.averagePrices?.avgLowPrice),
+          today: this.trendDiff(this.latestPrices().low, day.averagePrices?.avgLowPrice),
           todayValue: day.averagePrices?.avgLowPrice,
         })),
       ),

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, WritableSignal, signal } from '@angular/core';
+import { Component, WritableSignal, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
@@ -14,7 +14,6 @@ import { PriceTrackerStorageService, RecentItem } from './price-tracker-storage.
   standalone: true,
   selector: 'price-tracker',
   templateUrl: './price-tracker.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
     FormsModule,

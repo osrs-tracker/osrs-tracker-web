@@ -68,7 +68,7 @@
         </button>
       </div>
 
-      <price-chart [timeSeries]="priceTimeSeries"></price-chart>
+      <price-chart [timeSeries]="priceTimeSeries()"></price-chart>
     </article>
 
     <article card>
@@ -85,7 +85,7 @@
         </button>
       </div>
 
-      <volume-chart [timeSeries]="volumeTimeSeries"></volume-chart>
+      <volume-chart [timeSeries]="volumeTimeSeries()"></volume-chart>
     </article>
   </div>
 </section>

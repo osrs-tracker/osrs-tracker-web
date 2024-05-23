@@ -1,4 +1,4 @@
-import { Directive, ElementRef, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Directive, ElementRef, InputSignal, OnInit, effect, input } from '@angular/core';
 import { config } from 'src/config/config';
 import { iconMap } from './icon.config';
 
@@ -6,15 +6,20 @@ import { iconMap } from './icon.config';
   standalone: true,
   selector: 'img[icon]',
 })
-export class IconDirective implements OnInit, OnChanges {
-  @Input() name: string;
-  @Input() wiki: boolean; // use icon from wiki
+export class IconDirective implements OnInit {
+  name: InputSignal<string> = input.required();
+  wiki: InputSignal<boolean> = input(false);
 
   get element(): HTMLImageElement {
     return this.elementRef.nativeElement;
   }
 
-  constructor(private elementRef: ElementRef) {}
+  constructor(private elementRef: ElementRef) {
+    effect(() => {
+      this.element.alt = `${this.name().replace(/\.png$/i, '')} icon`;
+      this.updateUrl();
+    });
+  }
 
   ngOnInit() {
     this.element.loading = 'lazy';
@@ -22,13 +27,8 @@ export class IconDirective implements OnInit, OnChanges {
     this.element.style.imageRendering = 'pixelated';
   }
 
-  ngOnChanges({ name }: SimpleChanges) {
-    if (name?.currentValue) this.element.alt = `${this.name.replace(/\.png$/i, '')} icon`;
-    this.updateUrl();
-  }
-
   private updateUrl() {
-    if (this.wiki) this.element.src = `${config.wikiBaseUrl}/images/${this.name.replaceAll(/\s/g, '_')}`;
-    else this.element.src = '/assets/icons' + iconMap[this.name];
+    if (this.wiki()) this.element.src = `${config.wikiBaseUrl}/images/${this.name().replaceAll(/\s/g, '_')}`;
+    else this.element.src = '/assets/icons' + iconMap[this.name()];
   }
 }

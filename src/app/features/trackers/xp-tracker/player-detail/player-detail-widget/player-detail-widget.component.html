@@ -1,16 +1,16 @@
 <section class="flex flex-col gap-4">
   <header class="flex items-end justify-between">
-    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ playerDetail.username | capitalizeWords }}</h2>
+    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ playerDetail().username | capitalizeWords }}</h2>
 
     <div class="relative flex gap-2 mb-0.5">
-      @if (playerDetail.type !== PlayerType.Normal) {
+      @if (playerDetail().type !== PlayerType.Normal) {
         <img
           icon
-          [name]="playerDetail.status === PlayerStatus.Default ? playerDetail.type : playerDetail.status"
+          [name]="playerDetail().status === PlayerStatus.Default ? playerDetail().type : playerDetail().status"
           class="h-6 w-6"
         />
       }
-      @if (playerDetail.diedAsHardcore) {
+      @if (playerDetail().diedAsHardcore) {
         <img icon name="dead" class="h-6 w-6" />
       }
     </div>
@@ -21,40 +21,40 @@
       <div>Username:</div>
       <div>Combat level:</div>
       <div>Mode:</div>
-      @if (playerDetail.type === PlayerType.Hardcore) {
+      @if (playerDetail().type === PlayerType.Hardcore) {
         <div>Hardcore status:</div>
       }
       @if (
-        playerDetail.type !== PlayerType.Normal &&
-        (playerDetail.diedAsHardcore || playerDetail.status !== PlayerStatus.Default)
+        playerDetail().type !== PlayerType.Normal &&
+        (playerDetail().diedAsHardcore || playerDetail().status !== PlayerStatus.Default)
       ) {
         <div>Ironman status:</div>
       }
-      @if (playerDetail.type !== PlayerType.Normal) {
+      @if (playerDetail().type !== PlayerType.Normal) {
         <div>Last checked:</div>
       }
     </div>
     <div class="flex flex-col flex-1 font-bold gap-y-1">
-      <div>{{ playerDetail.username | capitalizeWords }}</div>
-      <div>{{ playerDetail.combatLevel }}</div>
-      <div>{{ playerDetail.type }}</div>
-      @if (playerDetail.type === PlayerType.Hardcore) {
+      <div>{{ playerDetail().username | capitalizeWords }}</div>
+      <div>{{ playerDetail().combatLevel }}</div>
+      <div>{{ playerDetail().type }}</div>
+      @if (playerDetail().type === PlayerType.Hardcore) {
         <div>
-          @if (playerDetail.diedAsHardcore) {
+          @if (playerDetail().diedAsHardcore) {
             <span class="negative"> dead </span>
           } @else {
             <span class="positive"> alive </span>
           }
         </div>
       }
-      @if (playerDetail.diedAsHardcore) {
-        <div>{{ playerDetail.status }}</div>
+      @if (playerDetail().diedAsHardcore) {
+        <div>{{ playerDetail().status }}</div>
       }
-      @if (playerDetail.type !== PlayerType.Normal && playerDetail.status !== PlayerStatus.Default) {
-        <div class="negative">{{ playerDetail.status }}</div>
+      @if (playerDetail().type !== PlayerType.Normal && playerDetail().status !== PlayerStatus.Default) {
+        <div class="negative">{{ playerDetail().status }}</div>
       }
-      @if (playerDetail.type !== PlayerType.Normal) {
-        <div>{{ playerDetail.lastModified | date: 'MMMM dd, HH:mm' }}</div>
+      @if (playerDetail().type !== PlayerType.Normal) {
+        <div>{{ playerDetail().lastModified | date: 'MMMM dd, HH:mm' }}</div>
       }
     </div>
   </div>

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { TooltipComponent } from './tooltip.component';
 
 @Component({
@@ -8,7 +8,6 @@ import { TooltipComponent } from './tooltip.component';
     <div class="text-xs ml-1 h-4" tooltip [tooltipTemplate]="tooltipTemplate">?</div>
     <ng-template #tooltipTemplate><ng-content /></ng-template>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TooltipComponent],
 })
 export class InfoTooltipComponent {}

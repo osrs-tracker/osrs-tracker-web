@@ -1,5 +1,5 @@
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { APP_INITIALIZER, ErrorHandler, isDevMode, provideZoneChangeDetection } from '@angular/core';
+import { APP_INITIALIZER, ErrorHandler, isDevMode, provideExperimentalZonelessChangeDetection } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import { SwUpdate, provideServiceWorker } from '@angular/service-worker';
@@ -27,7 +27,7 @@ bootstrapApplication(AppComponent, {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:3000',
     }),
-    provideZoneChangeDetection({ eventCoalescing: true, runCoalescing: true }),
+    provideExperimentalZonelessChangeDetection(),
 
     { provide: ErrorHandler, useClass: CustomErrorHandler },
 

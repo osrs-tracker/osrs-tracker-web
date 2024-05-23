@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   standalone: true,
@@ -11,6 +11,5 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
       </h1>
     </header>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class NotFoundComponent {}

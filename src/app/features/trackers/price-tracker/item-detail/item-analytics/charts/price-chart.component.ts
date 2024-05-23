@@ -1,19 +1,19 @@
 import { formatNumber } from '@angular/common';
 import {
-  ChangeDetectionStrategy,
   Component,
   ElementRef,
   HostBinding,
   HostListener,
   Injector,
-  Input,
+  InputSignal,
   OnDestroy,
   OnInit,
   Signal,
-  ViewChild,
   computed,
   effect,
+  input,
   runInInjectionContext,
+  viewChild,
 } from '@angular/core';
 import { Chart, LineController, LineElement, LinearScale, PointElement, TimeSeriesScale, Tooltip } from 'chart.js';
 import Annotation from 'chartjs-plugin-annotation';
@@ -28,15 +28,14 @@ import { config } from 'src/config/config';
   standalone: true,
   selector: 'price-chart',
   template: '<canvas #priceChart></canvas>',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PriceChartComponent implements OnInit, OnDestroy {
   @HostBinding('class') class = 'block h-60 max-w-full';
 
   priceChart: Chart;
-  @ViewChild('priceChart', { static: true }) priceChartCanvas: ElementRef<HTMLCanvasElement>;
+  priceChartCanvas: Signal<ElementRef<HTMLCanvasElement>> = viewChild.required('priceChart');
 
-  @Input({ required: true }) timeSeries: Signal<AveragePricesAtTime[]>;
+  timeSeries: InputSignal<AveragePricesAtTime[]> = input.required();
   latestHighPrice: Signal<AveragePricesAtTime> = computed(
     () =>
       this.timeSeries()
@@ -93,13 +92,13 @@ export class PriceChartComponent implements OnInit, OnDestroy {
   // Workaround for chart.js not closing tooltips when tapping outside the canvas (iOS)
   @HostListener('document:touchend', ['$event.target'])
   hideTooltip(target: HTMLElement): void {
-    if (target !== this.priceChartCanvas.nativeElement) {
-      this.priceChartCanvas.nativeElement.dispatchEvent(new Event('mouseout'));
+    if (target !== this.priceChartCanvas().nativeElement) {
+      this.priceChartCanvas().nativeElement.dispatchEvent(new Event('mouseout'));
     }
   }
 
   private createPriceChart(): void {
-    this.priceChart = new Chart(this.priceChartCanvas.nativeElement, {
+    this.priceChart = new Chart(this.priceChartCanvas().nativeElement, {
       type: 'line',
       data: { datasets: [] },
       options: {

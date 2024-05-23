@@ -1,14 +1,6 @@
 import { DecimalPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnChanges,
-  WritableSignal,
-  signal,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, InputSignal, OnChanges, WritableSignal, input, signal } from '@angular/core';
 import { SkillEnum, getOverallXpDiff } from '@osrs-tracker/hiscores';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { EMPTY, catchError, forkJoin } from 'rxjs';
@@ -31,7 +23,7 @@ import { XpTrackerStorageService } from '../xp-tracker-storage.service';
       "
     >
       <div class="flex-1 flex items-center justify-between  rounded-l bg-slate-300 dark:bg-slate-700 px-4 py-2">
-        <h3>{{ username | capitalizeWords }}</h3>
+        <h3>{{ username() | capitalizeWords }}</h3>
         @if (playerDetails()) {
           <div class="relative flex items-center rounded-full gap-2">
             @if (playerDetails()!.type !== PlayerType.Normal) {
@@ -63,7 +55,6 @@ import { XpTrackerStorageService } from '../xp-tracker-storage.service';
       </div>
     </article>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CapitalizePipe, DecimalPipe, IconDirective, SpinnerComponent],
 })
 export class PlayerWidgetComponent implements OnChanges {
@@ -76,8 +67,8 @@ export class PlayerWidgetComponent implements OnChanges {
   playerDetails: WritableSignal<Player | null> = signal(null);
   overallDiff: WritableSignal<number | null> = signal(null);
 
-  @Input() username: string;
-  @Input() scrapingOffset: number;
+  username: InputSignal<string> = input.required();
+  scrapingOffset: InputSignal<number> = input.required();
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
@@ -91,8 +82,8 @@ export class PlayerWidgetComponent implements OnChanges {
     this.loading.set(true);
 
     forkJoin([
-      this.osrsProxyRepo.getPlayerHiscore(this.username, this.scrapingOffset),
-      this.osrsTrackerRepo.getPlayerInfo(this.username, this.scrapingOffset, { includeLatestHiscoreEntry: true }),
+      this.osrsProxyRepo.getPlayerHiscore(this.username(), this.scrapingOffset()),
+      this.osrsTrackerRepo.getPlayerInfo(this.username(), this.scrapingOffset(), { includeLatestHiscoreEntry: true }),
     ])
       .pipe(
         catchError(err => {
@@ -114,15 +105,15 @@ export class PlayerWidgetComponent implements OnChanges {
   }
 
   private removeMissingPlayer(): void {
-    if (this.xpTrackerStorageService.getRecentPlayers().includes(this.username)) {
-      this.xpTrackerStorageService.removeRecentPlayer(this.username);
+    if (this.xpTrackerStorageService.getRecentPlayers().includes(this.username())) {
+      this.xpTrackerStorageService.removeRecentPlayer(this.username());
     }
 
-    if (this.xpTrackerStorageService.getFavoritePlayers().includes(this.username)) {
-      this.xpTrackerStorageService.toggleFavoritePlayer(this.username);
+    if (this.xpTrackerStorageService.getFavoritePlayers().includes(this.username())) {
+      this.xpTrackerStorageService.toggleFavoritePlayer(this.username());
     }
 
-    this.googlAnalyticsService.trackEvent('remove-missing-player', 'xp-tracker', this.username, true);
+    this.googlAnalyticsService.trackEvent('remove-missing-player', 'xp-tracker', this.username(), true);
 
     this.changeDetectorRef.markForCheck();
   }

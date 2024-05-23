@@ -1,3 +1,10 @@
+## 2024/05/23
+
+- Updated to Angular 18
+- Updated all dependencies to their latest versions
+- Use zoneless change detection, removed zone.js
+- Use new signal input/output/... notation
+
 ## 2024/04/06
 
 - Add missing colliseum glory icon

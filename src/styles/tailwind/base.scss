@@ -1,11 +1,11 @@
 @layer base {
   body::-webkit-scrollbar,
   .scroll-bar::-webkit-scrollbar {
-    @apply dark:w-4;
+    @apply w-3.5;
   }
   body::-webkit-scrollbar-thumb,
   .scroll-bar::-webkit-scrollbar-thumb {
-    @apply rounded-lg border-4 border-solid border-transparent bg-clip-content bg-slate-600;
+    @apply rounded-lg border-4 border-solid border-transparent bg-clip-content dark:bg-slate-600 bg-slate-800;
   }
 
   @font-face {

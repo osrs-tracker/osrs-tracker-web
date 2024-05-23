@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   standalone: true,
@@ -16,8 +16,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
       <ng-content />
     </div>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  // eslint-disable-next-line @angular-eslint/no-host-metadata-property
   host: {
     class: 'text-lg shadow-lg rounded-lg bg-slate-100 dark:bg-slate-800',
   },
