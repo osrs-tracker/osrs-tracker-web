@@ -1,3 +1,11 @@
+## 2024/09/14
+
+- update dependencies
+
+## 2024/08/28
+
+- Arraxor support
+
 ## 2024/05/23
 
 - Updated to Angular 18

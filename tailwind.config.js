@@ -7,10 +7,10 @@ module.exports = {
   darkMode: 'class',
   future: {
     removeDeprecatedGapUtilities: true,
-    purgeLayersByDefault: true,
+    purgeLayersByDefault: true
   },
   experimental: {
-    optimizeUniversalDefaults: true,
+    optimizeUniversalDefaults: true
   },
   theme: {
     colors: {
@@ -22,15 +22,15 @@ module.exports = {
 
       // accent
       emerald: colors.emerald,
-      slate: colors.slate,
+      slate: colors.slate
     },
     fontFamily: {
       sans: ['SOLIX'],
-      mono: defaultTheme.fontFamily.mono,
+      mono: defaultTheme.fontFamily.mono
     },
     extend: {
-      maxHeight: { 18: '72px' },
-    },
+      maxHeight: { 18: '72px' }
+    }
   },
-  plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography')],
+  plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography')]
 };
