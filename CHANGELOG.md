@@ -1,3 +1,7 @@
+## 2024/09/25
+
+- Varlamore Part 2 support
+
 ## 2024/09/14
 
 - update dependencies
