@@ -1,10 +1,10 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorHandler, Injectable } from '@angular/core';
+import { ErrorHandler, Injectable, inject } from '@angular/core';
 import { GoogleAnalyticsService } from 'src/app/common/services/google-analytics.service';
 
 @Injectable()
 export class CustomErrorHandler implements ErrorHandler {
-  constructor(private googleAnalyticsService: GoogleAnalyticsService) {}
+  private readonly googleAnalyticsService = inject(GoogleAnalyticsService);
 
   handleError(error: Error) {
     if (error instanceof HttpErrorResponse) {

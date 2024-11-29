@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, InputSignal, Signal, computed, input } from '@angular/core';
+import { Component, InputSignal, Signal, computed, inject, input } from '@angular/core';
 import { Hiscore, MiniGame, Skill, hiscoreDiff } from '@osrs-tracker/hiscores';
 import { Player } from '@osrs-tracker/models';
 import { CardComponent } from 'src/app/common/components/general/card.component';
@@ -14,27 +14,28 @@ export enum ViewType {
 }
 
 @Component({
-  standalone: true,
   selector: 'player-logs',
   templateUrl: './player-logs.component.html',
   imports: [CapitalizePipe, CardComponent, DecimalPipe, IconDirective, ShortDatePipe],
 })
 export class PlayerLogsComponent {
+  private readonly xpTrackerStorageService = inject(XpTrackerStorageService);
+
   readonly ViewType: typeof ViewType = ViewType;
   viewType: ViewType = this.xpTrackerStorageService.getViewType();
 
   otherKeys: (keyof Hiscore)[] = ['bountyHunter', 'clueScrolls', 'competitive', 'miniGames', 'bosses', 'raids'];
 
-  playerDetail: InputSignal<Player> = input.required();
+  readonly playerDetail: InputSignal<Player> = input.required();
 
   get isPlayerTracked(): boolean {
     return !!this.playerDetail().scrapingOffsets?.length;
   }
 
-  today: InputSignal<Hiscore | undefined> = input();
-  history: InputSignal<Hiscore[] | undefined> = input();
+  readonly today: InputSignal<Hiscore | undefined> = input();
+  readonly history: InputSignal<Hiscore[] | undefined> = input();
 
-  hiscoreDiffs: Signal<Hiscore[]> = computed(() => {
+  readonly hiscoreDiffs: Signal<Hiscore[]> = computed(() => {
     let previousHiscore = this.today();
 
     return this.history()!.map(hiscore => {
@@ -43,8 +44,6 @@ export class PlayerLogsComponent {
       return diff;
     });
   });
-
-  constructor(private xpTrackerStorageService: XpTrackerStorageService) {}
 
   skills(hiscore: Hiscore): Skill[] {
     return Object.values(hiscore.skills);

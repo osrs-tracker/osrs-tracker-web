@@ -1,4 +1,4 @@
-import { Component, WritableSignal, signal } from '@angular/core';
+import { Component, WritableSignal, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
@@ -11,7 +11,6 @@ import { ItemWidgetComponent } from './item-widget/item-widget.component';
 import { PriceTrackerStorageService, RecentItem } from './price-tracker-storage.service';
 
 @Component({
-  standalone: true,
   selector: 'price-tracker',
   templateUrl: './price-tracker.component.html',
   imports: [
@@ -25,10 +24,13 @@ import { PriceTrackerStorageService, RecentItem } from './price-tracker-storage.
   ],
 })
 export default class PriceTrackerComponent {
+  private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
+  private readonly priceTrackerStorageService = inject(PriceTrackerStorageService);
+
   query = '';
 
-  loading: WritableSignal<boolean> = signal(false);
-  results: WritableSignal<Item[]> = signal([]);
+  readonly loading: WritableSignal<boolean> = signal(false);
+  readonly results: WritableSignal<Item[]> = signal([]);
 
   get favoriteItems(): RecentItem[] {
     return this.priceTrackerStorageService.getFavoriteItems();
@@ -37,11 +39,6 @@ export default class PriceTrackerComponent {
   get recentItems(): RecentItem[] {
     return this.priceTrackerStorageService.getRecentItems();
   }
-
-  constructor(
-    private osrsTrackerRepo: OsrsTrackerRepo,
-    private priceTrackerStorageService: PriceTrackerStorageService,
-  ) {}
 
   searchItems(): void {
     if (!this.query) return;
@@ -52,9 +49,5 @@ export default class PriceTrackerComponent {
       this.results.set(items ?? []);
       this.loading.set(false);
     });
-  }
-
-  trackById(_index: number, item: RecentItem): number {
-    return item.id;
   }
 }

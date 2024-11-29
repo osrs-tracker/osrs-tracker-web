@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from '@angular/common';
-import { Component, Signal, computed } from '@angular/core';
+import { Component, Signal, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { map } from 'rxjs';
@@ -10,22 +10,17 @@ import { OsrsNewsCardSkeletonComponent } from './osrs-news-card/osrs-news-card-s
 import OsrsNewsCardComponent from './osrs-news-card/osrs-news-card.component';
 
 @Component({
-  standalone: true,
   selector: 'home',
   templateUrl: './home.component.html',
   imports: [NgOptimizedImage, RouterLink, OsrsNewsCardComponent, OsrsNewsCardSkeletonComponent],
 })
 export default class HomeComponent {
-  osrsNewsItems: Signal<OsrsNewsItem[] | undefined>;
+  private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
+  private readonly themeService = inject(ThemeService);
 
-  isDarkMode: Signal<boolean> = computed(() => this.themeService.darkMode());
+  osrsNewsItems: Signal<OsrsNewsItem[] | undefined> = toSignal(
+    this.osrsTrackerRepo.getLatestOsrsNewsItems().pipe(map(osrsNewsItems => osrsNewsItems.slice(0, 4))),
+  );
 
-  constructor(
-    private osrsTrackerRepo: OsrsTrackerRepo,
-    private themeService: ThemeService,
-  ) {
-    this.osrsNewsItems = toSignal(
-      this.osrsTrackerRepo.getLatestOsrsNewsItems().pipe(map(osrsNewsItems => osrsNewsItems.slice(0, 4))),
-    );
-  }
+  readonly isDarkMode: Signal<boolean> = computed(() => this.themeService.darkMode());
 }

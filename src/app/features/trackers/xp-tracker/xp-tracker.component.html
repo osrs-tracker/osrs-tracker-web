@@ -4,15 +4,15 @@
       type="text"
       class="w-full input--default"
       placeholder="Enter username"
-      name="username"
-      [(ngModel)]="username"
+      name="usernameQuery"
+      [(ngModel)]="usernameQuery"
       autocomplete="hidden"
     />
 
     <button
       type="submit"
       class="absolute right-0 button--primary button--rounded"
-      [routerLink]="username ? ['/trackers/xp', username] : '.'"
+      [routerLink]="usernameQuery ? ['/trackers/xp', usernameQuery] : '.'"
     >
       Search
     </button>

@@ -11,6 +11,7 @@ import {
   Signal,
   computed,
   effect,
+  inject,
   input,
   runInInjectionContext,
   viewChild,
@@ -30,31 +31,29 @@ import { config } from 'src/config/config';
   template: '<canvas #priceChart></canvas>',
 })
 export class PriceChartComponent implements OnInit, OnDestroy {
+  private readonly injector = inject(Injector);
+  private readonly themeService = inject(ThemeService);
+
   @HostBinding('class') class = 'block h-60 max-w-full';
 
   priceChart: Chart;
-  priceChartCanvas: Signal<ElementRef<HTMLCanvasElement>> = viewChild.required('priceChart');
+  readonly priceChartCanvas: Signal<ElementRef<HTMLCanvasElement>> = viewChild.required('priceChart');
 
-  timeSeries: InputSignal<AveragePricesAtTime[]> = input.required();
-  latestHighPrice: Signal<AveragePricesAtTime> = computed(
+  readonly timeSeries: InputSignal<AveragePricesAtTime[]> = input.required();
+  readonly latestHighPrice: Signal<AveragePricesAtTime> = computed(
     () =>
       this.timeSeries()
         .filter(v => v.avgHighPrice)
         .slice(-1)[0],
   );
-  latestLowPrice: Signal<AveragePricesAtTime> = computed(
+  readonly latestLowPrice: Signal<AveragePricesAtTime> = computed(
     () =>
       this.timeSeries()
         .filter(v => v.avgLowPrice)
         .slice(-1)[0],
   );
 
-  chartConfig = computed(() => (this.themeService.darkMode() ? config.chart.dark : config.chart.light));
-
-  constructor(
-    private injector: Injector,
-    private themeService: ThemeService,
-  ) {}
+  readonly chartConfig = computed(() => (this.themeService.darkMode() ? config.chart.dark : config.chart.light));
 
   ngOnInit(): void {
     Chart.register(LineController, LineElement, PointElement, LinearScale, TimeSeriesScale, Tooltip, Annotation, Zoom);

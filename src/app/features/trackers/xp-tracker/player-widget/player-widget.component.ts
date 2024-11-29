@@ -1,6 +1,15 @@
 import { DecimalPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectorRef, Component, InputSignal, OnChanges, WritableSignal, input, signal } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  InputSignal,
+  OnChanges,
+  WritableSignal,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { SkillEnum, getOverallXpDiff } from '@osrs-tracker/hiscores';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { EMPTY, catchError, forkJoin } from 'rxjs';
@@ -13,7 +22,6 @@ import { GoogleAnalyticsService } from 'src/app/common/services/google-analytics
 import { XpTrackerStorageService } from '../xp-tracker-storage.service';
 
 @Component({
-  standalone: true,
   selector: 'player-widget',
   template: `
     <article
@@ -58,25 +66,23 @@ import { XpTrackerStorageService } from '../xp-tracker-storage.service';
   imports: [CapitalizePipe, DecimalPipe, IconDirective, SpinnerComponent],
 })
 export class PlayerWidgetComponent implements OnChanges {
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
+  private readonly googlAnalyticsService = inject(GoogleAnalyticsService);
+  private readonly osrsProxyRepo = inject(OsrsProxyRepo);
+  private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
+  private readonly xpTrackerStorageService = inject(XpTrackerStorageService);
+
   readonly PlayerType: typeof PlayerType = PlayerType;
   readonly PlayerStatus: typeof PlayerStatus = PlayerStatus;
   readonly SkillEnum: typeof SkillEnum = SkillEnum;
 
-  loading = signal(true);
+  readonly loading = signal(true);
 
-  playerDetails: WritableSignal<Player | null> = signal(null);
-  overallDiff: WritableSignal<number | null> = signal(null);
+  readonly playerDetails: WritableSignal<Player | null> = signal(null);
+  readonly overallDiff: WritableSignal<number | null> = signal(null);
 
-  username: InputSignal<string> = input.required();
-  scrapingOffset: InputSignal<number> = input.required();
-
-  constructor(
-    private changeDetectorRef: ChangeDetectorRef,
-    private googlAnalyticsService: GoogleAnalyticsService,
-    private osrsProxyRepo: OsrsProxyRepo,
-    private osrsTrackerRepo: OsrsTrackerRepo,
-    private xpTrackerStorageService: XpTrackerStorageService,
-  ) {}
+  readonly username: InputSignal<string> = input.required();
+  readonly scrapingOffset: InputSignal<number> = input.required();
 
   ngOnChanges(): void {
     this.loading.set(true);

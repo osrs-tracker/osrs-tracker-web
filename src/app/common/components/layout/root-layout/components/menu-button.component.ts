@@ -30,10 +30,10 @@ import {
 export class MenuButtonComponent implements OnChanges {
   @HostBinding('class') class = 'flex';
 
-  menuCollapsedState: WritableSignal<boolean> = signal(false);
+  readonly menuCollapsedState: WritableSignal<boolean> = signal(false);
 
-  menuCollapsed: InputSignal<boolean> = input.required();
-  menuCollapsedChange: OutputEmitterRef<boolean> = output<boolean>();
+  readonly menuCollapsed: InputSignal<boolean> = input.required();
+  readonly menuCollapsedChange: OutputEmitterRef<boolean> = output<boolean>();
 
   ngOnChanges(): void {
     this.menuCollapsedState.set(this.menuCollapsed());

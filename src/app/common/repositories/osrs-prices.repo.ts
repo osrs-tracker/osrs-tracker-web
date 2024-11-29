@@ -1,5 +1,5 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { fromUnixTime, getUnixTime } from 'date-fns';
 import { Observable, map, shareReplay } from 'rxjs';
 import { BASE_URL_PREFIX } from 'src/app/core/interceptors/base-url.interceptors';
@@ -35,13 +35,13 @@ export interface AveragePricesAtTime extends AveragePrices {
   providedIn: 'root',
 })
 export class OsrsPricesRepo {
+  private readonly httpClient = inject(HttpClient);
+
   private averagePriceCache: {
     [key in TimeSpan]: {
       [timestamp: number]: Observable<{ data: { [key: string]: AveragePrices }; timestamp: number }>;
     };
   } = { [TimeSpan.FIVE_MINUTES]: {}, [TimeSpan.HOUR]: {}, [TimeSpan.SIX_HOURS]: {}, [TimeSpan.DAY]: {} };
-
-  constructor(private httpClient: HttpClient) {}
 
   getLatestPrices(id: number, options?: { fetchAll?: boolean; loadingIndicator?: boolean }): Observable<LatestPrices> {
     return this.httpClient

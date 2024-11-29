@@ -1,8 +1,6 @@
 import { Component, InputSignal, input } from '@angular/core';
-import { ShortDatePipe } from '../../pipes/date-fns.pipe';
 
 @Component({
-  standalone: true,
   selector: 'information-page',
   template: `
     <div class="container mx-auto px-4 py-8">
@@ -17,9 +15,8 @@ import { ShortDatePipe } from '../../pipes/date-fns.pipe';
       </div>
     </div>
   `,
-  imports: [ShortDatePipe],
 })
 export class InformationPageComponent {
-  title: InputSignal<string> = input.required();
-  lastUpdated: InputSignal<string | undefined> = input();
+  readonly title: InputSignal<string> = input.required();
+  readonly lastUpdated: InputSignal<string | undefined> = input();
 }

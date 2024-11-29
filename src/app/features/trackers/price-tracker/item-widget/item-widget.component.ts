@@ -1,4 +1,4 @@
-import { Component, Injector, Input, InputSignal, OnInit, Signal, WritableSignal, input, signal } from '@angular/core';
+import { Component, Injector, InputSignal, OnInit, Signal, WritableSignal, inject, input, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { subDays } from 'date-fns';
 import { forkJoin, map, tap } from 'rxjs';
@@ -10,7 +10,6 @@ import { OsrsPricesRepo, TimeSpan } from 'src/app/common/repositories/osrs-price
 import { RecentItem } from '../price-tracker-storage.service';
 
 @Component({
-  standalone: true,
   selector: 'item-widget',
   template: `
     <article
@@ -33,15 +32,13 @@ import { RecentItem } from '../price-tracker-storage.service';
   imports: [IconDirective, ColoredValueComponent, SpinnerComponent],
 })
 export class ItemWidgetComponent implements OnInit {
-  loading: WritableSignal<boolean> = signal(true);
+  private readonly injector = inject(Injector);
+  private readonly osrsPricesRepo = inject(OsrsPricesRepo);
+
+  readonly loading: WritableSignal<boolean> = signal(true);
   trend: Signal<number | undefined>;
 
-  recentItem: InputSignal<RecentItem> = input.required();
-
-  constructor(
-    private injector: Injector,
-    private osrsPricesRepo: OsrsPricesRepo,
-  ) {}
+  readonly recentItem: InputSignal<RecentItem> = input.required();
 
   ngOnInit(): void {
     this.trend = toSignal<number | undefined>(

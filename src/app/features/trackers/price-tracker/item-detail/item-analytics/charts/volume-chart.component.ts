@@ -11,6 +11,7 @@ import {
   Signal,
   computed,
   effect,
+  inject,
   input,
   runInInjectionContext,
   viewChild,
@@ -29,19 +30,17 @@ import { config } from 'src/config/config';
   template: '<canvas #volumeChart></canvas>',
 })
 export class VolumeChartComponent implements OnInit, OnDestroy {
+  private readonly injector = inject(Injector);
+  private readonly themeService = inject(ThemeService);
+
   @HostBinding('class') class = 'block h-60 max-w-full';
 
   volumeChart: Chart;
-  volumeChartCanvas: Signal<ElementRef<HTMLCanvasElement>> = viewChild.required('volumeChart');
+  readonly volumeChartCanvas: Signal<ElementRef<HTMLCanvasElement>> = viewChild.required('volumeChart');
 
-  timeSeries: InputSignal<AveragePricesAtTime[]> = input.required();
+  readonly timeSeries: InputSignal<AveragePricesAtTime[]> = input.required();
 
-  chartConfig = computed(() => (this.themeService.darkMode() ? config.chart.dark : config.chart.light));
-
-  constructor(
-    private injector: Injector,
-    private themeService: ThemeService,
-  ) {}
+  readonly chartConfig = computed(() => (this.themeService.darkMode() ? config.chart.dark : config.chart.light));
 
   ngOnInit(): void {
     Chart.register(BarController, BarElement, LinearScale, TimeSeriesScale, Tooltip, Zoom);

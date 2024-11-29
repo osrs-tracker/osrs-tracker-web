@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HiscoreEntry } from '@osrs-tracker/models';
 import { map, Observable } from 'rxjs';
 
@@ -21,7 +21,7 @@ export class OsrsNewsItem {
   providedIn: 'root',
 })
 export class OsrsProxyRepo {
-  constructor(private httpClient: HttpClient) {}
+  private readonly httpClient = inject(HttpClient);
 
   //
   // Players

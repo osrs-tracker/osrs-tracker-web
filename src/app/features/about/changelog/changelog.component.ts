@@ -4,7 +4,6 @@ import { marked } from 'marked';
 import { InformationPageComponent } from 'src/app/common/components/layout/information-page.component';
 
 @Component({
-  standalone: true,
   selector: 'changelog',
   template: `
     <information-page title="Changelog">
@@ -14,6 +13,7 @@ import { InformationPageComponent } from 'src/app/common/components/layout/infor
   imports: [AsyncPipe, InformationPageComponent],
 })
 export default class ChangelogComponent {
-  changelog: InputSignal<string> = input('loading');
-  markdown: Signal<Promise<string>> = computed(async () => marked(this.changelog()));
+  readonly changelog: InputSignal<string> = input('loading');
+
+  readonly markdown: Signal<Promise<string>> = computed(async () => marked(this.changelog()));
 }

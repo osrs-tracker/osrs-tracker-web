@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { StorageKey } from 'src/app/common/services/storage/storage';
 import { StorageService } from 'src/app/common/services/storage/storage.service';
 
@@ -12,9 +12,9 @@ export interface RecentItem {
   providedIn: 'root',
 })
 export class PriceTrackerStorageService {
-  readonly MAX_PLAYERS_STORED = 5;
+  private readonly storageService = inject(StorageService);
 
-  constructor(private storageService: StorageService) {}
+  readonly MAX_PLAYERS_STORED = 5;
 
   getRecentItems(): RecentItem[] {
     return JSON.parse(this.storageService.getItem(StorageKey.PriceTrackerRecentItems) ?? '[]');

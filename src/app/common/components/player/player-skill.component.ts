@@ -5,7 +5,6 @@ import { IconDirective } from '../../directives/icon/icon.directive';
 import { TooltipComponent } from '../general/tooltip/tooltip.component';
 
 @Component({
-  standalone: true,
   selector: 'player-skill',
   template: `
     <div
@@ -46,7 +45,7 @@ import { TooltipComponent } from '../general/tooltip/tooltip.component';
 export class PlayerSkillWidgetComponent {
   readonly SkillEnum: typeof SkillEnum = SkillEnum;
 
-  skill: InputSignal<Skill | undefined> = input();
+  readonly skill: InputSignal<Skill | undefined> = input();
 
   get xpToNextLevel(): number {
     return calculateXPToNextLevel(this.skill()?.xp ?? 0, this.skill()?.level ?? 1);

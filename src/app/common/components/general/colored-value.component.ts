@@ -2,7 +2,6 @@ import { DecimalPipe } from '@angular/common';
 import { Component, InputSignal, computed, input } from '@angular/core';
 
 @Component({
-  standalone: true,
   selector: 'colored-value',
   template: `
     @if (value() != null) {
@@ -19,10 +18,10 @@ import { Component, InputSignal, computed, input } from '@angular/core';
   imports: [DecimalPipe],
 })
 export class ColoredValueComponent {
-  value: InputSignal<number | null | undefined> = input<number | null | undefined>();
-  suffix: InputSignal<string> = input('');
+  readonly value: InputSignal<number | null | undefined> = input<number | null | undefined>();
+  readonly suffix: InputSignal<string> = input('');
 
-  absValue = computed(() => Math.abs(this.value() ?? 0));
-  isPositive = computed(() => (this.value() ?? 0) > 0);
-  isNegative = computed(() => (this.value() ?? 0) < 0);
+  readonly absValue = computed(() => Math.abs(this.value() ?? 0));
+  readonly isPositive = computed(() => (this.value() ?? 0) > 0);
+  readonly isNegative = computed(() => (this.value() ?? 0) < 0);
 }

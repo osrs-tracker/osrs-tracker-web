@@ -1,5 +1,5 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HiscoreEntry, Item, OsrsNewsItem, Player } from '@osrs-tracker/models';
 import { Observable, map } from 'rxjs';
 import { LOADING_INDICATOR } from 'src/app/core/interceptors/loading-indicator.interceptor';
@@ -8,7 +8,7 @@ import { LOADING_INDICATOR } from 'src/app/core/interceptors/loading-indicator.i
   providedIn: 'root',
 })
 export class OsrsTrackerRepo {
-  constructor(private httpClient: HttpClient) {}
+  private readonly httpClient = inject(HttpClient);
 
   //
   // News

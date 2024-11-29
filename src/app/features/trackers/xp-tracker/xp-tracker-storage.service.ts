@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { StorageKey } from 'src/app/common/services/storage/storage';
 import { StorageService } from 'src/app/common/services/storage/storage.service';
 import { ViewType } from './player-detail/player-logs/player-logs.component';
@@ -7,9 +7,9 @@ import { ViewType } from './player-detail/player-logs/player-logs.component';
   providedIn: 'root',
 })
 export class XpTrackerStorageService {
-  readonly MAX_PLAYERS_STORED = 5;
+  private readonly storageService = inject(StorageService);
 
-  constructor(private storageService: StorageService) {}
+  readonly MAX_PLAYERS_STORED = 5;
 
   getScrapingOffset(): number {
     return Number(this.storageService.getItem(StorageKey.XpTrackerScrapingOffset) ?? '0');

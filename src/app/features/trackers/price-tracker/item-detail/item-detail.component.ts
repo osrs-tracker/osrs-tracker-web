@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, computed, inject, input } from '@angular/core';
 import { Item } from '@osrs-tracker/models';
 import { AveragePricesAtTime, LatestPrices } from 'src/app/common/repositories/osrs-prices.repo';
 import { PriceTrackerStorageService } from '../price-tracker-storage.service';
@@ -6,37 +6,25 @@ import { ItemAnalyticsComponent } from './item-analytics/item-analytics.componen
 import { ItemDetailWidgetComponent } from './item-detail-widget/item-detail.widget.component';
 
 @Component({
-  standalone: true,
   selector: 'item-detail',
   templateUrl: './item-detail.component.html',
   imports: [ItemAnalyticsComponent, ItemDetailWidgetComponent],
 })
 export default class ItemDetailComponent implements OnInit {
-  get itemDetail(): Item {
-    return this.item[0];
-  }
+  private readonly priceTrackerStorageService = inject(PriceTrackerStorageService);
 
-  get latestPrices(): LatestPrices {
-    return this.item[1];
-  }
+  readonly item = input.required<[Item, LatestPrices, number, AveragePricesAtTime[]]>();
 
-  get dailyVolume(): number {
-    return this.item[2];
-  }
-
-  get timeSeriesToday(): AveragePricesAtTime[] {
-    return this.item[3];
-  }
-
-  @Input('item') item: [Item, LatestPrices, number, AveragePricesAtTime[]];
-
-  constructor(private priceTrackerStorageService: PriceTrackerStorageService) {}
+  readonly itemDetail = computed((): Item => this.item()[0]);
+  readonly latestPrices = computed((): LatestPrices => this.item()[1]);
+  readonly dailyVolume = computed((): number => this.item()[2]);
+  readonly timeSeriesToday = computed((): AveragePricesAtTime[] => this.item()[3]);
 
   ngOnInit(): void {
     this.priceTrackerStorageService.pushRecentItem({
-      id: this.itemDetail.id,
-      name: this.itemDetail.name,
-      icon: this.itemDetail.icon,
+      id: this.itemDetail().id,
+      name: this.itemDetail().name,
+      icon: this.itemDetail().icon,
     });
   }
 }

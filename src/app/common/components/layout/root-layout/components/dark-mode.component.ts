@@ -1,4 +1,4 @@
-import { Component, HostBinding } from '@angular/core';
+import { Component, HostBinding, inject } from '@angular/core';
 import { ThemeService } from 'src/app/common/services/theme.service';
 
 @Component({
@@ -32,7 +32,7 @@ import { ThemeService } from 'src/app/common/services/theme.service';
   `,
 })
 export class DarkModeComponent {
-  @HostBinding('class') class = 'flex';
+  readonly themeService = inject(ThemeService);
 
-  constructor(public themeService: ThemeService) {}
+  @HostBinding('class') class = 'flex';
 }

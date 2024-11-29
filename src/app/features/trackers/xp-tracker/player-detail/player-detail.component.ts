@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Input, OnInit, Signal, WritableSignal, computed, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, Signal, WritableSignal, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Hiscore, parseHiscores } from '@osrs-tracker/hiscores';
 import { Player } from '@osrs-tracker/models';
@@ -12,47 +12,45 @@ import { PlayerDetailWidgetComponent } from './player-detail-widget/player-detai
 import { PlayerLogsComponent } from './player-logs/player-logs.component';
 
 @Component({
-  standalone: true,
   selector: 'player-detail',
   templateUrl: './player-detail.component.html',
   imports: [PlayerSkillsWidgetComponent, PlayerDetailWidgetComponent, PlayerLogsComponent, SpinnerComponent],
 })
 export default class PlayerDetailComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly osrsProxyRepo = inject(OsrsProxyRepo);
+  private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
+  private readonly xpTrackerStorageService = inject(XpTrackerStorageService);
+
   #DEFAULT_SIZE = 14;
   #MORE_SIZE = 7;
 
-  #historyEntries: WritableSignal<Hiscore[][]> = signal([]);
+  readonly #historyEntries: WritableSignal<Hiscore[][]> = signal([]);
 
-  today: WritableSignal<Hiscore | undefined> = signal(undefined);
-  history: Signal<Hiscore[]> = computed(() => this.#historyEntries().flat());
+  readonly today: WritableSignal<Hiscore | undefined> = signal(undefined);
+  readonly history: Signal<Hiscore[]> = computed(() => this.#historyEntries().flat());
 
-  loadingMore: WritableSignal<boolean> = signal(false);
-  hasMoreEntries: WritableSignal<boolean> = signal(false);
+  readonly loadingMore: WritableSignal<boolean> = signal(false);
+  readonly hasMoreEntries: WritableSignal<boolean> = signal(false);
 
-  @Input('player') playerDetail: Player;
-
-  constructor(
-    private destroyRef: DestroyRef,
-    private osrsProxyRepo: OsrsProxyRepo,
-    private osrsTrackerRepo: OsrsTrackerRepo,
-    private xpTrackerStorageService: XpTrackerStorageService,
-  ) {}
+  readonly playerDetail = input.required<Player>({ alias: 'player' });
 
   ngOnInit(): void {
-    if (!this.playerDetail) return;
+    const playerDetail = this.playerDetail();
+    if (!playerDetail) return;
 
     this.loadInitialHiscores();
-    this.xpTrackerStorageService.pushRecentPlayer(this.playerDetail.username);
+    this.xpTrackerStorageService.pushRecentPlayer(playerDetail.username);
   }
 
   loadInitialHiscores(): void {
     forkJoin([
       this.osrsProxyRepo.getPlayerHiscore(
-        this.playerDetail!.username,
+        this.playerDetail()!.username,
         this.xpTrackerStorageService.getScrapingOffset(),
       ), // current hiscore
       this.osrsTrackerRepo.getPlayerHiscores(
-        this.playerDetail!.username,
+        this.playerDetail()!.username,
         this.xpTrackerStorageService.getScrapingOffset(),
         this.#DEFAULT_SIZE,
         0,
@@ -72,7 +70,7 @@ export default class PlayerDetailComponent implements OnInit {
 
     this.osrsTrackerRepo
       .getPlayerHiscores(
-        this.playerDetail!.username,
+        this.playerDetail()!.username,
         this.xpTrackerStorageService.getScrapingOffset(),
         this.#MORE_SIZE,
         this.history().flat().length,

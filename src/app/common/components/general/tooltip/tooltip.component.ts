@@ -12,6 +12,7 @@ import {
   Signal,
   TemplateRef,
   ViewContainerRef,
+  inject,
   input,
   viewChild,
 } from '@angular/core';
@@ -19,7 +20,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, debounceTime } from 'rxjs';
 
 @Component({
-  standalone: true,
   selector: '[tooltip]',
   template: `
     <ng-content />
@@ -47,6 +47,10 @@ import { Subject, debounceTime } from 'rxjs';
   imports: [NgTemplateOutlet, OverlayModule],
 })
 export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
+  private readonly elementRef = inject(ElementRef);
+  private readonly overlay = inject(Overlay);
+  private readonly viewContainerRef = inject(ViewContainerRef);
+
   mousePresent$ = new Subject<boolean>();
 
   isOpen = false;
@@ -57,17 +61,13 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
   containerOverlayRef?: OverlayRef;
   containerTemplatePortal: TemplatePortal;
 
-  tooltipTemplate: InputSignal<TemplateRef<unknown>> = input.required();
-  tooltipUnderline: InputSignal<boolean> = input(true);
+  readonly tooltipTemplate: InputSignal<TemplateRef<unknown>> = input.required();
+  readonly tooltipUnderline: InputSignal<boolean> = input(true);
 
   tooltipTemplateArrow: Signal<TemplateRef<unknown>> = viewChild.required('tooltipTemplateArrow');
   tooltipTemplateContainer: Signal<TemplateRef<unknown>> = viewChild.required('tooltipTemplateContainer');
 
-  constructor(
-    private elementRef: ElementRef,
-    private overlay: Overlay,
-    private viewContainerRef: ViewContainerRef,
-  ) {
+  constructor() {
     this.mousePresent$.pipe(debounceTime(300), takeUntilDestroyed()).subscribe(isPresent => {
       if (this.isOpen === isPresent) return;
       this.isOpen = isPresent;

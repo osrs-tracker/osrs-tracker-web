@@ -34,7 +34,12 @@
               "src/manifest.webmanifest",
               "src/robots.txt"
             ],
-            "styles": ["src/styles/tailwind/index.scss", "src/styles/index.scss"],
+            "styles": [
+              "src/styles/tailwind/base.scss",
+              "src/styles/tailwind/components.scss",
+              "src/styles/tailwind/utilities.scss",
+              "src/styles/index.scss"
+            ],
             "scripts": [],
             "allowedCommonJsDependencies": ["hammerjs"],
             "serviceWorker": "ngsw-config.json",
@@ -42,6 +47,18 @@
           },
           "configurations": {
             "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
               "outputHashing": "all"
             },
             "development": {

@@ -1,5 +1,11 @@
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { APP_INITIALIZER, ErrorHandler, isDevMode, provideExperimentalZonelessChangeDetection } from '@angular/core';
+import {
+  ErrorHandler,
+  inject,
+  isDevMode,
+  provideAppInitializer,
+  provideExperimentalZonelessChangeDetection,
+} from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import { SwUpdate, provideServiceWorker } from '@angular/service-worker';
@@ -31,25 +37,19 @@ bootstrapApplication(AppComponent, {
 
     { provide: ErrorHandler, useClass: CustomErrorHandler },
 
-    {
-      provide: APP_INITIALIZER,
-      deps: [GoogleAnalyticsService],
-      multi: true,
-      useFactory: (googleAnalyticsService: GoogleAnalyticsService) => () => googleAnalyticsService.setupPageAnalytics(),
-    },
-    {
-      provide: APP_INITIALIZER,
-      deps: [SwUpdate],
-      multi: true,
-      useFactory: (swUpdate: SwUpdate) => () =>
-        swUpdate.isEnabled &&
+    provideAppInitializer(() => inject(GoogleAnalyticsService).setupPageAnalytics()),
+    provideAppInitializer(() => {
+      const swUpdate = inject(SwUpdate);
+
+      if (swUpdate.isEnabled) {
         fromEvent(document, 'visibilitychange')
           .pipe(
             filter(() => document.visibilityState === 'visible'),
             startWith(null),
             switchMap(() => swUpdate.checkForUpdate()),
           )
-          .subscribe(updated => updated && document.location.reload()),
-    },
+          .subscribe(updated => updated && document.location.reload());
+      }
+    }),
   ],
 });

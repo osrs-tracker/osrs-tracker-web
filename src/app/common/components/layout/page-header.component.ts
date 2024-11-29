@@ -13,5 +13,5 @@ import { Component, InputSignal, input } from '@angular/core';
   `,
 })
 export class PageHeaderComponent {
-  headerText: InputSignal<string> = input.required();
+  readonly headerText: InputSignal<string> = input.required();
 }

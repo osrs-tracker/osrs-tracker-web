@@ -1,10 +1,8 @@
 import { Component, InputSignal, Signal, computed, input } from '@angular/core';
 import { Hiscore } from '@osrs-tracker/hiscores';
-import { IconDirective } from '../../directives/icon/icon.directive';
 import { PlayerSkillWidgetComponent } from './player-skill.component';
 
 @Component({
-  standalone: true,
   selector: 'player-skills',
   template: `
     <section class="p-2 shadow-lg rounded-lg bg-slate-100 dark:bg-slate-800">
@@ -54,9 +52,9 @@ import { PlayerSkillWidgetComponent } from './player-skill.component';
       </div>
     </section>
   `,
-  imports: [IconDirective, PlayerSkillWidgetComponent],
+  imports: [PlayerSkillWidgetComponent],
 })
 export class PlayerSkillsWidgetComponent {
-  hiscore: InputSignal<Hiscore | undefined> = input();
-  skills: Signal<Hiscore['skills'] | undefined> = computed(() => this.hiscore()?.skills);
+  readonly hiscore: InputSignal<Hiscore | undefined> = input();
+  readonly skills: Signal<Hiscore['skills'] | undefined> = computed(() => this.hiscore()?.skills);
 }

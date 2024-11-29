@@ -1,5 +1,5 @@
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
-import { Component, Input, InputSignal, OnInit, input } from '@angular/core';
+import { Component, InputSignal, OnInit, inject, input } from '@angular/core';
 import { Item } from '@osrs-tracker/models';
 import { InfoTooltipComponent } from 'src/app/common/components/general/tooltip/info-tooltip.component';
 import { TooltipComponent } from 'src/app/common/components/general/tooltip/tooltip.component';
@@ -10,15 +10,17 @@ import { config } from 'src/config/config';
 import { PriceTrackerStorageService } from '../../price-tracker-storage.service';
 
 @Component({
-  standalone: true,
   selector: 'item-detail-widget',
   templateUrl: './item-detail-widget.component.html',
   imports: [NgOptimizedImage, DecimalPipe, TimeAgoPipe, InfoTooltipComponent, TooltipComponent],
 })
 export class ItemDetailWidgetComponent implements OnInit {
-  itemDetail: InputSignal<Item> = input.required();
-  latestPrices: InputSignal<LatestPrices> = input.required();
-  dailyVolume: InputSignal<number> = input.required();
+  private readonly googlAnalyticsService = inject(GoogleAnalyticsService);
+  private readonly priceTrackerStorageService = inject(PriceTrackerStorageService);
+
+  readonly itemDetail: InputSignal<Item> = input.required();
+  readonly latestPrices: InputSignal<LatestPrices> = input.required();
+  readonly dailyVolume: InputSignal<number> = input.required();
 
   // don't transform icon but transform name, ex. bolts have different name (Diamond_bolts_(e)_5.png vs Diamond_bolts_(e)_detail.png)
   get detailIconUrl(): string {
@@ -30,11 +32,6 @@ export class ItemDetailWidgetComponent implements OnInit {
   }
 
   wikiUrl: string;
-
-  constructor(
-    private googlAnalyticsService: GoogleAnalyticsService,
-    private priceTrackerStorageService: PriceTrackerStorageService,
-  ) {}
 
   ngOnInit(): void {
     this.wikiUrl = `${config.wikiBaseUrl}/w/${this.itemDetail().name.replaceAll(/\s/g, '_')}`;

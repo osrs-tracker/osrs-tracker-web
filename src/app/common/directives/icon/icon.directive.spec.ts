@@ -15,10 +15,11 @@ import { IconDirective } from './icon.directive';
 
 @Component({
   template: '<img icon [name]="name()" [wiki]="wiki()">',
+  imports: [IconDirective],
 })
 class TestComponent {
-  name: InputSignal<string> = input('coins');
-  wiki: InputSignal<boolean> = input(false);
+  readonly name: InputSignal<string> = input('coins');
+  readonly wiki: InputSignal<boolean> = input(false);
 }
 
 describe('IconDirective', () => {
@@ -27,8 +28,6 @@ describe('IconDirective', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [IconDirective],
-      declarations: [TestComponent],
       providers: [provideExperimentalZonelessChangeDetection()],
     });
 

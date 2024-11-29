@@ -70,7 +70,7 @@
           <section class="flex flex-col gap-1 mb-4 last:mb-0">
             <h3 class="font-bold bg-slate-100 dark:bg-slate-800 col-span-full">{{ otherKey | capitalizeWords }}</h3>
 
-            @for (miniGame of miniGames(otherKey, diff); track miniGames.name) {
+            @for (miniGame of miniGames(otherKey, diff); track miniGame.name) {
               @if (miniGame.score) {
                 <div class="flex items-center gap-2">
                   <img icon [name]="$any(miniGame).name" class="w-4 h-4" />

@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, Injector, InputSignal, OnInit, Signal, WritableSignal, input, signal } from '@angular/core';
+import { Component, Injector, InputSignal, OnInit, Signal, WritableSignal, inject, input, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Item } from '@osrs-tracker/models';
 import 'chartjs-adapter-date-fns';
@@ -20,7 +20,6 @@ import { VolumeChartComponent } from './charts/volume-chart.component';
 import { Trend } from './item-analytics.model';
 
 @Component({
-  standalone: true,
   selector: 'item-analytics',
   templateUrl: './item-analytics.component.html',
   imports: [
@@ -33,24 +32,22 @@ import { Trend } from './item-analytics.model';
   ],
 })
 export class ItemAnalyticsComponent implements OnInit {
+  private readonly injector = inject(Injector);
+  private readonly osrsPricesRepo = inject(OsrsPricesRepo);
+
   readonly TimeSpan = TimeSpan;
   timeSeriesMap$: { [key in TimeSpan]: Observable<AveragePricesAtTime[]> };
 
   priceTimeSpan: TimeSpan = TimeSpan.FIVE_MINUTES;
-  priceTimeSeries: WritableSignal<AveragePricesAtTime[]> = signal([]);
+  readonly priceTimeSeries: WritableSignal<AveragePricesAtTime[]> = signal([]);
   volumeTimeSpan: TimeSpan = TimeSpan.FIVE_MINUTES;
-  volumeTimeSeries: WritableSignal<AveragePricesAtTime[]> = signal([]);
+  readonly volumeTimeSeries: WritableSignal<AveragePricesAtTime[]> = signal([]);
 
-  itemDetail: InputSignal<Item> = input.required();
-  latestPrices: InputSignal<LatestPrices> = input.required();
-  timeSeriesToday: InputSignal<AveragePricesAtTime[]> = input.required();
+  readonly itemDetail: InputSignal<Item> = input.required();
+  readonly latestPrices: InputSignal<LatestPrices> = input.required();
+  readonly timeSeriesToday: InputSignal<AveragePricesAtTime[]> = input.required();
 
   trend: Signal<Trend | undefined>;
-
-  constructor(
-    private injector: Injector,
-    private osrsPricesRepo: OsrsPricesRepo,
-  ) {}
 
   ngOnInit(): void {
     this.timeSeriesMap$ = {

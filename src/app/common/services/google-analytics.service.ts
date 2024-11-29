@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { DefaultTitleStrategy, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 
@@ -6,10 +6,8 @@ import { filter } from 'rxjs';
   providedIn: 'root',
 })
 export class GoogleAnalyticsService {
-  constructor(
-    private router: Router,
-    private titleStrategy: DefaultTitleStrategy,
-  ) {}
+  private readonly router = inject(Router);
+  private readonly titleStrategy = inject(DefaultTitleStrategy);
 
   setupPageAnalytics() {
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
