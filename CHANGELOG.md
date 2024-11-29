@@ -1,3 +1,9 @@
+## 2024/11/29
+
+- Updated to Angular 19
+- Executed all new possible Angular migrations
+- Updated all dependencies to their latest versions
+
 ## 2024/09/25
 
 - Varlamore Part 2 support
