@@ -1,3 +1,8 @@
+## 2024/12/14
+
+- fix minor styling issues
+- update @angular-eslint to a non alpha version
+
 ## 2024/11/29
 
 - Updated to Angular 19
