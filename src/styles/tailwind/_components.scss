@@ -1,5 +1,3 @@
-@tailwind components;
-
 @layer components {
   .button-group {
     @apply text-base font-bold flex rounded-lg bg-slate-100 dark:bg-slate-800;

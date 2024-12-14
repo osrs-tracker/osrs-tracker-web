@@ -34,12 +34,7 @@
               "src/manifest.webmanifest",
               "src/robots.txt"
             ],
-            "styles": [
-              "src/styles/tailwind/base.scss",
-              "src/styles/tailwind/components.scss",
-              "src/styles/tailwind/utilities.scss",
-              "src/styles/index.scss"
-            ],
+            "styles": ["@angular/cdk/overlay-prebuilt.css", "src/styles/tailwind.scss"],
             "scripts": [],
             "allowedCommonJsDependencies": ["hammerjs"],
             "serviceWorker": "ngsw-config.json",
