@@ -63,7 +63,7 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
   @HostListener('window:resize')
   onResize(): void {
     this.volumeChart.resize(1, 1);
-    window.requestAnimationFrame(() => this.volumeChart.resize());
+    requestAnimationFrame(() => this.volumeChart.resize());
   }
 
   // Workaround for chart.js not closing tooltips when tapping outside the canvas (iOS)
@@ -124,7 +124,7 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
           mode: 'index',
           intersect: false,
         },
-        devicePixelRatio: Math.max(window.devicePixelRatio, 1.5),
+        devicePixelRatio: Math.max(devicePixelRatio, 1.5),
         plugins: {
           tooltip: {
             enabled: true,

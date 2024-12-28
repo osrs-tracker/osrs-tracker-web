@@ -1,3 +1,7 @@
+## 2024/12/28
+
+- minor config changes.
+
 ## 2024/12/14
 
 - fix minor styling issues

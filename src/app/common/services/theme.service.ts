@@ -16,7 +16,7 @@ export class ThemeService {
   constructor() {
     const darkModeSetting = this.storageService.getItem(StorageKey.DarkMode);
 
-    if (!darkModeSetting) this.#darkMode.set(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    if (!darkModeSetting) this.#darkMode.set(matchMedia('(prefers-color-scheme: dark)').matches);
     else this.#darkMode.set(darkModeSetting === 'true');
   }
 

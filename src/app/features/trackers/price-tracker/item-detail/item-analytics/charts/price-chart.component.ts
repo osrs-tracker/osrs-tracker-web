@@ -85,7 +85,7 @@ export class PriceChartComponent implements OnInit, OnDestroy {
   @HostListener('window:resize')
   onResize(): void {
     this.priceChart.resize(1, 1);
-    window.requestAnimationFrame(() => this.priceChart.resize());
+    requestAnimationFrame(() => this.priceChart.resize());
   }
 
   // Workaround for chart.js not closing tooltips when tapping outside the canvas (iOS)
@@ -147,7 +147,7 @@ export class PriceChartComponent implements OnInit, OnDestroy {
           mode: 'index',
           intersect: false,
         },
-        devicePixelRatio: Math.max(window.devicePixelRatio, 1.5),
+        devicePixelRatio: Math.max(devicePixelRatio, 1.5),
         plugins: {
           tooltip: {
             enabled: true,
