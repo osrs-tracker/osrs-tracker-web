@@ -37,6 +37,7 @@
         ],
         "@angular-eslint/no-input-rename": "off",
         "@typescript-eslint/no-non-null-assertion": "off",
+        "comma-dangle": ["error", "always-multiline"],
         "no-console": "error"
       }
     },
@@ -49,6 +50,7 @@
       "files": ["*.js"],
       "extends": ["eslint:recommended"],
       "rules": {
+        "comma-dangle": ["error", "always-multiline"],
         "no-undef": "off"
       }
     }

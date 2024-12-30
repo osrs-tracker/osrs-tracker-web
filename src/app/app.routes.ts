@@ -1,12 +1,13 @@
 import { inject } from '@angular/core';
 import { Route } from '@angular/router';
+import RootLayoutComponent from './common/components/layout/root-layout/root-layout.component';
 import { MetaService } from './common/services/meta.service';
 
 export default [
   {
     path: '',
     pathMatch: 'prefix',
-    loadComponent: () => import('./common/components/layout/root-layout/root-layout.component'),
+    component: RootLayoutComponent,
     children: [
       {
         path: '',
