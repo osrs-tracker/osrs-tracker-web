@@ -1,6 +1,6 @@
 import { Overlay, OverlayModule, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
-import { NgTemplateOutlet } from '@angular/common';
+import { DOCUMENT, NgTemplateOutlet } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -17,7 +17,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Subject, debounceTime } from 'rxjs';
+import { Subject, debounceTime, fromEvent } from 'rxjs';
 
 @Component({
   selector: '[tooltip]',
@@ -47,6 +47,7 @@ import { Subject, debounceTime } from 'rxjs';
   imports: [NgTemplateOutlet, OverlayModule],
 })
 export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
+  private readonly document = inject(DOCUMENT);
   private readonly elementRef = inject(ElementRef);
   private readonly overlay = inject(Overlay);
   private readonly viewContainerRef = inject(ViewContainerRef);
@@ -68,6 +69,14 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
   tooltipTemplateContainer: Signal<TemplateRef<unknown>> = viewChild.required('tooltipTemplateContainer');
 
   constructor() {
+    fromEvent(this.elementRef.nativeElement, 'touchstart', { passive: true })
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.onMouseEnter());
+
+    fromEvent(this.document, 'touchend', { passive: true })
+      .pipe(takeUntilDestroyed())
+      .subscribe(e => this.onDocumentTouchend(e.target as HTMLElement));
+
     this.mousePresent$.pipe(debounceTime(300), takeUntilDestroyed()).subscribe(isPresent => {
       if (this.isOpen === isPresent) return;
       this.isOpen = isPresent;
@@ -101,7 +110,7 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
     this.mousePresent$.complete();
   }
 
-  @HostListener('mouseenter') @HostListener('touchstart') onMouseEnter() {
+  @HostListener('mouseenter') onMouseEnter() {
     this.mousePresent$.next(true);
   }
 
@@ -109,7 +118,7 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
     this.mousePresent$.next(false);
   }
 
-  @HostListener('document:touchend', ['$event.target']) onDocumentTouchend(target: HTMLElement) {
+  private onDocumentTouchend(target: HTMLElement) {
     const found = [
       this.elementRef.nativeElement,
       this.containerOverlayRef?.hostElement,

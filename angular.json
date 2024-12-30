@@ -19,18 +19,23 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": {
-              "base": "dist/osrs-tracker-web",
-              "browser": "."
-            },
+            "outputPath": "dist/osrs-tracker-web",
             "index": "src/index.html",
             "polyfills": [],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/assets",
-              { "glob": "favicon*.png", "input": "src", "output": "." },
-              { "glob": "sitemap*.xml", "input": "src", "output": "." },
+              {
+                "glob": "favicon*.png",
+                "input": "src",
+                "output": "."
+              },
+              {
+                "glob": "sitemap*.xml",
+                "input": "src",
+                "output": "."
+              },
               "src/manifest.webmanifest",
               "src/robots.txt"
             ],

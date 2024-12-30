@@ -28,11 +28,6 @@ export default [
         loadChildren: () => import('./features/about/about.routes'),
       },
       {
-        path: 'changelog',
-        pathMatch: 'full',
-        redirectTo: '/about/changelog',
-      },
-      {
         path: '**',
         pathMatch: 'full',
         title: '404 Not Found - OSRS Tracker',

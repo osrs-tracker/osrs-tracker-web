@@ -2,7 +2,6 @@ import { formatNumber } from '@angular/common';
 import {
   Component,
   ElementRef,
-  HostBinding,
   HostListener,
   Injector,
   InputSignal,
@@ -32,8 +31,6 @@ import { config } from 'src/config/config';
 export class VolumeChartComponent implements OnInit, OnDestroy {
   private readonly injector = inject(Injector);
   private readonly themeService = inject(ThemeService);
-
-  @HostBinding('class') class = 'block h-60 max-w-full';
 
   volumeChart: Chart;
   readonly volumeChartCanvas: Signal<ElementRef<HTMLCanvasElement>> = viewChild.required('volumeChart');

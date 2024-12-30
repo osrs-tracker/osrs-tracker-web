@@ -68,7 +68,13 @@
         </button>
       </div>
 
-      <price-chart [timeSeries]="priceTimeSeries()"></price-chart>
+      <div class="block h-72 max-w-full">
+        @defer {
+          <price-chart class="block h-full w-full" [timeSeries]="priceTimeSeries()"></price-chart>
+        } @loading {
+          <spinner class="flex h-full items-center justify-center"></spinner>
+        }
+      </div>
     </article>
 
     <article card>
@@ -85,7 +91,13 @@
         </button>
       </div>
 
-      <volume-chart [timeSeries]="volumeTimeSeries()"></volume-chart>
+      <div class="block h-72 max-w-full">
+        @defer {
+          <volume-chart class="block h-full w-full" [timeSeries]="volumeTimeSeries()"></volume-chart>
+        } @loading {
+          <spinner class="flex h-full items-center justify-center"></spinner>
+        }
+      </div>
     </article>
   </div>
 </section>

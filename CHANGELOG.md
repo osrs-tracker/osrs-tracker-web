@@ -1,3 +1,11 @@
+## 2024/12/30
+
+- Deferred `price-chart` and `volume-chart` loading to improve page load time, plus minor chart style changes.
+- Renamed xp-tracker search field from `username` to `player name` to prevent password manager code injection.
+- Improved tooltip performance by using `passive: true`.
+- Replaced bad `/changelog` route with `/about/changelog`.
+- Used `div` instead of `p` for `page-header` content to be semantically correct.
+
 ## 2024/12/28
 
 - minor config changes.

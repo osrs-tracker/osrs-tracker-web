@@ -7,15 +7,8 @@
   </header>
 
   <div class="shadow-lg rounded-lg bg-slate-100 dark:bg-slate-800 p-4 flex flex-col gap-4">
-    <picture class="flex justify-center py-4">
-      <img
-        class="object-contain h-40"
-        [ngSrc]="detailIconUrl"
-        [width]="160"
-        [height]="160"
-        [priority]="true"
-        [alt]="itemDetail().name + ' icon'"
-      />
+    <picture class="relative flex justify-center py-4 h-40">
+      <img class="object-contain" [ngSrc]="detailIconUrl" [priority]="true" [alt]="itemDetail().name + ' icon'" fill />
     </picture>
 
     <section class="text-lg">

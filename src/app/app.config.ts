@@ -7,7 +7,6 @@ import {
   provideAppInitializer,
   provideExperimentalZonelessChangeDetection,
 } from '@angular/core';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import { provideServiceWorker, SwUpdate } from '@angular/service-worker';
 import { filter, fromEvent, startWith, switchMap } from 'rxjs';
@@ -51,6 +50,5 @@ export const appConfig: ApplicationConfig = {
           .subscribe(updated => updated && document.location.reload());
       }
     }),
-    provideClientHydration(withEventReplay()),
   ],
 };
