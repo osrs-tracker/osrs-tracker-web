@@ -1,4 +1,4 @@
-## 2024/01/05
+## 2025/01/05
 
 - Fix `eslint` not linting any files anymore.
 
