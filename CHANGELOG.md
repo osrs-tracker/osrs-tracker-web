@@ -1,3 +1,7 @@
+## 2024/01/05
+
+- Fix `eslint` not linting any files anymore.
+
 ## 2024/12/30
 
 - Deferred `price-chart` and `volume-chart` loading to improve page load time, plus minor chart style changes.
