@@ -14,7 +14,7 @@ import { TooltipComponent } from '../general/tooltip/tooltip.component';
       [tooltipUnderline]="false"
     >
       @if (skill()) {
-        <img icon [name]="skill()!.name" class="flex-1 h-6" />
+        <img class="flex-1 h-6" icon [name]="skill()!.name" />
         <div class="flex-1 text-lg font-bold">{{ skill()!.level }}</div>
       } @else {
         <div class="animate-pulse h-5 w-20 my-1 rounded-lg bg-slate-300 dark:bg-slate-700"></div>
@@ -45,7 +45,7 @@ import { TooltipComponent } from '../general/tooltip/tooltip.component';
 export class PlayerSkillWidgetComponent {
   readonly SkillEnum: typeof SkillEnum = SkillEnum;
 
-  readonly skill: InputSignal<Skill | undefined> = input();
+  readonly skill: InputSignal<Skill | undefined> = input.required();
 
   get xpToNextLevel(): number {
     return calculateXPToNextLevel(this.skill()?.xp ?? 0, this.skill()?.level ?? 1);

@@ -5,9 +5,9 @@
     <div class="relative flex gap-2 mb-0.5">
       @if (playerDetail().type !== PlayerType.Normal) {
         <img
+          class="h-6 w-6"
           icon
           [name]="playerDetail().status === PlayerStatus.Default ? playerDetail().type : playerDetail().status"
-          class="h-6 w-6"
         />
       }
       @if (playerDetail().diedAsHardcore) {

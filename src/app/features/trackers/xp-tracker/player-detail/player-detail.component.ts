@@ -33,10 +33,10 @@ export default class PlayerDetailComponent implements OnInit {
   readonly loadingMore: WritableSignal<boolean> = signal(false);
   readonly hasMoreEntries: WritableSignal<boolean> = signal(false);
 
-  readonly playerDetail = input.required<Player>({ alias: 'player' });
+  readonly player = input.required<Player>();
 
   ngOnInit(): void {
-    const playerDetail = this.playerDetail();
+    const playerDetail = this.player();
     if (!playerDetail) return;
 
     this.loadInitialHiscores();
@@ -45,12 +45,9 @@ export default class PlayerDetailComponent implements OnInit {
 
   loadInitialHiscores(): void {
     forkJoin([
-      this.osrsProxyRepo.getPlayerHiscore(
-        this.playerDetail()!.username,
-        this.xpTrackerStorageService.getScrapingOffset(),
-      ), // current hiscore
+      this.osrsProxyRepo.getPlayerHiscore(this.player()!.username, this.xpTrackerStorageService.getScrapingOffset()), // current hiscore
       this.osrsTrackerRepo.getPlayerHiscores(
-        this.playerDetail()!.username,
+        this.player()!.username,
         this.xpTrackerStorageService.getScrapingOffset(),
         this.#DEFAULT_SIZE,
         0,
@@ -70,7 +67,7 @@ export default class PlayerDetailComponent implements OnInit {
 
     this.osrsTrackerRepo
       .getPlayerHiscores(
-        this.playerDetail()!.username,
+        this.player()!.username,
         this.xpTrackerStorageService.getScrapingOffset(),
         this.#MORE_SIZE,
         this.history().flat().length,
@@ -80,8 +77,8 @@ export default class PlayerDetailComponent implements OnInit {
         finalize(() => this.loadingMore.set(false)),
       )
       .subscribe(scrapedHiscores => {
-        this.#historyEntries.update(entries => [...entries, parseHiscores(scrapedHiscores)]),
-          this.hasMoreEntries.set(scrapedHiscores.length === this.#MORE_SIZE);
+        this.#historyEntries.update(entries => [...entries, parseHiscores(scrapedHiscores)]);
+        this.hasMoreEntries.set(scrapedHiscores.length === this.#MORE_SIZE);
       });
   }
 }

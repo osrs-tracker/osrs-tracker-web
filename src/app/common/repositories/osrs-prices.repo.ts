@@ -37,15 +37,19 @@ export interface AveragePricesAtTime extends AveragePrices {
 export class OsrsPricesRepo {
   private readonly httpClient = inject(HttpClient);
 
-  private averagePriceCache: {
-    [key in TimeSpan]: {
-      [timestamp: number]: Observable<{ data: { [key: string]: AveragePrices }; timestamp: number }>;
-    };
-  } = { [TimeSpan.FIVE_MINUTES]: {}, [TimeSpan.HOUR]: {}, [TimeSpan.SIX_HOURS]: {}, [TimeSpan.DAY]: {} };
+  private averagePriceCache: Record<
+    TimeSpan,
+    Record<number, Observable<{ data: Record<string, AveragePrices>; timestamp: number }>>
+  > = {
+    [TimeSpan.FIVE_MINUTES]: {},
+    [TimeSpan.HOUR]: {},
+    [TimeSpan.SIX_HOURS]: {},
+    [TimeSpan.DAY]: {},
+  };
 
   getLatestPrices(id: number, options?: { fetchAll?: boolean; loadingIndicator?: boolean }): Observable<LatestPrices> {
     return this.httpClient
-      .get<{ data: { [key: string]: { [key: string]: number } } }>(`${config.pricesBaseUrl}/api/v1/osrs/latest`, {
+      .get<{ data: Record<string, Record<string, number>> }>(`${config.pricesBaseUrl}/api/v1/osrs/latest`, {
         ...(!options?.fetchAll && { params: { id } }),
         context: new HttpContext().set(BASE_URL_PREFIX, false).set(LOADING_INDICATOR, options?.loadingIndicator),
       })
@@ -62,7 +66,7 @@ export class OsrsPricesRepo {
 
   getVolume(id: number, options?: { loadingIndicator?: boolean }): Observable<number> {
     return this.httpClient
-      .get<{ data: { [key: string]: number } }>(`${config.pricesBaseUrl}/api/v1/osrs/volumes`, {
+      .get<{ data: Record<string, number> }>(`${config.pricesBaseUrl}/api/v1/osrs/volumes`, {
         context: new HttpContext().set(BASE_URL_PREFIX, false).set(LOADING_INDICATOR, options?.loadingIndicator),
       })
       .pipe(map(response => response.data[id]));
@@ -106,8 +110,8 @@ export class OsrsPricesRepo {
   private fetchAveragePrice(
     timeSpan: TimeSpan,
     timestamp?: Date,
-  ): Observable<{ data: { [key: string]: AveragePrices }; timestamp: number }> {
-    return this.httpClient.get<{ data: { [key: string]: AveragePrices }; timestamp: number }>(
+  ): Observable<{ data: Record<string, AveragePrices>; timestamp: number }> {
+    return this.httpClient.get<{ data: Record<string, AveragePrices>; timestamp: number }>(
       `${config.pricesBaseUrl}/api/v1/osrs/${timeSpan}`,
       {
         ...(timestamp && { params: { timestamp: getUnixTime(timestamp) } }), // Only add the timestamp param if it's defined
@@ -118,7 +122,7 @@ export class OsrsPricesRepo {
 
   private mapAveragePriceResponse(
     id: number,
-    request$: Observable<{ data: { [key: string]: AveragePrices }; timestamp: number }>,
+    request$: Observable<{ data: Record<string, AveragePrices>; timestamp: number }>,
   ): Observable<{ averagePrices?: AveragePrices; timestamp: Date }> {
     return request$.pipe(
       map(response => ({ averagePrices: response.data[id], timestamp: fromUnixTime(response.timestamp) })),

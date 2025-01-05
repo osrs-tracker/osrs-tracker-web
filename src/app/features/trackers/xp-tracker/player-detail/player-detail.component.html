@@ -1,10 +1,10 @@
 <div class="container mx-auto my-4 px-4 grid lg:grid-cols-3 2xl:grid-cols-4 gap-8">
-  <player-detail-widget [playerDetail]="playerDetail()">
+  <player-detail-widget [playerDetail]="player()">
     <player-skills [hiscore]="today()" />
   </player-detail-widget>
 
   <section class="lg:col-span-2 2xl:col-span-3">
-    <player-logs [playerDetail]="playerDetail()" [today]="today()" [history]="history()" />
+    <player-logs [playerDetail]="player()" [today]="today()" [history]="history()" />
 
     @if (hasMoreEntries()) {
       <footer class="flex justify-center mt-4">

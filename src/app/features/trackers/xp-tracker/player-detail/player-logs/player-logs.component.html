@@ -21,7 +21,7 @@
               @if (skill.xp) {
                 <div>
                   <div class="flex items-center gap-2">
-                    <img icon [name]="skill.name" class="w-4 h-4" />
+                    <img class="w-4 h-4" icon [name]="skill.name" />
                     <span>{{ skill.name }}</span>
                     @if (skill.level) {
                       <span class="font-bold positive-value">{{ skill.level }}</span>
@@ -73,7 +73,7 @@
             @for (miniGame of miniGames(otherKey, diff); track miniGame.name) {
               @if (miniGame.score) {
                 <div class="flex items-center gap-2">
-                  <img icon [name]="$any(miniGame).name" class="w-4 h-4" />
+                  <img class="w-4 h-4" icon [name]="$any(miniGame).name" />
                   <div>{{ miniGame.name }}:</div>
                   <div class="font-bold text-slate-900 dark:text-white">{{ miniGame.score | number }}</div>
                 </div>

@@ -3,8 +3,6 @@ import { Observable, finalize, share } from 'rxjs';
 
 const ongoingRequests = new Map<string, Observable<HttpEvent<unknown>>>();
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 /**
  * This interceptor is used to share ongoing requests to reduce the number of unnecessary requests.
  */

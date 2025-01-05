@@ -38,7 +38,7 @@ export class ItemAnalyticsComponent implements OnInit {
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
 
   readonly TimeSpan = TimeSpan;
-  timeSeriesMap$: { [key in TimeSpan]: Observable<AveragePricesAtTime[]> };
+  timeSeriesMap$: Record<TimeSpan, Observable<AveragePricesAtTime[]>>;
 
   priceTimeSpan: TimeSpan = TimeSpan.FIVE_MINUTES;
   readonly priceTimeSeries: WritableSignal<AveragePricesAtTime[]> = signal([]);

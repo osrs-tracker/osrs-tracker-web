@@ -36,15 +36,15 @@ import { XpTrackerStorageService } from '../xp-tracker-storage.service';
           <div class="relative flex items-center rounded-full gap-2">
             @if (playerDetails()!.type !== PlayerType.Normal) {
               <img
+                class="h-6 w-6"
                 icon
                 [name]="
                   playerDetails()!.status === PlayerStatus.Default ? playerDetails()!.type : playerDetails()!.status
                 "
-                class="h-6 w-6"
               />
             }
             @if (playerDetails()!.diedAsHardcore) {
-              <img icon name="dead" class="h-6 w-6" />
+              <img class="h-6 w-6" icon name="dead" />
             }
           </div>
         }
@@ -57,7 +57,7 @@ import { XpTrackerStorageService } from '../xp-tracker-storage.service';
             &mdash;
           } @else {
             <div>+&nbsp;{{ overallDiff() | number }}&nbsp;XP</div>
-            <img icon [name]="SkillEnum.Overall" class="w-5 h-5 ml-2 mb-1" />
+            <img class="w-5 h-5 ml-2 mb-1" icon [name]="SkillEnum.Overall" />
           }
         }
       </div>

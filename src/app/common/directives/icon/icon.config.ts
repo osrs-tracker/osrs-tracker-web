@@ -9,7 +9,7 @@ import {
 } from '@osrs-tracker/hiscores';
 import { PlayerStatus, PlayerType } from '@osrs-tracker/models';
 
-export const iconMap: { [key: string]: string } = {
+export const iconMap: Record<string, string> = {
   ['coins']: '/coins.png',
   ['combat']: '/combat.png',
   ['dead']: '/skull.png',
