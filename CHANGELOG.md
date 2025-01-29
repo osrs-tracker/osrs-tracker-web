@@ -1,3 +1,7 @@
+## 2025/01/29
+
+- Add support for the new `Collection Log` hiscore category.
+
 ## 2025/01/05
 
 - Fix `eslint` not linting any files anymore.
