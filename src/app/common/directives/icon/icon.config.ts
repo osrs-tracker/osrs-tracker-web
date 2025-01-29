@@ -58,6 +58,7 @@ export const iconMap: Record<string, string> = {
   [MiniGameEnum.SoulWarsZeal]: '/minigames/game_icon_soulwarszeal.png',
   [MiniGameEnum.RiftsClosed]: '/minigames/game_icon_riftsclosed.png',
   [MiniGameEnum.ColosseumGlory]: '/minigames/game_icon_colosseumglory.png',
+  [MiniGameEnum.CollectionsLogged]: '/minigames/game_icon_collectionslogged.png',
 
   [ClueScrollsEnum.ClueScrollsAll]: '/cluescrolls/game_icon_cluescrollsall.png',
   [ClueScrollsEnum.ClueScrollsBeginner]: '/cluescrolls/game_icon_cluescrollsbeginner.png',

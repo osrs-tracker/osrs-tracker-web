@@ -1,6 +1,7 @@
 ## 2025/01/29
 
 - Add support for the new `Collection Log` hiscore category.
+- Updated copyright to 2025.
 
 ## 2025/01/05
 
