@@ -1,3 +1,7 @@
+## 2025/02/05
+
+- Add support for the new `The Royal Titans` hiscore category.
+
 ## 2025/01/29
 
 - Add support for the new `Collection Log` hiscore category.

@@ -122,6 +122,7 @@ export const iconMap: Record<string, string> = {
   [BossEnum.Tempoross]: '/bosses/game_icon_tempoross.png',
   [BossEnum.TheHueycoatl]: '/bosses/game_icon_thehueycoatl.png',
   [BossEnum.TheLeviathan]: '/bosses/game_icon_theleviathan.png',
+  [BossEnum.TheRoyalTitans]: '/bosses/game_icon_theroyaltitans.png',
   [BossEnum.TheWhisperer]: '/bosses/game_icon_thewhisperer.png',
   [BossEnum.ThermoNuclearSmokeDevil]: '/bosses/game_icon_thermonuclearsmokedevil.png',
   [BossEnum.TzKalZuk]: '/bosses/game_icon_tzkalzuk.png',
