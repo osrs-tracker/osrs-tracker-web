@@ -1,12 +1,13 @@
 <page-header headerText="XP Tracker">
-  <div class="mb-8">
-    Track your daily Old School Runescape XP gains, completed Clue scrolls, Boss kills, and more with the OSRS XP
-    Tracker.
-    <br />
-    Keep up-to-date with you and your friends' progress to stay motivated.
+  <div class="mb-8 flex flex-col gap-2">
+    <div>
+      Track your daily Old School Runescape XP gains, completed Clue scrolls, Boss kills, and more with the OSRS XP
+      Tracker.
+    </div>
+    <div>Keep up-to-date with you and your friends' progress to stay motivated.</div>
   </div>
 
-  <form class="relative max-w-md w-full mx-4">
+  <div class="relative max-w-md w-full mx-4">
     <input
       type="text"
       class="w-full input--default"
@@ -15,7 +16,6 @@
       [(ngModel)]="usernameQuery"
       autocomplete="hidden"
     />
-
     <button
       type="submit"
       class="absolute right-0 button--primary button--rounded"
@@ -23,34 +23,34 @@
     >
       Search
     </button>
-  </form>
 
-  <div class="absolute top-32 mt-2">
-    <div class="flex gap-4 items-center">
-      <div class="whitespace-nowrap flex text-xs">
-        <span tooltip [tooltipTemplate]="scrapingOffsetTooltip">Tracking offset:</span>
-        <ng-template #scrapingOffsetTooltip>
-          <div class="pb-1">
-            The tracking offset indicates which set of hiscores is being shown: a tracking offset of +02:00 UTC will
-            only show hiscores that were tracked at 02:00 UTC.
-          </div>
-          <div>
-            Since we only start tracking a player the first time they are looked up, it's possible that there are no
-            hiscores yet for a selected tracking offset.
-          </div>
-        </ng-template>
+    <div class="absolute mt-2 flex justify-center w-full">
+      <div class="flex gap-4 items-center">
+        <div class="whitespace-nowrap flex text-xs">
+          <span tooltip [tooltipTemplate]="scrapingOffsetTooltip">Tracking offset:</span>
+          <ng-template #scrapingOffsetTooltip>
+            <div class="pb-1">
+              The tracking offset indicates which set of hiscores is being shown: a tracking offset of +02:00 UTC will
+              only show hiscores that were tracked at 02:00 UTC.
+            </div>
+            <div>
+              Since we only start tracking a player the first time they are looked up, it's possible that there are no
+              hiscores yet for a selected tracking offset.
+            </div>
+          </ng-template>
+        </div>
+        <select
+          class="input--default input--small"
+          [ngModel]="scrapingOffset()"
+          (ngModelChange)="updateScrapingOffset($event)"
+        >
+          @for (offset of SCRAPING_OFFSETS; track offset) {
+            <option class="font-mono" [ngValue]="offset">
+              {{ offset === 0 ? '&nbsp;' : offset > 0 ? '+' : '' }}{{ offset | number: '2.0-0' }}:00 UTC
+            </option>
+          }
+        </select>
       </div>
-      <select
-        class="input--default input--small"
-        [ngModel]="scrapingOffset()"
-        (ngModelChange)="updateScrapingOffset($event)"
-      >
-        @for (offset of SCRAPING_OFFSETS; track offset) {
-          <option class="font-mono" [ngValue]="offset">
-            {{ offset === 0 ? '&nbsp;' : offset > 0 ? '+' : '' }}{{ offset | number: '2.0-0' }}:00 UTC
-          </option>
-        }
-      </select>
     </div>
   </div>
 </page-header>
