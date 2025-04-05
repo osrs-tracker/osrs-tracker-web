@@ -1,4 +1,10 @@
 <page-header headerText="Price Tracker">
+  <div class="mb-8">
+    Keep track of real-time prices and market trends in Old School Runescape with the OSRS Price Tracker.
+    <br />
+    Stay ahead of the market and make smart decisions with the latest pricing information.
+  </div>
+
   <form class="relative max-w-md w-full mx-4">
     <input
       type="text"
@@ -56,17 +62,43 @@
 </page-header>
 
 <div class="container mx-auto mb-8 px-4">
-  <div class="mx-auto max-w-xl lg:max-w-5xl grid lg:grid-cols-2 gap-8">
+  <div class="mx-auto grid lg:grid-cols-3 gap-8">
     <section>
       <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4 flex">
-        Recent
+        Global recent lookups
         <info-tooltip>
           The widget shows the price difference between the last instant-sell price and the 24h average of the previous
           day (UTC).
         </info-tooltip>
       </h2>
 
-      <div class="grid gap-4">
+      <div class="grid gap-4 p-0.5 max-h-72 overflow-y-auto">
+        @if (recentItemLookups.isLoading()) {
+          <div class="flex justify-center items-center h-72 -m-0.5">
+            <spinner [size]="8" />
+          </div>
+        } @else {
+          @for (item of recentItemLookups.value(); track item.id) {
+            <a [routerLink]="['/trackers/price', item.id]">
+              <item-widget [recentItem]="item"></item-widget>
+            </a>
+          } @empty {
+            <p>No items looked up yet.</p>
+          }
+        }
+      </div>
+    </section>
+
+    <section>
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4 flex">
+        Your recent lookups
+        <info-tooltip>
+          The widget shows the price difference between the last instant-sell price and the 24h average of the previous
+          day (UTC).
+        </info-tooltip>
+      </h2>
+
+      <div class="grid gap-4 p-0.5 max-h-72 overflow-y-auto">
         @for (item of recentItems; track item.id) {
           <a [routerLink]="['/trackers/price', item.id]">
             <item-widget [recentItem]="item"></item-widget>
@@ -76,16 +108,17 @@
         }
       </div>
     </section>
+
     <section>
       <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4 flex">
-        Favorite
+        Your favorites
         <info-tooltip>
           The widget shows the price difference between the last instant-sell price and the 24h average of the previous
           day (UTC).
         </info-tooltip>
       </h2>
 
-      <div class="grid gap-4">
+      <div class="grid gap-4 p-0.5 max-h-72 overflow-y-auto">
         @for (item of favoriteItems; track item.id) {
           <a [routerLink]="['/trackers/price', item.id]">
             <item-widget [recentItem]="item"></item-widget>

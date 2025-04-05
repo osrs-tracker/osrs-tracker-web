@@ -1,10 +1,17 @@
-import { Component } from '@angular/core';
+import { NgClass } from '@angular/common';
+import { Component, computed, input, InputSignal, Signal } from '@angular/core';
 
 @Component({
   standalone: true,
   selector: 'spinner',
   template: `
-    <svg class="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    <svg
+      class="animate-spin"
+      [ngClass]="sizeClasses()"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
       <path
         class="opacity-75"
@@ -13,5 +20,9 @@ import { Component } from '@angular/core';
       ></path>
     </svg>
   `,
+  imports: [NgClass],
 })
-export class SpinnerComponent {}
+export class SpinnerComponent {
+  readonly size: InputSignal<number> = input(6);
+  readonly sizeClasses: Signal<string> = computed(() => `h-${this.size()} w-${this.size()}`);
+}

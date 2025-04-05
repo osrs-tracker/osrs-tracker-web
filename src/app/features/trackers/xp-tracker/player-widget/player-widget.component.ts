@@ -4,8 +4,11 @@ import {
   ChangeDetectorRef,
   Component,
   InputSignal,
-  OnChanges,
+  OnInit,
+  Signal,
   WritableSignal,
+  computed,
+  effect,
   inject,
   input,
   signal,
@@ -14,8 +17,10 @@ import { SkillEnum, getOverallXpDiff } from '@osrs-tracker/hiscores';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { EMPTY, catchError, forkJoin } from 'rxjs';
 import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
+import { TooltipComponent } from 'src/app/common/components/general/tooltip/tooltip.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { CapitalizePipe } from 'src/app/common/pipes/capitalize.pipe';
+import { TimeAgoPipe } from 'src/app/common/pipes/time-ago.pipe';
 import { OsrsProxyRepo } from 'src/app/common/repositories/osrs-proxy.repo';
 import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
 import { GoogleAnalyticsService } from 'src/app/common/services/google-analytics.service';
@@ -31,7 +36,9 @@ import { XpTrackerStorageService } from '../xp-tracker-storage.service';
       "
     >
       <div class="flex-1 flex items-center justify-between  rounded-l bg-slate-300 dark:bg-slate-700 px-4 py-2">
-        <h3>{{ username() | capitalizeWords }}</h3>
+        <h3 class="flex">
+          {{ _username() | capitalizeWords }}
+        </h3>
         @if (playerDetails()) {
           <div class="relative flex items-center rounded-full gap-2">
             @if (playerDetails()!.type !== PlayerType.Normal) {
@@ -49,23 +56,32 @@ import { XpTrackerStorageService } from '../xp-tracker-storage.service';
           </div>
         }
       </div>
-      <div class="flex-1 flex items-center justify-end px-4 py-2">
-        @if (loading()) {
-          <spinner />
-        } @else {
-          @if (overallDiff() === null) {
-            &mdash;
+      <div class="flex-1 flex px-4 py-2 justify-end">
+        <div class="flex items-center">
+          @if (loading()) {
+            <spinner />
           } @else {
-            <div>+&nbsp;{{ overallDiff() | number }}&nbsp;XP</div>
-            <img class="w-5 h-5 ml-2 mb-1" icon [name]="SkillEnum.Overall" />
+            @if (overallDiff() === null) {
+              &mdash;
+            } @else {
+              <div [tooltip]="!!this.player()" [tooltipTemplate]="tooltip">
+                +&nbsp;{{ overallDiff() | number }}&nbsp;XP
+              </div>
+              <ng-template #tooltip>
+                The XP for this player is calculated since they were last scraped, which is
+                {{ this.player()?.hiscoreEntries?.[0]?.date | timeAgo }}.
+              </ng-template>
+
+              <img class="w-5 h-5 ml-2 mb-1" icon [name]="SkillEnum.Overall" />
+            }
           }
-        }
+        </div>
       </div>
     </article>
   `,
-  imports: [CapitalizePipe, DecimalPipe, IconDirective, SpinnerComponent],
+  imports: [CapitalizePipe, DecimalPipe, TimeAgoPipe, IconDirective, SpinnerComponent, TooltipComponent],
 })
-export class PlayerWidgetComponent implements OnChanges {
+export class PlayerWidgetComponent implements OnInit {
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly googlAnalyticsService = inject(GoogleAnalyticsService);
   private readonly osrsProxyRepo = inject(OsrsProxyRepo);
@@ -76,20 +92,38 @@ export class PlayerWidgetComponent implements OnChanges {
   readonly PlayerStatus: typeof PlayerStatus = PlayerStatus;
   readonly SkillEnum: typeof SkillEnum = SkillEnum;
 
-  readonly loading = signal(true);
+  readonly username: InputSignal<string | null> = input<string | null>(null);
+  readonly player: InputSignal<Player | null> = input<Player | null>(null);
+  readonly scrapingOffset: InputSignal<number> = input.required();
+
+  readonly _username: Signal<string> = computed(() => (this.player()?.username ?? this.username())!);
+  readonly formattedOffset: Signal<string> = computed(() => {
+    const offset = this.player()?.hiscoreEntries?.[0]?.scrapingOffset ?? this.scrapingOffset();
+    return offset > 0 ? `+${offset}` : offset.toString();
+  });
 
   readonly playerDetails: WritableSignal<Player | null> = signal(null);
   readonly overallDiff: WritableSignal<number | null> = signal(null);
 
-  readonly username: InputSignal<string> = input.required();
-  readonly scrapingOffset: InputSignal<number> = input.required();
+  readonly loading = signal(true);
 
-  ngOnChanges(): void {
+  constructor() {
+    effect(() => this.username() && this.fetchFromUsername(this.username()!));
+    effect(() => this.player() && (this.playerDetails.set(this.player()), this.fetchFromPlayer(this.player()!)));
+  }
+
+  ngOnInit(): void {
+    if (this.player() === null && this.username() === null) {
+      throw new Error('Either player or username must be provided');
+    }
+  }
+
+  private fetchFromUsername(username: string): void {
     this.loading.set(true);
 
     forkJoin([
-      this.osrsProxyRepo.getPlayerHiscore(this.username(), this.scrapingOffset()),
-      this.osrsTrackerRepo.getPlayerInfo(this.username(), this.scrapingOffset(), { includeLatestHiscoreEntry: true }),
+      this.osrsProxyRepo.getPlayerHiscore(username, this.scrapingOffset()),
+      this.osrsTrackerRepo.getPlayerInfo(username, this.scrapingOffset(), { includeLatestHiscoreEntry: true }),
     ])
       .pipe(
         catchError(err => {
@@ -110,16 +144,25 @@ export class PlayerWidgetComponent implements OnChanges {
       });
   }
 
+  private fetchFromPlayer(player: Player): void {
+    this.loading.set(true);
+
+    this.osrsProxyRepo.getPlayerHiscore(player.username, this.scrapingOffset()).subscribe(hiscore => {
+      this.overallDiff.set(getOverallXpDiff(hiscore, player.hiscoreEntries![0]));
+      this.loading.set(false);
+    });
+  }
+
   private removeMissingPlayer(): void {
-    if (this.xpTrackerStorageService.getRecentPlayers().includes(this.username())) {
-      this.xpTrackerStorageService.removeRecentPlayer(this.username());
+    if (this.xpTrackerStorageService.getRecentPlayers().includes(this._username())) {
+      this.xpTrackerStorageService.removeRecentPlayer(this._username());
     }
 
-    if (this.xpTrackerStorageService.getFavoritePlayers().includes(this.username())) {
-      this.xpTrackerStorageService.toggleFavoritePlayer(this.username());
+    if (this.xpTrackerStorageService.getFavoritePlayers().includes(this._username())) {
+      this.xpTrackerStorageService.toggleFavoritePlayer(this._username());
     }
 
-    this.googlAnalyticsService.trackEvent('remove-missing-player', 'xp-tracker', this.username(), true);
+    this.googlAnalyticsService.trackEvent('remove-missing-player', 'xp-tracker', this._username(), true);
 
     this.changeDetectorRef.markForCheck();
   }

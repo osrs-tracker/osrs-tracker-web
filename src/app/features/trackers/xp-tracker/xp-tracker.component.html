@@ -1,4 +1,11 @@
 <page-header headerText="XP Tracker">
+  <div class="mb-8">
+    Track your daily Old School Runescape XP gains, completed Clue scrolls, Boss kills, and more with the OSRS XP
+    Tracker.
+    <br />
+    Keep up-to-date with you and your friends' progress to stay motivated.
+  </div>
+
   <form class="relative max-w-md w-full mx-4">
     <input
       type="text"
@@ -12,13 +19,13 @@
     <button
       type="submit"
       class="absolute right-0 button--primary button--rounded"
-      [routerLink]="usernameQuery ? ['/trackers/xp', usernameQuery] : '.'"
+      [routerLink]="usernameQuery() ? ['/trackers/xp', usernameQuery()] : '.'"
     >
       Search
     </button>
   </form>
 
-  <div class="absolute top-16 mt-2">
+  <div class="absolute top-32 mt-2">
     <div class="flex gap-4 items-center">
       <div class="whitespace-nowrap flex text-xs">
         <span tooltip [tooltipTemplate]="scrapingOffsetTooltip">Tracking offset:</span>
@@ -49,10 +56,29 @@
 </page-header>
 
 <div class="container mx-auto mb-8 px-4">
-  <div class="mx-auto max-w-xl lg:max-w-5xl grid lg:grid-cols-2 gap-8">
+  <div class="mx-auto grid lg:grid-cols-3 gap-8">
     <section>
-      <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Recent</h2>
-      <div class="grid gap-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Global recent lookups</h2>
+      <div class="grid gap-4 p-0.5 max-h-72 overflow-y-auto">
+        @if (recentPlayerLookups.isLoading()) {
+          <div class="flex justify-center items-center h-72 -m-0.5">
+            <spinner [size]="8" />
+          </div>
+        } @else {
+          @for (player of recentPlayerLookups.value(); track player.username) {
+            <a [routerLink]="['/trackers/xp', player.username]">
+              <player-widget [player]="player" [scrapingOffset]="scrapingOffset()" />
+            </a>
+          } @empty {
+            <p>No players looked up yet.</p>
+          }
+        }
+      </div>
+    </section>
+
+    <section>
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Your recent lookups</h2>
+      <div class="grid gap-4 p-0.5 max-h-72 overflow-y-auto">
         @for (username of recentPlayers; track username) {
           <a [routerLink]="['/trackers/xp', username]">
             <player-widget [username]="username" [scrapingOffset]="scrapingOffset()" />
@@ -62,9 +88,10 @@
         }
       </div>
     </section>
+
     <section>
-      <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Favorite</h2>
-      <div class="grid gap-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Your favorites</h2>
+      <div class="grid gap-4 p-0.5 max-h-72 overflow-y-auto">
         @for (username of favoritePlayers; track username) {
           <a [routerLink]="['/trackers/xp', username]">
             <player-widget [username]="username" [scrapingOffset]="scrapingOffset()" />

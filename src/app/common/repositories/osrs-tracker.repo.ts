@@ -49,6 +49,17 @@ export class OsrsTrackerRepo {
       .pipe(map(hiscoreEntries => (hiscoreEntries ?? []).map(entry => ({ ...entry, date: new Date(entry.date) }))));
   }
 
+  getRecentPlayerLookups(): Observable<Player[]> {
+    return this.httpClient.get<Player[]>('/players/recent').pipe(
+      map(players =>
+        players.map(player => ({
+          ...player,
+          hiscoreEntries: player.hiscoreEntries?.map(entry => ({ ...entry, date: new Date(entry.date) })),
+        })),
+      ),
+    );
+  }
+
   //
   // Items
   //
@@ -61,5 +72,9 @@ export class OsrsTrackerRepo {
     return this.httpClient.get<Item>(`/item/${itemId}`, {
       context: new HttpContext().set(LOADING_INDICATOR, options?.loadingIndicator),
     });
+  }
+
+  getRecentItemLookups(): Observable<Item[]> {
+    return this.httpClient.get<Item[]>('/items/recent');
   }
 }

@@ -1,4 +1,5 @@
-import { Component, WritableSignal, inject, signal } from '@angular/core';
+import { Component, ResourceRef, WritableSignal, inject, signal } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
@@ -27,8 +28,7 @@ export default class PriceTrackerComponent {
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly priceTrackerStorageService = inject(PriceTrackerStorageService);
 
-  query = '';
-
+  readonly query: WritableSignal<string> = signal('');
   readonly loading: WritableSignal<boolean> = signal(false);
   readonly results: WritableSignal<Item[]> = signal([]);
 
@@ -40,12 +40,17 @@ export default class PriceTrackerComponent {
     return this.priceTrackerStorageService.getRecentItems();
   }
 
+  readonly recentItemLookups: ResourceRef<Item[]> = rxResource({
+    loader: () => this.osrsTrackerRepo.getRecentItemLookups(),
+    defaultValue: [],
+  });
+
   searchItems(): void {
-    if (!this.query) return;
+    if (!this.query()) return;
 
     this.loading.set(true);
 
-    this.osrsTrackerRepo.searchItems(this.query).subscribe(items => {
+    this.osrsTrackerRepo.searchItems(this.query()).subscribe(items => {
       this.results.set(items ?? []);
       this.loading.set(false);
     });

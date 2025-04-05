@@ -62,11 +62,13 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
   containerOverlayRef?: OverlayRef;
   containerTemplatePortal: TemplatePortal;
 
+  /** When `false is passed, the tooltip wil be disabled. */
+  readonly tooltip: InputSignal<string | boolean> = input<string | boolean>(true);
   readonly tooltipTemplate: InputSignal<TemplateRef<unknown>> = input.required();
   readonly tooltipUnderline: InputSignal<boolean> = input(true);
 
-  tooltipTemplateArrow: Signal<TemplateRef<unknown>> = viewChild.required('tooltipTemplateArrow');
-  tooltipTemplateContainer: Signal<TemplateRef<unknown>> = viewChild.required('tooltipTemplateContainer');
+  readonly tooltipTemplateArrow: Signal<TemplateRef<unknown>> = viewChild.required('tooltipTemplateArrow');
+  readonly tooltipTemplateContainer: Signal<TemplateRef<unknown>> = viewChild.required('tooltipTemplateContainer');
 
   constructor() {
     fromEvent(this.elementRef.nativeElement, 'touchstart', { passive: true })
@@ -93,6 +95,9 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Tooltip is not enabled => break early and complete the observable
+    if (this.tooltip() === false) return this.mousePresent$.complete();
+
     if (this.tooltipUnderline()) {
       this.elementRef.nativeElement.classList.add('underline', 'underline-offset-[6px]', 'decoration-dotted');
     }

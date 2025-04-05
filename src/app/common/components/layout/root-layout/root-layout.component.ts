@@ -14,7 +14,9 @@ import { MenuButtonComponent } from './components/menu-button.component';
 export default class RootLayoutComponent {
   readonly loadingIndicatorService = inject(LoadingIndicatorService);
 
-  routes = [
+  readonly currentYear = new Date().getFullYear();
+
+  readonly routes = [
     {
       path: '/',
       name: 'Home',

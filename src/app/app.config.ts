@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import { provideServiceWorker, SwUpdate } from '@angular/service-worker';
-import { filter, fromEvent, startWith, switchMap } from 'rxjs';
+import { interval, startWith, switchMap } from 'rxjs';
 import appRoutes from './app.routes';
 import { GoogleAnalyticsService } from './common/services/google-analytics.service';
 import { CustomErrorHandler } from './core/error-handling/error-handler';
@@ -28,10 +28,7 @@ export const appConfig: ApplicationConfig = {
       withComponentInputBinding(),
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
     ),
-    provideServiceWorker('ngsw-worker.js', {
-      enabled: !isDevMode(),
-      registrationStrategy: 'registerWhenStable:3000',
-    }),
+    provideServiceWorker('ngsw-worker.js', { enabled: !isDevMode() }),
     provideExperimentalZonelessChangeDetection(),
 
     { provide: ErrorHandler, useClass: CustomErrorHandler },
@@ -40,10 +37,10 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => {
       const swUpdate = inject(SwUpdate);
 
+      // checks every 5 minutes if there's an update, if so, reloads the page
       if (swUpdate.isEnabled) {
-        fromEvent(document, 'visibilitychange')
+        interval(60 * 5 * 1000)
           .pipe(
-            filter(() => document.visibilityState === 'visible'),
             startWith(null),
             switchMap(() => swUpdate.checkForUpdate()),
           )
