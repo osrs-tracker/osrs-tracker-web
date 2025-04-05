@@ -1,3 +1,8 @@
+## 2025/04/05
+
+- Added new section to Price Tracker: `Global recent lookups`.
+- Added new section to XP Tracker: `Global recent lookups`.
+
 ## 2025/02/05
 
 - Add support for the new `The Royal Titans` hiscore category.
