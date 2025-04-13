@@ -3,15 +3,15 @@ import {
   ApplicationConfig,
   ErrorHandler,
   inject,
-  isDevMode,
   provideAppInitializer,
   provideExperimentalZonelessChangeDetection,
 } from '@angular/core';
+import { provideClientHydration, withEventReplay, withHttpTransferCacheOptions } from '@angular/platform-browser';
 import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import { provideServiceWorker, SwUpdate } from '@angular/service-worker';
 import { interval, startWith, switchMap } from 'rxjs';
 import appRoutes from './app.routes';
-import { GoogleAnalyticsService } from './common/services/google-analytics.service';
+import { AnalyticsService } from './common/services/analytics/analytics.service';
 import { CustomErrorHandler } from './core/error-handling/error-handler';
 import { baseUrlInterceptor } from './core/interceptors/base-url.interceptors';
 import { loadingIndicatorInterceptor } from './core/interceptors/loading-indicator.interceptor';
@@ -28,12 +28,13 @@ export const appConfig: ApplicationConfig = {
       withComponentInputBinding(),
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
     ),
-    provideServiceWorker('ngsw-worker.js', { enabled: !isDevMode() }),
+    provideClientHydration(withEventReplay(), withHttpTransferCacheOptions({})),
+    provideServiceWorker('ngsw-worker.js', { enabled: false }),
     provideExperimentalZonelessChangeDetection(),
 
     { provide: ErrorHandler, useClass: CustomErrorHandler },
 
-    provideAppInitializer(() => inject(GoogleAnalyticsService).setupPageAnalytics()),
+    provideAppInitializer(() => inject(AnalyticsService).setupPageAnalytics()),
     provideAppInitializer(() => {
       const swUpdate = inject(SwUpdate);
 

@@ -5,7 +5,7 @@ import { InfoTooltipComponent } from 'src/app/common/components/general/tooltip/
 import { TooltipComponent } from 'src/app/common/components/general/tooltip/tooltip.component';
 import { TimeAgoPipe } from 'src/app/common/pipes/time-ago.pipe';
 import { LatestPrices } from 'src/app/common/repositories/osrs-prices.repo';
-import { GoogleAnalyticsService } from 'src/app/common/services/google-analytics.service';
+import { AnalyticsService } from 'src/app/common/services/analytics/analytics.service';
 import { config } from 'src/config/config';
 import { PriceTrackerStorageService } from '../../price-tracker-storage.service';
 
@@ -15,7 +15,7 @@ import { PriceTrackerStorageService } from '../../price-tracker-storage.service'
   imports: [NgOptimizedImage, DecimalPipe, TimeAgoPipe, InfoTooltipComponent, TooltipComponent],
 })
 export class ItemDetailWidgetComponent implements OnInit {
-  private readonly googlAnalyticsService = inject(GoogleAnalyticsService);
+  private readonly analyticsService = inject(AnalyticsService);
   private readonly priceTrackerStorageService = inject(PriceTrackerStorageService);
 
   readonly itemDetail: InputSignal<Item> = input.required();
@@ -38,12 +38,7 @@ export class ItemDetailWidgetComponent implements OnInit {
   }
 
   toggleFavorite(): void {
-    this.googlAnalyticsService.trackEvent(
-      'toggle_favorite_item',
-      'price_tracker',
-      this.itemDetail().id,
-      this.isFavorite,
-    );
+    this.analyticsService.trackEvent('toggle_favorite_item', 'price_tracker', this.itemDetail().id, this.isFavorite);
 
     this.priceTrackerStorageService.toggleFavoriteItem({
       id: this.itemDetail().id,

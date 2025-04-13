@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: osrs-tracker-web
+  labels:
+    app: osrs-tracker-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: osrs-tracker-web
+  template:
+    metadata:
+      labels:
+        app: osrs-tracker-web
+    spec:
+      revisionHistoryLimit: 1
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: osrs-tracker-web
+          image: freekmencke/osrs-tracker-web:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /healthy
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthy
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: osrs-tracker-web-service
+spec:
+  selector:
+    app: osrs-tracker-web
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: osrs-tracker-web-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: 'letsencrypt-prod'
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - osrs-tracker.freekmencke.com
+      secretName: osrs-tracker-tls
+  rules:
+    - host: osrs-tracker.freekmencke.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: osrs-tracker-web-service
+                port:
+                  number: 80

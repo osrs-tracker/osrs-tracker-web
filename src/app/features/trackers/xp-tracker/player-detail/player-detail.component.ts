@@ -1,8 +1,20 @@
-import { Component, DestroyRef, OnInit, Signal, WritableSignal, computed, inject, input, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import {
+  Component,
+  DestroyRef,
+  OnInit,
+  PLATFORM_ID,
+  Signal,
+  WritableSignal,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Hiscore, parseHiscores } from '@osrs-tracker/hiscores';
 import { Player } from '@osrs-tracker/models';
-import { finalize, forkJoin } from 'rxjs';
+import { finalize } from 'rxjs';
 import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
 import { PlayerSkillsWidgetComponent } from 'src/app/common/components/player/player-skills.component';
 import { OsrsProxyRepo } from 'src/app/common/repositories/osrs-proxy.repo';
@@ -21,11 +33,13 @@ export default class PlayerDetailComponent implements OnInit {
   private readonly osrsProxyRepo = inject(OsrsProxyRepo);
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly xpTrackerStorageService = inject(XpTrackerStorageService);
+  private readonly platformId = inject(PLATFORM_ID);
 
-  #DEFAULT_SIZE = 14;
-  #MORE_SIZE = 7;
-
+  readonly #DEFAULT_SIZE = 14;
+  readonly #MORE_SIZE = 7;
   readonly #historyEntries: WritableSignal<Hiscore[][]> = signal([]);
+
+  readonly player = input.required<Player>();
 
   readonly today: WritableSignal<Hiscore | undefined> = signal(undefined);
   readonly history: Signal<Hiscore[]> = computed(() => this.#historyEntries().flat());
@@ -33,32 +47,35 @@ export default class PlayerDetailComponent implements OnInit {
   readonly loadingMore: WritableSignal<boolean> = signal(false);
   readonly hasMoreEntries: WritableSignal<boolean> = signal(false);
 
-  readonly player = input.required<Player>();
-
   ngOnInit(): void {
-    const playerDetail = this.player();
-    if (!playerDetail) return;
-
     this.loadInitialHiscores();
-    this.xpTrackerStorageService.pushRecentPlayer(playerDetail.username);
+    if (isPlatformBrowser(this.platformId)) {
+      this.getPlayerHiscore();
+      this.xpTrackerStorageService.pushRecentPlayer(this.player().username);
+    }
   }
 
   loadInitialHiscores(): void {
-    forkJoin([
-      this.osrsProxyRepo.getPlayerHiscore(this.player()!.username, this.xpTrackerStorageService.getScrapingOffset()), // current hiscore
-      this.osrsTrackerRepo.getPlayerHiscores(
+    this.osrsTrackerRepo
+      .getPlayerHiscores(
         this.player()!.username,
         this.xpTrackerStorageService.getScrapingOffset(),
         this.#DEFAULT_SIZE,
         0,
-      ), // scraped Hiscores
-    ])
+      )
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(([currentHiscore, scrapedHiscores]) => {
-        this.today.set(parseHiscores([currentHiscore])[0]);
+      .subscribe(scrapedHiscores => {
         this.#historyEntries.update(entries => [...entries, parseHiscores(scrapedHiscores)]);
-
         this.hasMoreEntries.set(scrapedHiscores.length === this.#DEFAULT_SIZE);
+      });
+  }
+
+  getPlayerHiscore(): void {
+    this.osrsProxyRepo
+      .getPlayerHiscore(this.player()!.username, this.xpTrackerStorageService.getScrapingOffset())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(currentHiscore => {
+        this.today.set(parseHiscores([currentHiscore])[0]);
       });
   }
 

@@ -3,14 +3,17 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectorRef,
   Component,
+  Injector,
   InputSignal,
   OnInit,
   Signal,
   WritableSignal,
+  afterNextRender,
   computed,
   effect,
   inject,
   input,
+  runInInjectionContext,
   signal,
 } from '@angular/core';
 import { SkillEnum, getOverallXpDiff } from '@osrs-tracker/hiscores';
@@ -23,7 +26,7 @@ import { CapitalizePipe } from 'src/app/common/pipes/capitalize.pipe';
 import { TimeAgoPipe } from 'src/app/common/pipes/time-ago.pipe';
 import { OsrsProxyRepo } from 'src/app/common/repositories/osrs-proxy.repo';
 import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
-import { GoogleAnalyticsService } from 'src/app/common/services/google-analytics.service';
+import { AnalyticsService } from 'src/app/common/services/analytics/analytics.service';
 import { XpTrackerStorageService } from '../xp-tracker-storage.service';
 
 @Component({
@@ -82,8 +85,9 @@ import { XpTrackerStorageService } from '../xp-tracker-storage.service';
   imports: [CapitalizePipe, DecimalPipe, TimeAgoPipe, IconDirective, SpinnerComponent, TooltipComponent],
 })
 export class PlayerWidgetComponent implements OnInit {
+  private readonly analyticsService = inject(AnalyticsService);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
-  private readonly googlAnalyticsService = inject(GoogleAnalyticsService);
+  private readonly injector = inject(Injector);
   private readonly osrsProxyRepo = inject(OsrsProxyRepo);
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly xpTrackerStorageService = inject(XpTrackerStorageService);
@@ -108,8 +112,12 @@ export class PlayerWidgetComponent implements OnInit {
   readonly loading = signal(true);
 
   constructor() {
-    effect(() => this.username() && this.fetchFromUsername(this.username()!));
-    effect(() => this.player() && (this.playerDetails.set(this.player()), this.fetchFromPlayer(this.player()!)));
+    afterNextRender(() =>
+      runInInjectionContext(this.injector, () => {
+        effect(() => this.username() && this.fetchFromUsername(this.username()!));
+        effect(() => this.player() && (this.playerDetails.set(this.player()), this.fetchFromPlayer(this.player()!)));
+      }),
+    );
   }
 
   ngOnInit(): void {
@@ -162,7 +170,7 @@ export class PlayerWidgetComponent implements OnInit {
       this.xpTrackerStorageService.toggleFavoritePlayer(this._username());
     }
 
-    this.googlAnalyticsService.trackEvent('remove-missing-player', 'xp-tracker', this._username(), true);
+    this.analyticsService.trackEvent('remove-missing-player', 'xp-tracker', this._username(), true);
 
     this.changeDetectorRef.markForCheck();
   }

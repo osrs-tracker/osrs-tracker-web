@@ -1,0 +1,45 @@
+# Node modules
+node_modules
+
+# Git files
+.git
+.gitignore
+.github
+
+# Build artifacts
+dist
+tmp
+out-tsc
+
+# IDE files
+.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode/*
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Test coverage
+coverage
+
+# Scripts
+scripts/node_modules
+
+# Docker files
+Dockerfile
+.dockerignore
+
+# Documentation
+README.md
+LICENSE

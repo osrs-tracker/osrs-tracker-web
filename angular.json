@@ -41,9 +41,11 @@
             ],
             "styles": ["@angular/cdk/overlay-prebuilt.css", "src/styles/tailwind.scss"],
             "scripts": [],
-            "allowedCommonJsDependencies": ["hammerjs"],
+            "allowedCommonJsDependencies": ["hammerjs", "morgan", "express-prom-bundle", "compression"],
             "serviceWorker": "ngsw-config.json",
-            "browser": "src/main.ts"
+            "browser": "src/main.ts",
+            "server": "src/main.server.ts",
+            "ssr": { "entry": "src/server.ts" }
           },
           "configurations": {
             "production": {

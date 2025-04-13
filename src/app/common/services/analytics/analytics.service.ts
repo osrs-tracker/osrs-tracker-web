@@ -1,11 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { DefaultTitleStrategy, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
+import { GTAG_TOKEN } from './analytics.token';
 
 @Injectable({
   providedIn: 'root',
 })
-export class GoogleAnalyticsService {
+export class AnalyticsService {
+  private readonly gtag = inject(GTAG_TOKEN);
   private readonly router = inject(Router);
   private readonly titleStrategy = inject(DefaultTitleStrategy);
 
@@ -13,7 +15,7 @@ export class GoogleAnalyticsService {
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
       const routerState = this.router.routerState.snapshot;
 
-      gtag('event', 'page_view', {
+      this.gtag?.('event', 'page_view', {
         page_path: routerState.url,
         page_title: this.titleStrategy.buildTitle(routerState),
         page_location: location.href,
@@ -22,7 +24,7 @@ export class GoogleAnalyticsService {
   }
 
   trackEvent(action: string, category: string, label: unknown, value: unknown) {
-    gtag('event', action, {
+    this.gtag?.('event', action, {
       event_category: category,
       event_label: label,
       value,
@@ -33,7 +35,7 @@ export class GoogleAnalyticsService {
     // eslint-disable-next-line no-console
     console.error(error ?? description);
 
-    gtag('event', 'exception', {
+    this.gtag?.('event', 'exception', {
       description,
       fatal,
     });

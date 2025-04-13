@@ -40,9 +40,8 @@
     <script>
       const darkModeSetting = localStorage.getItem('dark-mode');
 
-      const darkModeEnabled = darkModeSetting
-        ? darkModeSetting === 'true'
-        : matchMedia('(prefers-color-scheme: dark)').matches;
+      const darkModeEnabled =
+        darkModeSetting !== null ? darkModeSetting === 'true' : matchMedia('(prefers-color-scheme: dark)').matches;
 
       document.documentElement.classList.toggle('dark', darkModeEnabled);
 

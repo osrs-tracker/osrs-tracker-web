@@ -1,7 +1,6 @@
-import { Component, Injector, InputSignal, OnInit, Signal, WritableSignal, inject, input, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, InputSignal, OnInit, WritableSignal, inject, input, signal } from '@angular/core';
 import { subDays } from 'date-fns';
-import { forkJoin, map, tap } from 'rxjs';
+import { forkJoin, map } from 'rxjs';
 import { ColoredValueComponent } from 'src/app/common/components/general/colored-value.component';
 import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
@@ -32,31 +31,37 @@ import { RecentItem } from '../price-tracker-storage.service';
   imports: [IconDirective, ColoredValueComponent, SpinnerComponent],
 })
 export class ItemWidgetComponent implements OnInit {
-  private readonly injector = inject(Injector);
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
 
-  readonly loading: WritableSignal<boolean> = signal(true);
-  trend: Signal<number | undefined>;
+  readonly loading: WritableSignal<boolean> = signal(false);
+  readonly trend: WritableSignal<number | undefined> = signal(undefined);
 
   readonly recentItem: InputSignal<RecentItem> = input.required();
 
   ngOnInit(): void {
-    this.trend = toSignal<number | undefined>(
-      forkJoin([
-        this.osrsPricesRepo.getLatestPrices(this.recentItem().id, { fetchAll: true }), // fetch all to share the request with other widgets due to the share-request.interceptor
-        this.osrsPricesRepo.getCachedPriceAverage(
-          this.recentItem().id,
-          TimeSpan.DAY,
-          utcStartOfDay(subDays(new Date(), 1)),
-        ),
-      ]).pipe(
+    this.fetchPrice();
+  }
+
+  fetchPrice(): void {
+    this.loading.set(true);
+
+    forkJoin([
+      this.osrsPricesRepo.getLatestPrices(this.recentItem().id, { fetchAll: true }), // fetch all to share the request with other widgets due to the share-request.interceptor
+      this.osrsPricesRepo.getCachedPriceAverage(
+        this.recentItem().id,
+        TimeSpan.DAY,
+        utcStartOfDay(subDays(new Date(), 1)),
+      ),
+    ])
+      .pipe(
         map(([latest, recent]) => {
           if (latest.low === null || recent.averagePrices?.avgLowPrice == null) return undefined;
           return latest.low - recent.averagePrices.avgLowPrice;
         }),
-        tap(() => this.loading.set(false)),
-      ),
-      { injector: this.injector },
-    );
+      )
+      .subscribe(trend => {
+        this.trend.set(trend);
+        this.loading.set(false);
+      });
   }
 }

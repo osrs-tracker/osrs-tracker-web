@@ -33,13 +33,13 @@ export class PlayerLogsComponent {
   }
 
   readonly today: InputSignal<Hiscore | undefined> = input();
-  readonly history: InputSignal<Hiscore[] | undefined> = input();
+  readonly history: InputSignal<Hiscore[]> = input.required();
 
   readonly hiscoreDiffs: Signal<Hiscore[]> = computed(() => {
-    let previousHiscore = this.today();
+    let previousHiscore = this.today() ?? this.history()[0];
 
     return this.history()!.map(hiscore => {
-      const diff = hiscoreDiff(previousHiscore!, hiscore);
+      const diff = hiscoreDiff(previousHiscore, hiscore);
       previousHiscore = hiscore;
       return diff;
     });

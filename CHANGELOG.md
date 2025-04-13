@@ -1,3 +1,9 @@
+## 2025/04/13
+
+- Migrated to Angular SSR
+- Temporarily disabled Angular Service Worker to prevent CSP and caching issues.
+- Minor changes in logic to allow for SSR.
+
 ## 2025/04/05
 
 - Added new section to Price Tracker: `Global recent lookups`.
