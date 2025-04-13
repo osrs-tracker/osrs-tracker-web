@@ -19,7 +19,7 @@ spec:
         - name: regcred
       containers:
         - name: osrs-tracker-web
-          image: freekmencke/osrs-tracker-web:latest
+          image: freekmencke/osrs-tracker-web@sha256:6dabf0eae804726560e475d1cacacb089795092ac2923c5a39b4af4f493647a5
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

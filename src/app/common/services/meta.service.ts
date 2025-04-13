@@ -11,7 +11,7 @@ export class MetaService {
     this.meta.updateTag({
       name: 'description',
       content:
-        'Track everything that matters in Old School Runescape with OSRS Tracker. Track the latest news, item prices, hiscores, and XP gains all in one place.',
+        'Track everything that matters in Old School RuneScape with OSRS Tracker. Track the latest news, item prices, hiscores, and XP gains all in one place.',
     });
   }
 
@@ -19,7 +19,7 @@ export class MetaService {
     this.meta.updateTag({
       name: 'description',
       content:
-        'Keep track of real-time prices and market trends in Old School Runescape with the OSRS Price Tracker. Stay ahead of the market and make smart decisions with the latest pricing information.',
+        'Track real-time Old School RuneScape prices and market trends with OSRS Price Tracker. Stay ahead and make smart decisions with the latest pricing info!',
     });
   }
 
@@ -27,7 +27,7 @@ export class MetaService {
     this.meta.updateTag({
       name: 'description',
       content:
-        "Track your daily Old School Runescape XP gains, completed Clue scrolls, Boss kills, and more with the OSRS XP Tracker. Keep up-to-date with you and your friends' progress to stay motivated.",
+        "Track your Old School RuneScape XP gains, Clue scrolls, Boss kills easily with OSRS Tracker. Stay motivated by tracking both your and your friends' progress!",
     });
   }
 }
