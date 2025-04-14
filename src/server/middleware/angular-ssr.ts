@@ -8,11 +8,11 @@ import { pageCache } from '../utils/page-cache';
  */
 export function angularSsrMiddleware(bootstrap: () => Promise<ApplicationRef>): RequestHandler {
   return (req, res, next) => {
-    const { protocol, originalUrl, headers } = req;
-    const fullUrl = `${protocol}://${headers.host}${originalUrl}`;
+    const { originalUrl, headers } = req;
+    const fullUrl = `//${headers.host}${originalUrl}`;
 
     // Check if the page is in cache first. (CACHE KEY IS ALWAYS HTTPS)
-    const cachedPage = pageCache.get(`https://${headers.host}${originalUrl}`);
+    const cachedPage = pageCache.get(fullUrl);
     if (cachedPage) {
       res.appendHeader('x-cache', 'HIT');
       return res.send(cachedPage);
@@ -22,11 +22,7 @@ export function angularSsrMiddleware(bootstrap: () => Promise<ApplicationRef>): 
 
     // Otherwise, render the page and cache it
     return renderWithSsr(bootstrap, fullUrl)
-      .then(html => {
-        // Store in cache for future requests
-        pageCache.set(fullUrl, html);
-        res.send(html);
-      })
+      .then(html => res.send(html))
       .catch(err => {
         // eslint-disable-next-line no-console
         console.error('Error during SSR:', err);

@@ -2,16 +2,12 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // Reused variables
-const PORT = process.env['PORT'] || 8080;
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 
 export const serverConfig = {
   // Server settings
-  PORT: PORT,
-  DOMAIN: process.env['DOMAIN_URL'] || `localhost:${PORT}`,
-
-  RATE_LIMIT_WINDOW_MS: Number(process.env['RATE_LIMIT_WINDOW_MS'] || 15 * 60 * 1000), // 15 minutes
-  RATE_LIMIT_MAX: Number(process.env['RATE_LIMIT_MAX'] || 500), // 500 requests
+  PORT: process.env['PORT'] || 8080,
+  HOST: process.env['HOST'] || `localhost:${process.env['PORT'] || 8080}`,
 
   // Paths
   serverDistFolder: serverDistFolder,

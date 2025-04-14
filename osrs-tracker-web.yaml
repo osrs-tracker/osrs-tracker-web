@@ -7,6 +7,7 @@ metadata:
     app: osrs-tracker-web
 spec:
   replicas: 2
+  revisionHistoryLimit: 1
   selector:
     matchLabels:
       app: osrs-tracker-web
@@ -15,15 +16,14 @@ spec:
       labels:
         app: osrs-tracker-web
     spec:
-      revisionHistoryLimit: 1
       imagePullSecrets:
         - name: regcred
       containers:
         - name: osrs-tracker-web
-          image: freekmencke/osrs-tracker-web@sha256:892407ed7e02498ff5cafbb84af9c48082ad1582b4e456583738f5ab4a6574a0
+          image: freekmencke/osrs-tracker-web@sha256:74df09269c825432fdcc86a02f741971d11f7fa1ea896e45e0333197a21b8022
           imagePullPolicy: Always
           env:
-            - name: DOMAIN
+            - name: HOST
               value: osrs-tracker.freekmencke.com
           ports:
             - containerPort: 8080

@@ -4,13 +4,13 @@ import morgan from 'morgan';
 export function loggingMiddleware(): RequestHandler {
   return morgan((tokens, req, res) =>
     JSON.stringify({
-      method: tokens['method'](req, res),
-      url: tokens['url'](req, res),
       status: tokens['status'](req, res),
+      method: tokens['method'](req, res),
+      host: tokens['req'](req, res, 'host'),
+      url: tokens['url'](req, res),
       responseTime: tokens['response-time'](req, res) + 'ms',
-      ip: req.ip,
-      userAgent: req.headers['user-agent'],
-      cached: res.getHeader('x-cache'),
+      cache: tokens['res'](req, res, 'x-cache'),
+      userAgent: tokens['user-agent'](req, res),
     }),
   );
 }
