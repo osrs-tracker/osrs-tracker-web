@@ -1,3 +1,9 @@
+## 2025/04/14
+
+- Refactored the `server.ts` file to a fully fleshed out `express` server folder structure.
+- Created `utils/page-cache.ts`, `utils/auto-generator.ts` and `server-config.ts` for automatically pre-rendering pages
+  and caching them.
+
 ## 2025/04/13
 
 - Migrated to Angular SSR
