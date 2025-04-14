@@ -45,6 +45,10 @@ kind: Service
 metadata:
   name: osrs-tracker-web-service
   namespace: default
+  annotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: '8080'
+    prometheus.io/scrape: 'true'
 spec:
   selector:
     app: osrs-tracker-web
@@ -62,6 +66,14 @@ metadata:
   namespace: default
   annotations:
     cert-manager.io/cluster-issuer: 'letsencrypt-prod'
+    nginx.ingress.kubernetes.io/limit-rps: '50'
+    nginx.ingress.kubernetes.io/limit-rpm: '3000'
+    nginx.ingress.kubernetes.io/limit-connections: '50'
+    nginx.ingress.kubernetes.io/limit-burst-multiplier: '5'
+    nginx.ingress.kubernetes.io/server-snippet: |
+      location ~ ^/metrics {
+        return 403;
+      }
 spec:
   ingressClassName: nginx
   tls:
