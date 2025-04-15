@@ -20,23 +20,24 @@ spec:
         - name: regcred
       containers:
         - name: osrs-tracker-web
-          image: freekmencke/osrs-tracker-web@sha256:74df09269c825432fdcc86a02f741971d11f7fa1ea896e45e0333197a21b8022
+          image: freekmencke/osrs-tracker-web@sha256:fd20b362ca1c2271410fea2ffe30ab315f0882cc242a3306b9b28e2ad9893b87
           imagePullPolicy: Always
           env:
             - name: HOST
               value: osrs-tracker.freekmencke.com
           ports:
             - containerPort: 8080
+            - containerPort: 9090
           readinessProbe:
             httpGet:
               path: /healthy
-              port: 8080
+              port: 9090
             initialDelaySeconds: 5
             periodSeconds: 5
           livenessProbe:
             httpGet:
               path: /healthy
-              port: 8080
+              port: 9090
             initialDelaySeconds: 5
             periodSeconds: 5
 ---
@@ -47,7 +48,7 @@ metadata:
   namespace: default
   annotations:
     prometheus.io/path: /metrics
-    prometheus.io/port: '8080'
+    prometheus.io/port: '9090'
     prometheus.io/scrape: 'true'
 spec:
   selector:
@@ -57,6 +58,10 @@ spec:
       targetPort: 8080
       protocol: TCP
       name: http
+    - port: 9090
+      targetPort: 9090
+      protocol: TCP
+      name: metrics
   type: ClusterIP
 ---
 apiVersion: networking.k8s.io/v1
@@ -70,10 +75,6 @@ metadata:
     nginx.ingress.kubernetes.io/limit-rpm: '3000'
     nginx.ingress.kubernetes.io/limit-connections: '50'
     nginx.ingress.kubernetes.io/limit-burst-multiplier: '5'
-    nginx.ingress.kubernetes.io/server-snippet: |
-      location ~ ^/metrics {
-        return 403;
-      }
 spec:
   ingressClassName: nginx
   tls:

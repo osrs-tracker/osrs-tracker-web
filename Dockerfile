@@ -28,13 +28,15 @@ COPY --from=build /app/dist ./dist
 
 # Set environment variables
 ENV PORT=8080
+ENV METRICS_PORT=9090
 
 # Expose the port the app runs on
 EXPOSE $PORT
+EXPOSE $METRICS_PORT
 
 # Command to run the application
 CMD ["node", "dist/osrs-tracker-web/server/server.mjs"]
 
 # Health check using the /healthy endpoint available in server.ts
 HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
-  CMD wget -qO- http://localhost:8080/healthy || exit 1
+  CMD wget -qO- http://localhost:9090/healthy || exit 1

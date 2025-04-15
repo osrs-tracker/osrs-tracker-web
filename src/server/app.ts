@@ -11,10 +11,10 @@ import { serverConfig } from './server-config';
 
 export function createApp(bootstrap: () => Promise<ApplicationRef>) {
   const app = express();
+  const metricsApp = express();
 
   app.use(
-    metricsMiddleware(), // Set up Monitoring
-    Router().use('/healthy', createHealthRouter()), // Health check endpoint
+    metricsMiddleware(metricsApp), // Set up Monitoring
     loggingMiddleware(), // Add request logging
     securityMiddleware(), // Add security headers
     compression(), // Add compression for better performance
@@ -26,5 +26,9 @@ export function createApp(bootstrap: () => Promise<ApplicationRef>) {
   // Handle all other requests with Angular SSR
   app.get('**', angularSsrMiddleware(bootstrap));
 
-  return app;
+  metricsApp.use(
+    Router().use('/healthy', createHealthRouter()), // Health check endpoint
+  );
+
+  return { app, metricsApp };
 }

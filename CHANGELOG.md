@@ -1,3 +1,10 @@
+## 2025/04/15
+
+- Fixed a bug where when the SSR fails the error could not be caught and the page would not load.
+- Added a fallback to non-SSR if the SSR fails (index.csr.html).
+- Moved health check and metrics to a separate port (9090).
+- Updated Dockerfile and Kubernetes configuration to reflect the new metrics port.
+
 ## 2025/04/14
 
 - Refactored the `server.ts` file to a fully fleshed out `express` server folder structure.

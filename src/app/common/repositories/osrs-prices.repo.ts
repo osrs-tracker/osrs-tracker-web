@@ -55,11 +55,11 @@ export class OsrsPricesRepo {
       })
       .pipe(
         map(response => response.data[id]),
-        map(({ high, low, highTime, lowTime }) => ({
-          high: high,
-          low: low,
-          highTime: fromUnixTime(highTime),
-          lowTime: fromUnixTime(lowTime),
+        map(price => ({
+          high: price?.['high'],
+          low: price?.['low'],
+          highTime: fromUnixTime(price?.['highTime']),
+          lowTime: fromUnixTime(price?.['lowTime']),
         })),
       );
   }

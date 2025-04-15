@@ -6,7 +6,7 @@ import { serverConfig } from './server-config';
 import { autoGenerateService } from './utils/auto-generator';
 import { configureGracefulShutdown } from './utils/shutdown';
 
-const app = createApp(bootstrap);
+const { app, metricsApp } = createApp(bootstrap);
 
 /**
  * Start the server if this module is the main entry point.
@@ -19,10 +19,15 @@ if (isMainModule(import.meta.url)) {
     autoGenerateService.initialize(bootstrap); // Initialize auto-generation of pages
   });
 
-  // Configure graceful shutdown
   configureGracefulShutdown(server, () => {
     autoGenerateService.shutdown(); // Clean up auto-generation service during shutdown
   });
+
+  const metricsServer = metricsApp.listen(serverConfig.METRICS_PORT, () => {
+    console.log(`Metrics server listening on http://localhost:${serverConfig.METRICS_PORT}`);
+  });
+
+  configureGracefulShutdown(metricsServer);
 }
 
-export default app;
+export default { app, metricsApp };
