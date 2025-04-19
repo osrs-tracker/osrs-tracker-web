@@ -4,6 +4,8 @@ import morgan from 'morgan';
 export function loggingMiddleware(): RequestHandler {
   return morgan((tokens, req, res) =>
     JSON.stringify({
+      level: Number(tokens['status'](req, res) ?? 500) >= 500 ? 'error' : 'log',
+      time: tokens['date'](req, res, 'iso'),
       status: tokens['status'](req, res),
       method: tokens['method'](req, res),
       host: tokens['req'](req, res, 'host'),

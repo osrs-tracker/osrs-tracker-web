@@ -15,6 +15,10 @@ spec:
     metadata:
       labels:
         app: osrs-tracker-web
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: '9090'
+        prometheus.io/scrape: 'true'
     spec:
       imagePullSecrets:
         - name: regcred
@@ -46,10 +50,6 @@ kind: Service
 metadata:
   name: osrs-tracker-web-service
   namespace: default
-  annotations:
-    prometheus.io/path: /metrics
-    prometheus.io/port: '9090'
-    prometheus.io/scrape: 'true'
 spec:
   selector:
     app: osrs-tracker-web
