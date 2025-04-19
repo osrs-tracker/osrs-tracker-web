@@ -6,7 +6,7 @@ import {
   provideAppInitializer,
   provideExperimentalZonelessChangeDetection,
 } from '@angular/core';
-import { provideClientHydration, withEventReplay, withHttpTransferCacheOptions } from '@angular/platform-browser';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import { provideServiceWorker, SwUpdate } from '@angular/service-worker';
 import { interval, startWith, switchMap } from 'rxjs';
@@ -16,19 +16,25 @@ import { CustomErrorHandler } from './core/error-handling/error-handler';
 import { baseUrlInterceptor } from './core/interceptors/base-url.interceptors';
 import { loadingIndicatorInterceptor } from './core/interceptors/loading-indicator.interceptor';
 import { shareRequestInterceptor } from './core/interceptors/share-request.interceptors';
+import { ssrUserAgentInterceptor } from './core/interceptors/ssr-user-agent.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(
       withFetch(),
-      withInterceptors([baseUrlInterceptor, loadingIndicatorInterceptor, shareRequestInterceptor]),
+      withInterceptors([
+        baseUrlInterceptor,
+        loadingIndicatorInterceptor,
+        shareRequestInterceptor,
+        ssrUserAgentInterceptor,
+      ]),
     ),
     provideRouter(
       appRoutes,
       withComponentInputBinding(),
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
     ),
-    provideClientHydration(withEventReplay(), withHttpTransferCacheOptions({})),
+    provideClientHydration(withEventReplay()),
     provideServiceWorker('ngsw-worker.js', { enabled: false }),
     provideExperimentalZonelessChangeDetection(),
 

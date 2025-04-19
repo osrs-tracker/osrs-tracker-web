@@ -8,12 +8,10 @@ import {
   OnInit,
   Signal,
   WritableSignal,
-  afterNextRender,
   computed,
   effect,
   inject,
   input,
-  runInInjectionContext,
   signal,
 } from '@angular/core';
 import { SkillEnum, getOverallXpDiff } from '@osrs-tracker/hiscores';
@@ -112,12 +110,8 @@ export class PlayerWidgetComponent implements OnInit {
   readonly loading = signal(true);
 
   constructor() {
-    afterNextRender(() =>
-      runInInjectionContext(this.injector, () => {
-        effect(() => this.username() && this.fetchFromUsername(this.username()!));
-        effect(() => this.player() && (this.playerDetails.set(this.player()), this.fetchFromPlayer(this.player()!)));
-      }),
-    );
+    effect(() => this.username() && this.fetchFromUsername(this.username()!));
+    effect(() => this.player() && (this.playerDetails.set(this.player()), this.fetchFromPlayer(this.player()!)));
   }
 
   ngOnInit(): void {

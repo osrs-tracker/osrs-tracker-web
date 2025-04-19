@@ -2,7 +2,9 @@ import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { HiscoreEntry, Item, OsrsNewsItem, Player } from '@osrs-tracker/models';
 import { Observable, map } from 'rxjs';
+import { BASE_URL_PREFIX } from 'src/app/core/interceptors/base-url.interceptors';
 import { LOADING_INDICATOR } from 'src/app/core/interceptors/loading-indicator.interceptor';
+import { config } from 'src/config/config';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +17,9 @@ export class OsrsTrackerRepo {
   //
 
   getLatestOsrsNewsItems(): Observable<OsrsNewsItem[]> {
-    return this.httpClient.get<OsrsNewsItem[]>('/news/latest');
+    return this.httpClient.get<OsrsNewsItem[]>(`${config.awsBaseUrl}/news/latest`, {
+      context: new HttpContext().set(BASE_URL_PREFIX, false),
+    });
   }
 
   //
@@ -28,11 +32,11 @@ export class OsrsTrackerRepo {
     options?: { includeLatestHiscoreEntry?: boolean; loadingIndicator?: boolean },
   ): Observable<Player> {
     return this.httpClient
-      .get<Player>(`/player/${username}`, {
+      .get<Player>(`/players/${username}`, {
         context: new HttpContext().set(LOADING_INDICATOR, options?.loadingIndicator),
         params: {
           scrapingOffset,
-          ...(options?.includeLatestHiscoreEntry ? { hiscore: true } : {}),
+          ...(options?.includeLatestHiscoreEntry ? { includeLatestHiscoreEntry: true } : {}),
         },
       })
       .pipe(
@@ -45,12 +49,12 @@ export class OsrsTrackerRepo {
 
   getPlayerHiscores(username: string, scrapingOffset: number, size: number, skip: number): Observable<HiscoreEntry[]> {
     return this.httpClient // Returns `null` when no hiscores have been scraped yet.
-      .get<HiscoreEntry[] | null>(`/player/${username}/hiscores`, { params: { scrapingOffset, size, skip } })
+      .get<HiscoreEntry[] | null>(`/players/${username}/hiscores`, { params: { scrapingOffset, size, skip } })
       .pipe(map(hiscoreEntries => (hiscoreEntries ?? []).map(entry => ({ ...entry, date: new Date(entry.date) }))));
   }
 
   getRecentPlayerLookups(): Observable<Player[]> {
-    return this.httpClient.get<Player[]>('/players/recent').pipe(
+    return this.httpClient.get<Player[]>('/players').pipe(
       map(players =>
         players.map(player => ({
           ...player,
@@ -65,16 +69,16 @@ export class OsrsTrackerRepo {
   //
 
   searchItems(query: string): Observable<Item[] | void> {
-    return this.httpClient.get<Item[]>(`/item/search/${query}`);
+    return this.httpClient.get<Item[]>(`/items/search/${query}`);
   }
 
   getItemInfo(itemId: number, options?: { loadingIndicator: boolean }): Observable<Item> {
-    return this.httpClient.get<Item>(`/item/${itemId}`, {
+    return this.httpClient.get<Item>(`/items/${itemId}`, {
       context: new HttpContext().set(LOADING_INDICATOR, options?.loadingIndicator),
     });
   }
 
   getRecentItemLookups(): Observable<Item[]> {
-    return this.httpClient.get<Item[]>('/items/recent');
+    return this.httpClient.get<Item[]>('/items');
   }
 }

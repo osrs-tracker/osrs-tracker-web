@@ -24,7 +24,7 @@ spec:
         - name: regcred
       containers:
         - name: osrs-tracker-web
-          image: freekmencke/osrs-tracker-web@sha256:fd20b362ca1c2271410fea2ffe30ab315f0882cc242a3306b9b28e2ad9893b87
+          image: freekmencke/osrs-tracker-web@sha256:fb7ed56036613f855dc17e9324119199575aab6325866db33c8cbfdcef69a6e4
           imagePullPolicy: Always
           env:
             - name: HOST
@@ -80,7 +80,7 @@ spec:
   tls:
     - hosts:
         - osrs-tracker.freekmencke.com
-      secretName: osrs-tracker-tls
+      secretName: osrs-tracker-web-tls
   rules:
     - host: osrs-tracker.freekmencke.com
       http:

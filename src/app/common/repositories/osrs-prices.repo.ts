@@ -47,10 +47,13 @@ export class OsrsPricesRepo {
     [TimeSpan.DAY]: {},
   };
 
-  getLatestPrices(id: number, options?: { fetchAll?: boolean; loadingIndicator?: boolean }): Observable<LatestPrices> {
+  getLatestPrices(
+    id: number,
+    options?: { fetchSingle?: boolean; loadingIndicator?: boolean },
+  ): Observable<LatestPrices> {
     return this.httpClient
       .get<{ data: Record<string, Record<string, number>> }>(`${config.pricesBaseUrl}/api/v1/osrs/latest`, {
-        ...(!options?.fetchAll && { params: { id } }),
+        ...(options?.fetchSingle && { params: { id } }),
         context: new HttpContext().set(BASE_URL_PREFIX, false).set(LOADING_INDICATOR, options?.loadingIndicator),
       })
       .pipe(

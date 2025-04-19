@@ -39,14 +39,6 @@ export const serverConfig = {
       path: '/about/terms',
       interval: 86400000, // 24 hours
     },
-    {
-      path: '/trackers/price',
-      interval: 30000, // 30 seconds
-    },
-    {
-      path: '/trackers/xp',
-      interval: 30000, // 30 seconds
-    },
   ],
 
   // These files are served by the static middleware and should not be cached

@@ -22,7 +22,7 @@ export const itemDetailResolver: ResolveFn<[Item, LatestPrices, number, AverageP
 
   return forkJoin([
     osrsTrackerRepo.getItemInfo(route.params['id'], { loadingIndicator: true }),
-    osrsPricesRepo.getLatestPrices(route.params['id'], { loadingIndicator: true }),
+    osrsPricesRepo.getLatestPrices(route.params['id'], { fetchSingle: true, loadingIndicator: true }),
     osrsPricesRepo.getVolume(route.params['id'], { loadingIndicator: true }),
     osrsPricesRepo.getPriceTimeSeries(route.params['id'], TimeSpan.FIVE_MINUTES, { loadingIndicator: true }),
   ]).pipe(

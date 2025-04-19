@@ -76,12 +76,14 @@
     <section>
       <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Your recent lookups</h2>
       <div class="grid gap-4 p-0.5 max-h-72 overflow-y-auto">
-        @for (username of recentPlayers; track username) {
-          <a [routerLink]="['/trackers/xp', username]">
-            <player-widget [username]="username" [scrapingOffset]="scrapingOffset()" />
-          </a>
-        } @empty {
-          <p>No players looked up yet.</p>
+        @defer {
+          @for (username of recentPlayers; track username) {
+            <a [routerLink]="['/trackers/xp', username]">
+              <player-widget [username]="username" [scrapingOffset]="scrapingOffset()" />
+            </a>
+          } @empty {
+            <p>No players looked up yet.</p>
+          }
         }
       </div>
     </section>
@@ -89,12 +91,14 @@
     <section>
       <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Your favorites</h2>
       <div class="grid gap-4 p-0.5 max-h-72 overflow-y-auto">
-        @for (username of favoritePlayers; track username) {
-          <a [routerLink]="['/trackers/xp', username]">
-            <player-widget [username]="username" [scrapingOffset]="scrapingOffset()" />
-          </a>
-        } @empty {
-          <p>No players favorited yet.</p>
+        @defer {
+          @for (username of favoritePlayers; track username) {
+            <a [routerLink]="['/trackers/xp', username]">
+              <player-widget [username]="username" [scrapingOffset]="scrapingOffset()" />
+            </a>
+          } @empty {
+            <p>No players favorited yet.</p>
+          }
         }
       </div>
     </section>

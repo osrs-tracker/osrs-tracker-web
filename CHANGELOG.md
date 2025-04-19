@@ -1,3 +1,7 @@
+## 2025/04/19
+
+- Use new API to prevent AWS Lamda cold starts.
+
 ## 2025/04/15
 
 - Fixed a bug where when the SSR fails the error could not be caught and the page would not load.

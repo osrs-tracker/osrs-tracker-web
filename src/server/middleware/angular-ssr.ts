@@ -13,13 +13,15 @@ export function angularSsrMiddleware(bootstrap: () => Promise<ApplicationRef>): 
     const { originalUrl, headers } = req;
     const fullUrl = `//${headers.host}${originalUrl}`;
 
+    // Set no-cache headers because this returns the "index.html" file
+    res.appendHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+
     // Check if the page is in cache first. (CACHE KEY IS ALWAYS HTTPS)
     const cachedPage = pageCache.get(fullUrl);
     if (cachedPage) {
       res.appendHeader('x-cache', 'HIT');
       return res.send(cachedPage);
     }
-
     res.appendHeader('x-cache', 'MISS');
 
     // Otherwise, render the page and cache it
