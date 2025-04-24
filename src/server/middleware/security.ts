@@ -13,7 +13,7 @@ export function securityMiddleware(): RequestHandler {
           "'self'",
           'data:',
           'https://www.googletagmanager.com',
-          'https://cdn.runescape.com',
+          'https://*.freekmencke.com',
           'https://oldschool.runescape.wiki',
         ],
         connectSrc: [

@@ -1,26 +1,14 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { HiscoreEntry, Item, OsrsNewsItem, Player } from '@osrs-tracker/models';
+import { HiscoreEntry, Item, Player } from '@osrs-tracker/models';
 import { Observable, map } from 'rxjs';
-import { BASE_URL_PREFIX } from 'src/app/core/interceptors/base-url.interceptors';
 import { LOADING_INDICATOR } from 'src/app/core/interceptors/loading-indicator.interceptor';
-import { config } from 'src/config/config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class OsrsTrackerRepo {
   private readonly httpClient = inject(HttpClient);
-
-  //
-  // News
-  //
-
-  getLatestOsrsNewsItems(): Observable<OsrsNewsItem[]> {
-    return this.httpClient.get<OsrsNewsItem[]>(`${config.awsBaseUrl}/news/latest`, {
-      context: new HttpContext().set(BASE_URL_PREFIX, false),
-    });
-  }
 
   //
   // Players

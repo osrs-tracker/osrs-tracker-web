@@ -12,7 +12,7 @@
   <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Latest OSRS News</h2>
 
   <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
-    @for (newsItem of osrsNewsItems(); track newsItem.link) {
+    @for (newsItem of osrsNewsItems.value(); track newsItem.link) {
       <osrs-news-card [osrsNewsItem]="newsItem" />
     } @empty {
       <osrs-news-card-skeleton />
