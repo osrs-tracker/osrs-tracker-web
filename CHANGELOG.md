@@ -1,3 +1,8 @@
+## 2025/04/24
+
+- Improved Xp Tracker SSR page loading speed by deferring the OSRS Hiscore calls to the client side.
+- Made spinner more understandable to search engines.
+
 ## 2025/04/19
 
 - Use new API to prevent AWS Lamda cold starts.

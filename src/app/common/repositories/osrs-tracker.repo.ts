@@ -29,7 +29,7 @@ export class OsrsTrackerRepo {
   getPlayerInfo(
     username: string,
     scrapingOffset: number,
-    options?: { includeLatestHiscoreEntry?: boolean; loadingIndicator?: boolean },
+    options?: { includeLatestHiscoreEntry?: boolean; loadingIndicator?: boolean; skipRefresh?: boolean },
   ): Observable<Player> {
     return this.httpClient
       .get<Player>(`/players/${username}`, {
@@ -37,6 +37,7 @@ export class OsrsTrackerRepo {
         params: {
           scrapingOffset,
           ...(options?.includeLatestHiscoreEntry ? { includeLatestHiscoreEntry: true } : {}),
+          ...(options?.skipRefresh ? { skipRefresh: true } : {}),
         },
       })
       .pipe(
