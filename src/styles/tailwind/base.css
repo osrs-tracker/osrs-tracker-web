@@ -8,6 +8,11 @@
     @apply rounded-lg border-4 border-solid border-transparent bg-clip-content dark:bg-slate-600 bg-slate-800;
   }
 
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+
   @font-face {
     font-family: 'SOLIX';
     font-style: normal;

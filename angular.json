@@ -39,7 +39,7 @@
               "src/manifest.webmanifest",
               "src/robots.txt"
             ],
-            "styles": ["@angular/cdk/overlay-prebuilt.css", "src/styles/tailwind.scss"],
+            "styles": ["@angular/cdk/overlay-prebuilt.css", "src/styles/tailwind.css"],
             "scripts": [],
             "allowedCommonJsDependencies": ["hammerjs", "morgan", "express-prom-bundle", "compression"],
             "serviceWorker": "ngsw-config.json",

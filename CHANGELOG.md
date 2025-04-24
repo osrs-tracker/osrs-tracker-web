@@ -2,6 +2,7 @@
 
 - Improved Xp Tracker SSR page loading speed by deferring the OSRS Hiscore calls to the client side.
 - Made spinner more understandable to search engines.
+- TailwindCSS v4 migration.
 
 ## 2025/04/19
 

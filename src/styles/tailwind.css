@@ -1,0 +1,11 @@
+@import 'tailwindcss';
+
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
+
+@import './tailwind/theme' layer(theme);
+@custom-variant dark (&:where(.dark, .dark *));
+
+@import './tailwind/base' layer(base);
+@import './tailwind/components' layer(components);
+@import './tailwind/utilities' layer(utilities);
