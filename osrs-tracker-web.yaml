@@ -1,8 +1,15 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: osrs-tracker
+  labels:
+    app: osrs-tracker
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: osrs-tracker-web
-  namespace: default
+  namespace: osrs-tracker
   labels:
     app: osrs-tracker-web
 spec:
@@ -20,8 +27,6 @@ spec:
         prometheus.io/port: '9090'
         prometheus.io/scrape: 'true'
     spec:
-      imagePullSecrets:
-        - name: regcred
       containers:
         - name: osrs-tracker-web
           image: freekmencke/osrs-tracker-web@sha256:2fc383134154ac6b8b03797e54f7238991065e41132859abffaac69cf7c6d2ac
@@ -49,7 +54,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: osrs-tracker-web-service
-  namespace: default
+  namespace: osrs-tracker
 spec:
   selector:
     app: osrs-tracker-web
@@ -68,7 +73,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: osrs-tracker-web-ingress
-  namespace: default
+  namespace: osrs-tracker
   annotations:
     cert-manager.io/cluster-issuer: 'letsencrypt-prod'
     nginx.ingress.kubernetes.io/limit-rps: '50'
