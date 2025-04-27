@@ -2,8 +2,6 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: osrs-tracker
-  labels:
-    app: osrs-tracker
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -29,7 +27,7 @@ spec:
     spec:
       containers:
         - name: osrs-tracker-web
-          image: freekmencke/osrs-tracker-web@sha256:2fc383134154ac6b8b03797e54f7238991065e41132859abffaac69cf7c6d2ac
+          image: freekmencke/osrs-tracker-web@sha256:9143a2aeca2dc9c0883b3a85bbfd46f9eef1cbcb9c8c2a47d24bf78fd4fbccdc
           imagePullPolicy: Always
           env:
             - name: HOST

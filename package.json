@@ -92,7 +92,7 @@
     "@types/gtag.js": "^0.0.20",
     "@types/jest": "^29.5.14",
     "@types/morgan": "^1.9.9",
-    "@types/node": "^22.14.1",
+    "@types/node": "^22.15.2",
     "angular-eslint": "^19.3.0",
     "autoprefixer": "^10.4.20",
     "commitizen": "^4.3.1",

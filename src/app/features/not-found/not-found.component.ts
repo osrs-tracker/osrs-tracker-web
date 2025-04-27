@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject, PLATFORM_ID } from '@angular/core';
+import { RESPONSE } from 'src/server/utils/response.token';
 
 @Component({
   standalone: true,
@@ -12,4 +13,8 @@ import { Component } from '@angular/core';
     </header>
   `,
 })
-export default class NotFoundComponent {}
+export default class NotFoundComponent {
+  constructor() {
+    if (inject(PLATFORM_ID) === 'server') inject(RESPONSE)?.status(404);
+  }
+}

@@ -17,7 +17,8 @@ export function angularSsrMiddleware(bootstrap: () => Promise<ApplicationRef>): 
     res.appendHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
 
     // Check if the page is in cache first. (CACHE KEY IS ALWAYS HTTPS)
-    const cachedPage = pageCache.get(fullUrl);
+    const url = new URL(`https:${fullUrl}`); // Make an url to easily strip query params
+    const cachedPage = pageCache.get(`//${url.host}${url.pathname}`);
     if (cachedPage) {
       res.appendHeader('x-cache', 'HIT');
       return res.send(cachedPage);
@@ -25,7 +26,7 @@ export function angularSsrMiddleware(bootstrap: () => Promise<ApplicationRef>): 
     res.appendHeader('x-cache', 'MISS');
 
     // Otherwise, render the page and cache it
-    return renderWithSsr(bootstrap, fullUrl).then(html =>
+    return renderWithSsr(bootstrap, fullUrl, res).then(html =>
       html ? res.send(html) : res.sendFile(join(serverConfig.browserDistFolder, 'index.csr.html')),
     ); // send normal non SSR index.html when SSR fails.
   };

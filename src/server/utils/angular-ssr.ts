@@ -2,7 +2,9 @@ import { APP_BASE_HREF } from '@angular/common';
 import { ApplicationRef } from '@angular/core';
 import { CommonEngine } from '@angular/ssr/node';
 import * as domain from 'domain';
+import { Response } from 'express';
 import { serverConfig } from '../server-config';
+import { RESPONSE } from './response.token';
 
 /** The common engine instance */
 const commonEngine = new CommonEngine();
@@ -15,7 +17,7 @@ const commonEngine = new CommonEngine();
 export async function renderWithSsr(
   bootstrap: () => Promise<ApplicationRef>,
   url: string,
-  baseUrl?: string,
+  res?: Response,
 ): Promise<string | null> {
   return new Promise(resolve => {
     // Create a domain to handle errors
@@ -33,7 +35,10 @@ export async function renderWithSsr(
         documentFilePath: serverConfig.indexHtml,
         url: url,
         publicPath: serverConfig.browserDistFolder,
-        providers: [{ provide: APP_BASE_HREF, useValue: baseUrl ?? '/' }],
+        providers: [
+          { provide: APP_BASE_HREF, useValue: '/' },
+          { provide: RESPONSE, useValue: res },
+        ],
       });
       resolve(page);
     });

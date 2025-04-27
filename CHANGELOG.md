@@ -1,3 +1,8 @@
+## 2025/04/27
+
+- SSR will not send a 404 response when the page is not found, instead of a soft 404 page with a 200 response.
+- SSR will now dismiss queryParams when checking for cached pages.
+
 ## 2025/04/24
 
 - Improved Xp Tracker SSR page loading speed by deferring the OSRS Hiscore calls to the client side.
