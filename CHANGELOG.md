@@ -1,3 +1,8 @@
+## 2025/04/29
+
+- Made it possible to use `Enter` to submit the search form in the XP Tracker.
+- Disabled form autocomplete in the Price Tracker and XP Tracker.
+
 ## 2025/04/27
 
 - SSR will not send a 404 response when the page is not found, instead of a soft 404 page with a 200 response.

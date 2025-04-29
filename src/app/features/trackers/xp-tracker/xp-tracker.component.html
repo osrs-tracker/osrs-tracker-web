@@ -4,7 +4,7 @@
     <div>Stay motivated by tracking both your and your friends' progress!</div>
   </div>
 
-  <div class="relative max-w-md w-full mx-4">
+  <form autocomplete="off" class="relative max-w-md w-full mx-4">
     <input
       type="text"
       class="w-full input--default"
@@ -38,6 +38,7 @@
         </div>
         <select
           class="input--default input--small"
+          name="scrapingOffset"
           [ngModel]="scrapingOffset()"
           (ngModelChange)="updateScrapingOffset($event)"
         >
@@ -49,7 +50,7 @@
         </select>
       </div>
     </div>
-  </div>
+  </form>
 </page-header>
 
 <div class="container mx-auto mb-8 px-4">
