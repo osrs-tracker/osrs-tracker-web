@@ -1,3 +1,8 @@
+## 2025/05/04
+
+- Fix feature image/text order on home page.
+- Add fallback from item image to item icon if the item image is not available.
+
 ## 2025/04/29
 
 - Made it possible to use `Enter` to submit the search form in the XP Tracker.

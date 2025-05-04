@@ -1,4 +1,8 @@
 @layer utilities {
+  .pixelated {
+    image-rendering: pixelated;
+  }
+
   /* Color */
   .accent {
     @apply text-emerald-500 dark:text-emerald-400;

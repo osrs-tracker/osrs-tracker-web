@@ -23,18 +23,23 @@ export class ItemDetailWidgetComponent implements OnInit {
   readonly dailyVolume: InputSignal<number> = input.required();
 
   // don't transform icon but transform name, ex. bolts have different name (Diamond_bolts_(e)_5.png vs Diamond_bolts_(e)_detail.png)
-  get detailIconUrl(): string {
-    return `${config.wikiBaseUrl}/images/${this.itemDetail().name.replaceAll(/\s/g, '_')}_detail.png`;
-  }
 
   get isFavorite(): boolean {
     return this.priceTrackerStorageService.isFavoriteItem(this.itemDetail().id);
   }
 
+  pixelated = false;
+  detailIconUrl: string;
   wikiUrl: string;
 
   ngOnInit(): void {
+    this.detailIconUrl = `${config.wikiBaseUrl}/images/${this.itemDetail().name.replaceAll(/\s/g, '_')}_detail.png`;
     this.wikiUrl = `${config.wikiBaseUrl}/w/${this.itemDetail().name.replaceAll(/\s/g, '_')}`;
+  }
+
+  setFallbackIconUrl(): void {
+    this.pixelated = true;
+    this.detailIconUrl = `${config.wikiBaseUrl}/images/${this.itemDetail().icon.replaceAll(/\s/g, '_')}`;
   }
 
   toggleFavorite(): void {
