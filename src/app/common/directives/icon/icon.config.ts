@@ -132,6 +132,7 @@ export const iconMap: Record<string, string> = {
   [BossEnum.Vetion]: '/bosses/game_icon_vetion.png',
   [BossEnum.Vorkath]: '/bosses/game_icon_vorkath.png',
   [BossEnum.Wintertodt]: '/bosses/game_icon_wintertodt.png',
+  [BossEnum.Yama]: '/bosses/game_icon_yama.png',
   [BossEnum.Zalcano]: '/bosses/game_icon_zalcano.png',
   [BossEnum.Zulrah]: '/bosses/game_icon_zulrah.png',
 };

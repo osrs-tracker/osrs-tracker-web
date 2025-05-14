@@ -1,3 +1,7 @@
+## 2025/05/14
+
+- Add support for the `Yama` hiscore category.
+
 ## 2025/05/04
 
 - Fix feature image/text order on home page.
