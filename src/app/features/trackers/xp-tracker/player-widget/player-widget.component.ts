@@ -39,7 +39,7 @@ import { XpTrackerStorageService } from '../xp-tracker-storage.service';
       "
     >
       <div class="flex-1 flex items-center justify-between  rounded-l bg-slate-300 dark:bg-slate-700 px-4 py-2">
-        <h3 class="flex">
+        <h3 class="truncate" [title]="_username()">
           {{ _username() | capitalizeWords }}
         </h3>
         @if (playerDetails()) {

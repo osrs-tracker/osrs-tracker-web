@@ -1,3 +1,10 @@
+## 2025/06/14
+
+- Updated to Angular 20.
+- Updated all dependencies to their latest versions.
+
+- increased displayed global/favorite item count in the main Price Tracker and XP Tracker to `6`.
+
 ## 2025/05/14
 
 - Add support for the `Yama` hiscore category.

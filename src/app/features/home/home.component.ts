@@ -16,5 +16,5 @@ export default class HomeComponent {
   private readonly themeService = inject(ThemeService);
   readonly isDarkMode: Signal<boolean> = computed(() => this.themeService.darkMode());
 
-  readonly osrsNewsItems: HttpResourceRef<OsrsNewsItem[]> = httpResource('/news', { defaultValue: [] });
+  readonly osrsNewsItems: HttpResourceRef<OsrsNewsItem[]> = httpResource(() => '/news', { defaultValue: [] });
 }

@@ -42,7 +42,7 @@ export default class XpTrackerComponent {
   }
 
   readonly recentPlayerLookups: ResourceRef<Player[]> = rxResource({
-    loader: () => this.osrsTrackerRepo.getRecentPlayerLookups(),
+    stream: () => this.osrsTrackerRepo.getRecentPlayerLookups(),
     defaultValue: [],
   });
 

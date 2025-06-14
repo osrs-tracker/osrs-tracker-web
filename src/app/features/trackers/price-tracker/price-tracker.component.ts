@@ -41,7 +41,7 @@ export default class PriceTrackerComponent {
   }
 
   readonly recentItemLookups: ResourceRef<Item[]> = rxResource({
-    loader: () => this.osrsTrackerRepo.getRecentItemLookups(),
+    stream: () => this.osrsTrackerRepo.getRecentItemLookups(),
     defaultValue: [],
   });
 

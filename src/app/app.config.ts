@@ -4,9 +4,10 @@ import {
   ErrorHandler,
   inject,
   provideAppInitializer,
-  provideExperimentalZonelessChangeDetection,
+  provideBrowserGlobalErrorListeners,
+  provideZonelessChangeDetection,
 } from '@angular/core';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import { provideClientHydration, withEventReplay, withIncrementalHydration } from '@angular/platform-browser';
 import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import { provideServiceWorker, SwUpdate } from '@angular/service-worker';
 import { interval, startWith, switchMap } from 'rxjs';
@@ -34,9 +35,12 @@ export const appConfig: ApplicationConfig = {
       withComponentInputBinding(),
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
     ),
-    provideClientHydration(withEventReplay()),
+
+    provideClientHydration(withEventReplay(), withIncrementalHydration()),
     provideServiceWorker('ngsw-worker.js', { enabled: false }),
-    provideExperimentalZonelessChangeDetection(),
+
+    provideBrowserGlobalErrorListeners(),
+    provideZonelessChangeDetection(),
 
     { provide: ErrorHandler, useClass: CustomErrorHandler },
 

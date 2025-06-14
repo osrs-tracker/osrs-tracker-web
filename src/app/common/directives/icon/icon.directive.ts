@@ -1,6 +1,6 @@
 import { Directive, ElementRef, InputSignal, OnInit, effect, inject, input } from '@angular/core';
 import { config } from 'src/config/config';
-import { iconMap } from './icon.config';
+import { iconMap } from '../../../../config/icon.config';
 
 @Directive({
   standalone: true,

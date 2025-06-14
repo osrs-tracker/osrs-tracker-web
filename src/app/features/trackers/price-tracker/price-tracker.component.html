@@ -71,7 +71,7 @@
         </info-tooltip>
       </h2>
 
-      <div class="grid gap-4 p-0.5 max-h-72 overflow-y-auto">
+      <div class="grid gap-4 p-0.5 max-h-87 overflow-y-auto">
         @for (item of recentItemLookups.value(); track item.id) {
           <a [routerLink]="['/trackers/price', item.id]">
             <item-widget [recentItem]="item"></item-widget>
@@ -80,7 +80,7 @@
           @if (!recentItemLookups.isLoading()) {
             <p>No items looked up yet.</p>
           } @else {
-            <div class="flex justify-center items-center h-72 -m-0.5">
+            <div class="flex justify-center items-center h-87 -m-0.5">
               <spinner [size]="8" />
             </div>
           }
@@ -97,7 +97,7 @@
         </info-tooltip>
       </h2>
 
-      <div class="grid gap-4 p-0.5 max-h-72 overflow-y-auto">
+      <div class="grid gap-4 p-0.5 max-h-87 overflow-y-auto">
         @for (item of recentItems; track item.id) {
           <a [routerLink]="['/trackers/price', item.id]">
             <item-widget [recentItem]="item"></item-widget>
@@ -117,7 +117,7 @@
         </info-tooltip>
       </h2>
 
-      <div class="grid gap-4 p-0.5 max-h-72 overflow-y-auto">
+      <div class="grid gap-4 p-0.5 max-h-87 overflow-y-auto">
         @for (item of favoriteItems; track item.id) {
           <a [routerLink]="['/trackers/price', item.id]">
             <item-widget [recentItem]="item"></item-widget>

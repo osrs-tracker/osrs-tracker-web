@@ -20,4 +20,7 @@ export const config = {
       gridColor: '#cbd5e1',
     },
   },
+
+  maxStoredItems: 6,
+  maxStoredPlayers: 6,
 };

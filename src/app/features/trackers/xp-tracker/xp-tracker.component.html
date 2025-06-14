@@ -57,7 +57,7 @@
   <div class="mx-auto grid lg:grid-cols-3 gap-8">
     <section>
       <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Global recent lookups</h2>
-      <div class="grid gap-4 p-0.5 max-h-72 overflow-y-auto">
+      <div class="grid gap-4 p-0.5 max-h-87 overflow-y-auto">
         @if (recentPlayerLookups.isLoading()) {
           <div class="flex justify-center items-center h-72 -m-0.5">
             <spinner [size]="8" />
@@ -76,7 +76,7 @@
 
     <section>
       <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Your recent lookups</h2>
-      <div class="grid gap-4 p-0.5 max-h-72 overflow-y-auto">
+      <div class="grid gap-4 p-0.5 max-h-87 overflow-y-auto">
         @defer {
           @for (username of recentPlayers; track username) {
             <a [routerLink]="['/trackers/xp', username]">
@@ -91,7 +91,7 @@
 
     <section>
       <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Your favorites</h2>
-      <div class="grid gap-4 p-0.5 lg:max-h-72 overflow-y-auto overflow-x-hidden">
+      <div class="grid gap-4 p-0.5 lg:max-h-87 overflow-y-auto overflow-x-hidden">
         @defer {
           @for (username of favoritePlayers; track username) {
             <a [routerLink]="['/trackers/xp', username]">

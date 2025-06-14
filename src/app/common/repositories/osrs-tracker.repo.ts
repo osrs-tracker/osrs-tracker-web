@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { HiscoreEntry, Item, Player } from '@osrs-tracker/models';
 import { Observable, map } from 'rxjs';
 import { LOADING_INDICATOR } from 'src/app/core/interceptors/loading-indicator.interceptor';
+import { config } from 'src/config/config';
 
 @Injectable({
   providedIn: 'root',
@@ -43,7 +44,7 @@ export class OsrsTrackerRepo {
   }
 
   getRecentPlayerLookups(): Observable<Player[]> {
-    return this.httpClient.get<Player[]>('/players').pipe(
+    return this.httpClient.get<Player[]>('/players', { params: { limit: config.maxStoredPlayers } }).pipe(
       map(players =>
         players.map(player => ({
           ...player,
@@ -68,6 +69,6 @@ export class OsrsTrackerRepo {
   }
 
   getRecentItemLookups(): Observable<Item[]> {
-    return this.httpClient.get<Item[]>('/items');
+    return this.httpClient.get<Item[]>('/items', { params: { limit: config.maxStoredItems } });
   }
 }

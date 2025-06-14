@@ -17,7 +17,7 @@ import { RecentItem } from '../price-tracker-storage.service';
     >
       <div class="flex-1 flex gap-3 items-center rounded-l bg-slate-300 dark:bg-slate-700 px-4 py-2">
         <img icon [name]="recentItem().icon" [wiki]="true" class="w-7 h-7" />
-        <h3>{{ recentItem().name }}</h3>
+        <h3 class="truncate" [title]="recentItem().name">{{ recentItem().name }}</h3>
       </div>
       <div class="flex-1 flex items-center justify-end px-4 py-2">
         @if (loading()) {

@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { StorageKey } from 'src/app/common/services/storage/storage';
 import { StorageService } from 'src/app/common/services/storage/storage.service';
+import { config } from 'src/config/config';
 import { ViewType } from './player-detail/player-logs/player-logs.component';
 
 @Injectable({
@@ -8,8 +9,6 @@ import { ViewType } from './player-detail/player-logs/player-logs.component';
 })
 export class XpTrackerStorageService {
   private readonly storageService = inject(StorageService);
-
-  readonly MAX_PLAYERS_STORED = 5;
 
   getScrapingOffset(): number {
     return Number(this.storageService.getItem(StorageKey.XpTrackerScrapingOffset) ?? '0');
@@ -32,7 +31,7 @@ export class XpTrackerStorageService {
 
     recentPlayers.unshift(username);
 
-    if (recentPlayers.length > this.MAX_PLAYERS_STORED) {
+    if (recentPlayers.length > config.maxStoredPlayers) {
       recentPlayers.pop();
     }
 
