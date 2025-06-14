@@ -1,4 +1,4 @@
-import { Component, InputSignal, input, provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { Component, InputSignal, input, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import {
@@ -28,7 +28,7 @@ describe('IconDirective', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      providers: [provideExperimentalZonelessChangeDetection()],
+      providers: [provideZonelessChangeDetection()],
     });
 
     fixture = TestBed.createComponent(TestComponent);
