@@ -38,7 +38,7 @@ import { XpTrackerStorageService } from '../xp-tracker-storage.service';
         cursor-pointer ring-2 ring-transparent hover:ring-emerald-500 dark:hover:ring-emerald-400
       "
     >
-      <div class="flex-1 flex items-center justify-between  rounded-l bg-slate-300 dark:bg-slate-700 px-4 py-2">
+      <div class="w-1/2 flex items-center justify-between  rounded-l bg-slate-300 dark:bg-slate-700 px-4 py-2">
         <h3 class="truncate" [title]="_username()">
           {{ _username() | capitalizeWords }}
         </h3>
@@ -59,7 +59,7 @@ import { XpTrackerStorageService } from '../xp-tracker-storage.service';
           </div>
         }
       </div>
-      <div class="flex-1 flex px-4 py-2 justify-end">
+      <div class="w-1/2 flex px-4 py-2 justify-end">
         <div class="flex items-center">
           @if (loading()) {
             <spinner />

@@ -1,3 +1,7 @@
+## 2025/07/23
+
+- Added support for the new `Doom of Mokhaiotl` hiscore category.
+
 ## 2025/06/14
 
 - Updated to Angular 20.

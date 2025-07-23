@@ -7,7 +7,7 @@ import { InformationPageComponent } from 'src/app/common/components/layout/infor
   selector: 'changelog',
   template: `
     <information-page title="Changelog">
-      <div class="prose dark:prose-invert" [innerHTML]="markdown() | async"></div>
+      <div class="prose dark:prose-invert max-w-none" [innerHTML]="markdown() | async"></div>
     </information-page>
   `,
   imports: [AsyncPipe, InformationPageComponent],

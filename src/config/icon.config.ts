@@ -96,6 +96,7 @@ export const iconMap: Record<string, string> = {
   [BossEnum.DagannothRex]: '/bosses/game_icon_dagannothrex.png',
   [BossEnum.DagannothSupreme]: '/bosses/game_icon_dagannothsupreme.png',
   [BossEnum.DerangedArchaeologist]: '/bosses/game_icon_derangedarchaeologist.png',
+  [BossEnum.DoomOfMokhaiotl]: '/bosses/game_icon_doomofmokhaiotl.png',
   [BossEnum.DukeSucellus]: '/bosses/game_icon_dukesucellus.png',
   [BossEnum.GeneralGraardor]: '/bosses/game_icon_generalgraardor.png',
   [BossEnum.GiantMole]: '/bosses/game_icon_giantmole.png',
