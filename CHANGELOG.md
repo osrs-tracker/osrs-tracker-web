@@ -1,3 +1,7 @@
+## 2025/09/24
+
+- Added a button to the XP Tracker to open the player's hiscore page on the official OSRS website.
+
 ## 2025/07/23
 
 - Added support for the new `Doom of Mokhaiotl` hiscore category.
