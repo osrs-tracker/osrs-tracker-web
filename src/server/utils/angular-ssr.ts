@@ -1,5 +1,6 @@
 import { APP_BASE_HREF } from '@angular/common';
 import { ApplicationRef } from '@angular/core';
+import { BootstrapContext } from '@angular/platform-browser';
 import { CommonEngine } from '@angular/ssr/node';
 import * as domain from 'domain';
 import { Response } from 'express';
@@ -15,7 +16,7 @@ const commonEngine = new CommonEngine();
  * Will return null if an error occurs.
  */
 export async function renderWithSsr(
-  bootstrap: () => Promise<ApplicationRef>,
+  bootstrap: (context: BootstrapContext) => Promise<ApplicationRef>,
   url: string,
   res?: Response,
 ): Promise<string | null> {

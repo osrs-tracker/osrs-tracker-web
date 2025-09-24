@@ -1,4 +1,5 @@
 import { ApplicationRef } from '@angular/core';
+import { BootstrapContext } from '@angular/platform-browser';
 import compression from 'compression';
 import express, { Router } from 'express';
 import { angularSsrMiddleware } from './middleware/angular-ssr';
@@ -9,7 +10,7 @@ import { createHealthRouter } from './routers/health';
 import { createNoCacheHeadersRouter } from './routers/no-cache-files';
 import { serverConfig } from './server-config';
 
-export function createApp(bootstrap: () => Promise<ApplicationRef>) {
+export function createApp(bootstrap: (context: BootstrapContext) => Promise<ApplicationRef>) {
   const app = express();
   const metricsApp = express();
 

@@ -4,11 +4,14 @@ import { join } from 'path';
 import { serverConfig } from '../server-config';
 import { renderWithSsr } from '../utils/angular-ssr';
 import { pageCache } from '../utils/page-cache';
+import { BootstrapContext } from '@angular/platform-browser';
 
 /**
  * Express middleware for handling Angular SSR rendering
  */
-export function angularSsrMiddleware(bootstrap: () => Promise<ApplicationRef>): RequestHandler {
+export function angularSsrMiddleware(
+  bootstrap: (context: BootstrapContext) => Promise<ApplicationRef>,
+): RequestHandler {
   return (req, res) => {
     const { originalUrl, headers } = req;
     const fullUrl = `//${headers.host}${originalUrl}`;
