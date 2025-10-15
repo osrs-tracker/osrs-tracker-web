@@ -1,3 +1,7 @@
+## 2025/10/15
+
+- Make XP Tracker compatible with Grid Master changes.
+
 ## 2025/09/24
 
 - Added a button to the XP Tracker to open the player's hiscore page on the official OSRS website.
