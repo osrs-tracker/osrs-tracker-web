@@ -1,3 +1,7 @@
+## 2025/11/05
+
+- Added support for the new `Shellbane Gryphon` hiscore category (Sailing pre-release).
+
 ## 2025/10/15
 
 - Make XP Tracker compatible with Grid Master changes.

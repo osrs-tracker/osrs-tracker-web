@@ -118,6 +118,7 @@ export const iconMap: Record<string, string> = {
   [BossEnum.Sarachnis]: '/bosses/game_icon_sarachnis.png',
   [BossEnum.Scorpia]: '/bosses/game_icon_scorpia.png',
   [BossEnum.Scurrius]: '/bosses/game_icon_scurrius.png',
+  [BossEnum.ShellbaneGryphon]: '/bosses/game_icon_shellbanegryphon.png',
   [BossEnum.Skotizo]: '/bosses/game_icon_skotizo.png',
   [BossEnum.SolHeredit]: '/bosses/game_icon_solheredit.png',
   [BossEnum.Spindel]: '/bosses/game_icon_spindel.png',
