@@ -44,9 +44,6 @@
           }
         </div>
       }
-      @if (playerDetail().diedAsHardcore) {
-        <div>{{ playerDetail().status }}</div>
-      }
       @if (playerDetail().type !== PlayerType.Normal && playerDetail().status !== PlayerStatus.Default) {
         <div class="negative">{{ playerDetail().status }}</div>
       }
