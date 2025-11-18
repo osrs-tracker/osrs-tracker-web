@@ -5,11 +5,12 @@ import {
   AfterViewInit,
   Component,
   DOCUMENT,
+  DestroyRef,
   ElementRef,
   HostListener,
   InputSignal,
+  OnChanges,
   OnDestroy,
-  OnInit,
   Signal,
   TemplateRef,
   ViewContainerRef,
@@ -47,7 +48,8 @@ import { Subject, debounceTime, fromEvent } from 'rxjs';
   `,
   imports: [NgTemplateOutlet, OverlayModule],
 })
-export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TooltipComponent implements OnChanges, AfterViewInit, OnDestroy {
+  private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
   private readonly elementRef = inject(ElementRef);
   private readonly overlay = inject(Overlay);
@@ -79,8 +81,16 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
     fromEvent(this.document, 'touchend', { passive: true })
       .pipe(takeUntilDestroyed())
       .subscribe(e => this.onDocumentTouchend(e.target as HTMLElement));
+  }
 
-    this.mousePresent$.pipe(debounceTime(300), takeUntilDestroyed()).subscribe(isPresent => {
+  ngOnChanges(): void {
+    this.mousePresent$.complete(); // Complete any existing observable
+
+    // Tooltip is not enabled => break early and complete the observable
+    if (this.tooltip() === false) return;
+
+    this.mousePresent$ = new Subject<boolean>(); // Recreate the subject if tooltip is enabled
+    this.mousePresent$.pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef)).subscribe(isPresent => {
       if (this.isOpen === isPresent) return;
       this.isOpen = isPresent;
 
@@ -93,11 +103,6 @@ export class TooltipComponent implements OnInit, AfterViewInit, OnDestroy {
         this.arrowOverlayRef?.detach();
       }
     });
-  }
-
-  ngOnInit(): void {
-    // Tooltip is not enabled => break early and complete the observable
-    if (this.tooltip() === false) return this.mousePresent$.complete();
 
     if (this.tooltipUnderline()) {
       this.elementRef.nativeElement.classList.add('underline', 'underline-offset-[6px]', 'decoration-dotted');

@@ -7,7 +7,12 @@ import { TooltipComponent } from '../general/tooltip/tooltip.component';
 @Component({
   selector: 'player-skill',
   template: `
-    <div class="flex flex-col" [tooltip]="!!skill()" [tooltipTemplate]="tooltipTemplate" [tooltipUnderline]="false">
+    <div
+      class="flex flex-col"
+      [tooltip]="skill() ? 'skillTooltip' : false"
+      [tooltipTemplate]="tooltipTemplate"
+      [tooltipUnderline]="false"
+    >
       <div
         class="p-2 pb-1.5 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700"
         [class.pb-2]="!hasProgressBar()"
