@@ -1,3 +1,8 @@
+## 2025/11/18
+
+- Prepped the skills component for the upcoming Sailing skill addition.
+- Added skill progress bars to display progress to next level for each skill.
+
 ## 2025/11/05
 
 - Added support for the new `Shellbane Gryphon` hiscore category (Sailing pre-release).

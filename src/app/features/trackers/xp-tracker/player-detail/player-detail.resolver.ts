@@ -17,7 +17,7 @@ export const playerDetailResolver: ResolveFn<Player | null> = (route: ActivatedR
     .getPlayerInfo(route.params['username'], xpTrackerStorageService.getScrapingOffset(), { loadingIndicator: true })
     .pipe(
       catchError((err: HttpErrorResponse) => {
-        if (err.status === 404) {
+        if ([400, 404].includes(err.status)) {
           router.navigate(['**'], { skipLocationChange: true }).then(() => {
             if (router.url !== '/tracker/xp/' + route.params['username'])
               loc.replaceState('/tracker/xp/' + route.params['username']);

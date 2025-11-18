@@ -47,7 +47,10 @@ import { PlayerSkillWidgetComponent } from './player-skill.component';
         <div class="grid grid-cols-3 divide-x divide-slate-300 dark:divide-slate-600">
           <player-skill [skill]="skills()?.Construction" class=" rounded-bl-lg" />
           <player-skill [skill]="skills()?.Hunter" />
-          <player-skill [skill]="skills()?.Overall" class=" rounded-br-lg" />
+          <player-skill [skill]="skills()?.Sailing" class=" rounded-br-lg" />
+        </div>
+        <div class="divide-x divide-slate-300 dark:divide-slate-600">
+          <player-skill [skill]="skills()?.Overall" class="rounded-b-lg rounded-br-lg col-span-3" />
         </div>
       </div>
     </section>
