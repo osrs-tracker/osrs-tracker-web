@@ -24,7 +24,7 @@ export class PlayerLogsComponent {
   readonly ViewType: typeof ViewType = ViewType;
   viewType: ViewType = this.xpTrackerStorageService.getViewType();
 
-  otherKeys: (keyof Hiscore)[] = ['bountyHunter', 'clueScrolls', 'competitive', 'miniGames', 'bosses', 'raids'];
+  otherKeys: (keyof Hiscore)[] = ['bountyHunter', 'clueScrolls', 'competitive', 'minigames', 'bosses', 'raids'];
 
   readonly playerDetail: InputSignal<Player> = input.required();
 
@@ -53,12 +53,12 @@ export class PlayerLogsComponent {
     return this.skills(hiscore).some(skill => skill.xp > 0);
   }
 
-  miniGames(type: keyof Hiscore, hiscore: Hiscore): MiniGame[] {
+  minigames(type: keyof Hiscore, hiscore: Hiscore): MiniGame[] {
     return Object.values(hiscore[type]);
   }
 
   hasMiniGameDiff(type: keyof Hiscore, hiscore: Hiscore): boolean {
-    return this.miniGames(type, hiscore).some(boss => boss.score > 0);
+    return this.minigames(type, hiscore).some(boss => boss.score > 0);
   }
 
   filteredOtherKeys(hiscore: Hiscore): (keyof Hiscore)[] {

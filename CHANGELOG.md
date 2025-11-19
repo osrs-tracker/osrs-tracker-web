@@ -1,3 +1,7 @@
+## 2025/11/19
+
+- Added support for the new `Sailing` hiscore category.
+
 ## 2025/11/18
 
 - Prepped the skills component for the upcoming Sailing skill addition.

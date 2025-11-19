@@ -45,6 +45,7 @@ export const iconMap: Record<string, string> = {
   [SkillEnum.Runecraft]: '/skills/skill_icon_runecraft1.gif',
   [SkillEnum.Hunter]: '/skills/skill_icon_hunter1.gif',
   [SkillEnum.Construction]: '/skills/skill_icon_construction1.gif',
+  [SkillEnum.Sailing]: '/skills/skill_icon_sailing1.gif',
 
   [CompetitiveEnum.GridPoints]: '/minigames/game_icon_gridpoints.png',
   [CompetitiveEnum.LeaguePoints]: '/minigames/game_icon_leaguepoints.png',
