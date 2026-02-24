@@ -87,7 +87,7 @@ export class PriceChartComponent implements OnInit, OnDestroy {
 
   // Workaround for chart.js not closing tooltips when tapping outside the canvas (iOS)
   @HostListener('document:touchend', ['$event.target'])
-  hideTooltip(target: HTMLElement): void {
+  hideTooltip(target: EventTarget | null): void {
     if (target !== this.priceChartCanvas().nativeElement) {
       this.priceChartCanvas().nativeElement.dispatchEvent(new Event('mouseout'));
     }
@@ -153,7 +153,7 @@ export class PriceChartComponent implements OnInit, OnDestroy {
             usePointStyle: true,
 
             callbacks: {
-              label: context => ` ${context.dataset.label}: ${formatNumber(context.parsed.y, 'en-US', '1.0-0')} gp`,
+              label: context => ` ${context.dataset.label}: ${formatNumber(context.parsed.y!, 'en-US', '1.0-0')} gp`,
             },
           },
           zoom: {

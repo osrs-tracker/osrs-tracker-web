@@ -1,5 +1,10 @@
 ## 2025/11/19
 
+- Updated to Angular 21.
+- Updated all dependencies to their latest versions.
+
+## 2025/11/19
+
 - Added support for the new `Sailing` hiscore category.
 
 ## 2025/11/18

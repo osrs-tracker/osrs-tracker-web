@@ -22,6 +22,7 @@ export default tseslint.config(
         {
           type: 'attribute',
           style: 'camelCase',
+          prefix: '',
         },
       ],
       '@angular-eslint/component-selector': [
@@ -29,6 +30,7 @@ export default tseslint.config(
         {
           type: 'element',
           style: 'kebab-case',
+          prefix: '',
         },
       ],
       '@stylistic/comma-dangle': ['error', 'always-multiline'],

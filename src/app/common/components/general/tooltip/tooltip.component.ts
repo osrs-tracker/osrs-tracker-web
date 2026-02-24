@@ -22,6 +22,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, debounceTime, fromEvent } from 'rxjs';
 
 @Component({
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: '[tooltip]',
   template: `
     <ng-content />

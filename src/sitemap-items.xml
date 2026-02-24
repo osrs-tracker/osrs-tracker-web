@@ -8441,6 +8441,14 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/8940</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/8941</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/9003</loc>
     <priority>0.5</priority>
   </url>
@@ -13873,7 +13881,27 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/22616</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/22619</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/22622</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/22625</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/22628</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/22631</loc>
     <priority>0.5</priority>
   </url>
   <url>
@@ -13885,7 +13913,31 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/22638</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/22641</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/22644</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/22647</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/22650</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/22653</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/22656</loc>
     <priority>0.5</priority>
   </url>
   <url>
@@ -17998,6 +18050,42 @@
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/32910</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/33012</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/33015</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/33018</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/33038</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/33041</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/33044</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/33047</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/33050</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/33074</loc>
     <priority>0.5</priority>
   </url>
 </urlset>

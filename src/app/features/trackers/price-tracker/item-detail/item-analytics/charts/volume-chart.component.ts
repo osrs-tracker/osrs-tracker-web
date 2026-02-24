@@ -65,7 +65,7 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
 
   // Workaround for chart.js not closing tooltips when tapping outside the canvas (iOS)
   @HostListener('document:touchend', ['$event.target'])
-  hideTooltip(target: HTMLElement): void {
+  hideTooltip(target: EventTarget | null): void {
     if (target !== this.volumeChartCanvas().nativeElement) {
       this.volumeChartCanvas().nativeElement.dispatchEvent(new Event('mouseout'));
     }
@@ -130,7 +130,7 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
             usePointStyle: true,
             callbacks: {
               label: context =>
-                ` ${context.dataset.label}: ${formatNumber(Math.abs(context.parsed.y), 'en-US', '1.0-0')}`,
+                ` ${context.dataset.label}: ${formatNumber(Math.abs(context.parsed.y!), 'en-US', '1.0-0')}`,
             },
           },
           zoom: {
