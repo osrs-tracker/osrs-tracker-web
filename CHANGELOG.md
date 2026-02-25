@@ -1,4 +1,8 @@
-## 2025/11/19
+## 2026/02/25
+
+- Added support for the new `Shellbane Gryphon` hiscore category (Sailing pre-release).
+
+## 2026/02/24
 
 - Updated to Angular 21.
 - Updated all dependencies to their latest versions.
