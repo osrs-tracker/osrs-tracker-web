@@ -1,6 +1,10 @@
+## 2026/05/06
+
+- dependency updates
+
 ## 2026/02/25
 
-- Added support for the new `Shellbane Gryphon` hiscore category (Sailing pre-release).
+- Added support for the new `Brutus` hiscore category.
 
 ## 2026/02/24
 
