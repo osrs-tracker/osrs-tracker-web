@@ -1,4 +1,4 @@
-import { formatNumber } from '@angular/common';
+import { formatNumber, isPlatformBrowser } from '@angular/common';
 import {
   Component,
   ElementRef,
@@ -7,6 +7,7 @@ import {
   InputSignal,
   OnDestroy,
   OnInit,
+  PLATFORM_ID,
   Signal,
   computed,
   effect,
@@ -17,7 +18,6 @@ import {
 } from '@angular/core';
 import { Chart, LineController, LineElement, LinearScale, PointElement, TimeSeriesScale, Tooltip } from 'chart.js';
 import Annotation from 'chartjs-plugin-annotation';
-import Zoom from 'chartjs-plugin-zoom';
 import { fromUnixTime } from 'date-fns';
 import { formatNumberLegible } from 'src/app/common/helpers/number.helper';
 import { AveragePricesAtTime } from 'src/app/common/repositories/osrs-prices.repo';
@@ -32,11 +32,15 @@ import { config } from 'src/config/config';
 export class PriceChartComponent implements OnInit, OnDestroy {
   private readonly injector = inject(Injector);
   private readonly themeService = inject(ThemeService);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly isBrowser = isPlatformBrowser(this.platformId);
+  private zoom: typeof import('chartjs-plugin-zoom').default | null = null;
 
   priceChart: Chart;
   readonly priceChartCanvas: Signal<ElementRef<HTMLCanvasElement>> = viewChild.required('priceChart');
 
   readonly timeSeries: InputSignal<AveragePricesAtTime[]> = input.required();
+
   readonly latestHighPrice: Signal<AveragePricesAtTime> = computed(
     () =>
       this.timeSeries()
@@ -53,7 +57,20 @@ export class PriceChartComponent implements OnInit, OnDestroy {
   readonly chartConfig = computed(() => (this.themeService.darkMode() ? config.chart.dark : config.chart.light));
 
   ngOnInit(): void {
-    Chart.register(LineController, LineElement, PointElement, LinearScale, TimeSeriesScale, Tooltip, Annotation, Zoom);
+    if (this.isBrowser) void this.initChart();
+  }
+
+  private async initChart(): Promise<void> {
+    Chart.register(
+      LineController,
+      LineElement,
+      PointElement,
+      LinearScale,
+      TimeSeriesScale,
+      Tooltip,
+      Annotation,
+      (this.zoom = (await import('chartjs-plugin-zoom')).default),
+    );
 
     this.createPriceChart();
 
@@ -74,7 +91,7 @@ export class PriceChartComponent implements OnInit, OnDestroy {
       TimeSeriesScale,
       Tooltip,
       Annotation,
-      Zoom,
+      this.zoom!,
     );
   }
 

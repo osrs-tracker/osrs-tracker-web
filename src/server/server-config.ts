@@ -8,7 +8,7 @@ export const serverConfig = {
   // Server settings
   PORT: process.env['PORT'] || 8080,
   METRICS_PORT: process.env['METRICS_PORT'] || 9090,
-  HOST: process.env['HOST'] || `localhost:${process.env['PORT'] || 8080}`,
+  HOST: process.env['HOST'] || 'localhost',
 
   // Paths
   serverDistFolder: serverDistFolder,
