@@ -1,3 +1,7 @@
+## 2026/06/30
+
+- Added support for the new `Maggot King` hiscore category.
+
 ## 2026/05/11
 
 - Fixed an issue where the 404 page would flash before loading the correct page.

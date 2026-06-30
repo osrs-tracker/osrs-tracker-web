@@ -112,6 +112,7 @@ export const iconMap: Record<string, string> = {
   [BossEnum.KrilTsutsaroth]: '/bosses/game_icon_kriltsutsaroth.png',
   [BossEnum.LunarChests]: '/bosses/game_icon_lunarchests.png',
   [BossEnum.Mimic]: '/bosses/game_icon_mimic.png',
+  [BossEnum.MaggotKing]: '/bosses/game_icon_maggotking.png',
   [BossEnum.Nex]: '/bosses/game_icon_nex.png',
   [BossEnum.Nightmare]: '/bosses/game_icon_nightmare.png',
   [BossEnum.PhosanisNightmare]: '/bosses/game_icon_phosanisnightmare.png',
