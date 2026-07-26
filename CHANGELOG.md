@@ -1,3 +1,7 @@
+## 2026/07/26
+
+- Updated to Angular 22.
+
 ## 2026/06/30
 
 - Added support for the new `Maggot King` hiscore category.

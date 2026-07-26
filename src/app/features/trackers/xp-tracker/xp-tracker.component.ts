@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, ResourceRef, WritableSignal, effect, inject, signal } from '@angular/core';
+import { Component, ResourceRef, WritableSignal, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -9,7 +9,7 @@ import { PageHeaderComponent } from 'src/app/common/components/layout/page-heade
 import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
 import { SpinnerComponent } from '../../../common/components/general/spinner.component';
 import { PlayerWidgetComponent } from './player-widget/player-widget.component';
-import { XpTrackerStorageService } from './xp-tracker-storage.service';
+import { XpTrackerStore } from './xp-tracker.store';
 
 @Component({
   selector: 'xp-tracker',
@@ -26,31 +26,19 @@ import { XpTrackerStorageService } from './xp-tracker-storage.service';
 })
 export default class XpTrackerComponent {
   readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
-  readonly xpTrackerStorageService = inject(XpTrackerStorageService);
+  readonly xpTrackerStore = inject(XpTrackerStore);
 
   readonly SCRAPING_OFFSETS = Array.from({ length: 24 }, (_, i) => i - 12); // -12 to 11
-  readonly scrapingOffset: WritableSignal<number> = signal(this.xpTrackerStorageService.getScrapingOffset());
+  readonly scrapingOffset = this.xpTrackerStore.scrapingOffset;
 
   readonly usernameQuery: WritableSignal<string> = signal('');
-
-  get favoritePlayers(): string[] {
-    return this.xpTrackerStorageService.getFavoritePlayers();
-  }
-
-  get recentPlayers(): string[] {
-    return this.xpTrackerStorageService.getRecentPlayers();
-  }
 
   readonly recentPlayerLookups: ResourceRef<Player[]> = rxResource({
     stream: () => this.osrsTrackerRepo.getRecentPlayerLookups(),
     defaultValue: [],
   });
 
-  constructor() {
-    effect(() => this.xpTrackerStorageService.setScrapingOffset(this.scrapingOffset()));
-  }
-
   updateScrapingOffset(offset: number): void {
-    this.scrapingOffset.set(offset);
+    this.xpTrackerStore.setScrapingOffset(offset);
   }
 }

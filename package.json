@@ -60,6 +60,7 @@
     "@angular/router": "^21.2.17",
     "@angular/service-worker": "^21.2.17",
     "@angular/ssr": "^21.2.17",
+    "@ngrx/signals": "^21.1.1",
     "@osrs-tracker/hiscores": "^1.2.0",
     "chart.js": "^4.5.1",
     "chartjs-adapter-date-fns": "^3.0.0",
@@ -106,5 +107,13 @@
     "tailwindcss": "^4.2.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1"
+  },
+  "allowScripts": {
+    "@parcel/watcher@2.5.6": true,
+    "esbuild@0.28.1": true,
+    "esbuild@0.27.7": true,
+    "lmdb@3.5.1": true,
+    "msgpackr-extract@3.0.4": true,
+    "unrs-resolver@1.11.1": true
   }
 }

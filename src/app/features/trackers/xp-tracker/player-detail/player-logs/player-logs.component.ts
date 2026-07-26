@@ -6,12 +6,8 @@ import { CardComponent } from 'src/app/common/components/general/card.component'
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { CapitalizePipe } from 'src/app/common/pipes/capitalize.pipe';
 import { ShortDatePipe } from 'src/app/common/pipes/date-fns.pipe';
-import { XpTrackerStorageService } from '../../xp-tracker-storage.service';
-
-export enum ViewType {
-  Other,
-  Skills,
-}
+import { XpTrackerViewType } from '../../xp-tracker-view-type';
+import { XpTrackerStore } from '../../xp-tracker.store';
 
 @Component({
   selector: 'player-logs',
@@ -19,10 +15,10 @@ export enum ViewType {
   imports: [CapitalizePipe, CardComponent, DecimalPipe, IconDirective, ShortDatePipe],
 })
 export class PlayerLogsComponent {
-  private readonly xpTrackerStorageService = inject(XpTrackerStorageService);
+  private readonly XpTrackerStore = inject(XpTrackerStore);
 
-  readonly ViewType: typeof ViewType = ViewType;
-  viewType: ViewType = this.xpTrackerStorageService.getViewType();
+  readonly XpTrackerViewType: typeof XpTrackerViewType = XpTrackerViewType;
+  readonly xpTrackerViewType = this.XpTrackerStore.viewType;
 
   otherKeys: (keyof Hiscore)[] = ['bountyHunter', 'clueScrolls', 'competitive', 'minigames', 'bosses', 'raids'];
 
@@ -65,8 +61,7 @@ export class PlayerLogsComponent {
     return this.otherKeys.filter(key => this.hasMiniGameDiff(key, hiscore));
   }
 
-  setView(viewType: ViewType): void {
-    this.viewType = viewType;
-    this.xpTrackerStorageService.setViewType(viewType);
+  setView(viewType: XpTrackerViewType): void {
+    this.XpTrackerStore.setViewType(viewType);
   }
 }
