@@ -1,13 +1,11 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { HiscoreEntry, Item, Player } from '@osrs-tracker/models';
 import { Observable, map } from 'rxjs';
 import { LOADING_INDICATOR } from 'src/app/core/interceptors/loading-indicator.interceptor';
 import { config } from 'src/config/config';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class OsrsTrackerRepo {
   private readonly httpClient = inject(HttpClient);
 

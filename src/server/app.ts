@@ -12,7 +12,10 @@ import { serverConfig } from './server-config';
 export function createApp() {
   const app = express();
   const metricsApp = express();
-  const angularApp = new AngularNodeAppEngine({ allowedHosts: [serverConfig.HOST] });
+  const angularApp = new AngularNodeAppEngine({
+    allowedHosts: [serverConfig.HOST],
+    trustProxyHeaders: ['X-Forwarded-For', 'X-Forwarded-Scheme', 'X-Forwarded-Port'],
+  });
 
   app.use(
     metricsMiddleware(metricsApp), // Set up Monitoring

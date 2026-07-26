@@ -19,7 +19,7 @@ import { SpinnerComponent } from 'src/app/common/components/general/spinner.comp
 import { PlayerSkillsWidgetComponent } from 'src/app/common/components/player/player-skills.component';
 import { OsrsProxyRepo } from 'src/app/common/repositories/osrs-proxy.repo';
 import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
-import { XpTrackerStorageService } from '../xp-tracker-storage.service';
+import { XpTrackerStore } from '../xp-tracker.store';
 import { PlayerDetailWidgetComponent } from './player-detail-widget/player-detail-widget.component';
 import { PlayerLogsComponent } from './player-logs/player-logs.component';
 
@@ -32,7 +32,7 @@ export default class PlayerDetailComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly osrsProxyRepo = inject(OsrsProxyRepo);
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
-  private readonly xpTrackerStorageService = inject(XpTrackerStorageService);
+  private readonly xpTrackerStore = inject(XpTrackerStore);
   private readonly platformId = inject(PLATFORM_ID);
 
   readonly #DEFAULT_SIZE = 14;
@@ -51,18 +51,13 @@ export default class PlayerDetailComponent implements OnInit {
     this.loadInitialHiscores();
     if (isPlatformBrowser(this.platformId)) {
       this.getPlayerHiscore();
-      this.xpTrackerStorageService.pushRecentPlayer(this.player().username);
+      this.xpTrackerStore.pushRecentPlayer(this.player().username);
     }
   }
 
   loadInitialHiscores(): void {
     this.osrsTrackerRepo
-      .getPlayerHiscores(
-        this.player()!.username,
-        this.xpTrackerStorageService.getScrapingOffset(),
-        this.#DEFAULT_SIZE,
-        0,
-      )
+      .getPlayerHiscores(this.player()!.username, this.xpTrackerStore.scrapingOffset(), this.#DEFAULT_SIZE, 0)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(scrapedHiscores => {
         this.#historyEntries.update(entries => [...entries, parseHiscores(scrapedHiscores)]);
@@ -72,7 +67,7 @@ export default class PlayerDetailComponent implements OnInit {
 
   getPlayerHiscore(): void {
     this.osrsProxyRepo
-      .getPlayerHiscore(this.player()!.username, this.xpTrackerStorageService.getScrapingOffset())
+      .getPlayerHiscore(this.player()!.username, this.xpTrackerStore.scrapingOffset())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(currentHiscore => {
         this.today.set(parseHiscores([currentHiscore])[0]);
@@ -85,7 +80,7 @@ export default class PlayerDetailComponent implements OnInit {
     this.osrsTrackerRepo
       .getPlayerHiscores(
         this.player()!.username,
-        this.xpTrackerStorageService.getScrapingOffset(),
+        this.xpTrackerStore.scrapingOffset(),
         this.#MORE_SIZE,
         this.history().flat().length,
       )

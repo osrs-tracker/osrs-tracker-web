@@ -27,7 +27,7 @@ import { TimeAgoPipe } from 'src/app/common/pipes/time-ago.pipe';
 import { OsrsProxyRepo } from 'src/app/common/repositories/osrs-proxy.repo';
 import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
 import { AnalyticsService } from 'src/app/common/services/analytics/analytics.service';
-import { XpTrackerStorageService } from '../xp-tracker-storage.service';
+import { XpTrackerStore } from '../xp-tracker.store';
 
 @Component({
   selector: 'player-widget',
@@ -90,7 +90,7 @@ export class PlayerWidgetComponent implements OnInit {
   private readonly injector = inject(Injector);
   private readonly osrsProxyRepo = inject(OsrsProxyRepo);
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
-  private readonly xpTrackerStorageService = inject(XpTrackerStorageService);
+  private readonly xpTrackerStore = inject(XpTrackerStore);
 
   readonly PlayerType: typeof PlayerType = PlayerType;
   readonly PlayerStatus: typeof PlayerStatus = PlayerStatus;
@@ -165,12 +165,12 @@ export class PlayerWidgetComponent implements OnInit {
   }
 
   private removeMissingPlayer(): void {
-    if (this.xpTrackerStorageService.getRecentPlayers().includes(this._username())) {
-      this.xpTrackerStorageService.removeRecentPlayer(this._username());
+    if (this.xpTrackerStore.recentPlayers().includes(this._username())) {
+      this.xpTrackerStore.removeRecentPlayer(this._username());
     }
 
-    if (this.xpTrackerStorageService.getFavoritePlayers().includes(this._username())) {
-      this.xpTrackerStorageService.toggleFavoritePlayer(this._username());
+    if (this.xpTrackerStore.favoritePlayers().includes(this._username())) {
+      this.xpTrackerStore.toggleFavoritePlayer(this._username());
     }
 
     this.analyticsService.trackEvent('remove-missing-player', 'xp-tracker', this._username(), true);

@@ -4,5 +4,13 @@
     "outDir": "./out-tsc/app",
     "types": ["gtag.js", "node"]
   },
-  "files": ["src/main.ts", "src/main.server.ts", "src/server/server.ts"]
+  "files": ["src/main.ts", "src/main.server.ts", "src/server/server.ts"],
+  "angularCompilerOptions": {
+    "extendedDiagnostics": {
+      "checks": {
+        "nullishCoalescingNotNullable": "suppress",
+        "optionalChainNotNullable": "suppress"
+      }
+    }
+  }
 }

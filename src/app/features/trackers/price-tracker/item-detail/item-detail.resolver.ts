@@ -28,7 +28,7 @@ export const itemDetailResolver: ResolveFn<[Item, LatestPrices, number, AverageP
   ]).pipe(
     catchError((err: HttpErrorResponse) => {
       if (err.status === 404) {
-        router.navigate(['**'], { skipLocationChange: true }).then(() => {
+        router.navigate(['**']).then(() => {
           if (router.url !== '/trackers/price/' + route.params['id'])
             loc.replaceState('/trackers/price/' + route.params['id']);
         });

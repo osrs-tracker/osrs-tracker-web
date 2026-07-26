@@ -1,11 +1,9 @@
-import { Injectable, Signal, WritableSignal, afterNextRender, computed, inject, signal } from '@angular/core';
+import { Service, Signal, WritableSignal, afterNextRender, computed, inject, signal } from '@angular/core';
 import { AnalyticsService } from 'src/app/common/services/analytics/analytics.service';
 import { StorageKey } from 'src/app/common/services/storage/storage';
 import { StorageService } from 'src/app/common/services/storage/storage.service';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class ThemeService {
   private readonly analyticsService = inject(AnalyticsService);
   private readonly storageService = inject(StorageService);

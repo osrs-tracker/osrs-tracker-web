@@ -4,7 +4,7 @@ import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { CapitalizePipe } from 'src/app/common/pipes/capitalize.pipe';
 import { AnalyticsService } from 'src/app/common/services/analytics/analytics.service';
-import { XpTrackerStorageService } from '../../xp-tracker-storage.service';
+import { XpTrackerStore } from '../../xp-tracker.store';
 
 @Component({
   selector: 'player-detail-widget',
@@ -13,13 +13,13 @@ import { XpTrackerStorageService } from '../../xp-tracker-storage.service';
 })
 export class PlayerDetailWidgetComponent {
   private readonly analyticsService = inject(AnalyticsService);
-  private readonly xpTrackerStorageService = inject(XpTrackerStorageService);
+  private readonly xpTrackerStore = inject(XpTrackerStore);
 
   readonly PlayerType: typeof PlayerType = PlayerType;
   readonly PlayerStatus: typeof PlayerStatus = PlayerStatus;
 
   readonly playerDetail: InputSignal<Player> = input.required();
-  readonly isFavorite = computed(() => this.xpTrackerStorageService.isFavoritePlayer(this.playerDetail().username));
+  readonly isFavorite = computed(() => this.xpTrackerStore.isFavoritePlayer(this.playerDetail().username));
 
   readonly hiscoreUrl = computed(() => {
     const username = this.playerDetail().username;
@@ -28,7 +28,7 @@ export class PlayerDetailWidgetComponent {
   });
 
   toggleFavorite(): void {
-    this.xpTrackerStorageService.toggleFavoritePlayer(this.playerDetail().username);
+    this.xpTrackerStore.toggleFavoritePlayer(this.playerDetail().username);
 
     this.analyticsService.trackEvent(
       'toggle_favorite_player',

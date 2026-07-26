@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { StorageKey } from 'src/app/common/services/storage/storage';
 import { StorageService } from 'src/app/common/services/storage/storage.service';
 import { config } from 'src/config/config';
@@ -9,9 +9,7 @@ export interface RecentItem {
   icon: string;
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class PriceTrackerStorageService {
   private readonly storageService = inject(StorageService);
 

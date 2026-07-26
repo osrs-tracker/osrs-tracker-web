@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { TimeAgoPipe } from './time-ago.pipe';
 
 describe('TimeAgoPipe', () => {
