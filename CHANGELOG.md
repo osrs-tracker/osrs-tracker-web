@@ -1,6 +1,8 @@
 ## 2026/07/26
 
 - Updated to Angular 22.
+- Fixed players who changed their name not being removed from the XP Tracker.
+- Fixed using the back button from the 404 page not working correctly in the XP Tracker.
 
 ## 2026/06/30
 

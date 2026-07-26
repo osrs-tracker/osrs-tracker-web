@@ -1,5 +1,5 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { HiscoreEntry } from '@osrs-tracker/models';
 import { map, Observable } from 'rxjs';
 import { BASE_URL_PREFIX } from 'src/app/core/interceptors/base-url.interceptors';
@@ -19,9 +19,7 @@ export class OsrsNewsItem {
   ) {}
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class OsrsProxyRepo {
   private readonly httpClient = inject(HttpClient);
 

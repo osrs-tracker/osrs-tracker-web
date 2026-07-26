@@ -1,10 +1,8 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { WINDOW } from 'src/app/core/platform/window.token';
 import { StorageKey } from './storage';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class StorageService implements Storage {
   readonly window: Window | null = inject(WINDOW);
 

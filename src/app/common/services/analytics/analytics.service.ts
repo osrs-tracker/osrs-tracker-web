@@ -1,11 +1,9 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { DefaultTitleStrategy, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { GTAG_TOKEN } from './analytics.token';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class AnalyticsService {
   private readonly gtag = inject(GTAG_TOKEN);
   private readonly router = inject(Router);

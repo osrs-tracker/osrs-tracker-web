@@ -18,7 +18,7 @@ export const playerDetailResolver: ResolveFn<Player | null> = (route: ActivatedR
     .pipe(
       catchError((err: HttpErrorResponse) => {
         if ([400, 404].includes(err.status)) {
-          router.navigate(['**'], { skipLocationChange: true }).then(() => {
+          router.navigate(['**']).then(() => {
             if (router.url !== '/tracker/xp/' + route.params['username'])
               loc.replaceState('/tracker/xp/' + route.params['username']);
           });

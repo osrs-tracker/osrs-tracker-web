@@ -1,10 +1,8 @@
 import { HttpContextToken, HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable, finalize, map } from 'rxjs';
+import { inject, Service } from '@angular/core';
+import { BehaviorSubject, finalize, map, Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class LoadingIndicatorService<T> {
   private ongoingRequests$ = new BehaviorSubject(new Map<string, Observable<HttpEvent<T>>>());
 

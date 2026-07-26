@@ -1,7 +1,7 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { fromUnixTime, getUnixTime } from 'date-fns';
-import { Observable, map, shareReplay } from 'rxjs';
+import { map, Observable, shareReplay } from 'rxjs';
 import { BASE_URL_PREFIX } from 'src/app/core/interceptors/base-url.interceptors';
 import { LOADING_INDICATOR } from 'src/app/core/interceptors/loading-indicator.interceptor';
 import { config } from 'src/config/config';
@@ -31,9 +31,7 @@ export interface AveragePricesAtTime extends AveragePrices {
   timestamp: number;
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class OsrsPricesRepo {
   private readonly httpClient = inject(HttpClient);
 

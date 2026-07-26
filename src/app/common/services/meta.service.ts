@@ -1,9 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class MetaService {
   private readonly meta = inject(Meta);
 
