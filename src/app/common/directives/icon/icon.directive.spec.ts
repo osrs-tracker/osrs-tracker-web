@@ -11,6 +11,7 @@ import {
   SkillEnum,
 } from '@osrs-tracker/hiscores';
 import { PlayerType } from '@osrs-tracker/models';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { IconDirective } from './icon.directive';
 
 @Component({
