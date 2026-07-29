@@ -1,3 +1,7 @@
+## 2026/07/29
+
+- Added support for the new `Mad Angel` hiscore category.
+
 ## 2026/07/26
 
 - Updated to Angular 22.

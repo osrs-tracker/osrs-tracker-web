@@ -14,7 +14,7 @@ export function createApp() {
   const metricsApp = express();
   const angularApp = new AngularNodeAppEngine({
     allowedHosts: [serverConfig.HOST],
-    trustProxyHeaders: ['X-Forwarded-For', 'X-Forwarded-Scheme', 'X-Forwarded-Port'],
+    trustProxyHeaders: serverConfig.TRUST_PROXY_HEADERS,
   });
 
   app.use(

@@ -9,6 +9,7 @@ export const serverConfig = {
   PORT: process.env['PORT'] || 8080,
   METRICS_PORT: process.env['METRICS_PORT'] || 9090,
   HOST: process.env['HOST'] || 'localhost',
+  TRUST_PROXY_HEADERS: process.env['TRUST_PROXY_HEADERS']?.split(',') || [],
 
   // Paths
   serverDistFolder: serverDistFolder,
