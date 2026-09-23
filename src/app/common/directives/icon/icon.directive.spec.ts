@@ -1,26 +1,20 @@
 import { Component, InputSignal, input, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import {
-  BossEnum,
-  BountyHunterEnum,
-  ClueScrollsEnum,
-  CompetitiveEnum,
-  MiniGameEnum,
-  RaidEnum,
-  SkillEnum,
-} from '@osrs-tracker/hiscores';
+import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
 import { PlayerType } from '@osrs-tracker/models';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { IconDirective } from './icon.directive';
 
 @Component({
-  template: '<img icon [name]="name()" [wiki]="wiki()">',
+  template: '<img icon [name]="name()" [wiki]="wiki()" [skill]="skill()" [activity]="activity()">',
   imports: [IconDirective],
 })
 class TestComponent {
   readonly name: InputSignal<string> = input('coins');
   readonly wiki: InputSignal<boolean> = input(false);
+  readonly skill: InputSignal<boolean> = input(false);
+  readonly activity: InputSignal<boolean> = input(false);
 }
 
 describe('IconDirective', () => {
@@ -77,6 +71,7 @@ describe('IconDirective', () => {
 
   it('should map SkillEnum to icon', async () => {
     fixture.componentRef.setInput('name', SkillEnum.Firemaking);
+    fixture.componentRef.setInput('skill', true);
     await fixture.whenStable();
 
     expect(img.src).toContain('/skills/skill_icon_firemaking1.gif');
@@ -84,51 +79,57 @@ describe('IconDirective', () => {
   });
 
   it('should map ClueScrollEnum to icon', async () => {
-    fixture.componentRef.setInput('name', ClueScrollsEnum.ClueScrollsHard);
+    fixture.componentRef.setInput('name', ActivityEnum.ClueScrollsHard);
+    fixture.componentRef.setInput('activity', true);
     await fixture.whenStable();
 
-    expect(img.src).toContain('/cluescrolls/game_icon_cluescrollshard.png');
-    expect(img.alt).toBe(`${ClueScrollsEnum.ClueScrollsHard} icon`);
+    expect(img.src).toContain('/activities/game_icon_cluescrollshard.png');
+    expect(img.alt).toBe(`${ActivityEnum.ClueScrollsHard} icon`);
   });
 
-  it('should map MiniGameEnum to icon', async () => {
-    fixture.componentRef.setInput('name', MiniGameEnum.SoulWarsZeal);
+  it('should map ActivityEnum to icon', async () => {
+    fixture.componentRef.setInput('name', ActivityEnum.SoulWarsZeal);
+    fixture.componentRef.setInput('activity', true);
     await fixture.whenStable();
 
-    expect(img.src).toContain('/minigames/game_icon_soulwarszeal.png');
-    expect(img.alt).toBe(`${MiniGameEnum.SoulWarsZeal} icon`);
+    expect(img.src).toContain('/activities/game_icon_soulwarszeal.png');
+    expect(img.alt).toBe(`${ActivityEnum.SoulWarsZeal} icon`);
   });
 
-  it('should map BountyHunterEnum to icon', async () => {
-    fixture.componentRef.setInput('name', BountyHunterEnum.BountyHunterRogues);
+  it('should map ActivityEnum to icon', async () => {
+    fixture.componentRef.setInput('name', ActivityEnum.BountyHunterRogue);
+    fixture.componentRef.setInput('activity', true);
     await fixture.whenStable();
 
-    expect(img.src).toContain('/minigames/game_icon_bountyhunterrogue.png');
-    expect(img.alt).toBe(`${BountyHunterEnum.BountyHunterRogues} icon`);
+    expect(img.src).toContain('/activities/game_icon_bountyhunterrogue.png');
+    expect(img.alt).toBe(`${ActivityEnum.BountyHunterRogue} icon`);
   });
 
-  it('should map CompetitiveEnum to icon', async () => {
-    fixture.componentRef.setInput('name', CompetitiveEnum.LastManStanding);
+  it('should map ActivityEnum to icon', async () => {
+    fixture.componentRef.setInput('name', ActivityEnum.LastManStanding);
+    fixture.componentRef.setInput('activity', true);
     await fixture.whenStable();
 
-    expect(img.src).toContain('/minigames/game_icon_lmsrank.png');
-    expect(img.alt).toBe(`${CompetitiveEnum.LastManStanding} icon`);
+    expect(img.src).toContain('/activities/game_icon_lmsrank.png');
+    expect(img.alt).toBe(`${ActivityEnum.LastManStanding} icon`);
   });
 
-  it('should map BossEnum to icon', async () => {
-    fixture.componentRef.setInput('name', BossEnum.KreeArra);
+  it('should map ActivityEnum to icon', async () => {
+    fixture.componentRef.setInput('name', ActivityEnum.KreeArra);
+    fixture.componentRef.setInput('activity', true);
     await fixture.whenStable();
 
-    expect(img.src).toContain('/bosses/game_icon_kreearra.png');
-    expect(img.alt).toBe(`${BossEnum.KreeArra} icon`);
+    expect(img.src).toContain('/activities/game_icon_kreearra.png');
+    expect(img.alt).toBe(`${ActivityEnum.KreeArra} icon`);
   });
 
-  it('should map RaidEnum to icon', async () => {
-    fixture.componentRef.setInput('name', RaidEnum.TheGauntlet);
+  it('should map ActivityEnum to icon', async () => {
+    fixture.componentRef.setInput('name', ActivityEnum.TheGauntlet);
+    fixture.componentRef.setInput('activity', true);
     await fixture.whenStable();
 
-    expect(img.src).toContain('/raids/game_icon_thegauntlet.png');
-    expect(img.alt).toBe(`${RaidEnum.TheGauntlet} icon`);
+    expect(img.src).toContain('/activities/game_icon_thegauntlet.png');
+    expect(img.alt).toBe(`${ActivityEnum.TheGauntlet} icon`);
   });
 
   it('should map Wiki item names to wiki image url', async () => {

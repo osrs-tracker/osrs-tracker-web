@@ -27,11 +27,11 @@
         <!-- hiscore diffs -->
         @if (hasXpDiff(diff)) {
           <div class="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-2">
-            @for (skill of skills(diff); track skill.name) {
+            @for (skill of diff.skills; track skill.name) {
               @if (skill.xp) {
                 <div>
                   <div class="flex items-center gap-2">
-                    <img class="w-4 h-4" icon [name]="skill.name" />
+                    <img class="w-4 h-4" icon [name]="skill.name" [skill]="true" />
                     <span>{{ skill.name }}</span>
                     @if (skill.level) {
                       <span class="font-bold positive-value">{{ skill.level }}</span>
@@ -76,22 +76,20 @@
         <h2 title>{{ diff.date | shortDate }}</h2>
 
         <!-- other diffs -->
-        @for (otherKey of filteredOtherKeys(diff); track otherKey) {
-          <section class="flex flex-col gap-1 mb-4 last:mb-0">
-            <h3 class="font-bold bg-slate-100 dark:bg-slate-800 col-span-full">{{ otherKey | capitalizeWords }}</h3>
+        <section class="flex flex-col gap-1 mb-4 last:mb-0">
+          <!-- <h3 class="font-bold bg-slate-100 dark:bg-slate-800 col-span-full">{{ otherKey | capitalizeWords }}</h3> -->
 
-            @for (miniGame of minigames(otherKey, diff); track miniGame.name) {
-              @if (miniGame.score) {
-                <div class="flex items-center gap-2">
-                  <img class="w-4 h-4" icon [name]="$any(miniGame).name" />
-                  <div>{{ miniGame.name }}:</div>
-                  <div class="font-bold text-slate-900 dark:text-white">{{ miniGame.score | number }}</div>
-                </div>
-              }
+          @for (activity of diff.activities; track activity.name) {
+            @if (activity.score) {
+              <div class="flex items-center gap-2">
+                <img class="w-4 h-4" icon [name]="$any(activity).name" [activity]="true" />
+                <div>{{ activity.name }}:</div>
+                <div class="font-bold text-slate-900 dark:text-white">{{ activity.score | number }}</div>
+              </div>
             }
-          </section>
-        }
-        @if (filteredOtherKeys(diff).length === 0) {
+          }
+        </section>
+        @if (!hasActivityDiff(diff)) {
           <p class="text-base opacity-70">Nothing interesting happened.</p>
         }
       </article>

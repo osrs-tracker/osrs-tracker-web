@@ -1,3 +1,8 @@
+## 2026/09/23
+
+- Updated the XP Tracker to use structured hiscore data.
+- Added skill and activity icons to player details and XP Tracker logs.
+
 ## 2026/07/29
 
 - Added support for the new `Mad Angel` hiscore category.

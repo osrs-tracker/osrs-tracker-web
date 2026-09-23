@@ -1,6 +1,7 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, InputSignal, Signal, computed, input } from '@angular/core';
-import { Skill, SkillEnum, calculateXPForSkillLevel, calculateXPToNextLevel } from '@osrs-tracker/hiscores';
+import { SkillEnum, calculateXPForSkillLevel, calculateXPToNextLevel } from '@osrs-tracker/hiscores';
+import { HiscoreSkill } from 'node_modules/@osrs-tracker/models/dist/esm';
 import { IconDirective } from '../../directives/icon/icon.directive';
 import { TooltipComponent } from '../general/tooltip/tooltip.component';
 
@@ -23,7 +24,7 @@ import { TooltipComponent } from '../general/tooltip/tooltip.component';
               Total level: <span class="font-bold">{{ skill()!.level }}</span>
             </div>
           } @else {
-            <img class="flex-1 h-6" icon [name]="skill()!.name" />
+            <img class="flex-1 h-6" icon [name]="skill()!.name" [skill]="true" />
             <div class="flex-1 text-lg font-bold">{{ skill()!.level }}</div>
           }
         } @else {
@@ -66,7 +67,7 @@ import { TooltipComponent } from '../general/tooltip/tooltip.component';
 export class PlayerSkillWidgetComponent {
   readonly SkillEnum: typeof SkillEnum = SkillEnum;
 
-  readonly skill: InputSignal<Skill | undefined> = input.required();
+  readonly skill: InputSignal<HiscoreSkill | undefined> = input.required();
 
   readonly hasProgressBar: Signal<boolean> = computed(
     () => (this.skill() && this.skill()!.name !== SkillEnum.Overall && this.skill()!.level < 99) || false,

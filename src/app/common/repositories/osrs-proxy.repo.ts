@@ -1,6 +1,6 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
-import { HiscoreEntry } from '@osrs-tracker/models';
+import { HiscoreActivity, HiscoreEntry, HiscoreSkill } from '@osrs-tracker/models';
 import { map, Observable } from 'rxjs';
 import { BASE_URL_PREFIX } from 'src/app/core/interceptors/base-url.interceptors';
 import { config } from 'src/config/config';
@@ -29,15 +29,20 @@ export class OsrsProxyRepo {
 
   getPlayerHiscore(username: string, scrapingOffset: number): Observable<HiscoreEntry> {
     return this.httpClient
-      .get(`${config.awsBaseUrl}/rs/m=hiscore_oldschool/index_lite.ws?player=${username}`, {
-        context: new HttpContext().set(BASE_URL_PREFIX, false),
-        responseType: 'text',
-      })
+      .get<{ skills: HiscoreSkill[]; activities: HiscoreActivity[] }>(
+        `${config.awsBaseUrl}/rs/m=hiscore_oldschool/index_lite.json?player=${username}`,
+        {
+          context: new HttpContext().set(BASE_URL_PREFIX, false),
+          responseType: 'json',
+        },
+      )
       .pipe(
-        map(hiscoreString => ({
-          sourceString: hiscoreString,
+        map(({ skills, activities }) => ({
+          sourceString: 'LEGACY',
           date: new Date(),
           scrapingOffset,
+          skills,
+          activities,
         })),
       );
   }

@@ -60,8 +60,8 @@
     "@angular/router": "^22.0.8",
     "@angular/service-worker": "^22.0.8",
     "@angular/ssr": "^22.0.8",
-    "@ngrx/signals": "^21.1.1",
-    "@osrs-tracker/hiscores": "^1.3.0",
+    "@ngrx/signals": "^22.0.1",
+    "@osrs-tracker/hiscores": "^2.1.2",
     "chart.js": "^4.5.1",
     "chartjs-adapter-date-fns": "^3.0.0",
     "chartjs-plugin-annotation": "^3.1.0",
@@ -82,7 +82,7 @@
     "@angular/cli": "^22.0.8",
     "@angular/compiler-cli": "^22.0.8",
     "@eslint/js": "^9.39.3",
-    "@osrs-tracker/models": "^0.6.0",
+    "@osrs-tracker/models": "^0.7.1",
     "@stylistic/eslint-plugin": "^4.4.1",
     "@tailwindcss/forms": "^0.5.11",
     "@tailwindcss/postcss": "^4.2.1",
@@ -108,17 +108,10 @@
     "vitest": "^4.1.10"
   },
   "allowScripts": {
+    "unrs-resolver@1.11.1": true,
     "@parcel/watcher@2.5.6": true,
     "esbuild@0.28.1": true,
-    "esbuild@0.27.7": true,
-    "msgpackr-extract@3.0.4": true,
-    "unrs-resolver@1.11.1": true,
-    "lmdb@3.5.4": true
-  },
-  "overrides": {
-    "@ngrx/signals": {
-      "@angular/common": "$@angular/common",
-      "@angular/core": "$@angular/core"
-    }
+    "lmdb@3.5.4": true,
+    "msgpackr-extract@3.0.4": true
   }
 }

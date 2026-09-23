@@ -12,8 +12,8 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Hiscore, parseHiscores } from '@osrs-tracker/hiscores';
-import { Player } from '@osrs-tracker/models';
+import { parseHiscores } from '@osrs-tracker/hiscores';
+import { HiscoreEntry, Player } from '@osrs-tracker/models';
 import { finalize } from 'rxjs';
 import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
 import { PlayerSkillsWidgetComponent } from 'src/app/common/components/player/player-skills.component';
@@ -37,12 +37,12 @@ export default class PlayerDetailComponent implements OnInit {
 
   readonly #DEFAULT_SIZE = 14;
   readonly #MORE_SIZE = 7;
-  readonly #historyEntries: WritableSignal<Hiscore[][]> = signal([]);
+  readonly #historyEntries: WritableSignal<HiscoreEntry[][]> = signal([]);
 
   readonly player = input.required<Player>();
 
-  readonly today: WritableSignal<Hiscore | undefined> = signal(undefined);
-  readonly history: Signal<Hiscore[]> = computed(() => this.#historyEntries().flat());
+  readonly today: WritableSignal<HiscoreEntry | undefined> = signal(undefined);
+  readonly history: Signal<HiscoreEntry[]> = computed(() => this.#historyEntries().flat());
 
   readonly loadingMore: WritableSignal<boolean> = signal(false);
   readonly hasMoreEntries: WritableSignal<boolean> = signal(false);

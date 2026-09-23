@@ -75,7 +75,7 @@ import { XpTrackerStore } from '../xp-tracker.store';
                 {{ this.player()?.hiscoreEntries?.[0]?.date | timeAgo }}.
               </ng-template>
 
-              <img class="w-5 h-5 ml-2 mb-1" icon [name]="SkillEnum.Overall" />
+              <img class="w-5 h-5 ml-2 mb-1" icon [name]="SkillEnum.Overall" [skill]="true" />
             }
           }
         </div>

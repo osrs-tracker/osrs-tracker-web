@@ -11,7 +11,9 @@ const wrapXml = content => {
 };
 
 (async () => {
-  const response = await fetch('https://prices.runescape.wiki/api/v1/osrs/mapping');
+  const response = await fetch('https://prices.runescape.wiki/api/v1/osrs/mapping', {
+    headers: { 'User-Agent': 'osrs-tracker-dev' },
+  });
   const items = await response.json();
 
   const entries = items
