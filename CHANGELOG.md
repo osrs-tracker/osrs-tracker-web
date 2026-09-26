@@ -1,3 +1,7 @@
+## 2026/09/26
+
+- Updated the hiscores package to fix a `hiscoreDiff` bug.
+
 ## 2026/09/23
 
 - Updated the XP Tracker to use structured hiscore data.
