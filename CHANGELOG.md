@@ -10,6 +10,7 @@
 - Added a page title to the changelog.
 - Updated to Node 24 and updated dependencies, including the latest shared OSRS Tracker packages.
 - Expanded the README with features, how the project fits together, and how to run it locally.
+- Updated the developer documentation for working across the OSRS Tracker projects.
 
 ## 2026/09/26
 

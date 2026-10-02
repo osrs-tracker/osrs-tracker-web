@@ -8,8 +8,36 @@ description:
 # osrs-tracker-web
 
 Angular 22 SSR app (zoneless, signals, standalone) served by a custom Express server, deployed as a Docker image to
-Kubernetes. The API it talks to lives in the sibling repo `../osrs-tracker-api` (NestJS); it has its own
-`osrs-tracker-api` skill.
+Kubernetes.
+
+## The system and who owns what
+
+OSRS Tracker is three repos, each with its own project skill and its own Claude session:
+
+| Repo                      | What                                                                         | Worked on by                          |
+| ------------------------- | ---------------------------------------------------------------------------- | ------------------------------------- |
+| `osrs-tracker-web` (this) | the website                                                                  | this session, which also orchestrates |
+| `../osrs-tracker-api`     | NestJS API on MongoDB Atlas, same k8s cluster                                | the "OSRS Tracker API" session        |
+| `../osrs-tracker-aws`     | Lambda jobs (queue/scrape players daily, refresh items), shared npm packages | the "OSRS Tracker AWS" session        |
+
+- **Delegate all API and AWS work to their sessions** (SendMessage): code, packages, deploys, commits. Reading those
+  repos for context is fine. Give each task the context it needs from the other repos, sequence cross-repo changes,
+  relay findings, and verify end to end from the web side. If a session is blocked by its own permissions, report that
+  to the user; never do the work from here instead.
+- **External endpoints the web uses** (`src/config/config.ts`):
+  - `apiBaseUrl`: osrs-tracker-api. It's used during SSR, so its `Cache-Control` matters (see SSR rules).
+  - `awsBaseUrl` = `runescape-api.freekmencke.com`: an API Gateway proxy to Jagex, console-managed in the AWS account.
+    The web only calls it **in the browser** (live "today" hiscores in `player-detail` behind `isPlatformBrowser`, and
+    the localStorage-backed `player-widget`), so its `no-cache` doesn't affect SSR. The API and the process-players
+    Lambda use the same proxy, so proxy changes need a check from all three.
+  - `pricesBaseUrl`: prices.runescape.wiki (third party).
+- **Shared packages** `@osrs-tracker/models` and `@osrs-tracker/hiscores` are published from osrs-tracker-aws (the user
+  publishes with an npm OTP). `hiscores` peer-depends on `models`, so **bump both together in the web** and use
+  `--prefer-online` right after a publish (the CDN dist-tags lag). Type-only bumps don't need a deploy.
+- **Paused players**: the Lambda pauses scraping after 7 days of hiscore 404s (`scrapingOffsets` →
+  `pausedScrapingOffsets`), and the API resumes it on a successful lookup. The web needs nothing for this: a paused
+  player's page 404s through the API refresh, and `isPlayerTracked` only reads `scrapingOffsets`.
+- **Test player** for production checks: **ToxSick** (the user's old account).
 
 ## Layout
 
@@ -142,7 +170,11 @@ render URL both depend on it.
 ## Commit and push
 
 - Commit straight to `main` with conventional commits (`fix(scope): …`, `feat(scope): …`; commitizen is configured).
-  Include the image digest bump and the regenerated sitemaps in the same commit as the code they deploy.
+  Include the image digest bump and the regenerated sitemaps in the same commit as the code they deploy. `main` has
+  rulesets (PRs, required checks) that the user's account bypasses; pushing straight to `main` is the chosen workflow,
+  so the "bypassed rule violations" notice is expected. Watch the CI run after pushing (`gh run watch`).
+- GPG's passphrase cache lasts about 10 minutes. When several sessions need to commit, tell them as soon as the user has
+  unlocked the key, so all commits land in the same window.
 - **Every change gets a `CHANGELOG.md` entry**, including dependency and tooling updates. Use a `## YYYY/MM/DD` heading
   (newest first; add to today's heading if it already exists) followed by short bullets. It's rendered on
   `/about/changelog` from GitHub `main`, so write the bullets for users, not developers.
