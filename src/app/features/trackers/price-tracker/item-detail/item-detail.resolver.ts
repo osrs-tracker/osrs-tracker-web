@@ -27,7 +27,7 @@ export const itemDetailResolver: ResolveFn<[Item, LatestPrices, number, AverageP
     osrsPricesRepo.getPriceTimeSeries(route.params['id'], TimeSpan.FIVE_MINUTES, { loadingIndicator: true }),
   ]).pipe(
     catchError((err: HttpErrorResponse) => {
-      if (err.status === 404) {
+      if ([400, 404].includes(err.status)) {
         router.navigate(['**']).then(() => {
           if (router.url !== '/trackers/price/' + route.params['id'])
             loc.replaceState('/trackers/price/' + route.params['id']);

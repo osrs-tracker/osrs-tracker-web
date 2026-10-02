@@ -11,7 +11,7 @@ import { config } from 'src/config/config';
 export default class OsrsNewsCardComponent {
   readonly osrsNewsItem: InputSignal<OsrsNewsItem> = input.required();
   readonly imageSrc: Signal<string> = computed(
-    () => `${config.apiBaseUrl}/news/image?url=${this.osrsNewsItem().enclosure.url}`,
+    () => `${config.apiBaseUrl}/news/image?url=${encodeURIComponent(this.osrsNewsItem().enclosure.url)}`,
   );
 
   openLink(url: string) {

@@ -1,5 +1,4 @@
-import { Component, inject, PLATFORM_ID } from '@angular/core';
-import { RESPONSE } from 'src/server/utils/response.token';
+import { Component, inject, RESPONSE_INIT } from '@angular/core';
 
 @Component({
   standalone: true,
@@ -15,6 +14,8 @@ import { RESPONSE } from 'src/server/utils/response.token';
 })
 export default class NotFoundComponent {
   constructor() {
-    if (inject(PLATFORM_ID) === 'server') inject(RESPONSE)?.status(404);
+    // Only available during SSR, `null` in the browser
+    const responseInit = inject(RESPONSE_INIT, { optional: true });
+    if (responseInit) responseInit.status = 404;
   }
 }

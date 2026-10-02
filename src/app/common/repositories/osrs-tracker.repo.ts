@@ -19,7 +19,7 @@ export class OsrsTrackerRepo {
     options?: { includeLatestHiscoreEntry?: boolean; loadingIndicator?: boolean; skipRefresh?: boolean },
   ): Observable<Player> {
     return this.httpClient
-      .get<Player>(`/players/${username}`, {
+      .get<Player>(`/players/${encodeURIComponent(username)}`, {
         context: new HttpContext().set(LOADING_INDICATOR, options?.loadingIndicator),
         params: {
           scrapingOffset,
@@ -37,7 +37,9 @@ export class OsrsTrackerRepo {
 
   getPlayerHiscores(username: string, scrapingOffset: number, size: number, skip: number): Observable<HiscoreEntry[]> {
     return this.httpClient // Returns `null` when no hiscores have been scraped yet.
-      .get<HiscoreEntry[] | null>(`/players/${username}/hiscores`, { params: { scrapingOffset, size, skip } })
+      .get<HiscoreEntry[] | null>(`/players/${encodeURIComponent(username)}/hiscores`, {
+        params: { scrapingOffset, size, skip },
+      })
       .pipe(map(hiscoreEntries => (hiscoreEntries ?? []).map(entry => ({ ...entry, date: new Date(entry.date) }))));
   }
 
@@ -57,7 +59,7 @@ export class OsrsTrackerRepo {
   //
 
   searchItems(query: string): Observable<Item[] | void> {
-    return this.httpClient.get<Item[]>(`/items/search/${query}`);
+    return this.httpClient.get<Item[]>(`/items/search/${encodeURIComponent(query)}`);
   }
 
   getItemInfo(itemId: number, options?: { loadingIndicator: boolean }): Observable<Item> {

@@ -1,10 +1,22 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, Injector, InputSignal, OnInit, Signal, WritableSignal, inject, input, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import {
+  Component,
+  Injector,
+  InputSignal,
+  OnInit,
+  ResourceRef,
+  Signal,
+  WritableSignal,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { Item } from '@osrs-tracker/models';
 import 'chartjs-adapter-date-fns';
 import { subDays } from 'date-fns';
-import { Observable, forkJoin, map, of, shareReplay } from 'rxjs';
+import { Observable, catchError, forkJoin, map, of, shareReplay } from 'rxjs';
 import { CardComponent } from 'src/app/common/components/general/card.component';
 import { ColoredValueComponent } from 'src/app/common/components/general/colored-value.component';
 import { InfoTooltipComponent } from 'src/app/common/components/general/tooltip/info-tooltip.component';
@@ -38,12 +50,9 @@ export class ItemAnalyticsComponent implements OnInit {
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
 
   readonly TimeSpan = TimeSpan;
-  timeSeriesMap$: Record<TimeSpan, Observable<AveragePricesAtTime[]>>;
 
-  priceTimeSpan: TimeSpan = TimeSpan.FIVE_MINUTES;
-  readonly priceTimeSeries: WritableSignal<AveragePricesAtTime[]> = signal([]);
-  volumeTimeSpan: TimeSpan = TimeSpan.FIVE_MINUTES;
-  readonly volumeTimeSeries: WritableSignal<AveragePricesAtTime[]> = signal([]);
+  readonly priceTimeSpan: WritableSignal<TimeSpan> = signal(TimeSpan.FIVE_MINUTES);
+  readonly volumeTimeSpan: WritableSignal<TimeSpan> = signal(TimeSpan.FIVE_MINUTES);
 
   readonly itemDetail: InputSignal<Item> = input.required();
   readonly latestPrices: InputSignal<LatestPrices> = input.required();
@@ -51,19 +60,31 @@ export class ItemAnalyticsComponent implements OnInit {
 
   trend: Signal<Trend | undefined>;
 
-  ngOnInit(): void {
-    this.timeSeriesMap$ = {
+  /** Shared per item, so switching back and forth between time spans doesn't refetch. */
+  private readonly timeSeriesMap: Signal<Record<TimeSpan, Observable<AveragePricesAtTime[]>>> = computed(() => {
+    const id = this.itemDetail().id;
+    return {
       [TimeSpan.FIVE_MINUTES]: of(this.timeSeriesToday()),
-      [TimeSpan.HOUR]: this.osrsPricesRepo.getPriceTimeSeries(this.itemDetail().id, TimeSpan.HOUR).pipe(shareReplay(1)),
-      [TimeSpan.SIX_HOURS]: this.osrsPricesRepo
-        .getPriceTimeSeries(this.itemDetail().id, TimeSpan.SIX_HOURS)
-        .pipe(shareReplay(1)),
-      [TimeSpan.DAY]: this.osrsPricesRepo.getPriceTimeSeries(this.itemDetail().id, TimeSpan.DAY).pipe(shareReplay(1)),
+      [TimeSpan.HOUR]: this.osrsPricesRepo.getPriceTimeSeries(id, TimeSpan.HOUR).pipe(shareReplay(1)),
+      [TimeSpan.SIX_HOURS]: this.osrsPricesRepo.getPriceTimeSeries(id, TimeSpan.SIX_HOURS).pipe(shareReplay(1)),
+      [TimeSpan.DAY]: this.osrsPricesRepo.getPriceTimeSeries(id, TimeSpan.DAY).pipe(shareReplay(1)),
     };
+  });
 
+  // Resources cancel the previous request when the time span changes, so a slow response can't overwrite a newer one.
+  readonly priceTimeSeries: ResourceRef<AveragePricesAtTime[]> = rxResource({
+    params: () => this.timeSeriesMap()[this.priceTimeSpan()],
+    stream: ({ params: timeSeries$ }) => timeSeries$.pipe(catchError(() => of([]))),
+    defaultValue: [],
+  });
+  readonly volumeTimeSeries: ResourceRef<AveragePricesAtTime[]> = rxResource({
+    params: () => this.timeSeriesMap()[this.volumeTimeSpan()],
+    stream: ({ params: timeSeries$ }) => timeSeries$.pipe(catchError(() => of([]))),
+    defaultValue: [],
+  });
+
+  ngOnInit(): void {
     this.initTrends();
-    this.updatePrice(this.priceTimeSpan);
-    this.updateVolume(this.volumeTimeSpan);
   }
 
   private initTrends(): void {
@@ -93,16 +114,6 @@ export class ItemAnalyticsComponent implements OnInit {
       ),
       { injector: this.injector },
     );
-  }
-
-  updatePrice(timeSpan: TimeSpan): void {
-    this.priceTimeSpan = timeSpan;
-    this.timeSeriesMap$[timeSpan].subscribe(priceTimeSeries => this.priceTimeSeries.set(priceTimeSeries));
-  }
-
-  updateVolume(timeSpan: TimeSpan): void {
-    this.volumeTimeSpan = timeSpan;
-    this.timeSeriesMap$[timeSpan].subscribe(priceTimeSeries => this.volumeTimeSeries.set(priceTimeSeries));
   }
 
   private trendDiff(value: number, base?: number): number {

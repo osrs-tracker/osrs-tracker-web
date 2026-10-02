@@ -1,6 +1,6 @@
 import { Component, InputSignal, OnInit, WritableSignal, inject, input, signal } from '@angular/core';
 import { subDays } from 'date-fns';
-import { forkJoin, map } from 'rxjs';
+import { catchError, forkJoin, map, of } from 'rxjs';
 import { ColoredValueComponent } from 'src/app/common/components/general/colored-value.component';
 import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
@@ -55,9 +55,10 @@ export class ItemWidgetComponent implements OnInit {
     ])
       .pipe(
         map(([latest, recent]) => {
-          if (latest.low === null || recent.averagePrices?.avgLowPrice == null) return undefined;
+          if (latest.low == null || recent.averagePrices?.avgLowPrice == null) return undefined;
           return latest.low - recent.averagePrices.avgLowPrice;
         }),
+        catchError(() => of(undefined)),
       )
       .subscribe(trend => {
         this.trend.set(trend);

@@ -34,7 +34,7 @@ export class PlayerDetailWidgetComponent {
       'toggle_favorite_player',
       'xp_tracker',
       this.playerDetail().username,
-      this.isFavorite,
+      this.isFavorite(),
     );
   }
 

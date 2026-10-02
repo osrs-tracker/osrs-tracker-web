@@ -18,7 +18,7 @@ import {
 } from '@angular/core';
 import { SkillEnum, getOverallXpDiff } from '@osrs-tracker/hiscores';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
-import { EMPTY, catchError, forkJoin } from 'rxjs';
+import { EMPTY, catchError, finalize, forkJoin } from 'rxjs';
 import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
 import { TooltipComponent } from 'src/app/common/components/general/tooltip/tooltip.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
@@ -141,6 +141,7 @@ export class PlayerWidgetComponent implements OnInit {
           if (err instanceof HttpErrorResponse && err.status === 404) {
             this.removeMissingPlayer();
           }
+          this.loading.set(false);
           return EMPTY;
         }),
       )
@@ -158,10 +159,17 @@ export class PlayerWidgetComponent implements OnInit {
   private fetchFromPlayer(player: Player): void {
     this.loading.set(true);
 
-    this.osrsProxyRepo.getPlayerHiscore(player.username, this.scrapingOffset()).subscribe(hiscore => {
-      this.overallDiff.set(getOverallXpDiff(hiscore, player.hiscoreEntries![0]));
-      this.loading.set(false);
-    });
+    this.osrsProxyRepo
+      .getPlayerHiscore(player.username, this.scrapingOffset())
+      .pipe(
+        catchError(() => EMPTY),
+        finalize(() => this.loading.set(false)),
+      )
+      .subscribe(hiscore => {
+        if (player.hiscoreEntries?.length) {
+          this.overallDiff.set(getOverallXpDiff(hiscore, player.hiscoreEntries[0]));
+        }
+      });
   }
 
   private removeMissingPlayer(): void {

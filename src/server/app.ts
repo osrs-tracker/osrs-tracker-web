@@ -1,6 +1,6 @@
 import { AngularNodeAppEngine, createNodeRequestHandler, writeResponseToNodeResponse } from '@angular/ssr/node';
 import compression from 'compression';
-import express, { Router } from 'express';
+import express, { NextFunction, Request, Response, Router } from 'express';
 import { angularCacheMiddleware } from './middleware/angular-cache';
 import { loggingMiddleware } from './middleware/logging';
 import { metricsMiddleware } from './middleware/metrics';
@@ -29,13 +29,24 @@ export function createApp() {
   app.use(express.static(serverConfig.browserDistFolder, { maxAge: '30d' }));
 
   app.use('*', (req, res, next) => {
-    angularApp.handle(req).then(response => {
-      if (response) {
-        writeResponseToNodeResponse(response, res);
-      } else {
-        next();
-      }
-    });
+    angularApp
+      .handle(req)
+      .then(response => {
+        if (response) {
+          writeResponseToNodeResponse(response, res);
+        } else {
+          next();
+        }
+      })
+      .catch(next);
+  });
+
+  // Log errors and respond with a generic 500, Express' default handler leaks the stack trace unless NODE_ENV=production
+  app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
+    // eslint-disable-next-line no-console
+    console.error(err);
+    if (res.headersSent) return next(err);
+    res.status(500).send('Internal Server Error');
   });
 
   metricsApp.use(

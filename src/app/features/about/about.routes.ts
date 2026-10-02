@@ -7,6 +7,7 @@ export default [
   {
     path: 'changelog',
     pathMatch: 'prefix',
+    title: 'Changelog - OSRS Tracker',
     loadComponent: () => import('./changelog/changelog.component'),
     resolve: {
       changelog: () => {

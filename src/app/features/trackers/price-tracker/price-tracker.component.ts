@@ -3,6 +3,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
+import { finalize } from 'rxjs';
 import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
 import { InfoTooltipComponent } from 'src/app/common/components/general/tooltip/info-tooltip.component';
 import { PageHeaderComponent } from 'src/app/common/components/layout/page-header.component';
@@ -50,9 +51,12 @@ export default class PriceTrackerComponent {
 
     this.loading.set(true);
 
-    this.osrsTrackerRepo.searchItems(this.query()).subscribe(items => {
-      this.results.set(items ?? []);
-      this.loading.set(false);
-    });
+    this.osrsTrackerRepo
+      .searchItems(this.query())
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: items => this.results.set(items ?? []),
+        error: () => this.results.set([]),
+      });
   }
 }

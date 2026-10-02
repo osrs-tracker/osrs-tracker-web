@@ -11,15 +11,13 @@ export function angularCacheMiddleware(): RequestHandler {
       return next();
     }
 
-    const { originalUrl, headers } = req;
-    const fullUrl = `//${headers.host}${originalUrl}`;
-
     // Set no-cache headers because this returns the "index.html" file
     res.appendHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
 
-    // Check if the page is in cache first.
-    const url = new URL(`https:${fullUrl}`); // Make an url to easily strip query params
-    const cachedPage = pageCache.get(`//${url.host}${url.pathname}`);
+    // Check if the page is in cache first, pages are keyed by path (without query params).
+    // The host is not part of the key: the cache only contains pages pre-rendered by the auto generator for the
+    // configured HOST, so it's safe to serve them regardless of the request's host header.
+    const cachedPage = pageCache.get(req.path);
 
     if (cachedPage) {
       res.appendHeader('x-cache', 'HIT');

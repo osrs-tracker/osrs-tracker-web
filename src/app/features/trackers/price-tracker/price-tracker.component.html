@@ -98,12 +98,15 @@
       </h2>
 
       <div class="grid gap-4 p-0.5 max-h-87 overflow-y-auto">
-        @for (item of recentItems; track item.id) {
-          <a [routerLink]="['/trackers/price', item.id]">
-            <item-widget [recentItem]="item"></item-widget>
-          </a>
-        } @empty {
-          <p>No items looked up yet.</p>
+        <!-- Deferred because these are read from local storage, which isn't available during SSR -->
+        @defer {
+          @for (item of recentItems; track item.id) {
+            <a [routerLink]="['/trackers/price', item.id]">
+              <item-widget [recentItem]="item"></item-widget>
+            </a>
+          } @empty {
+            <p>No items looked up yet.</p>
+          }
         }
       </div>
     </section>
@@ -118,12 +121,15 @@
       </h2>
 
       <div class="grid gap-4 p-0.5 max-h-87 overflow-y-auto">
-        @for (item of favoriteItems; track item.id) {
-          <a [routerLink]="['/trackers/price', item.id]">
-            <item-widget [recentItem]="item"></item-widget>
-          </a>
-        } @empty {
-          <p>No items favorited yet.</p>
+        <!-- Deferred because these are read from local storage, which isn't available during SSR -->
+        @defer {
+          @for (item of favoriteItems; track item.id) {
+            <a [routerLink]="['/trackers/price', item.id]">
+              <item-widget [recentItem]="item"></item-widget>
+            </a>
+          } @empty {
+            <p>No items favorited yet.</p>
+          }
         }
       </div>
     </section>

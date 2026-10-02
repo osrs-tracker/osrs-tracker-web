@@ -21,7 +21,7 @@ export class PageCache {
 
   /**
    * Get a cached page if it exists and is not expired
-   * @param url The full URL of the page
+   * @param url The path of the page
    * @returns The cached HTML or null if not found or expired
    */
   get(url: string): string | null {
@@ -40,7 +40,7 @@ export class PageCache {
 
   /**
    * Store a page in the cache
-   * @param url The full URL of the page
+   * @param url The path of the page
    * @param html The rendered HTML content
    */
   set(url: string, html: string): void {

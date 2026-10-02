@@ -16,12 +16,13 @@ import {
   runInInjectionContext,
   viewChild,
 } from '@angular/core';
-import { BarController, BarElement, Chart, LinearScale, TimeSeriesScale, Tooltip } from 'chart.js';
+import { Chart, Plugin } from 'chart.js';
 import { fromUnixTime } from 'date-fns';
 import { formatNumberLegible } from 'src/app/common/helpers/number.helper';
 import { AveragePricesAtTime } from 'src/app/common/repositories/osrs-prices.repo';
 import { ThemeService } from 'src/app/common/services/theme.service';
 import { config } from 'src/config/config';
+import './chart-setup';
 
 @Component({
   standalone: true,
@@ -33,9 +34,9 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
   private readonly themeService = inject(ThemeService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
-  private zoom: typeof import('chartjs-plugin-zoom').default | null = null;
 
-  volumeChart: Chart;
+  volumeChart?: Chart;
+  private destroyed = false;
   readonly volumeChartCanvas: Signal<ElementRef<HTMLCanvasElement>> = viewChild.required('volumeChart');
 
   readonly timeSeries: InputSignal<AveragePricesAtTime[]> = input.required();
@@ -47,48 +48,45 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
   }
 
   private async initChart(): Promise<void> {
-    Chart.register(
-      BarController,
-      BarElement,
-      LinearScale,
-      TimeSeriesScale,
-      Tooltip,
-      (this.zoom = (await import('chartjs-plugin-zoom')).default),
-    );
+    // The zoom plugin is loaded lazily (it needs the browser), so it's passed to the chart instead of registered globally
+    const zoom = (await import('chartjs-plugin-zoom')).default;
 
-    this.createVolumeChart();
+    // The component can be destroyed while the zoom plugin is loading
+    if (this.destroyed) return;
+
+    this.createVolumeChart([zoom]);
 
     runInInjectionContext(this.injector, () => {
       effect(() => this.updateVolumeChart(this.timeSeries()));
-      effect(() => (this.themeService.darkMode(), this.volumeChart.update('none')));
+      effect(() => (this.themeService.darkMode(), this.volumeChart!.update('none')));
     });
   }
 
   ngOnDestroy(): void {
-    this.volumeChart.destroy();
-
-    Chart.unregister(BarController, BarElement, LinearScale, TimeSeriesScale, Tooltip, this.zoom!);
+    this.destroyed = true;
+    this.volumeChart?.destroy();
   }
 
   // Workaround for chart.js not updating when the size of the canvas shrinks
   @HostListener('window:resize')
   onResize(): void {
-    this.volumeChart.resize(1, 1);
-    requestAnimationFrame(() => this.volumeChart.resize());
+    this.volumeChart?.resize(1, 1);
+    requestAnimationFrame(() => this.volumeChart?.resize());
   }
 
   // Workaround for chart.js not closing tooltips when tapping outside the canvas (iOS)
   @HostListener('document:touchend', ['$event.target'])
   hideTooltip(target: EventTarget | null): void {
-    if (target !== this.volumeChartCanvas().nativeElement) {
+    if (this.volumeChart && target !== this.volumeChartCanvas().nativeElement) {
       this.volumeChartCanvas().nativeElement.dispatchEvent(new Event('mouseout'));
     }
   }
 
-  private createVolumeChart(): void {
+  private createVolumeChart(plugins: Plugin[]): void {
     this.volumeChart = new Chart(this.volumeChartCanvas().nativeElement, {
       type: 'bar',
       data: { datasets: [] },
+      plugins,
       options: {
         responsive: true,
         maintainAspectRatio: false,
@@ -169,6 +167,8 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
   }
 
   private updateVolumeChart(priceTimeSeries: AveragePricesAtTime[]) {
+    if (!this.volumeChart) return;
+
     this.volumeChart.data.datasets = [
       {
         label: 'Buy volume',

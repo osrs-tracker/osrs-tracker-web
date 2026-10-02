@@ -8,7 +8,7 @@ import {
   provideZonelessChangeDetection,
 } from '@angular/core';
 import { provideClientHydration, withEventReplay, withIncrementalHydration } from '@angular/platform-browser';
-import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
+import { provideRouter, RouteReuseStrategy, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import { provideServiceWorker, SwUpdate } from '@angular/service-worker';
 import { interval, startWith, switchMap } from 'rxjs';
 import appRoutes from './app.routes';
@@ -18,6 +18,7 @@ import { baseUrlInterceptor } from './core/interceptors/base-url.interceptors';
 import { loadingIndicatorInterceptor } from './core/interceptors/loading-indicator.interceptor';
 import { shareRequestInterceptor } from './core/interceptors/share-request.interceptors';
 import { ssrUserAgentInterceptor } from './core/interceptors/ssr-user-agent.interceptor';
+import { ParamAwareReuseStrategy } from './core/routing/param-aware-reuse-strategy';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -42,6 +43,7 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
 
     { provide: ErrorHandler, useClass: CustomErrorHandler },
+    { provide: RouteReuseStrategy, useClass: ParamAwareReuseStrategy },
 
     provideAppInitializer(() => inject(AnalyticsService).setupPageAnalytics()),
     provideAppInitializer(() => {

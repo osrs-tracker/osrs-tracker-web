@@ -16,13 +16,13 @@ import {
   runInInjectionContext,
   viewChild,
 } from '@angular/core';
-import { Chart, LineController, LineElement, LinearScale, PointElement, TimeSeriesScale, Tooltip } from 'chart.js';
-import Annotation from 'chartjs-plugin-annotation';
+import { Chart, Plugin } from 'chart.js';
 import { fromUnixTime } from 'date-fns';
 import { formatNumberLegible } from 'src/app/common/helpers/number.helper';
 import { AveragePricesAtTime } from 'src/app/common/repositories/osrs-prices.repo';
 import { ThemeService } from 'src/app/common/services/theme.service';
 import { config } from 'src/config/config';
+import './chart-setup';
 
 @Component({
   standalone: true,
@@ -34,9 +34,9 @@ export class PriceChartComponent implements OnInit, OnDestroy {
   private readonly themeService = inject(ThemeService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
-  private zoom: typeof import('chartjs-plugin-zoom').default | null = null;
 
-  priceChart: Chart;
+  priceChart?: Chart;
+  private destroyed = false;
   readonly priceChartCanvas: Signal<ElementRef<HTMLCanvasElement>> = viewChild.required('priceChart');
 
   readonly timeSeries: InputSignal<AveragePricesAtTime[]> = input.required();
@@ -61,59 +61,45 @@ export class PriceChartComponent implements OnInit, OnDestroy {
   }
 
   private async initChart(): Promise<void> {
-    Chart.register(
-      LineController,
-      LineElement,
-      PointElement,
-      LinearScale,
-      TimeSeriesScale,
-      Tooltip,
-      Annotation,
-      (this.zoom = (await import('chartjs-plugin-zoom')).default),
-    );
+    // The zoom plugin is loaded lazily (it needs the browser), so it's passed to the chart instead of registered globally
+    const zoom = (await import('chartjs-plugin-zoom')).default;
 
-    this.createPriceChart();
+    // The component can be destroyed while the zoom plugin is loading
+    if (this.destroyed) return;
+
+    this.createPriceChart([zoom]);
 
     runInInjectionContext(this.injector, () => {
       effect(() => this.updatePriceChart(this.timeSeries()));
-      effect(() => (this.themeService.darkMode(), this.priceChart.update('none')));
+      effect(() => (this.themeService.darkMode(), this.priceChart!.update('none')));
     });
   }
 
   ngOnDestroy(): void {
-    this.priceChart.destroy();
-
-    Chart.unregister(
-      LineController,
-      LineElement,
-      PointElement,
-      LinearScale,
-      TimeSeriesScale,
-      Tooltip,
-      Annotation,
-      this.zoom!,
-    );
+    this.destroyed = true;
+    this.priceChart?.destroy();
   }
 
   // Workaround for chart.js not updating when the size of the canvas shrinks
   @HostListener('window:resize')
   onResize(): void {
-    this.priceChart.resize(1, 1);
-    requestAnimationFrame(() => this.priceChart.resize());
+    this.priceChart?.resize(1, 1);
+    requestAnimationFrame(() => this.priceChart?.resize());
   }
 
   // Workaround for chart.js not closing tooltips when tapping outside the canvas (iOS)
   @HostListener('document:touchend', ['$event.target'])
   hideTooltip(target: EventTarget | null): void {
-    if (target !== this.priceChartCanvas().nativeElement) {
+    if (this.priceChart && target !== this.priceChartCanvas().nativeElement) {
       this.priceChartCanvas().nativeElement.dispatchEvent(new Event('mouseout'));
     }
   }
 
-  private createPriceChart(): void {
+  private createPriceChart(plugins: Plugin[]): void {
     this.priceChart = new Chart(this.priceChartCanvas().nativeElement, {
       type: 'line',
       data: { datasets: [] },
+      plugins,
       options: {
         responsive: true,
         maintainAspectRatio: false,
@@ -195,6 +181,8 @@ export class PriceChartComponent implements OnInit, OnDestroy {
   }
 
   private updatePriceChart(priceTimeSeries: AveragePricesAtTime[]) {
+    if (!this.priceChart) return;
+
     this.priceChart.data.datasets = [
       {
         label: 'Buy price',

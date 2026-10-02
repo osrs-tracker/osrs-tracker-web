@@ -30,8 +30,9 @@ export class OsrsProxyRepo {
   getPlayerHiscore(username: string, scrapingOffset: number): Observable<HiscoreEntry> {
     return this.httpClient
       .get<{ skills: HiscoreSkill[]; activities: HiscoreActivity[] }>(
-        `${config.awsBaseUrl}/rs/m=hiscore_oldschool/index_lite.json?player=${username}`,
+        `${config.awsBaseUrl}/rs/m=hiscore_oldschool/index_lite.json`,
         {
+          params: { player: username },
           context: new HttpContext().set(BASE_URL_PREFIX, false),
           responseType: 'json',
         },

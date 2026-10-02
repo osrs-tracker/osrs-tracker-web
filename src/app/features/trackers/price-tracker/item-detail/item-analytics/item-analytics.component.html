@@ -58,19 +58,26 @@
       <h2 title>Price</h2>
 
       <div actions class="button-group">
-        <button [class.active]="priceTimeSpan === TimeSpan.DAY" (click)="updatePrice(TimeSpan.DAY)">Year</button>
-        <button [class.active]="priceTimeSpan === TimeSpan.SIX_HOURS" (click)="updatePrice(TimeSpan.SIX_HOURS)">
+        <button [class.active]="priceTimeSpan() === TimeSpan.DAY" (click)="priceTimeSpan.set(TimeSpan.DAY)">
+          Year
+        </button>
+        <button [class.active]="priceTimeSpan() === TimeSpan.SIX_HOURS" (click)="priceTimeSpan.set(TimeSpan.SIX_HOURS)">
           Quarter
         </button>
-        <button [class.active]="priceTimeSpan === TimeSpan.HOUR" (click)="updatePrice(TimeSpan.HOUR)">Week</button>
-        <button [class.active]="priceTimeSpan === TimeSpan.FIVE_MINUTES" (click)="updatePrice(TimeSpan.FIVE_MINUTES)">
+        <button [class.active]="priceTimeSpan() === TimeSpan.HOUR" (click)="priceTimeSpan.set(TimeSpan.HOUR)">
+          Week
+        </button>
+        <button
+          [class.active]="priceTimeSpan() === TimeSpan.FIVE_MINUTES"
+          (click)="priceTimeSpan.set(TimeSpan.FIVE_MINUTES)"
+        >
           Day
         </button>
       </div>
 
       <div class="block h-72 max-w-full">
         @defer {
-          <price-chart class="block h-full w-full" [timeSeries]="priceTimeSeries()"></price-chart>
+          <price-chart class="block h-full w-full" [timeSeries]="priceTimeSeries.value()"></price-chart>
         } @loading {
           <spinner class="flex h-full items-center justify-center"></spinner>
         }
@@ -81,19 +88,29 @@
       <h2 title>Volume</h2>
 
       <div actions class="button-group">
-        <button [class.active]="volumeTimeSpan === TimeSpan.DAY" (click)="updateVolume(TimeSpan.DAY)">Year</button>
-        <button [class.active]="volumeTimeSpan === TimeSpan.SIX_HOURS" (click)="updateVolume(TimeSpan.SIX_HOURS)">
+        <button [class.active]="volumeTimeSpan() === TimeSpan.DAY" (click)="volumeTimeSpan.set(TimeSpan.DAY)">
+          Year
+        </button>
+        <button
+          [class.active]="volumeTimeSpan() === TimeSpan.SIX_HOURS"
+          (click)="volumeTimeSpan.set(TimeSpan.SIX_HOURS)"
+        >
           Quarter
         </button>
-        <button [class.active]="volumeTimeSpan === TimeSpan.HOUR" (click)="updateVolume(TimeSpan.HOUR)">Week</button>
-        <button [class.active]="volumeTimeSpan === TimeSpan.FIVE_MINUTES" (click)="updateVolume(TimeSpan.FIVE_MINUTES)">
+        <button [class.active]="volumeTimeSpan() === TimeSpan.HOUR" (click)="volumeTimeSpan.set(TimeSpan.HOUR)">
+          Week
+        </button>
+        <button
+          [class.active]="volumeTimeSpan() === TimeSpan.FIVE_MINUTES"
+          (click)="volumeTimeSpan.set(TimeSpan.FIVE_MINUTES)"
+        >
           Day
         </button>
       </div>
 
       <div class="block h-72 max-w-full">
         @defer {
-          <volume-chart class="block h-full w-full" [timeSeries]="volumeTimeSeries()"></volume-chart>
+          <volume-chart class="block h-full w-full" [timeSeries]="volumeTimeSeries.value()"></volume-chart>
         } @loading {
           <spinner class="flex h-full items-center justify-center"></spinner>
         }
