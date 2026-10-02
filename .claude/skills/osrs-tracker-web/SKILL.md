@@ -1,8 +1,9 @@
 ---
 name: osrs-tracker-web
 description:
-  Conventions, Angular 22 / SSR best practices, verification and the deploy workflow for osrs-tracker-web. Use when
-  writing or reviewing code in this repo, running it locally, or building, deploying, committing or pushing it.
+  Angular 22 SSR conventions, the SSR transfer-cache and page-cache pitfalls, local runs, the Docker/Kubernetes deploy
+  and the commit rules for osrs-tracker-web. Use when writing or reviewing code in this repo, debugging data that
+  refetches or flashes after load, running it locally, or building, deploying, committing or pushing it.
 ---
 
 # osrs-tracker-web
@@ -10,45 +11,29 @@ description:
 Angular 22 SSR app (zoneless, signals, standalone) served by a custom Express server, deployed as a Docker image to
 Kubernetes.
 
-## The system and who owns what
+## Related repos
 
-OSRS Tracker is three repos, each with its own project skill and its own Claude session:
+The API (`../osrs-tracker-api`) and the Lambdas and shared packages (`../osrs-tracker-aws`) each have their own skill.
+When a separate Claude session owns one of them, send changes there instead of editing it from here.
 
-| Repo                      | What                                                                         | Worked on by                          |
-| ------------------------- | ---------------------------------------------------------------------------- | ------------------------------------- |
-| `osrs-tracker-web` (this) | the website                                                                  | this session, which also orchestrates |
-| `../osrs-tracker-api`     | NestJS API on MongoDB Atlas, same k8s cluster                                | the "OSRS Tracker API" session        |
-| `../osrs-tracker-aws`     | Lambda jobs (queue/scrape players daily, refresh items), shared npm packages | the "OSRS Tracker AWS" session        |
-
-- **Delegate all API and AWS work to their sessions** (SendMessage): code, packages, deploys, commits. Reading those
-  repos for context is fine. Give each task the context it needs from the other repos, sequence cross-repo changes,
-  relay findings, and verify end to end from the web side. If a session is blocked by its own permissions, report that
-  to the user; never do the work from here instead.
-- **External endpoints the web uses** (`src/config/config.ts`):
-  - `apiBaseUrl`: osrs-tracker-api. It's used during SSR, so its `Cache-Control` matters (see SSR rules).
-  - `awsBaseUrl` = `runescape-api.freekmencke.com`: an API Gateway proxy to Jagex, console-managed in the AWS account.
-    The web only calls it **in the browser** (live "today" hiscores in `player-detail` behind `isPlatformBrowser`, and
-    the localStorage-backed `player-widget`), so its `no-cache` doesn't affect SSR. The API and the process-players
-    Lambda use the same proxy, so proxy changes need a check from all three.
+- **External endpoints** (`src/config/config.ts`, hard-coded to production):
+  - `apiBaseUrl`: osrs-tracker-api. It's called during SSR, so its `Cache-Control` matters (see SSR rules).
+  - `awsBaseUrl`: an API Gateway proxy to Jagex's hiscores. It's only called **in the browser** (`player-detail` behind
+    `isPlatformBrowser`, and `player-widget`), so its `no-cache` doesn't affect SSR. The API and a Lambda use the same
+    proxy, so changes to it need checking from all three repos.
   - `pricesBaseUrl`: prices.runescape.wiki (third party).
-- **Shared packages** `@osrs-tracker/models` and `@osrs-tracker/hiscores` are published from osrs-tracker-aws (the user
-  publishes with an npm OTP). `hiscores` peer-depends on `models`, so **bump both together in the web** and use
-  `--prefer-online` right after a publish (the CDN dist-tags lag). Type-only bumps don't need a deploy.
-- **Paused players**: the Lambda pauses scraping after 7 days of hiscore 404s (`scrapingOffsets` →
-  `pausedScrapingOffsets`), and the API resumes it on a successful lookup. The web needs nothing for this: a paused
-  player's page 404s through the API refresh, and `isPlayerTracked` only reads `scrapingOffsets`.
-- **Test player** for production checks: **ToxSick** (the user's old account).
+- **Shared packages** `@osrs-tracker/models` and `@osrs-tracker/hiscores` are published from osrs-tracker-aws.
+  `hiscores` peer-depends on `models`, so **bump both together**, with `--prefer-online` right after a publish (the
+  registry's dist-tags lag). Type-only bumps don't need a deploy.
+- Use **ToxSick** (the maintainer's old account) as the test player for production checks.
 
 ## Layout
 
-- `src/app/core/`: app-wide plumbing: `interceptors/`, `routing/` (route reuse strategy), `error-handling/`, `platform/`
-  (`WINDOW` token).
-- `src/app/common/`: shared `components/`, `directives/`, `pipes/`, `services/`, `helpers/`, and `repositories/` (all
-  HTTP access).
+- `src/app/common/repositories/`: all HTTP access. `src/app/core/`: interceptors, the route reuse strategy, error
+  handling, the `WINDOW` token.
 - `src/app/features/<feature>/`: routed features with their own `*.routes.ts`, resolvers and sub-components.
-- `src/server/`: Express server: `app.ts` (middleware chain, Angular handler, error handler), `middleware/`
+- `src/server/`: the Express server: `app.ts` (middleware chain, Angular handler, error handler), `middleware/`
   (`angular-cache`, logging, metrics, security), `utils/` (`auto-generator`, `page-cache`), `server-config.ts`.
-- `src/config/config.ts`: API base URLs (hard-coded to production) and chart colors.
 
 ## Angular conventions
 
@@ -70,7 +55,6 @@ Match the surrounding code; these are the patterns the codebase already uses:
   components can load data on init.
 - **Templates**: built-in control flow (`@if`, `@for` with `track`, `@defer`), Tailwind classes. Component selectors are
   unprefixed kebab-case and directive selectors unprefixed camelCase (enforced by ESLint).
-- **No `console`** in app code (ESLint `no-console`); server files that log use `/* eslint-disable no-console */`.
 
 ## SSR rules (important)
 
@@ -82,8 +66,8 @@ Match the surrounding code; these are the patterns the codebase already uses:
 - **HTTP transfer cache**: server-side responses are only handed to the browser if their `Cache-Control` has **no**
   `no-store`, `no-cache` or `private`. Otherwise the browser refetches on hydration and resources flash back to their
   `defaultValue`. When a page refetches after load, check the API's `Cache-Control` before changing anything here.
-  Verify by parsing `<script id="ng-state">`: HTTP entries have a `u` field, and slashes in it are escaped as `/`, so
-  grep for `/news`, not `/news`.
+  Verify by parsing `<script id="ng-state">`: HTTP entries have a `u` field, and slashes in it are escaped as `\u002F`,
+  so grep for `\u002Fnews`, not `/news`.
 - **Chart.js**: shared registrations live in `charts/chart-setup.ts` (imported for its side effects). Load browser-only
   plugins (zoom) lazily and pass them per chart via `plugins`; never `Chart.unregister` in `ngOnDestroy`.
 - **Page cache**: `angular-cache` serves pages pre-rendered by `AutoGenerator` (paths in
@@ -94,19 +78,7 @@ Match the surrounding code; these are the patterns the codebase already uses:
 ## Verify before handing off
 
 ```bash
-npx ng build --configuration production
-```
-
-```bash
-npx ng lint
-```
-
-```bash
-npx prettier --check src
-```
-
-```bash
-npx ng test --watch=false
+npx ng build --configuration production && npx ng lint && npx prettier --check src && npx ng test --watch=false
 ```
 
 CI (`.github/workflows/nodejs.yml`) runs lint, `prettier:ci`, build and test on every push to `main`.
@@ -115,8 +87,8 @@ CI (`.github/workflows/nodejs.yml`) runs lint, `prettier:ci`, build and test on 
 
 - **The API's CORS only allows `http://localhost:4200`.** Any other port renders server-side fine, but browser API calls
   fail.
-- `npx ng serve` (skip `--open` on WSL): fast reload for browser-side work. It does **not** start the auto-generator or
-  page cache, because `server.ts` only runs them when it's the main module.
+- `npm start` (`ng serve --open`): fast reload for browser-side work. It does **not** start the auto-generator or page
+  cache, because `server.ts` only runs them when it's the main module.
 - Production SSR build, which is the only way to exercise the server code (`angular-cache`, auto-generator, error
   handler):
 
@@ -173,13 +145,12 @@ render URL both depend on it.
   Include the image digest bump and the regenerated sitemaps in the same commit as the code they deploy. `main` has
   rulesets (PRs, required checks) that the user's account bypasses; pushing straight to `main` is the chosen workflow,
   so the "bypassed rule violations" notice is expected. Watch the CI run after pushing (`gh run watch`).
-- GPG's passphrase cache lasts about 10 minutes. When several sessions need to commit, tell them as soon as the user has
-  unlocked the key, so all commits land in the same window.
 - **Every change gets a `CHANGELOG.md` entry**, including dependency and tooling updates. Use a `## YYYY/MM/DD` heading
   (newest first; add to today's heading if it already exists) followed by short bullets. It's rendered on
   `/about/changelog` from GitHub `main`, so write the bullets for users, not developers.
 - Commits are GPG-signed. If signing fails with "Inappropriate ioctl for device", ask the user to unlock the key in
-  their own terminal (`echo test | gpg --clearsign > /dev/null`); never use `--no-gpg-sign`.
+  their own terminal (`echo test | gpg --clearsign > /dev/null`), then commit right away: the cache lasts about 10
+  minutes. Never use `--no-gpg-sign`.
 - Push over HTTPS via `gh` (`gh auth setup-git` is configured). If `gh auth status` fails, ask the user to log in.
 - Deploying without committing leaves production running code that isn't on GitHub, so commit and push in the same
   session as the deploy.
