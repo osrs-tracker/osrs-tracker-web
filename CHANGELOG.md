@@ -9,6 +9,7 @@
 - Fixed the favorite player toggle being reported incorrectly in analytics.
 - Added a page title to the changelog.
 - Updated to Node 24 and updated dependencies.
+- Expanded the README with features, how the project fits together, and how to run it locally.
 
 ## 2026/09/26
 
