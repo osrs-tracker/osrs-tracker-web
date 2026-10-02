@@ -1,3 +1,15 @@
+## 2026/10/02
+
+- Fixed the latest news and other data briefly reloading after the page had loaded.
+- Fixed pages not updating when navigating between items or players.
+- Fixed charts sometimes showing data for the wrong time span after quickly switching.
+- Fixed unknown pages, items and players not returning a proper 404 status.
+- Fixed searching for items or players with special characters in their name.
+- Fixed loading spinners getting stuck when a request failed.
+- Fixed the favorite player toggle being reported incorrectly in analytics.
+- Added a page title to the changelog.
+- Updated to Node 24 and updated dependencies.
+
 ## 2026/09/26
 
 - Updated the hiscores package to fix a `hiscoreDiff` bug.
