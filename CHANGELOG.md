@@ -8,7 +8,7 @@
 - Fixed loading spinners getting stuck when a request failed.
 - Fixed the favorite player toggle being reported incorrectly in analytics.
 - Added a page title to the changelog.
-- Updated to Node 24 and updated dependencies.
+- Updated to Node 24 and updated dependencies, including the latest shared OSRS Tracker packages.
 - Expanded the README with features, how the project fits together, and how to run it locally.
 
 ## 2026/09/26
