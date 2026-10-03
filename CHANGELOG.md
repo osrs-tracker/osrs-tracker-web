@@ -1,5 +1,9 @@
 ## 2026/10/03
 
+- Updated the site font, which now has a medium weight and equal-width digits, so numbers line up in columns.
+- Days without progress in the logs on player pages, including a single day or today, are now shown as a muted outlined
+  card instead of a regular card.
+- The numbers in the logs on player pages are no longer bold.
 - Consecutive days without progress in the logs on player pages are now combined into one compact row.
 - The boss card on player pages now lists every boss, with a dash for bosses without a kill count on the hiscores.
 - Fixed extra spacing above "Nothing interesting happened." in the Other logs on player pages.

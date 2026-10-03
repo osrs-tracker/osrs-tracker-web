@@ -1,4 +1,9 @@
 @layer base {
+  /* Equal-width digits everywhere, so numbers line up in columns. */
+  html {
+    font-variant-numeric: tabular-nums;
+  }
+
   body::-webkit-scrollbar,
   .scroll-bar::-webkit-scrollbar {
     @apply w-3.5;
@@ -18,8 +23,7 @@
     font-style: normal;
     font-weight: 300;
     font-display: block;
-    descent-override: 10%;
-    src: url(/assets/fonts/solix_light.woff2) format('woff2');
+    src: url(/assets/fonts/solix_light.woff2?v=2) format('woff2');
   }
 
   @font-face {
@@ -27,8 +31,15 @@
     font-style: normal;
     font-weight: 400;
     font-display: block;
-    descent-override: 10%;
-    src: url(/assets/fonts/solix.woff2) format('woff2');
+    src: url(/assets/fonts/solix.woff2?v=2) format('woff2');
+  }
+
+  @font-face {
+    font-family: 'SOLIX';
+    font-style: normal;
+    font-weight: 500;
+    font-display: block;
+    src: url(/assets/fonts/solix_medium.woff2?v=2) format('woff2');
   }
 
   @font-face {
@@ -36,7 +47,6 @@
     font-style: normal;
     font-weight: 700;
     font-display: block;
-    descent-override: 10%;
-    src: url(/assets/fonts/solix_bold.woff2) format('woff2');
+    src: url(/assets/fonts/solix_bold.woff2?v=2) format('woff2');
   }
 }
