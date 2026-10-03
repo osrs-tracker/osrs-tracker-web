@@ -1,6 +1,9 @@
 <div class="container mx-auto my-4 px-4 grid lg:grid-cols-3 2xl:grid-cols-4 gap-8">
   <player-detail-widget [playerDetail]="player()">
     <player-skills [hiscore]="today()" />
+    <player-clues [hiscore]="today()" />
+    <player-raids [hiscore]="today()" />
+    <player-bosses [hiscore]="today()" />
   </player-detail-widget>
 
   <section class="lg:col-span-2 2xl:col-span-3">

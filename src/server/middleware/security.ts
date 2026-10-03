@@ -12,6 +12,7 @@ export function securityMiddleware(): RequestHandler {
         imgSrc: [
           "'self'",
           'data:',
+          'blob:', // pixel-art icons upscaled on a canvas by IconDirective
           'https://www.googletagmanager.com',
           'https://*.freekmencke.com',
           'https://oldschool.runescape.wiki',

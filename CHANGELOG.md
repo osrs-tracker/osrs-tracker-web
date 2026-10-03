@@ -1,5 +1,9 @@
 ## 2026/10/03
 
+- Added clue scroll, raid and boss kill cards to player pages.
+- Made the skill and activity icons on player pages sharper.
+- Replaced the favorite button on player and item pages with a star icon at the top of the page, and the Old School
+  Hiscores button on player pages with an external link icon.
 - Fixed a deprecation warning in the server logs.
 - Fixed some invalid page addresses returning a server error instead of a 404.
 - Removed unused dependencies.
