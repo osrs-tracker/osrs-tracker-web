@@ -81,7 +81,7 @@ Match the surrounding code; these are the patterns the codebase already uses:
 npx ng build --configuration production && npx ng lint && npx prettier --check src && npx ng test --watch=false
 ```
 
-CI (`.github/workflows/nodejs.yml`) runs lint, `prettier:ci`, build and test on every push to `main`.
+CI (`.github/workflows/nodejs.yml`) runs lint, `prettier:ci`, build and test on every PR to and push to `main`.
 
 ## Running locally
 
@@ -141,10 +141,17 @@ render URL both depend on it.
 
 ## Commit and push
 
-- Commit straight to `main` with conventional commits (`fix(scope): …`, `feat(scope): …`; commitizen is configured).
-  Include the image digest bump and the regenerated sitemaps in the same commit as the code they deploy. `main` has
-  rulesets (PRs, required checks) that the user's account bypasses; pushing straight to `main` is the chosen workflow,
-  so the "bypassed rule violations" notice is expected. Watch the CI run after pushing (`gh run watch`).
+- **Ask the user whether to commit straight to `main` or open a PR**, every time, before committing. `main` requires a
+  PR and passing `build`, `lint` and `test` checks (no approvals), which the user's admin account can bypass, so a
+  direct push works and shows a "bypassed rule violations" notice.
+  - Straight to `main`: push, then watch the CI run (`gh run watch --exit-status`).
+  - PR: commit on a `<type>/<short-name>` branch, push it, `gh pr create --base main` and check `gh pr checks`. Once the
+    user says it's merged, `git switch main && git pull --ff-only`, delete the local branch with `git branch -d` and
+    `git fetch --prune` (GitHub deletes the remote branch on merge).
+  - Deploying from a PR branch leaves production running unmerged code: tell the user, and don't deploy from `main`
+    until the PR is merged.
+- Use conventional commits (`fix(scope): …`, `feat(scope): …`; commitizen is configured). Include the image digest bump
+  and the regenerated sitemaps in the same commit as the code they deploy.
 - **Every change gets a `CHANGELOG.md` entry**, including dependency and tooling updates. Use a `## YYYY/MM/DD` heading
   (newest first; add to today's heading if it already exists) followed by short bullets. It's rendered on
   `/about/changelog` from GitHub `main`, so write the bullets for users, not developers.

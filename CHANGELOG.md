@@ -3,6 +3,7 @@
 - Fixed a deprecation warning in the server logs.
 - Fixed some invalid page addresses returning a server error instead of a 404.
 - Removed unused dependencies.
+- Updated the developer documentation for the new pull request workflow.
 
 ## 2026/10/02
 
