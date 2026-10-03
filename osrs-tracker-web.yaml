@@ -74,12 +74,10 @@ metadata:
   namespace: osrs-tracker
   annotations:
     cert-manager.io/cluster-issuer: 'letsencrypt-prod'
-    nginx.ingress.kubernetes.io/limit-rps: '50'
-    nginx.ingress.kubernetes.io/limit-rpm: '3000'
-    nginx.ingress.kubernetes.io/limit-connections: '200'
-    nginx.ingress.kubernetes.io/limit-burst-multiplier: '5'
+    # Per-client-IP rate limits: the Middlewares below.
+    traefik.ingress.kubernetes.io/router.middlewares: osrs-tracker-osrs-tracker-web-ratelimit@kubernetescrd,osrs-tracker-osrs-tracker-web-inflight@kubernetescrd
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   tls:
     - hosts:
         - osrs-tracker.freekmencke.com
@@ -95,3 +93,23 @@ spec:
                 name: osrs-tracker-web-service
                 port:
                   number: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: osrs-tracker-web-ratelimit
+  namespace: osrs-tracker
+spec:
+  rateLimit:
+    average: 50
+    period: 1s
+    burst: 250
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: osrs-tracker-web-inflight
+  namespace: osrs-tracker
+spec:
+  inFlightReq:
+    amount: 200

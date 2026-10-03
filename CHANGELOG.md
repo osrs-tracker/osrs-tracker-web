@@ -1,5 +1,7 @@
 ## 2026/10/03
 
+- The ingress runs on Traefik (ingress-nginx is retired); the rate limits moved to Traefik Middlewares with the
+  same values.
 - Updated the site font, which now has a medium weight and equal-width digits, so numbers line up in columns.
 - Days without progress in the logs on player pages, including a single day or today, are now shown as a muted outlined
   card instead of a regular card.
