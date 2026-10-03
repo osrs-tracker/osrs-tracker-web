@@ -1,6 +1,9 @@
 ## 2026/10/03
 
 - The boss card on player pages now lists every boss, with a dash for bosses without a kill count on the hiscores.
+- Fixed extra spacing above "Nothing interesting happened." in the Other logs on player pages.
+- Redesigned the logs on player pages: one line per skill or activity with right-aligned numbers, sharper and bigger
+  icons, and the total XP and levels gained in the header of each day.
 - Fixed icons on player pages sometimes failing to load.
 - Added clue scroll, raid and boss kill cards to player pages.
 - Made the skill and activity icons on player pages sharper.

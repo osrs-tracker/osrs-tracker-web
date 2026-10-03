@@ -1,7 +1,7 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core';
-import { hiscoreDiff } from '@osrs-tracker/hiscores';
-import { HiscoreEntry, Player } from '@osrs-tracker/models';
+import { hiscoreDiff, SkillEnum } from '@osrs-tracker/hiscores';
+import { HiscoreEntry, HiscoreSkill, Player } from '@osrs-tracker/models';
 import { CardComponent } from 'src/app/common/components/general/card.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { ShortDatePipe } from 'src/app/common/pipes/date-fns.pipe';
@@ -17,6 +17,7 @@ export class PlayerLogsComponent {
   private readonly XpTrackerStore = inject(XpTrackerStore);
 
   readonly XpTrackerViewType: typeof XpTrackerViewType = XpTrackerViewType;
+  readonly SkillEnum: typeof SkillEnum = SkillEnum;
   readonly xpTrackerViewType = this.XpTrackerStore.viewType;
 
   readonly playerDetail: InputSignal<Player> = input.required();
@@ -37,6 +38,10 @@ export class PlayerLogsComponent {
       return diff;
     });
   });
+
+  overall(hiscore: HiscoreEntry): HiscoreSkill | undefined {
+    return hiscore.skills.find(skill => skill.name === SkillEnum.Overall);
+  }
 
   hasXpDiff(hiscore: HiscoreEntry): boolean {
     return hiscore.skills.some(skill => skill.xp > 0);
