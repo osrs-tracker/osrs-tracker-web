@@ -2,7 +2,6 @@ import { DecimalPipe } from '@angular/common';
 import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core';
 import { hiscoreDiff, SkillEnum } from '@osrs-tracker/hiscores';
 import { HiscoreEntry, HiscoreSkill, Player } from '@osrs-tracker/models';
-import { isToday } from 'date-fns';
 import { CardComponent } from 'src/app/common/components/general/card.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { ShortDatePipe } from 'src/app/common/pipes/date-fns.pipe';
@@ -51,20 +50,18 @@ export class PlayerLogsComponent {
     this.groupEmptyDays(this.hiscoreDiffs(), diff => this.hasActivityDiff(diff)),
   );
 
-  /** Merges runs of 2+ consecutive empty days into one group. Today always keeps its own card. */
+  /** Merges each run of consecutive empty days (including a single day) into one group. */
   private groupEmptyDays(diffs: HiscoreEntry[], hasDiff: (diff: HiscoreEntry) => boolean): LogGroup[] {
     const groups: LogGroup[] = [];
     let run: HiscoreEntry[] = [];
 
     const flushRun = (): void => {
-      if (run.length === 1) groups.push({ type: 'day', diff: run[0] });
-      else if (run.length > 1)
-        groups.push({ type: 'empty', from: run[run.length - 1].date, to: run[0].date, days: run.length });
+      if (run.length) groups.push({ type: 'empty', from: run[run.length - 1].date, to: run[0].date, days: run.length });
       run = [];
     };
 
     diffs.forEach(diff => {
-      if (hasDiff(diff) || isToday(new Date(diff.date))) {
+      if (hasDiff(diff)) {
         flushRun();
         groups.push({ type: 'day', diff });
       } else {

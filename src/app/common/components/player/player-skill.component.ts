@@ -28,7 +28,7 @@ import { TooltipComponent } from '../general/tooltip/tooltip.component';
               <div class="size-7 shrink-0 flex items-center justify-center">
                 <img icon [name]="skill()!.name" [skill]="true" [scale]="1.5" />
               </div>
-              <div class="ml-auto text-lg font-bold tabular-nums">{{ skill()!.level }}</div>
+              <div class="ml-auto text-lg font-bold">{{ skill()!.level }}</div>
             </div>
           }
         } @else {

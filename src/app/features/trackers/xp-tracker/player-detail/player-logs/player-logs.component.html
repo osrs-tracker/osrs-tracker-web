@@ -35,44 +35,44 @@
                 >
                 <div class="h-4 w-px bg-slate-400 dark:bg-slate-500"></div>
               }
-              <span class="font-bold tabular-nums text-slate-900 dark:text-white">+{{ overallDiff.xp | number }}</span>
+              <span class="font-bold text-slate-900 dark:text-white">+{{ overallDiff.xp | number }}</span>
               <img class="size-5 -ml-1 mb-1" icon [name]="SkillEnum.Overall" [skill]="true" />
             </div>
           }
 
           <!-- hiscore diffs -->
-          @if (hasXpDiff(diff)) {
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-10 gap-y-1">
-              @for (skill of diff.skills; track skill.name) {
-                @if (skill.xp > 0 && skill.name !== SkillEnum.Overall) {
-                  <div class="flex items-center gap-2">
-                    <div class="size-6 shrink-0 flex items-center justify-center">
-                      <img icon [name]="skill.name" [skill]="true" [scale]="1.25" />
-                    </div>
-                    <span class="flex items-baseline gap-1.5">
-                      {{ skill.name }}
-                      @if (skill.level > 0) {
-                        <span class="font-bold text-base positive-value">{{ skill.level }}</span>
-                      }
-                    </span>
-                    <span class="ml-auto font-bold tabular-nums text-slate-900 dark:text-white">
-                      +{{ skill.xp | number }}
-                    </span>
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-10 gap-y-1">
+            @for (skill of diff.skills; track skill.name) {
+              @if (skill.xp > 0 && skill.name !== SkillEnum.Overall) {
+                <div class="flex items-center gap-2">
+                  <div class="size-6 shrink-0 flex items-center justify-center">
+                    <img icon [name]="skill.name" [skill]="true" [scale]="1.25" />
                   </div>
-                }
+                  <span class="flex items-baseline gap-1.5">
+                    {{ skill.name }}
+                    @if (skill.level > 0) {
+                      <span class="font-bold text-base positive-value">{{ skill.level }}</span>
+                    }
+                  </span>
+                  <span class="ml-auto font-medium text-slate-900 dark:text-white"> +{{ skill.xp | number }} </span>
+                </div>
               }
-            </div>
-          } @else {
-            <p class="text-base opacity-70">Nothing interesting happened.</p>
-          }
+            }
+          </div>
         </article>
       } @else {
         <article class="text-lg rounded-lg border border-slate-300 dark:border-slate-700">
           <div class="flex justify-between gap-4 px-4 py-2 border-b border-slate-300 dark:border-slate-700">
-            <h2 class="font-bold text-slate-900 dark:text-white">
-              {{ group.from | shortDate }} – {{ group.to | shortDate }}
+            <h2 class="font-bold text-slate-600 dark:text-slate-300">
+              @if (group.days === 1) {
+                {{ group.to | shortDate }}
+              } @else {
+                {{ group.from | shortDate }} – {{ group.to | shortDate }}
+              }
             </h2>
-            <span class="self-center tabular-nums text-slate-900 dark:text-white">{{ group.days }} days</span>
+            @if (group.days > 1) {
+              <span class="self-center text-slate-600 dark:text-slate-300">{{ group.days }} days</span>
+            }
           </div>
 
           <div class="p-4">
@@ -111,31 +111,35 @@
           <h2 title>{{ diff.date | shortDate }}</h2>
 
           <!-- other diffs -->
-          @if (hasActivityDiff(diff)) {
-            <section class="flex flex-col gap-1">
-              @for (activity of diff.activities; track activity.name) {
-                @if (activity.score) {
-                  <div class="flex items-center gap-2">
-                    <div class="size-6 shrink-0 flex items-center justify-center">
-                      <img icon [name]="$any(activity).name" [activity]="true" [scale]="1.25" />
-                    </div>
-                    <div>{{ activity.name }}:</div>
-                    <div class="font-bold text-slate-900 dark:text-white">{{ activity.score | number }}</div>
+          <section class="flex flex-col gap-1">
+            @for (activity of diff.activities; track activity.name) {
+              @if (activity.score) {
+                <div class="flex items-center gap-2">
+                  <div class="size-6 shrink-0 flex items-center justify-center">
+                    <img icon [name]="$any(activity).name" [activity]="true" [scale]="1.25" />
                   </div>
-                }
+                  <div>{{ activity.name }}:</div>
+                  <div class="font-medium text-slate-900 dark:text-white">
+                    {{ activity.score | number }}
+                  </div>
+                </div>
               }
-            </section>
-          } @else {
-            <p class="text-base opacity-70">Nothing interesting happened.</p>
-          }
+            }
+          </section>
         </article>
       } @else {
         <article class="text-lg rounded-lg border border-slate-300 dark:border-slate-700">
           <div class="flex justify-between gap-4 px-4 py-2 border-b border-slate-300 dark:border-slate-700">
-            <h2 class="font-bold text-slate-900 dark:text-white">
-              {{ group.from | shortDate }} – {{ group.to | shortDate }}
+            <h2 class="font-bold text-slate-600 dark:text-slate-300">
+              @if (group.days === 1) {
+                {{ group.to | shortDate }}
+              } @else {
+                {{ group.from | shortDate }} – {{ group.to | shortDate }}
+              }
             </h2>
-            <span class="self-center tabular-nums text-slate-900 dark:text-white">{{ group.days }} days</span>
+            @if (group.days > 1) {
+              <span class="self-center text-slate-600 dark:text-slate-300">{{ group.days }} days</span>
+            }
           </div>
 
           <div class="p-4">
