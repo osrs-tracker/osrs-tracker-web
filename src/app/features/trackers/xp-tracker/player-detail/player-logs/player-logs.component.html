@@ -24,22 +24,38 @@
       <article card>
         <h2 title>{{ diff.date | shortDate }}</h2>
 
+        @let overallDiff = overall(diff);
+        @if (overallDiff && overallDiff.xp > 0) {
+          <div actions class="self-center flex items-center gap-3">
+            @if (overallDiff.level > 0) {
+              <span class="font-bold positive-value"
+                >{{ overallDiff.level }} {{ overallDiff.level === 1 ? 'level' : 'levels' }}</span
+              >
+              <div class="h-4 w-px bg-slate-400 dark:bg-slate-500"></div>
+            }
+            <span class="font-bold tabular-nums text-slate-900 dark:text-white">+{{ overallDiff.xp | number }}</span>
+            <img class="size-5 -ml-1 mb-1" icon [name]="SkillEnum.Overall" [skill]="true" />
+          </div>
+        }
+
         <!-- hiscore diffs -->
         @if (hasXpDiff(diff)) {
-          <div class="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-2">
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-10 gap-y-1">
             @for (skill of diff.skills; track skill.name) {
-              @if (skill.xp) {
-                <div>
-                  <div class="flex items-center gap-2">
-                    <img class="w-4 h-4" icon [name]="skill.name" [skill]="true" />
-                    <span>{{ skill.name }}</span>
-                    @if (skill.level) {
-                      <span class="font-bold positive-value">{{ skill.level }}</span>
+              @if (skill.xp > 0 && skill.name !== SkillEnum.Overall) {
+                <div class="flex items-center gap-2">
+                  <div class="size-6 shrink-0 flex items-center justify-center">
+                    <img icon [name]="skill.name" [skill]="true" [scale]="1.25" />
+                  </div>
+                  <span class="flex items-baseline gap-1.5">
+                    {{ skill.name }}
+                    @if (skill.level > 0) {
+                      <span class="font-bold text-base positive-value">{{ skill.level }}</span>
                     }
-                  </div>
-                  <div class="font-bold text-slate-900 dark:text-white ml-2">
-                    +&nbsp;{{ skill.xp | number }}&nbsp;XP
-                  </div>
+                  </span>
+                  <span class="ml-auto font-bold tabular-nums text-slate-900 dark:text-white">
+                    +{{ skill.xp | number }}
+                  </span>
                 </div>
               }
             }
@@ -56,11 +72,12 @@
             <div class="animate-pulse h-5 w-20 my-1 rounded-xl bg-slate-200 dark:bg-slate-600"></div>
           </div>
 
-          <div class="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-2">
-            @for (skills of [].constructor(((i * 3) % 9) + 6); track $index) {
-              <div>
-                <div class="animate-pulse h-4 w-20 my-2 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
-                <div class="animate-pulse h-4 w-28 my-2 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-10 gap-y-1">
+            @for (skills of [].constructor(((i * 3) % 9) + 3); track $index) {
+              <div class="flex items-center gap-2 h-7">
+                <div class="animate-pulse size-5 rounded-md bg-slate-300 dark:bg-slate-700"></div>
+                <div class="animate-pulse h-4 w-20 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
+                <div class="animate-pulse ml-auto h-4 w-16 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
               </div>
             }
           </div>
@@ -76,20 +93,23 @@
         <h2 title>{{ diff.date | shortDate }}</h2>
 
         <!-- other diffs -->
-        <section class="flex flex-col gap-1 mb-4 last:mb-0">
-          <!-- <h3 class="font-bold bg-slate-100 dark:bg-slate-800 col-span-full">{{ otherKey | capitalizeWords }}</h3> -->
-
-          @for (activity of diff.activities; track activity.name) {
-            @if (activity.score) {
-              <div class="flex items-center gap-2">
-                <img class="w-4 h-4" icon [name]="$any(activity).name" [activity]="true" />
-                <div>{{ activity.name }}:</div>
-                <div class="font-bold text-slate-900 dark:text-white">{{ activity.score | number }}</div>
-              </div>
+        @if (hasActivityDiff(diff)) {
+          <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-10 gap-y-1">
+            @for (activity of diff.activities; track activity.name) {
+              @if (activity.score > 0) {
+                <div class="flex items-center gap-2">
+                  <div class="size-6 shrink-0 flex items-center justify-center">
+                    <img icon [name]="$any(activity).name" [activity]="true" [scale]="1.25" />
+                  </div>
+                  <span>{{ activity.name }}</span>
+                  <span class="ml-auto font-bold tabular-nums text-slate-900 dark:text-white">
+                    +{{ activity.score | number }}
+                  </span>
+                </div>
+              }
             }
-          }
-        </section>
-        @if (!hasActivityDiff(diff)) {
+          </section>
+        } @else {
           <p class="text-base opacity-70">Nothing interesting happened.</p>
         }
       </article>
@@ -101,13 +121,12 @@
             <div class="animate-pulse h-5 w-24 my-1 rounded-xl bg-slate-200 dark:bg-slate-600"></div>
           </div>
 
-          <div class="flex flex-col gap-2">
-            @for (skills of [].constructor((i % 3) + 1); track $index) {
-              <div>
-                <div class="animate-pulse h-4 w-20 mt-1.5 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
-                <div class="animate-pulse h-4 w-48 my-4 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
-                <div class="animate-pulse h-4 w-32 my-4 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
-                <div class="animate-pulse h-4 w-40 mb-1.5 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-10 gap-y-1">
+            @for (skills of [].constructor((i % 4) + 1); track $index) {
+              <div class="flex items-center gap-2 h-7">
+                <div class="animate-pulse size-5 rounded-md bg-slate-300 dark:bg-slate-700"></div>
+                <div class="animate-pulse h-4 w-20 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
+                <div class="animate-pulse ml-auto h-4 w-16 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
               </div>
             }
           </div>
