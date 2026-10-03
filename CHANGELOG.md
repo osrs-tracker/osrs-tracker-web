@@ -1,3 +1,9 @@
+## 2026/10/03
+
+- Fixed a deprecation warning in the server logs.
+- Fixed some invalid page addresses returning a server error instead of a 404.
+- Removed unused dependencies.
+
 ## 2026/10/02
 
 - Fixed the latest news and other data briefly reloading after the page had loaded.
