@@ -15,8 +15,8 @@ import { TooltipComponent } from '../general/tooltip/tooltip.component';
       [tooltipUnderline]="false"
     >
       <div
-        class="px-3 pt-1.5 pb-1 flex items-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700"
-        [class.pb-1.5]="!hasProgressBar()"
+        class="px-3 pt-1.5 flex items-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700"
+        [class]="hasProgressBar() ? 'pb-1' : 'pb-1.5'"
       >
         @if (skill()) {
           @if (skill()!.name === SkillEnum.Overall) {
