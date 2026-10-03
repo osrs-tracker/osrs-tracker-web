@@ -150,8 +150,8 @@ render URL both depend on it.
     `git fetch --prune` (GitHub deletes the remote branch on merge).
   - Deploying from a PR branch leaves production running unmerged code: tell the user, and don't deploy from `main`
     until the PR is merged.
-- Use conventional commits (`fix(scope): …`, `feat(scope): …`; commitizen is configured). Include the image digest bump
-  and the regenerated sitemaps in the same commit as the code they deploy.
+- Use conventional commits (`fix(scope): …`, `feat(scope): …`). Include the image digest bump and the regenerated
+  sitemaps in the same commit as the code they deploy.
 - **Every change gets a `CHANGELOG.md` entry**, including dependency and tooling updates. Use a `## YYYY/MM/DD` heading
   (newest first; add to today's heading if it already exists) followed by short bullets. It's rendered on
   `/about/changelog` from GitHub `main`, so write the bullets for users, not developers.

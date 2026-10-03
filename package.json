@@ -45,11 +45,6 @@
     "test": "ng test",
     "watch": "ng build --watch --configuration development"
   },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  },
   "prettier": "./.prettierrc.json",
   "dependencies": {
     "@angular/cdk": "^22.0.6",
@@ -97,8 +92,6 @@
     "@types/node": "^24.19.1",
     "angular-eslint": "^22.1.0",
     "autoprefixer": "^10.4.24",
-    "commitizen": "^4.2.4",
-    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^9.39.3",
     "eslint-config-prettier": "^10.1.8",
     "jsdom": "^29.1.1",

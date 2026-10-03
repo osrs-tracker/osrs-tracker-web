@@ -3,7 +3,7 @@
 - Fixed a deprecation warning in the server logs.
 - Fixed some invalid page addresses returning a server error instead of a 404.
 - Removed unused dependencies.
-- Removed an unused development tool that pulled in packages with known security issues.
+- Removed unused development tools that pulled in packages with known security issues.
 - Updated the developer documentation for the new pull request workflow.
 
 ## 2026/10/02
