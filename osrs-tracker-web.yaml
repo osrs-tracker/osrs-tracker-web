@@ -32,6 +32,9 @@ spec:
           env:
             - name: HOST
               value: osrs-tracker.freekmencke.com
+            # Traefik sets these and overwrites any sent by clients.
+            - name: TRUST_PROXY_HEADERS
+              value: x-forwarded-for,x-forwarded-host,x-forwarded-port,x-forwarded-proto,x-forwarded-server
           ports:
             - containerPort: 8080
             - containerPort: 9090
@@ -74,8 +77,8 @@ metadata:
   namespace: osrs-tracker
   annotations:
     cert-manager.io/cluster-issuer: 'letsencrypt-prod'
-    # Per-client-IP rate limits: the Middlewares below.
-    traefik.ingress.kubernetes.io/router.middlewares: osrs-tracker-osrs-tracker-web-ratelimit@kubernetescrd,osrs-tracker-osrs-tracker-web-inflight@kubernetescrd
+    # Per-client-IP rate limits and Forwarded header stripping: the Middlewares below.
+    traefik.ingress.kubernetes.io/router.middlewares: osrs-tracker-osrs-tracker-web-ratelimit@kubernetescrd,osrs-tracker-osrs-tracker-web-inflight@kubernetescrd,osrs-tracker-osrs-tracker-web-strip-forwarded@kubernetescrd
 spec:
   ingressClassName: traefik
   tls:
@@ -113,3 +116,14 @@ metadata:
 spec:
   inFlightReq:
     amount: 200
+---
+# Traefik passes a client-sent RFC 7239 Forwarded header through unchanged (it only rewrites X-Forwarded-*), so drop it.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: osrs-tracker-web-strip-forwarded
+  namespace: osrs-tracker
+spec:
+  headers:
+    customRequestHeaders:
+      Forwarded: ''

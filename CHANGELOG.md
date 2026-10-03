@@ -1,5 +1,7 @@
 ## 2026/10/03
 
+- Fixed a flood of proxy header warnings in the server logs since the move to Traefik; a client-sent Forwarded header is
+  now dropped at the ingress.
 - The ingress runs on Traefik (ingress-nginx is retired); the rate limits moved to Traefik Middlewares with the same
   values.
 - Updated the site font, which now has a medium weight and equal-width digits, so numbers line up in columns.
