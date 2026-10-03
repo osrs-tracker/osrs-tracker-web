@@ -4,6 +4,7 @@ import express, { NextFunction, Request, Response, Router } from 'express';
 import { angularCacheMiddleware } from './middleware/angular-cache';
 import { loggingMiddleware } from './middleware/logging';
 import { metricsMiddleware } from './middleware/metrics';
+import { protocolRelativeMiddleware } from './middleware/protocol-relative';
 import { securityMiddleware } from './middleware/security';
 import { createHealthRouter } from './routers/health';
 import { createNoCacheHeadersRouter } from './routers/no-cache-files';
@@ -21,6 +22,7 @@ export function createApp() {
     metricsMiddleware(metricsApp), // Set up Monitoring
     loggingMiddleware(), // Add request logging
     securityMiddleware(), // Add security headers
+    protocolRelativeMiddleware(), // 404 for `//host` paths, which Angular SSR rejects with an error
     compression(), // Add compression for better performance
     createNoCacheHeadersRouter(), // No-cache headers for critical static files
     angularCacheMiddleware(), // Cache rendered pages in memory for faster subsequent responses
