@@ -16,6 +16,9 @@ import { parseHiscores } from '@osrs-tracker/hiscores';
 import { HiscoreEntry, Player } from '@osrs-tracker/models';
 import { finalize } from 'rxjs';
 import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
+import { PlayerBossesWidgetComponent } from 'src/app/common/components/player/player-bosses.component';
+import { PlayerCluesWidgetComponent } from 'src/app/common/components/player/player-clues.component';
+import { PlayerRaidsWidgetComponent } from 'src/app/common/components/player/player-raids.component';
 import { PlayerSkillsWidgetComponent } from 'src/app/common/components/player/player-skills.component';
 import { OsrsProxyRepo } from 'src/app/common/repositories/osrs-proxy.repo';
 import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
@@ -26,7 +29,15 @@ import { PlayerLogsComponent } from './player-logs/player-logs.component';
 @Component({
   selector: 'player-detail',
   templateUrl: './player-detail.component.html',
-  imports: [PlayerSkillsWidgetComponent, PlayerDetailWidgetComponent, PlayerLogsComponent, SpinnerComponent],
+  imports: [
+    PlayerSkillsWidgetComponent,
+    PlayerCluesWidgetComponent,
+    PlayerRaidsWidgetComponent,
+    PlayerBossesWidgetComponent,
+    PlayerDetailWidgetComponent,
+    PlayerLogsComponent,
+    SpinnerComponent,
+  ],
 })
 export default class PlayerDetailComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);

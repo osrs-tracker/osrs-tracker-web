@@ -15,8 +15,8 @@ import { TooltipComponent } from '../general/tooltip/tooltip.component';
       [tooltipUnderline]="false"
     >
       <div
-        class="p-2 pb-1.5 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700"
-        [class.pb-2]="!hasProgressBar()"
+        class="px-3 pt-1.5 flex items-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700"
+        [class]="hasProgressBar() ? 'pb-1' : 'pb-1.5'"
       >
         @if (skill()) {
           @if (skill()!.name === SkillEnum.Overall) {
@@ -24,11 +24,15 @@ import { TooltipComponent } from '../general/tooltip/tooltip.component';
               Total level: <span class="font-bold">{{ skill()!.level }}</span>
             </div>
           } @else {
-            <img class="flex-1 h-6" icon [name]="skill()!.name" [skill]="true" />
-            <div class="flex-1 text-lg font-bold">{{ skill()!.level }}</div>
+            <div class="mx-auto w-full max-w-15 flex items-center gap-2">
+              <div class="size-7 shrink-0 flex items-center justify-center">
+                <img icon [name]="skill()!.name" [skill]="true" [scale]="1.5" />
+              </div>
+              <div class="ml-auto text-lg font-bold tabular-nums">{{ skill()!.level }}</div>
+            </div>
           }
         } @else {
-          <div class="animate-pulse h-5 w-20 my-1 rounded-lg bg-slate-300 dark:bg-slate-700"></div>
+          <div class="animate-pulse mx-auto h-5 w-20 my-1 rounded-lg bg-slate-300 dark:bg-slate-700"></div>
         }
       </div>
       @if (hasProgressBar()) {
