@@ -94,17 +94,15 @@
 
         <!-- other diffs -->
         @if (hasActivityDiff(diff)) {
-          <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-10 gap-y-1">
+          <section class="flex flex-col gap-1">
             @for (activity of diff.activities; track activity.name) {
-              @if (activity.score > 0) {
+              @if (activity.score) {
                 <div class="flex items-center gap-2">
                   <div class="size-6 shrink-0 flex items-center justify-center">
                     <img icon [name]="$any(activity).name" [activity]="true" [scale]="1.25" />
                   </div>
-                  <span>{{ activity.name }}</span>
-                  <span class="ml-auto font-bold tabular-nums text-slate-900 dark:text-white">
-                    +{{ activity.score | number }}
-                  </span>
+                  <div>{{ activity.name }}:</div>
+                  <div class="font-bold text-slate-900 dark:text-white">{{ activity.score | number }}</div>
                 </div>
               }
             }
@@ -121,12 +119,13 @@
             <div class="animate-pulse h-5 w-24 my-1 rounded-xl bg-slate-200 dark:bg-slate-600"></div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-10 gap-y-1">
-            @for (skills of [].constructor((i % 4) + 1); track $index) {
-              <div class="flex items-center gap-2 h-7">
-                <div class="animate-pulse size-5 rounded-md bg-slate-300 dark:bg-slate-700"></div>
-                <div class="animate-pulse h-4 w-20 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
-                <div class="animate-pulse ml-auto h-4 w-16 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
+          <div class="flex flex-col gap-2">
+            @for (skills of [].constructor((i % 3) + 1); track $index) {
+              <div>
+                <div class="animate-pulse h-4 w-20 mt-1.5 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
+                <div class="animate-pulse h-4 w-48 my-4 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
+                <div class="animate-pulse h-4 w-32 my-4 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
+                <div class="animate-pulse h-4 w-40 mb-1.5 rounded-xl bg-slate-300 dark:bg-slate-700"></div>
               </div>
             }
           </div>
