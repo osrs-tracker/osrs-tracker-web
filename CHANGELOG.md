@@ -1,5 +1,7 @@
 ## 2026/10/03
 
+- The boss card on player pages now lists every boss, with a dash for bosses without a kill count on the hiscores.
+- Fixed icons on player pages sometimes failing to load.
 - Added clue scroll, raid and boss kill cards to player pages.
 - Made the skill and activity icons on player pages sharper.
 - Replaced the favorite button on player and item pages with a star icon at the top of the page, and the Old School

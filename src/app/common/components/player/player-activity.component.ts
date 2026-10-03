@@ -23,7 +23,9 @@ import { TooltipComponent } from '../general/tooltip/tooltip.component';
             <div class="size-7 shrink-0 flex items-center justify-center">
               <img icon [name]="activity()!.name" [activity]="true" [scale]="1.5" />
             </div>
-            <div class="ml-auto text-base font-bold tabular-nums">{{ activity()!.score | number }}</div>
+            <div class="ml-auto text-base font-bold tabular-nums">
+              {{ activity()!.score > 0 ? (activity()!.score | number) : '-' }}
+            </div>
           </div>
         }
       } @else {
@@ -39,7 +41,7 @@ import { TooltipComponent } from '../general/tooltip/tooltip.component';
           <div>Rank:</div>
         </div>
         <div class="text-right">
-          <div>{{ activity()?.score | number }}</div>
+          <div>{{ (activity()?.score ?? -1) > 0 ? (activity()?.score | number) : '-' }}</div>
           <div>{{ (activity()?.rank ?? -1) > 0 ? (activity()?.rank | number) : 'Unranked' }}</div>
         </div>
       </div>

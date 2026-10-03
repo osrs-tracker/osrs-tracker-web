@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: osrs-tracker-web
-          image: freekmencke/osrs-tracker-web@sha256:01d627b1a7582dba259339205646c4439ed3d47f7c66a583ac18794b319e3e49
+          image: freekmencke/osrs-tracker-web@sha256:335a8953730a618b124351e51d67cd7f9b2c2e14a5a4c3f3647c66d8854a053f
           imagePullPolicy: Always
           env:
             - name: HOST
@@ -76,7 +76,7 @@ metadata:
     cert-manager.io/cluster-issuer: 'letsencrypt-prod'
     nginx.ingress.kubernetes.io/limit-rps: '50'
     nginx.ingress.kubernetes.io/limit-rpm: '3000'
-    nginx.ingress.kubernetes.io/limit-connections: '50'
+    nginx.ingress.kubernetes.io/limit-connections: '200'
     nginx.ingress.kubernetes.io/limit-burst-multiplier: '5'
 spec:
   ingressClassName: nginx
