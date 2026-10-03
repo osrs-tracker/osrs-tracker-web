@@ -16,6 +16,7 @@
 - Removed unused dependencies.
 - Removed unused development tools that pulled in packages with known security issues.
 - Updated the developer documentation for the new pull request workflow.
+- Documented the release flow for developers.
 
 ## 2026/10/02
 
