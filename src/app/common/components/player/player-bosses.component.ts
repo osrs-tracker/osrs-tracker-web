@@ -16,20 +16,16 @@ const BOSSES: ReadonlySet<string> = new Set(
   template: `
     <section class="p-2 shadow-lg rounded-lg bg-slate-100 dark:bg-slate-800">
       @if (bosses(); as bosses) {
-        @if (bosses.length) {
-          <div
-            class="overflow-hidden border rounded-xl grid grid-cols-3 gap-px border-slate-300 dark:border-slate-600 bg-slate-300 dark:bg-slate-600"
-          >
-            @for (boss of bosses; track boss.name) {
-              <player-activity class="bg-slate-100 dark:bg-slate-800" [activity]="boss" scoreLabel="Kill count" />
-            }
-            @for (filler of fillers(); track $index) {
-              <div class="bg-slate-100 dark:bg-slate-800"></div>
-            }
-          </div>
-        } @else {
-          <p class="p-2 text-center opacity-70">No boss kills yet.</p>
-        }
+        <div
+          class="overflow-hidden border rounded-xl grid grid-cols-3 gap-px border-slate-300 dark:border-slate-600 bg-slate-300 dark:bg-slate-600"
+        >
+          @for (boss of bosses; track boss.name) {
+            <player-activity class="bg-slate-100 dark:bg-slate-800" [activity]="boss" scoreLabel="Kill count" />
+          }
+          @for (filler of fillers(); track $index) {
+            <div class="bg-slate-100 dark:bg-slate-800"></div>
+          }
+        </div>
       } @else {
         <div
           class="overflow-hidden border rounded-xl grid grid-cols-3 gap-px border-slate-300 dark:border-slate-600 bg-slate-300 dark:bg-slate-600"
@@ -46,9 +42,9 @@ const BOSSES: ReadonlySet<string> = new Set(
 export class PlayerBossesWidgetComponent {
   readonly hiscore: InputSignal<HiscoreEntry | undefined> = input();
 
-  /** Bosses the player has killed at least once, in hiscores order; undefined while the hiscore is loading. */
+  /** All bosses in hiscores order; undefined while the hiscore is loading. */
   readonly bosses: Signal<HiscoreActivity[] | undefined> = computed(() =>
-    this.hiscore()?.activities?.filter(activity => BOSSES.has(activity.name) && activity.score > 0),
+    this.hiscore()?.activities?.filter(activity => BOSSES.has(activity.name)),
   );
 
   /** Empty cells that complete the last row of the grid. */
