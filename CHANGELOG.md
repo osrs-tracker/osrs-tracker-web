@@ -1,5 +1,6 @@
 ## 2026/10/03
 
+- Consecutive days without progress in the logs on player pages are now combined into one compact row.
 - The boss card on player pages now lists every boss, with a dash for bosses without a kill count on the hiscores.
 - Fixed extra spacing above "Nothing interesting happened." in the Other logs on player pages.
 - Redesigned the skill logs on player pages: one line per skill with right-aligned numbers, sharper and bigger icons,
