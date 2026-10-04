@@ -5,6 +5,8 @@
   addresses are shared with CrowdSec's community blocklist; and how to exercise your GDPR rights.
 - Privacy policy: clarified that log entries are kept for security and generally not deleted on request before they
   expire after 30 days.
+- Server monitoring groups requests by page type (e.g. all player pages together) instead of tracking every URL
+  separately.
 
 ## 2026/10/03
 
