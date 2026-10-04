@@ -164,7 +164,7 @@ If the Playwright tools aren't available in the session, say so instead of falli
 
 ## Deploy (Docker → Kubernetes)
 
-1. Pass the verification steps above.
+1. Pass the verification steps above (in a release, a passing CI run on the PR counts).
 2. Build and push. `predocker:build` regenerates `src/sitemap.xml` and `src/sitemap-site.xml`; commit those as well.
 
    ```bash
@@ -211,15 +211,21 @@ render URL both depend on it.
 When the user asks to release or ship, run the whole flow without asking for confirmation between steps. Stop and report
 only if a step fails.
 
+The local verification steps run once, before committing. After that, CI is the gate: don't re-run lint, prettier or
+tests locally for later commits, and run the Docker build while CI runs instead of after it.
+
 1. **PR**: commit on a `<type>/<short-name>` branch (code, `CHANGELOG.md`), push it and `gh pr create --base main`.
-2. **Review the PR's code** (`gh pr diff`): look for bugs, convention violations and leftovers, fix what you find, and
-   re-run the verification steps.
-3. **Deploy to production** following the deploy steps above, including the smoke test.
-4. **Update the PR** with the deploy changes: commit the image digest bump and the regenerated sitemaps to the branch,
+2. **Review the PR's code** (`gh pr diff`): look for bugs, convention violations and leftovers. Fix what you find and
+   push; CI checks the fix.
+3. **Build the image while CI runs**: start `npm run docker:build && npm run docker:push` and `gh pr checks <n> --watch`
+   in the background at the same time.
+4. **Deploy to production** once CI passes, following the deploy steps above from step 3 (digest, live image check,
+   diff, apply, smoke test).
+5. **Update the PR** with the deploy changes: commit the image digest bump and the regenerated sitemaps to the branch,
    push, and record the deployed digest and the smoke-test results in the PR description. `gh pr edit` can fail on a
    Projects (classic) GraphQL error; use `gh api -X PATCH repos/osrs-tracker/osrs-tracker-web/pulls/<n> -F body=@<file>`
    instead.
-5. **Merge** once everything is fine and all checks pass (`gh pr checks <n> --watch`): `gh pr merge <n> --merge`, then
+6. **Merge** once the checks on the deploy commit pass (`gh pr checks <n> --watch`): `gh pr merge <n> --merge`, then
    `git switch main && git pull --ff-only`, `git branch -d <branch>` and `git fetch --prune`.
 
 ## Commit and push
