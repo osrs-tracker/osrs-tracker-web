@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 
 @Component({
-  standalone: true,
   selector: 'article[card]',
   template: `
     <div class="flex justify-between rounded-t-lg bg-slate-300 dark:bg-slate-700 px-4 py-2">

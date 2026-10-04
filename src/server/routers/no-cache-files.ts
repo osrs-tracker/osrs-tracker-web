@@ -1,5 +1,4 @@
 import express, { Router } from 'express';
-import { join } from 'node:path';
 import { serverConfig } from '../server-config';
 
 export function createNoCacheHeadersRouter(): Router {
@@ -14,10 +13,6 @@ export function createNoCacheHeadersRouter(): Router {
         'Expires': '0',
       });
 
-      // Override the service worker with safety-worker.js
-      if (file === '/ngsw-worker.js') {
-        return res.sendFile(join(serverConfig.browserDistFolder, 'safety-worker.js'));
-      }
       next();
     });
   });

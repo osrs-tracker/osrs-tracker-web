@@ -25,7 +25,6 @@ import { config } from 'src/config/config';
 import './chart-setup';
 
 @Component({
-  standalone: true,
   selector: 'volume-chart',
   template: '<canvas #volumeChart></canvas>',
 })

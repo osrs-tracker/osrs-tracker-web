@@ -2,7 +2,6 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { format, isToday, isYesterday } from 'date-fns';
 
 @Pipe({
-  standalone: true,
   name: 'shortDate',
 })
 export class ShortDatePipe implements PipeTransform {

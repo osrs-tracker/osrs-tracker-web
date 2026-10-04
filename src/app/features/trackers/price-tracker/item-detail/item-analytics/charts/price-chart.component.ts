@@ -25,7 +25,6 @@ import { config } from 'src/config/config';
 import './chart-setup';
 
 @Component({
-  standalone: true,
   selector: 'price-chart',
   template: '<canvas #priceChart></canvas>',
 })

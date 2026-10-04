@@ -1,7 +1,7 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, InputSignal, Signal, computed, input } from '@angular/core';
 import { SkillEnum, calculateXPForSkillLevel, calculateXPToNextLevel } from '@osrs-tracker/hiscores';
-import { HiscoreSkill } from 'node_modules/@osrs-tracker/models/dist/esm';
+import { HiscoreSkill } from '@osrs-tracker/models';
 import { IconDirective } from '../../directives/icon/icon.directive';
 import { TooltipComponent } from '../general/tooltip/tooltip.component';
 

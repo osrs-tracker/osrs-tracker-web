@@ -12,14 +12,6 @@ export class PageCache {
   private cache = new Map<string, PageCacheEntry>();
 
   /**
-   * Get all keys currently in the cache
-   * @returns An array of cached keys
-   */
-  keys(): string[] {
-    return Array.from(this.cache.keys());
-  }
-
-  /**
    * Get a cached page if it exists and is not expired
    * @param url The path of the page
    * @returns The cached HTML or null if not found or expired

@@ -3,9 +3,6 @@ FROM node:24-alpine AS build
 
 WORKDIR /app
 
-# Copy scripts package.json and package-lock.json
-COPY scripts/package*json ./scripts/
-
 # Copy package.json and package-lock.json
 COPY package*.json ./
 

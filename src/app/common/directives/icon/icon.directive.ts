@@ -13,7 +13,6 @@ const sharpUrls = new Map<string, Promise<string | null>>();
 const resolvedSharpUrls = new Map<string, string>();
 
 @Directive({
-  standalone: true,
   selector: 'img[icon]',
 })
 export class IconDirective implements OnInit {

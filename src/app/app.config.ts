@@ -9,8 +9,6 @@ import {
 } from '@angular/core';
 import { provideClientHydration, withEventReplay, withIncrementalHydration } from '@angular/platform-browser';
 import { provideRouter, RouteReuseStrategy, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
-import { provideServiceWorker, SwUpdate } from '@angular/service-worker';
-import { interval, startWith, switchMap } from 'rxjs';
 import appRoutes from './app.routes';
 import { AnalyticsService } from './common/services/analytics/analytics.service';
 import { CustomErrorHandler } from './core/error-handling/error-handler';
@@ -37,7 +35,6 @@ export const appConfig: ApplicationConfig = {
     ),
 
     provideClientHydration(withEventReplay(), withIncrementalHydration()),
-    provideServiceWorker('ngsw-worker.js', { enabled: false }),
 
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
@@ -46,18 +43,5 @@ export const appConfig: ApplicationConfig = {
     { provide: RouteReuseStrategy, useClass: ParamAwareReuseStrategy },
 
     provideAppInitializer(() => inject(AnalyticsService).setupPageAnalytics()),
-    provideAppInitializer(() => {
-      const swUpdate = inject(SwUpdate);
-
-      // checks every 5 minutes if there's an update, if so, reloads the page
-      if (swUpdate.isEnabled) {
-        interval(60 * 5 * 1000)
-          .pipe(
-            startWith(null),
-            switchMap(() => swUpdate.checkForUpdate()),
-          )
-          .subscribe(updated => updated && document.location.reload());
-      }
-    }),
   ],
 };

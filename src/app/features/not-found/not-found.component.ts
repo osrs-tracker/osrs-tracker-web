@@ -1,7 +1,6 @@
 import { Component, inject, RESPONSE_INIT } from '@angular/core';
 
 @Component({
-  standalone: true,
   selector: 'not-found-404',
   template: `
     <header class="container mx-auto py-48 sm:py-72">

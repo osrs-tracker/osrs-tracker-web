@@ -2,7 +2,6 @@ import { NgClass } from '@angular/common';
 import { Component, computed, input, InputSignal, Signal } from '@angular/core';
 
 @Component({
-  standalone: true,
   selector: 'spinner',
   template: `
     <div role="status" aria-live="polite" [attr.aria-label]="ariaLabel()">

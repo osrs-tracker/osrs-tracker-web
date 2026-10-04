@@ -1,4 +1,4 @@
-import { dirname, join, resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // Reused variables
@@ -14,7 +14,6 @@ export const serverConfig = {
   // Paths
   serverDistFolder: serverDistFolder,
   browserDistFolder: resolve(serverDistFolder, '../browser'),
-  indexHtml: join(serverDistFolder, 'index.server.html'),
 
   // Cache settings
   pageCache: {
@@ -43,5 +42,5 @@ export const serverConfig = {
   ],
 
   // These files are served by the static middleware and should not be cached
-  noCacheStaticFiles: ['/ngsw.json', '/ngsw-worker.js', '/manifest.webmanifest', '/sitemap.xml', '/robots.txt'],
+  noCacheStaticFiles: ['/ngsw-worker.js', '/manifest.webmanifest', '/sitemap.xml', '/robots.txt'],
 };

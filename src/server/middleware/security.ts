@@ -6,7 +6,7 @@ export function securityMiddleware(): RequestHandler {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://www.googletagmanager.com'],
+        scriptSrc: ["'self'", "'unsafe-inline'", 'https://www.googletagmanager.com'],
         scriptSrcAttr: ["'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: [

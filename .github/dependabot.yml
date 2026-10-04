@@ -1,0 +1,25 @@
+# Security updates only: open-pull-requests-limit 0 disables version updates, while Dependabot security updates
+# (enabled in the repository settings) still use this configuration. Other updates are done by hand.
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    groups:
+      # Angular packages must stay on the same version
+      angular:
+        applies-to: security-updates
+        patterns: ['@angular/*', '@angular-devkit/*', 'angular-eslint']
+      # hiscores peer-depends on models, so they must be bumped together
+      osrs-tracker:
+        applies-to: security-updates
+        patterns: ['@osrs-tracker/*']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
