@@ -94,6 +94,24 @@ npx ng build --configuration production && npx ng lint && npm run prettier:ci &&
 
 CI (`.github/workflows/nodejs.yml`) runs lint, `prettier:ci`, build and test on every PR to and push to `main`.
 
+## Tests
+
+**Only test complex or important logic**: code that is easy to break, where a regression would be costly or invisible in
+production, or that guards a "keep in sync" rule. Don't add tests for coverage or because a unit has none; too many
+tests is pollution too. Skip one-liners, config, thin wrappers and code that's about to be rewritten (test the new
+behaviour instead). Prefer one request-level test over a spec per middleware.
+
+- Specs live next to the code (`x.spec.ts`), import from `vitest`, and run with `ng test` (CI's `test` job). Run one
+  file with `npx ng test --watch=false --include src/server/app.spec.ts`.
+- **Server specs** start with `// @vitest-environment node`. `src/server/app.spec.ts` is the example: it replaces the
+  Angular engine with `vi.mock('@angular/ssr/node')` and makes real requests with `serve()` from
+  `src/server/testing/serve.ts`. `vi.mock` only works for packages, not relative imports, under Angular's test runner.
+- **App specs** use `TestBed` with `provideZonelessChangeDetection()`, and `provideHttpClientTesting()` +
+  `HttpTestingController` for HTTP (see `share-request.interceptors.spec.ts`). Stores read the real jsdom
+  `localStorage`; clear it in `afterEach`.
+- `route-label.spec.ts` checks every route in the Angular route table, so a new route without a metrics label fails CI.
+- After writing a test, break the code it protects once and check that it fails.
+
 ## Running locally
 
 - **The API's CORS only allows `http://localhost:4200`.** Any other port renders server-side fine, but browser API calls

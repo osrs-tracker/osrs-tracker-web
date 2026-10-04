@@ -14,7 +14,7 @@ export class PriceTrackerStorageService {
   private readonly storageService = inject(StorageService);
 
   getRecentItems(): RecentItem[] {
-    return JSON.parse(this.storageService.getItem(StorageKey.PriceTrackerRecentItems) ?? '[]');
+    return this.readStoredItems(StorageKey.PriceTrackerRecentItems);
   }
 
   pushRecentItem(recentItem: RecentItem): void {
@@ -36,7 +36,7 @@ export class PriceTrackerStorageService {
   }
 
   getFavoriteItems(): RecentItem[] {
-    return JSON.parse(this.storageService.getItem(StorageKey.PriceTrackerFavoriteItems) ?? '[]');
+    return this.readStoredItems(StorageKey.PriceTrackerFavoriteItems);
   }
 
   isFavoriteItem(id: number): boolean {
@@ -55,5 +55,15 @@ export class PriceTrackerStorageService {
     }
 
     this.storageService.setItem(StorageKey.PriceTrackerFavoriteItems, JSON.stringify(favoriteItems));
+  }
+
+  /** Stored values can be corrupted or edited by hand, fall back to no items instead of breaking the page */
+  private readStoredItems(key: StorageKey): RecentItem[] {
+    try {
+      const items: unknown = JSON.parse(this.storageService.getItem(key) ?? '[]');
+      return Array.isArray(items) ? items : [];
+    } catch {
+      return [];
+    }
   }
 }
