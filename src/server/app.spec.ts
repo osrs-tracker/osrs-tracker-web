@@ -16,13 +16,14 @@ vi.mock('@angular/ssr/node', () => ({
     res: { status(code: number): { send(body: string): void } },
   ) => res.status(response.status).send(await response.text()),
 }));
+
 describe('createApp', () => {
   const { app, metricsApp } = createApp();
   const get = serve(app);
   const getMetrics = serve(metricsApp);
 
   beforeEach(() => {
-    handle.mockReset().mockResolvedValue(new Response('<html>rendered</html>', { status: 200 }));
+    handle.mockReset().mockImplementation(async () => new Response('<html>rendered</html>'));
     vi.spyOn(process.stdout, 'write').mockReturnValue(true); // Keeps the request logs out of the test output
   });
   afterEach(() => {
@@ -51,7 +52,7 @@ describe('createApp', () => {
   });
 
   it('passes the status Angular renders, so unknown routes are a 404', async () => {
-    handle.mockResolvedValue(new Response('<html>not found</html>', { status: 404 }));
+    handle.mockImplementation(async () => new Response('<html>not found</html>', { status: 404 }));
 
     expect((await get('/nope')).status).toBe(404);
   });
