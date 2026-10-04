@@ -66,7 +66,7 @@ export class TooltipComponent implements OnChanges, AfterViewInit, OnDestroy {
   containerOverlayRef?: OverlayRef;
   containerTemplatePortal: TemplatePortal;
 
-  /** When `false is passed, the tooltip wil be disabled. */
+  /** When `false` is passed, the tooltip will be disabled. */
   readonly tooltip: InputSignal<string | boolean> = input<string | boolean>(true);
   readonly tooltipTemplate: InputSignal<TemplateRef<unknown>> = input.required();
   readonly tooltipUnderline: InputSignal<boolean> = input(true);
@@ -118,7 +118,7 @@ export class TooltipComponent implements OnChanges, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     [this.arrowOverlayRef, this.containerOverlayRef].forEach(ref => (ref?.detach(), ref?.dispose()));
 
-    this.mousePresent$.next(false); // emite false to be sure.
+    this.mousePresent$.next(false); // emit false to be sure.
     this.mousePresent$.complete();
   }
 

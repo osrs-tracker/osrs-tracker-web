@@ -13,18 +13,18 @@ import { TooltipComponent } from '../general/tooltip/tooltip.component';
       [tooltipTemplate]="tooltipTemplate"
       [tooltipUnderline]="false"
     >
-      @if (activity()) {
+      @if (activity(); as activity) {
         @if (totalLabel()) {
           <div class="text-center flex-1 text-base">
-            {{ totalLabel() }}: <span class="font-bold">{{ activity()!.score | number }}</span>
+            {{ totalLabel() }}: <span class="font-bold">{{ activity.score | number }}</span>
           </div>
         } @else {
           <div class="mx-auto w-full max-w-19 flex items-center gap-2">
             <div class="size-7 shrink-0 flex items-center justify-center">
-              <img icon [name]="activity()!.name" [activity]="true" [scale]="1.5" />
+              <img icon [name]="activity.name" [activity]="true" [scale]="1.5" />
             </div>
             <div class="ml-auto text-base font-bold">
-              {{ activity()!.score > 0 ? (activity()!.score | number) : '-' }}
+              {{ activity.score > 0 ? (activity.score | number) : '-' }}
             </div>
           </div>
         }

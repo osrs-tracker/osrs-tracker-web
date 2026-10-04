@@ -8,7 +8,7 @@ import { LoadErrorComponent } from 'src/app/common/components/general/load-error
 import { TooltipComponent } from 'src/app/common/components/general/tooltip/tooltip.component';
 import { PageHeaderComponent } from 'src/app/common/components/layout/page-header.component';
 import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
-import { SpinnerComponent } from '../../../common/components/general/spinner.component';
+import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
 import { PlayerWidgetComponent } from './player-widget/player-widget.component';
 import { XpTrackerStore } from './xp-tracker.store';
 

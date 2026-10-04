@@ -1,7 +1,7 @@
 import { DOCUMENT, Directive, ElementRef, InputSignal, OnInit, effect, inject, input } from '@angular/core';
 import { WINDOW } from 'src/app/core/platform/window.token';
 import { config } from 'src/config/config';
-import { iconMap } from '../../../../config/icon.config';
+import { iconMap } from 'src/config/icon.config';
 import { LOCAL_ICONS } from './local-icons.token';
 
 /** Factor the pixel art is upscaled to before the browser smoothly scales it down to `scale`. */

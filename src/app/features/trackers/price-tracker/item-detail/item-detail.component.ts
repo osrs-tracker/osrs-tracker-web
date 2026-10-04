@@ -1,9 +1,8 @@
-import { Component, OnInit, computed, inject, input } from '@angular/core';
-import { Item } from '@osrs-tracker/models';
-import { AveragePricesAtTime, LatestPrices } from 'src/app/common/repositories/osrs-prices.repo';
+import { Component, InputSignal, OnInit, inject, input } from '@angular/core';
 import { PriceTrackerStore } from '../price-tracker.store';
 import { ItemAnalyticsComponent } from './item-analytics/item-analytics.component';
 import { ItemDetailWidgetComponent } from './item-detail-widget/item-detail.widget.component';
+import { ItemDetail } from './item-detail.resolver';
 
 @Component({
   selector: 'item-detail',
@@ -13,18 +12,10 @@ import { ItemDetailWidgetComponent } from './item-detail-widget/item-detail.widg
 export default class ItemDetailComponent implements OnInit {
   private readonly priceTrackerStore = inject(PriceTrackerStore);
 
-  readonly item = input.required<[Item, LatestPrices, number, AveragePricesAtTime[]]>();
-
-  readonly itemDetail = computed((): Item => this.item()[0]);
-  readonly latestPrices = computed((): LatestPrices => this.item()[1]);
-  readonly dailyVolume = computed((): number => this.item()[2]);
-  readonly timeSeriesToday = computed((): AveragePricesAtTime[] => this.item()[3]);
+  readonly itemDetail: InputSignal<ItemDetail> = input.required();
 
   ngOnInit(): void {
-    this.priceTrackerStore.pushRecentItem({
-      id: this.itemDetail().id,
-      name: this.itemDetail().name,
-      icon: this.itemDetail().icon,
-    });
+    const { id, name, icon } = this.itemDetail().item;
+    this.priceTrackerStore.pushRecentItem({ id, name, icon });
   }
 }

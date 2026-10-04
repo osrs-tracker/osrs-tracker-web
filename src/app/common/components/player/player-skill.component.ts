@@ -18,17 +18,17 @@ import { TooltipComponent } from '../general/tooltip/tooltip.component';
         class="px-3 pt-1.5 flex items-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700"
         [class]="hasProgressBar() ? 'pb-1' : 'pb-1.5'"
       >
-        @if (skill()) {
-          @if (skill()!.name === SkillEnum.Overall) {
+        @if (skill(); as skill) {
+          @if (skill.name === SkillEnum.Overall) {
             <div class="text-center flex-1 text-lg">
-              Total level: <span class="font-bold">{{ skill()!.level }}</span>
+              Total level: <span class="font-bold">{{ skill.level }}</span>
             </div>
           } @else {
             <div class="mx-auto w-full max-w-15 flex items-center gap-2">
               <div class="size-7 shrink-0 flex items-center justify-center">
-                <img icon [name]="skill()!.name" [skill]="true" [scale]="1.5" />
+                <img icon [name]="skill.name" [skill]="true" [scale]="1.5" />
               </div>
-              <div class="ml-auto text-lg font-bold">{{ skill()!.level }}</div>
+              <div class="ml-auto text-lg font-bold">{{ skill.level }}</div>
             </div>
           }
         } @else {
@@ -73,9 +73,10 @@ export class PlayerSkillWidgetComponent {
 
   readonly skill: InputSignal<HiscoreSkill | undefined> = input.required();
 
-  readonly hasProgressBar: Signal<boolean> = computed(
-    () => (this.skill() && this.skill()!.name !== SkillEnum.Overall && this.skill()!.level < 99) || false,
-  );
+  readonly hasProgressBar: Signal<boolean> = computed(() => {
+    const skill = this.skill();
+    return !!skill && skill.name !== SkillEnum.Overall && skill.level < 99;
+  });
 
   get xpToNextLevel(): number {
     return calculateXPToNextLevel(this.skill()?.xp ?? 0, this.skill()?.level ?? 1);
