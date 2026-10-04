@@ -17,6 +17,7 @@ export class LoadingIndicatorService {
   }
 }
 
+/** Shows the loading bar at the top of the page while the request runs */
 export const LOADING_INDICATOR = new HttpContextToken<boolean>(() => false);
 
 export const loadingIndicatorInterceptor = (

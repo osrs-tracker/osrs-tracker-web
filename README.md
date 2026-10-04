@@ -51,6 +51,26 @@ npm start
 The site runs at [localhost:4200](http://localhost:4200) and uses the live API. Run it on port 4200, because the API
 only accepts requests from that address when running locally.
 
+## Contributing
+
+Local runs use the production API, so player lookups show up in the live "Global recent lookups".
+
+```bash
+npm run lint
+npm run prettier
+npm test
+```
+
+`npm start` doesn't run the server code (page cache, pre-rendering). To test that, build and run the production server:
+
+```bash
+npm run build
+HOST=localhost PORT=4200 node dist/osrs-tracker-web/server/server.mjs
+```
+
+Conventions, the deploy and the release flow are in
+[.claude/skills/osrs-tracker-web/SKILL.md](.claude/skills/osrs-tracker-web/SKILL.md).
+
 ## Built with
 
 Angular with server-side rendering, Tailwind CSS and Chart.js, running on Node 24 in Docker on Kubernetes.
@@ -60,3 +80,7 @@ Angular with server-side rendering, Tailwind CSS and Chart.js, running on Node 2
 OSRS Tracker was originally built entirely without AI assistance. Since October 2026, I've started using
 [Claude](https://claude.com/claude-code), Anthropic's AI coding assistant, to help improve development speed and
 reliability.
+
+## License
+
+[Apache 2.0](LICENSE)

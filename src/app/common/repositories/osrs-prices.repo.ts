@@ -86,6 +86,7 @@ export class OsrsPricesRepo {
       .pipe(map(response => response.data));
   }
 
+  /** Average prices for the `timeSpan` period starting at `timestamp` (the latest period without one) */
   getPriceAverage(
     id: number,
     timeSpan: TimeSpan,
@@ -94,6 +95,10 @@ export class OsrsPricesRepo {
     return this.mapAveragePriceResponse(id, this.fetchAveragePrice(timeSpan, timestamp));
   }
 
+  /**
+   * Same as `getPriceAverage`, but shares one request per time span and timestamp, since the response holds every item.
+   * A failed request is retried by the next subscriber.
+   */
   getCachedPriceAverage(
     id: number,
     timeSpan: TimeSpan,

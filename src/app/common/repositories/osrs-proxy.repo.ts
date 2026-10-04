@@ -13,6 +13,7 @@ export class OsrsProxyRepo {
   // Players
   //
 
+  /** Live hiscores from Jagex (through the AWS proxy), shaped like a stored hiscore entry */
   getPlayerHiscore(username: string, scrapingOffset: number): Observable<HiscoreEntry> {
     return this.httpClient
       .get<{ skills: HiscoreSkill[]; activities: HiscoreActivity[] }>(

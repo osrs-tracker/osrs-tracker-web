@@ -2,6 +2,7 @@ import { HttpContextToken, HttpEvent, HttpHandlerFn, HttpInterceptorFn, HttpRequ
 import { Observable } from 'rxjs';
 import { config } from 'src/config/config';
 
+/** Prefixes the request URL with the API base URL. Set to `false` for requests to other hosts. */
 export const BASE_URL_PREFIX = new HttpContextToken<boolean>(() => true);
 
 export const baseUrlInterceptor: HttpInterceptorFn = (
