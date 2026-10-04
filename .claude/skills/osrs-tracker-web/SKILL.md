@@ -146,7 +146,9 @@ that CI is the gate, so don't re-run checks locally.
 - Conventional commits. Commit and push in the same session as a deploy, so production never runs code that isn't on
   GitHub.
 - **Every change gets a `CHANGELOG.md` entry** (deps and tooling too, not Dependabot PRs) under a `## YYYY/MM/DD`
-  heading, newest first. It's shown on `/about/changelog`, so write for users.
+  heading, newest first. It's shown on `/about/changelog`, so write for users. Busy days get `###` subtitles
+  (user-facing first, "Behind the scenes" last); extend an existing entry rather than add a near-duplicate, and don't
+  repeat the subtitle in its entries.
 - If GPG signing fails with "Inappropriate ioctl for device", ask the user to run
   `echo test | gpg --clearsign > /dev/null` in their terminal, then commit right away (the cache lasts ~10 min). Never
   use `--no-gpg-sign`.

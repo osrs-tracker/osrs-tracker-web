@@ -1,85 +1,101 @@
 ## 2026/10/04
 
-- Removed the last piece of the old offline support (service worker), which was switched off in April 2025.
-- Behind-the-scenes maintenance: updated the code checking and testing tools and the changelog renderer.
-- Behind-the-scenes maintenance: the home page news, the changelog and the loading bar use the site's shared data
-  loading code.
-- The clue scrolls card on player pages no longer shrinks slightly when the hiscores finish loading.
-- Behind-the-scenes maintenance: simplified the player and item page code.
-- Your favorite and recently viewed items now update right away, and the price tracker reads them from the browser only
-  once.
-- Behind-the-scenes maintenance: the price and volume charts share their setup code.
-- Behind-the-scenes maintenance: updated the web server to Express 5.
-- Updates to the site no longer cause brief errors while they roll out.
-- Behind-the-scenes maintenance: the server runs with fewer permissions and is taken out of service automatically when
-  it stops responding.
-- Tightened the site's security policy further: scripts that aren't part of the site can no longer run on its pages.
-- Player pages, player cards, item price trends and charts, the recent lookups and the home page news now show a message
+### Error handling
+
+- Player pages, player cards, item price trends and charts, the recent lookups and the home page news show a message
   with a retry button when loading fails, instead of loading forever or showing empty data.
-- Opening a player or item page while the site's data is unavailable now shows an error page, instead of the link doing
+- Opening a player or item page while the site's data is unavailable shows an error page, instead of the link doing
   nothing.
-- Behind-the-scenes maintenance: automated tests for page errors and for removing players that no longer exist.
-- Fixed the price tracker crashing, and player pages showing "not found", when the trackers' saved data in the browser
-  was damaged.
-- Behind-the-scenes maintenance: automated tests for the server's page cache, page pre-rendering, request handling and
-  monitoring.
-- Tightened the site's security policy: scripts can no longer be generated from text at runtime.
-- Fixed item search sometimes showing the results of an earlier search when searching quickly.
-- Removed the old offline mode (disabled since April 2025). Browsers that still had it installed remove it on their next
-  visit.
-- Behind-the-scenes maintenance: cleaner server shutdown during updates, server-side page renders no longer share
-  requests with each other, automatic security updates for dependencies, and removed unused code and dependencies.
-- Pages load a little faster: the site's fonts are no longer downloaded twice.
-- Player pages load faster: the skill, boss, raid and clue icons now come with the page instead of as about a hundred
-  separate downloads.
-- Pages load faster on repeat visits: skill icons and the homepage images are now cached by the browser instead of
-  downloaded again on every visit.
-- Server logs now record the visitor's IP address, the referring page and the response size, to spot and block abuse.
-- Updated the privacy policy: server logs include IP addresses, kept for up to 30 days for security; attacking IP
-  addresses are shared with CrowdSec's community blocklist; and how to exercise your GDPR rights.
-- Privacy policy: clarified that log entries are kept for security and generally not deleted on request before they
-  expire after 30 days.
-- Server monitoring groups requests by page type (e.g. all player pages together) instead of tracking every URL
-  separately.
+
+### Improvements and fixes
+
+- Favorite and recently viewed items update right away, and the price tracker reads them from the browser only once.
+- The clue scrolls card on player pages no longer shrinks slightly when the hiscores finish loading.
+- Item search no longer shows the results of an earlier search when searching quickly.
+- Damaged tracker data saved in the browser no longer crashes the price tracker or makes player pages show "not found".
+- Site updates no longer cause brief errors while they roll out.
+
+### Performance
+
+- Fonts are no longer downloaded twice.
+- Skill, boss, raid and clue icons come with the player page instead of as about a hundred separate downloads.
+- Skill icons and homepage images are cached by the browser instead of downloaded again on every visit.
+
+### Security and privacy
+
+- Tightened the security policy: scripts can no longer be generated from text at runtime, and scripts that aren't part
+  of the site can no longer run on its pages.
+- Server logs record the visitor's IP address, the referring page and the response size, to spot and block abuse.
+- Updated the privacy policy: logs include IP addresses and are kept for up to 30 days for security, generally without
+  deletion on request; attacking IP addresses are shared with CrowdSec's community blocklist; and it explains how to
+  exercise your GDPR rights.
+
+### Behind the scenes
+
+- Removed the old offline mode (disabled since April 2025), including the cleanup step for browsers that still had it
+  installed.
+- Server monitoring groups requests by page type (e.g. all player pages together) instead of by URL.
+- The server runs with fewer permissions, is taken out of service automatically when it stops responding, and shuts down
+  cleanly during updates.
+- Server-side page renders no longer share requests with each other.
+- Updated the web server to Express 5, the code checking and testing tools, and the changelog renderer.
+- Automatic security updates for dependencies; removed unused code and dependencies.
+- Simplified the player and item page code; the home page news, changelog and loading bar use the shared data loading
+  code, and the price and volume charts share their setup code.
+- Project skill: documented the changelog conventions (`###` subtitles on busy days, no near-duplicate entries).
+- Automated tests for the page cache, page pre-rendering, request handling, monitoring, page errors and removing players
+  that no longer exist.
 
 ## 2026/10/03
 
-- Fixed a flood of proxy header warnings in the server logs since the move to Traefik; a client-sent Forwarded header is
-  now dropped at the ingress.
+### Player pages
+
+- Added clue scroll, raid and boss kill cards. The boss card lists every boss, with a dash for bosses without a kill
+  count on the hiscores.
+- Redesigned the skill logs: one line per skill with right-aligned numbers, and the total XP and levels gained in the
+  header of each day.
+- Bigger, sharper icons in the skill and other logs, and sharper skill and activity icons elsewhere.
+- Days without progress, including a single day or today, show as a muted outlined card, and consecutive ones are
+  combined into one compact row.
+- Numbers in the logs are no longer bold.
+- The favorite button (also on item pages) is now a star icon at the top of the page, and the Old School Hiscores button
+  an external link icon.
+- Fixed icons sometimes failing to load.
+- Fixed extra spacing above "Nothing interesting happened." in the Other logs.
+
+### Site-wide
+
+- Updated the font, which now has a medium weight and equal-width digits, so numbers line up in columns.
+- Fixed some invalid page addresses returning a server error instead of a 404.
+
+### Server
+
 - The ingress runs on Traefik (ingress-nginx is retired); the rate limits moved to Traefik Middlewares with the same
   values.
-- Updated the site font, which now has a medium weight and equal-width digits, so numbers line up in columns.
-- Days without progress in the logs on player pages, including a single day or today, are now shown as a muted outlined
-  card instead of a regular card.
-- The numbers in the logs on player pages are no longer bold.
-- Consecutive days without progress in the logs on player pages are now combined into one compact row.
-- The boss card on player pages now lists every boss, with a dash for bosses without a kill count on the hiscores.
-- Fixed extra spacing above "Nothing interesting happened." in the Other logs on player pages.
-- Redesigned the skill logs on player pages: one line per skill with right-aligned numbers, sharper and bigger icons,
-  and the total XP and levels gained in the header of each day.
-- Made the icons in the other logs on player pages bigger and sharper.
-- Fixed icons on player pages sometimes failing to load.
-- Added clue scroll, raid and boss kill cards to player pages.
-- Made the skill and activity icons on player pages sharper.
-- Replaced the favorite button on player and item pages with a star icon at the top of the page, and the Old School
-  Hiscores button on player pages with an external link icon.
-- Fixed a deprecation warning in the server logs.
-- Fixed some invalid page addresses returning a server error instead of a 404.
-- Removed unused dependencies.
-- Removed unused development tools that pulled in packages with known security issues.
-- Updated the developer documentation for the new pull request workflow.
-- Documented the release flow for developers.
+- Fixed a flood of proxy header warnings in the logs since that move; a client-sent Forwarded header is now dropped at
+  the ingress.
+- Fixed a deprecation warning in the logs.
+
+### Behind the scenes
+
+- Removed unused dependencies, and unused development tools that pulled in packages with known security issues.
+- Documented the new pull request workflow and the release flow for developers.
 
 ## 2026/10/02
 
-- Fixed the latest news and other data briefly reloading after the page had loaded.
-- Fixed pages not updating when navigating between items or players.
-- Fixed charts sometimes showing data for the wrong time span after quickly switching.
-- Fixed unknown pages, items and players not returning a proper 404 status.
-- Fixed searching for items or players with special characters in their name.
-- Fixed some loading spinners getting stuck when a request failed (player pages and the home page news were fixed on
+### Fixes
+
+- The latest news and other data no longer briefly reload after the page has loaded.
+- Pages update when navigating between items or players.
+- Charts no longer show data for the wrong time span after quickly switching.
+- Unknown pages, items and players return a proper 404 status.
+- Searching for items or players with special characters in their name works.
+- Loading spinners no longer get stuck when a request fails (player pages and the home page news followed on
   2026/10/04).
-- Fixed the favorite player toggle being reported incorrectly in analytics.
+- The favorite player toggle is reported correctly in analytics.
+
+### Other changes
+
 - Added a page title to the changelog.
 - Updated to Node 24 and updated dependencies, including the latest shared OSRS Tracker packages.
 - Expanded the README with features, how the project fits together, and how to run it locally.
@@ -154,7 +170,6 @@
 
 - Updated to Angular 20.
 - Updated all dependencies to their latest versions.
-
 - increased displayed global/favorite item count in the main Price Tracker and XP Tracker to `6`.
 
 ## 2025/05/14
@@ -313,41 +328,41 @@
   - Refactored all `NgIf` and `NgFor` instances to the new control flow.
 - Updated all other dependencies to their latest versions. No breaking changes.
 
-### 2023/09/11
+## 2023/09/11
 
 - Fix problem with hiscore when parsing DT2 bosses.
 
-### 2023/08/30
+## 2023/08/30
 
 - Added short description of features on home page.
 - Made button styling not specific to button elements. This way it can be used for links as well.
 - Made Wiki link on item page an `<a>` element instead of a `<button>` element. This way crawlers can follow the link.
 
-### 2023/08/29
+## 2023/08/29
 
 - **It's now possible to select a custom XP scraping offset in the XP Tracker!**
 - Improved SOLIX custom font styling.
 
-### 2023/08/28
+## 2023/08/28
 
 - Use SOLIX custom font for OSRS Tracker.
 - Clamped OSRS news articles to 1 line for title, and 3 lines for body.
 
-### 2023/08/25
+## 2023/08/25
 
 - Sitemap index now uses the time the file was last modified as `lastmod`.
 
-### 2023/08/24
+## 2023/08/24
 
 - Updated changelogs for previous days because I forgot to do so.
 - Added titles to the X/twitter and github svgs.
 
-### 2023/08/19
+## 2023/08/19
 
 - Updated all dependencies to their latest versions. No breaking changes.
 - Moved hiscore parsing to the `@osrs-tracker/hiscores` package.
 
-### 2023/08/16
+## 2023/08/16
 
 - Added skeleton loaders instead of local storage cache
 - Added a link to the GitHub repo and twitter account in the upper right of the header.
