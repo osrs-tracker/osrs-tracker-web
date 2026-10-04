@@ -51,7 +51,9 @@ Match the surrounding code; these are the patterns the codebase already uses:
 - **DI**: `inject()` only, never constructor injection. Root services use `@Service()` (Angular 22), not
   `@Injectable({ providedIn: 'root' })`.
 - **State**: signals everywhere: `input()` / `input.required()`, `signal`, `computed`, `linkedSignal`. Explicitly type
-  public signal fields (`readonly foo: Signal<Bar> = computed(...)`).
+  public signal fields (`readonly foo: Signal<Bar> = computed(...)`). Data persisted in localStorage lives in an
+  `@ngrx/signals` store per feature (`XpTrackerStore`, `PriceTrackerStore`) that loads it once and guards `JSON.parse`;
+  components read its signals, never localStorage directly.
 - **Async data**: prefer `httpResource` / `rxResource` (they cancel stale requests when params change) over manual
   `subscribe` + `signal.set`. If you do subscribe, handle errors and reset loading state with `finalize`, so a failed
   request can't leave a spinner running.
@@ -88,7 +90,9 @@ Match the surrounding code; these are the patterns the codebase already uses:
   Verify by parsing `<script id="ng-state">`: HTTP entries have a `u` field, and slashes in it are escaped as `\u002F`,
   so grep for `\u002Fnews`, not `/news`.
 - **Chart.js**: shared registrations live in `charts/chart-setup.ts` (imported for its side effects). Load browser-only
-  plugins (zoom) lazily and pass them per chart via `plugins`; never `Chart.unregister` in `ngOnDestroy`.
+  plugins (zoom) lazily and pass them per chart via `plugins`; never `Chart.unregister` in `ngOnDestroy`. Time series
+  charts extend `charts/base-chart.ts` (lifecycle, zoom loading, resize and iOS tooltip workarounds, shared options) and
+  only add their type, extra options and `setData`.
 - **Icons**: the skill and activity icons are also bundled as data URIs in `local-icons.generated.ts`, which
   `PlayerDetailComponent` provides via `LOCAL_ICONS` (the server keeps file URLs). After adding or changing an icon in
   `src/assets/icons/{skills,activities}`, run `npm run icons` and commit the result (`build` regenerates it too).

@@ -6,7 +6,7 @@ import { SpinnerComponent } from 'src/app/common/components/general/spinner.comp
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { utcStartOfDay } from 'src/app/common/helpers/date.helper';
 import { OsrsPricesRepo, TimeSpan } from 'src/app/common/repositories/osrs-prices.repo';
-import { RecentItem } from '../price-tracker-storage.service';
+import { RecentItem } from '../price-tracker.store';
 
 @Component({
   selector: 'item-widget',

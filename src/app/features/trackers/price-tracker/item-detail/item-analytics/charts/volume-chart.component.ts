@@ -1,177 +1,52 @@
-import { formatNumber, isPlatformBrowser } from '@angular/common';
-import {
-  Component,
-  ElementRef,
-  HostListener,
-  Injector,
-  InputSignal,
-  OnDestroy,
-  OnInit,
-  PLATFORM_ID,
-  Signal,
-  computed,
-  effect,
-  inject,
-  input,
-  runInInjectionContext,
-  viewChild,
-} from '@angular/core';
-import { Chart, Plugin } from 'chart.js';
+import { formatNumber } from '@angular/common';
+import { Component } from '@angular/core';
+import { Chart, ChartOptions, Point } from 'chart.js';
 import { fromUnixTime } from 'date-fns';
 import { formatNumberLegible } from 'src/app/common/helpers/number.helper';
 import { AveragePricesAtTime } from 'src/app/common/repositories/osrs-prices.repo';
-import { ThemeService } from 'src/app/common/services/theme.service';
-import { config } from 'src/config/config';
-import './chart-setup';
+import { BaseChart } from './base-chart';
 
 @Component({
   selector: 'volume-chart',
-  template: '<canvas #volumeChart></canvas>',
+  template: '<canvas #chart></canvas>',
 })
-export class VolumeChartComponent implements OnInit, OnDestroy {
-  private readonly injector = inject(Injector);
-  private readonly themeService = inject(ThemeService);
-  private readonly platformId = inject(PLATFORM_ID);
-  private readonly isBrowser = isPlatformBrowser(this.platformId);
+export class VolumeChartComponent extends BaseChart<'bar'> {
+  protected readonly type = 'bar';
 
-  volumeChart?: Chart;
-  private destroyed = false;
-  readonly volumeChartCanvas: Signal<ElementRef<HTMLCanvasElement>> = viewChild.required('volumeChart');
-
-  readonly timeSeries: InputSignal<AveragePricesAtTime[]> = input.required();
-
-  readonly chartConfig = computed(() => (this.themeService.darkMode() ? config.chart.dark : config.chart.light));
-
-  ngOnInit(): void {
-    if (this.isBrowser) void this.initChart();
-  }
-
-  private async initChart(): Promise<void> {
-    // The zoom plugin is loaded lazily (it needs the browser), so it's passed to the chart instead of registered globally
-    const zoom = (await import('chartjs-plugin-zoom')).default;
-
-    // The component can be destroyed while the zoom plugin is loading
-    if (this.destroyed) return;
-
-    this.createVolumeChart([zoom]);
-
-    runInInjectionContext(this.injector, () => {
-      effect(() => this.updateVolumeChart(this.timeSeries()));
-      effect(() => (this.themeService.darkMode(), this.volumeChart!.update('none')));
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.destroyed = true;
-    this.volumeChart?.destroy();
-  }
-
-  // Workaround for chart.js not updating when the size of the canvas shrinks
-  @HostListener('window:resize')
-  onResize(): void {
-    this.volumeChart?.resize(1, 1);
-    requestAnimationFrame(() => this.volumeChart?.resize());
-  }
-
-  // Workaround for chart.js not closing tooltips when tapping outside the canvas (iOS)
-  @HostListener('document:touchend', ['$event.target'])
-  hideTooltip(target: EventTarget | null): void {
-    if (this.volumeChart && target !== this.volumeChartCanvas().nativeElement) {
-      this.volumeChartCanvas().nativeElement.dispatchEvent(new Event('mouseout'));
-    }
-  }
-
-  private createVolumeChart(plugins: Plugin[]): void {
-    this.volumeChart = new Chart(this.volumeChartCanvas().nativeElement, {
-      type: 'bar',
-      data: { datasets: [] },
-      plugins,
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            type: 'timeseries',
-            stacked: true,
-            time: {
-              minUnit: 'hour',
-              displayFormats: {
-                hour: 'HH:mm',
-                day: 'MMMM do',
-                month: 'MMMM yyyy',
-              },
-              tooltipFormat: 'MMMM do - HH:mm',
-            },
-            ticks: {
-              color: () => this.chartConfig().tickColor,
-              source: 'data',
-              maxRotation: 0,
-              includeBounds: false,
-              stepSize: 3,
-            },
-            grid: { color: () => this.chartConfig().gridColor, lineWidth: 1 },
-          },
-          y: {
-            type: 'linear',
-            stacked: true,
-            beginAtZero: true,
-            ticks: {
-              color: () => this.chartConfig().tickColor,
-              autoSkip: false,
-              includeBounds: false,
-              callback: (value, index, array) => {
-                const indexOfZero = array.findIndex(v => v.value === 0);
-                const rest = indexOfZero % 2;
-                return rest === index % 2 ? formatNumberLegible(Math.abs(Number(value)), 3) : '';
-              },
-            },
-            grid: { color: () => this.chartConfig().gridColor },
-          },
-        },
-        hover: {
-          mode: 'index',
-          intersect: false,
-        },
-        devicePixelRatio: Math.max(devicePixelRatio, 1.5),
-        plugins: {
-          tooltip: {
-            enabled: true,
-            mode: 'index',
-            intersect: false,
-            usePointStyle: true,
-            callbacks: {
-              label: context =>
-                ` ${context.dataset.label}: ${formatNumber(Math.abs(context.parsed.y!), 'en-US', '1.0-0')}`,
-            },
-          },
-          zoom: {
-            limits: {
-              x: { min: 'original', max: 'original' },
-              y: { min: 'original', max: 'original' },
-            },
-            pan: {
-              enabled: true,
-              threshold: 10,
-              mode: 'x',
-            },
-            zoom: {
-              wheel: { enabled: true },
-              pinch: { enabled: true },
-              mode: 'x',
+  // Sell volume is drawn below the axis as negative values, so ticks and tooltips show absolute values
+  protected chartOptions(): ChartOptions<'bar'> {
+    return {
+      scales: {
+        x: { stacked: true },
+        y: {
+          stacked: true,
+          beginAtZero: true,
+          ticks: {
+            autoSkip: false,
+            callback: (value, index, array) => {
+              const indexOfZero = array.findIndex(v => v.value === 0);
+              const rest = indexOfZero % 2;
+              return rest === index % 2 ? formatNumberLegible(Math.abs(Number(value)), 3) : '';
             },
           },
         },
       },
-    });
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: context =>
+              ` ${context.dataset.label}: ${formatNumber(Math.abs(context.parsed.y!), 'en-US', '1.0-0')}`,
+          },
+        },
+      },
+    };
   }
 
-  private updateVolumeChart(priceTimeSeries: AveragePricesAtTime[]) {
-    if (!this.volumeChart) return;
-
-    this.volumeChart.data.datasets = [
+  protected setData(chart: Chart<'bar', Point[]>, volumeTimeSeries: AveragePricesAtTime[]): void {
+    chart.data.datasets = [
       {
         label: 'Buy volume',
-        data: priceTimeSeries.map(price => ({
+        data: volumeTimeSeries.map(price => ({
           x: fromUnixTime(price.timestamp).getTime(),
           y: price.highPriceVolume,
         })),
@@ -181,7 +56,7 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
       },
       {
         label: 'Sell volume',
-        data: priceTimeSeries.map(price => ({
+        data: volumeTimeSeries.map(price => ({
           x: fromUnixTime(price.timestamp).getTime(),
           y: -price.lowPriceVolume,
         })),
@@ -190,8 +65,5 @@ export class VolumeChartComponent implements OnInit, OnDestroy {
         stack: 'stack',
       },
     ];
-
-    this.volumeChart.update();
-    this.volumeChart.resetZoom();
   }
 }
