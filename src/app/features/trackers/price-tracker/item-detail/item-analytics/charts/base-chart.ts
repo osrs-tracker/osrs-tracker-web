@@ -35,7 +35,7 @@ export abstract class BaseChart<TType extends 'line' | 'bar'> implements OnInit,
   private readonly themeService = inject(ThemeService);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  chart?: Chart<TType, Point[]>;
+  private chart?: Chart<TType, Point[]>;
   private destroyed = false;
   private readonly canvas: Signal<ElementRef<HTMLCanvasElement>> = viewChild.required('chart');
 
