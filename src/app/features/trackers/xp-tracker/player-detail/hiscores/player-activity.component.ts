@@ -1,8 +1,8 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, InputSignal, input } from '@angular/core';
 import { HiscoreActivity } from '@osrs-tracker/models';
-import { IconDirective } from '../../directives/icon/icon.directive';
-import { TooltipComponent } from '../general/tooltip/tooltip.component';
+import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
+import { TooltipComponent } from 'src/app/common/components/general/tooltip/tooltip.component';
 
 @Component({
   selector: 'player-activity',

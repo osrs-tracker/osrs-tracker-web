@@ -37,7 +37,8 @@ When a separate Claude session owns one of them, send changes there instead of e
 
 - `src/app/common/repositories/`: all HTTP access. `src/app/core/`: interceptors, the route reuse strategy, error
   handling, the `WINDOW` token.
-- `src/app/features/<feature>/`: routed features with their own `*.routes.ts`, resolvers and sub-components.
+- `src/app/features/<feature>/`: routed features with their own `*.routes.ts`, resolvers and sub-components. Code used
+  by one feature lives in that feature; `src/app/common/` is only for code shared between features.
 - `src/server/`: the Express server: `app.ts` (middleware chain, Angular handler, error handler), `middleware/`
   (`angular-cache`, logging, metrics, `protocol-relative`, security with the CSP), `routers/` (`health`,
   `no-cache-files`), `utils/` (`auto-generator`, `page-cache`, `route-label`, `shutdown`), `server-config.ts`.

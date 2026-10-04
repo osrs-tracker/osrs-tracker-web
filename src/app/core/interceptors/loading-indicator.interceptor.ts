@@ -1,25 +1,19 @@
 import { HttpContextToken, HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http';
-import { inject, Service } from '@angular/core';
-import { BehaviorSubject, finalize, map, Observable } from 'rxjs';
+import { computed, inject, Service, Signal, signal } from '@angular/core';
+import { defer, finalize, Observable } from 'rxjs';
 
 @Service()
-export class LoadingIndicatorService<T> {
-  private ongoingRequests$ = new BehaviorSubject(new Map<string, Observable<HttpEvent<T>>>());
+export class LoadingIndicatorService {
+  private readonly ongoingRequests = signal(0);
 
-  get hasOngoingRequests(): Observable<boolean> {
-    return this.ongoingRequests$.asObservable().pipe(map(ongoingRequests => ongoingRequests.size > 0));
+  readonly hasOngoingRequests: Signal<boolean> = computed(() => this.ongoingRequests() > 0);
+
+  addRequest(): void {
+    this.ongoingRequests.update(count => count + 1);
   }
 
-  addRequest(requestId: string, request: Observable<HttpEvent<T>>) {
-    const ongoingRequests = new Map(this.ongoingRequests$.value);
-    ongoingRequests.set(requestId, request);
-    this.ongoingRequests$.next(ongoingRequests);
-  }
-
-  removeRequest(requestId: string) {
-    const ongoingRequests = new Map(this.ongoingRequests$.value);
-    ongoingRequests.delete(requestId);
-    this.ongoingRequests$.next(ongoingRequests);
+  removeRequest(): void {
+    this.ongoingRequests.update(count => count - 1);
   }
 }
 
@@ -33,9 +27,9 @@ export const loadingIndicatorInterceptor = (
 
   const loadingIndicatorService = inject(LoadingIndicatorService);
 
-  const requestId = crypto.randomUUID();
-  const ongoingRequest = next(request).pipe(finalize(() => loadingIndicatorService.removeRequest(requestId)));
-  loadingIndicatorService.addRequest(requestId, ongoingRequest);
-
-  return ongoingRequest;
+  // Counted per subscription, so a request that's never subscribed to can't leave the indicator running
+  return defer(() => {
+    loadingIndicatorService.addRequest();
+    return next(request).pipe(finalize(() => loadingIndicatorService.removeRequest()));
+  });
 };
