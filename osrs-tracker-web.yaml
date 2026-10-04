@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: osrs-tracker-web
-          image: freekmencke/osrs-tracker-web@sha256:8030af45b964d480bf036b05ace1c0bfff413ac8ec5fee51aa36bae379f685c4
+          image: freekmencke/osrs-tracker-web@sha256:7048236b444c193cbe20b82da91a441e3dbbd50f6c34a989233f9a81d8d4e3f8
           imagePullPolicy: IfNotPresent
           env:
             - name: HOST
@@ -47,6 +47,9 @@ spec:
               memory: 512Mi
           securityContext:
             runAsNonRoot: true
+            # The image's `node` user, numeric so the kubelet can verify it isn't root
+            runAsUser: 1000
+            runAsGroup: 1000
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
             capabilities:
