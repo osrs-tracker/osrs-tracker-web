@@ -1,5 +1,7 @@
 ## 2026/10/04
 
+- Player pages load faster: the skill, boss, raid and clue icons now come with the page instead of as about a hundred
+  separate downloads.
 - Pages load faster on repeat visits: skill icons and the homepage images are now cached by the browser instead of
   downloaded again on every visit.
 - Server logs now record the visitor's IP address, the referring page and the response size, to spot and block abuse.

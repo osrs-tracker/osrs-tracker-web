@@ -5,6 +5,7 @@ import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
 import { PlayerType } from '@osrs-tracker/models';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { IconDirective } from './icon.directive';
+import { LOCAL_ICONS } from './local-icons.token';
 
 @Component({
   template: '<img icon [name]="name()" [wiki]="wiki()" [skill]="skill()" [activity]="activity()">',
@@ -139,5 +140,40 @@ describe('IconDirective', () => {
 
     expect(img.src).toBe('https://oldschool.runescape.wiki/images/Abyssal_whip.png');
     expect(img.alt).toBe('Abyssal whip icon');
+  });
+});
+
+describe('IconDirective with LOCAL_ICONS', () => {
+  const firemakingDataUri = 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
+  let fixture: ComponentFixture<TestComponent>;
+  let img: HTMLImageElement;
+
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        { provide: LOCAL_ICONS, useValue: { '/skills/skill_icon_firemaking1.gif': firemakingDataUri } },
+      ],
+    });
+
+    fixture = TestBed.createComponent(TestComponent);
+    fixture.componentRef.setInput('skill', true);
+    await fixture.whenStable();
+
+    img = fixture.debugElement.query(By.directive(IconDirective)).nativeElement;
+  });
+
+  it('should use the data URI of a local icon', async () => {
+    fixture.componentRef.setInput('name', SkillEnum.Firemaking);
+    await fixture.whenStable();
+
+    expect(img.src).toBe(firemakingDataUri);
+  });
+
+  it('should fall back to the file for an icon that is not local', async () => {
+    fixture.componentRef.setInput('name', SkillEnum.Attack);
+    await fixture.whenStable();
+
+    expect(img.src).toContain('/assets/icons/skills/skill_icon_attack1.gif');
   });
 });
