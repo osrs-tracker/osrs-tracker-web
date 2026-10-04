@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import { pageCache } from '../utils/page-cache';
+import { applyCspNonce } from './csp-nonce';
 
 /**
  * Express middleware for handling Angular SSR rendering
@@ -21,7 +22,7 @@ export function angularCacheMiddleware(): RequestHandler {
 
     if (cachedPage) {
       res.appendHeader('x-cache', 'HIT');
-      return res.send(cachedPage);
+      return res.send(applyCspNonce(cachedPage, res));
     }
     res.appendHeader('x-cache', 'MISS');
 

@@ -1,5 +1,9 @@
 ## 2026/10/04
 
+- Updates to the site no longer cause brief errors while they roll out.
+- Behind-the-scenes maintenance: the server runs with fewer permissions and is taken out of service automatically when
+  it stops responding.
+- Tightened the site's security policy further: scripts that aren't part of the site can no longer run on its pages.
 - Player pages, player cards, item price trends and charts, the recent lookups and the home page news now show a message
   with a retry button when loading fails, instead of loading forever or showing empty data.
 - Opening a player or item page while the site's data is unavailable now shows an error page, instead of the link doing

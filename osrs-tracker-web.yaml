@@ -28,7 +28,7 @@ spec:
       containers:
         - name: osrs-tracker-web
           image: freekmencke/osrs-tracker-web@sha256:8030af45b964d480bf036b05ace1c0bfff413ac8ec5fee51aa36bae379f685c4
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           env:
             - name: HOST
               value: osrs-tracker.freekmencke.com
@@ -38,18 +38,54 @@ spec:
           ports:
             - containerPort: 8080
             - containerPort: 9090
+          resources:
+            # Measured idle at ~2m CPU / 50-75Mi on 2026-10-04. No CPU limit: throttling would slow down SSR renders.
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          # Checks the main app, so a pod whose app stopped serving is taken out of the service
           readinessProbe:
             httpGet:
               path: /healthy
-              port: 9090
-            initialDelaySeconds: 5
+              port: 8080
             periodSeconds: 5
+          # Only restarts a hung process
           livenessProbe:
             httpGet:
               path: /healthy
               port: 9090
-            initialDelaySeconds: 5
-            periodSeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /healthy
+              port: 8080
+            periodSeconds: 2
+            failureThreshold: 30
+          lifecycle:
+            # Keep serving until Traefik has dropped the terminating pod, otherwise in-flight requests get a 502/504
+            preStop:
+              sleep:
+                seconds: 5
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: osrs-tracker-web
+  namespace: osrs-tracker
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: osrs-tracker-web
 ---
 apiVersion: v1
 kind: Service

@@ -1,13 +1,19 @@
-import { RequestHandler } from 'express';
+import { RequestHandler, Response } from 'express';
 import helmet from 'helmet';
+import { getCspNonce } from './csp-nonce';
 
 export function securityMiddleware(): RequestHandler {
   return helmet({
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", 'https://www.googletagmanager.com'],
-        scriptSrcAttr: ["'unsafe-inline'"],
+        // Inline scripts need the response's nonce, see `applyCspNonce`
+        scriptSrc: [
+          "'self'",
+          (req, res) => `'nonce-${getCspNonce(res as Response)}'`,
+          'https://www.googletagmanager.com',
+        ],
+        scriptSrcAttr: ["'none'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: [
           "'self'",

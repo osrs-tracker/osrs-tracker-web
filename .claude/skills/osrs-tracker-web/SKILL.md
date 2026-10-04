@@ -75,6 +75,10 @@ Match the surrounding code; these are the patterns the codebase already uses:
 - **Browser-only APIs** (`window`, `localStorage`, canvas): inject `WINDOW` (null on the server) or `StorageService`,
   check `isPlatformBrowser`, or put the UI inside `@defer` (it renders nothing on the server; add a `@placeholder` to
   avoid layout shift).
+- **CSP**: `script-src` has no `'unsafe-inline'`. Inline scripts run because of a per-response nonce: `index.html` sets
+  `ngCspNonce="CSP_NONCE_PLACEHOLDER"`, the build and Angular's SSR copy it onto every inline script, and
+  `applyCspNonce` swaps it for the response's nonce (also on page-cache hits). Any new path that sends page HTML must
+  call `applyCspNonce`, otherwise every script on the page is blocked. Never use inline event handlers (`onclick="…"`).
 - **Response status**: set it with `inject(RESPONSE_INIT, { optional: true })` (null in the browser). Don't use an
   Express `RESPONSE` token.
 - **HTTP transfer cache**: server-side responses are only handed to the browser if their `Cache-Control` has **no**
@@ -189,6 +193,9 @@ If the Playwright tools aren't available in the session, say so instead of falli
    ```bash
    kubectl -n osrs-tracker logs deploy/osrs-tracker-web --since=5m
    ```
+
+Rollback, logs, health checks and upstream failure modes are in `docs/runbook.md`. The container runs as `node` with a
+read-only root filesystem: don't write to disk at runtime.
 
 Production sets `HOST=osrs-tracker.freekmencke.com`; the Angular app engine's `allowedHosts` and the auto-generator's
 render URL both depend on it.
