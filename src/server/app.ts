@@ -12,6 +12,8 @@ import { serverConfig } from './server-config';
 
 export function createApp() {
   const app = express();
+  // Traefik is the only hop in front of the app and overwrites any client-sent X-Forwarded-For, so req.ip is the client
+  app.set('trust proxy', 1);
   const metricsApp = express();
   const angularApp = new AngularNodeAppEngine({
     allowedHosts: [serverConfig.HOST],
