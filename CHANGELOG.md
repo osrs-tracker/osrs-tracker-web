@@ -6,6 +6,7 @@
   with a retry button when loading fails, instead of loading forever or showing empty data.
 - Opening a player or item page while the site's data is unavailable shows an error page, instead of the link doing
   nothing.
+- The error and not found pages have a button back to the previous page, or to the home page when opened directly.
 
 ### Improvements and fixes
 
