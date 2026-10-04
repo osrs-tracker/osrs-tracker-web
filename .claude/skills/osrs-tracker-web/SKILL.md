@@ -103,6 +103,21 @@ CI (`.github/workflows/nodejs.yml`) runs lint, `prettier:ci`, build and test on 
   Smoke test with `curl -s -D - http://localhost:4200/<path>`: check the status (unknown routes must return 404) and
   `x-cache` (HIT for auto-generated pages). Stop it with `lsof -ti:4200 -sTCP:LISTEN | xargs -r kill`.
 
+## Check in the browser
+
+curl only sees the server-rendered HTML. For anything the user can see or that changes requests (rendering, hydration,
+icons, caching, bundles), also check the page in a real browser with the Playwright MCP tools (`browser_navigate`,
+`browser_take_screenshot`, `browser_network_requests`, `browser_console_messages`), locally and on production after a
+deploy:
+
+- Send the user a screenshot of the changed page (with `SendUserFile`).
+- Report the request count and anything failing in the network list, and any console errors.
+- For caching, load the page a second time and compare what was fetched.
+- Close the browser when done (`browser_close`). Its snapshots, logs and screenshots go to `.playwright-mcp/` in the
+  working directory (it can't write outside it). That folder is in the user's global gitignore; delete it afterwards.
+
+If the Playwright tools aren't available in the session, say so instead of falling back to curl silently.
+
 ## Deploy (Docker → Kubernetes)
 
 1. Pass the verification steps above.
@@ -134,7 +149,8 @@ CI (`.github/workflows/nodejs.yml`) runs lint, `prettier:ci`, build and test on 
    ```
 
 7. Smoke test production (`https://osrs-tracker.freekmencke.com`): `/` returns 200 with `x-cache: HIT`, an unknown path
-   returns 404, an item and a player page return 200, and the pod logs are clean:
+   returns 404, an item and a player page return 200, the changed pages look and load right in the browser (see
+   [Check in the browser](#check-in-the-browser)), and the pod logs are clean:
 
    ```bash
    kubectl -n osrs-tracker logs deploy/osrs-tracker-web --since=5m
