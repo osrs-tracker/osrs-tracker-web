@@ -1,7 +1,7 @@
 const { readdir, readFile, writeFile } = require('fs').promises;
 
-// The skill and activity icons are all shown on every player page, so they're bundled into the XP tracker's JS as data
-// URIs (see LOCAL_ICONS) instead of being fetched one by one.
+// The skill and activity icons are all shown on every player page, so they're bundled into its chunk as data URIs (see
+// LOCAL_ICONS) instead of being fetched one by one.
 const ICONS_DIR = 'src/assets/icons';
 const FOLDERS = ['skills', 'activities'];
 const MIME_TYPES = { '.gif': 'image/gif', '.png': 'image/png' };
