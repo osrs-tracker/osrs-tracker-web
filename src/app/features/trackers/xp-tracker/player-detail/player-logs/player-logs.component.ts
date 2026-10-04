@@ -35,7 +35,7 @@ export class PlayerLogsComponent {
   readonly hiscoreDiffs: Signal<HiscoreEntry[]> = computed(() => {
     let previousHiscore = this.today() ?? this.history()[0];
 
-    return this.history()!.map(hiscore => {
+    return this.history().map(hiscore => {
       const diff = hiscoreDiff(previousHiscore, hiscore);
       previousHiscore = hiscore;
       return diff;

@@ -36,11 +36,12 @@ export class PageCache {
    * @param html The rendered HTML content
    */
   set(url: string, html: string): void {
-    // Enforce maximum cache size
+    // A Map iterates in insertion order, so re-inserting keeps the oldest entry first
+    this.cache.delete(url);
+
+    // Enforce maximum cache size by dropping the oldest entry
     if (this.cache.size >= serverConfig.pageCache.maxSize) {
-      // Remove oldest entry if at capacity
-      const oldestKey = [...this.cache.entries()].sort((a, b) => a[1].timestamp - b[1].timestamp)[0][0];
-      this.cache.delete(oldestKey);
+      this.cache.delete(this.cache.keys().next().value!);
     }
 
     this.cache.set(url, { html, timestamp: Date.now() });

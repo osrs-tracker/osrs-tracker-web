@@ -39,18 +39,16 @@ import { XpTrackerStore } from '../xp-tracker.store';
         <h3 class="truncate" [title]="_username()">
           {{ _username() | capitalizeWords }}
         </h3>
-        @if (playerDetails()) {
+        @if (playerDetails(); as playerDetails) {
           <div class="relative flex items-center rounded-full gap-2">
-            @if (playerDetails()!.type !== PlayerType.Normal) {
+            @if (playerDetails.type !== PlayerType.Normal) {
               <img
                 class="h-6 w-6"
                 icon
-                [name]="
-                  playerDetails()!.status === PlayerStatus.Default ? playerDetails()!.type : playerDetails()!.status
-                "
+                [name]="playerDetails.status === PlayerStatus.Default ? playerDetails.type : playerDetails.status"
               />
             }
-            @if (playerDetails()!.diedAsHardcore) {
+            @if (playerDetails.diedAsHardcore) {
               <img class="h-6 w-6" icon name="dead" />
             }
           </div>

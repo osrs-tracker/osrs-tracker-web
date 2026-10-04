@@ -6,8 +6,8 @@ const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 
 export const serverConfig = {
   // Server settings
-  PORT: process.env['PORT'] || 8080,
-  METRICS_PORT: process.env['METRICS_PORT'] || 9090,
+  PORT: Number(process.env['PORT'] || 8080),
+  METRICS_PORT: Number(process.env['METRICS_PORT'] || 9090),
   HOST: process.env['HOST'] || 'localhost',
   TRUST_PROXY_HEADERS: process.env['TRUST_PROXY_HEADERS']?.split(',') || [],
 

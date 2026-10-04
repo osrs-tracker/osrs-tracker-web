@@ -26,7 +26,7 @@ import {
   OsrsPricesRepo,
   TimeSpan,
 } from 'src/app/common/repositories/osrs-prices.repo';
-import { SpinnerComponent } from '../../../../../common/components/general/spinner.component';
+import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
 import { PriceChartComponent } from './charts/price-chart.component';
 import { VolumeChartComponent } from './charts/volume-chart.component';
 import { Trend } from './item-analytics.model';
