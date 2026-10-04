@@ -96,7 +96,10 @@ server HTML). If it's unavailable, say so rather than falling back to curl silen
 ## Deploy
 
 1. Verify (in a release, passing CI counts).
-2. `npm run docker:build && npm run docker:push`; commit the regenerated `src/sitemap*.xml`.
+2. `npm run docker:build && npm run docker:push`; commit the regenerated `src/sitemap*.xml`. If `docker` is missing or
+   the engine is down, start Docker Desktop from Windows:
+   `"/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" desktop start` (WSL's `docker` exists only while it
+   runs).
 3. Put the pushed digest in `osrs-tracker-web.yaml`'s `image:` line.
 4. Confirm the live image matches the yaml, so you don't roll back someone else's deploy:
    `kubectl -n osrs-tracker get deploy osrs-tracker-web -o jsonpath='{.spec.template.spec.containers[0].image}'`
