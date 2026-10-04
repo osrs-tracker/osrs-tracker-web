@@ -1,29 +1,16 @@
-import { Location } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { ActivatedRouteSnapshot, ResolveFn, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
 import { Player } from '@osrs-tracker/models';
 import { catchError } from 'rxjs';
 import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
+import { resolverErrorHandler } from 'src/app/core/routing/resolver-error';
 import { XpTrackerStore } from '../xp-tracker.store';
 
 export const playerDetailResolver: ResolveFn<Player | null> = (route: ActivatedRouteSnapshot) => {
-  const loc = inject(Location);
-  const router = inject(Router);
   const osrsTrackerRepo = inject(OsrsTrackerRepo);
   const xpTrackerStore = inject(XpTrackerStore);
 
   return osrsTrackerRepo
     .getPlayerInfo(route.params['username'], xpTrackerStore.scrapingOffset(), { loadingIndicator: true })
-    .pipe(
-      catchError((err: HttpErrorResponse) => {
-        if ([400, 404].includes(err.status)) {
-          router.navigate(['**']).then(() => {
-            if (router.url !== '/trackers/xp/' + route.params['username'])
-              loc.replaceState('/trackers/xp/' + route.params['username']);
-          });
-        }
-        throw err;
-      }),
-    );
+    .pipe(catchError(resolverErrorHandler('/trackers/xp/' + route.params['username'])));
 };

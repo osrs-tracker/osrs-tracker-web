@@ -62,6 +62,8 @@
           <div class="flex justify-center items-center h-72 -m-0.5">
             <spinner [size]="8" />
           </div>
+        } @else if (recentPlayerLookups.error()) {
+          <load-error source="recent-player-lookups" (retry)="recentPlayerLookups.reload()" />
         } @else {
           @for (player of recentPlayerLookups.value(); track player.username) {
             <a [routerLink]="['/trackers/xp', player.username]">

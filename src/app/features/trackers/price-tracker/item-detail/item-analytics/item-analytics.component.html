@@ -7,51 +7,55 @@
     <article card>
       <h2 title>Trend</h2>
 
-      <div class="grid grid-cols-2 lg:grid-cols-4 text-2xl font-bold">
-        <section class="py-1 flex flex-col items-center justify-center">
-          <div class="flex">
-            <h2 class="mb-1 text-xl font-normal">Quarter</h2>
-            <info-tooltip>
-              Compared to the 24-hour average 90 days ago (UTC), which was
-              <span class="font-bold">{{ trend()?.quarterValue | number }}&nbsp;gp</span>.
-            </info-tooltip>
-          </div>
-          <colored-value [value]="trend()?.quarter" suffix="%"></colored-value>
-        </section>
+      @if (trend.error()) {
+        <load-error source="item-trend" message="Couldn't load the price trend." (retry)="trend.reload()" />
+      } @else {
+        <div class="grid grid-cols-2 lg:grid-cols-4 text-2xl font-bold">
+          <section class="py-1 flex flex-col items-center justify-center">
+            <div class="flex">
+              <h2 class="mb-1 text-xl font-normal">Quarter</h2>
+              <info-tooltip>
+                Compared to the 24-hour average 90 days ago (UTC), which was
+                <span class="font-bold">{{ trend.value()?.quarterValue | number }}&nbsp;gp</span>.
+              </info-tooltip>
+            </div>
+            <colored-value [value]="trend.value()?.quarter" suffix="%"></colored-value>
+          </section>
 
-        <section class="py-1 flex flex-col items-center justify-center">
-          <div class="flex">
-            <h2 class="mb-1 text-xl font-normal">Month</h2>
-            <info-tooltip>
-              Compared to the 24-hour average 30 days ago (UTC), which was
-              <span class="font-bold">{{ trend()?.monthValue | number }}&nbsp;gp</span>.
-            </info-tooltip>
-          </div>
-          <colored-value [value]="trend()?.month" suffix="%"></colored-value>
-        </section>
+          <section class="py-1 flex flex-col items-center justify-center">
+            <div class="flex">
+              <h2 class="mb-1 text-xl font-normal">Month</h2>
+              <info-tooltip>
+                Compared to the 24-hour average 30 days ago (UTC), which was
+                <span class="font-bold">{{ trend.value()?.monthValue | number }}&nbsp;gp</span>.
+              </info-tooltip>
+            </div>
+            <colored-value [value]="trend.value()?.month" suffix="%"></colored-value>
+          </section>
 
-        <section class="py-1 flex flex-col items-center justify-center">
-          <div class="flex">
-            <h2 class="mb-1 text-xl font-normal">Week</h2>
-            <info-tooltip>
-              Compared to the 24-hour average of 7 days ago (UTC), which was
-              <span class="font-bold">{{ trend()?.weekValue | number }}&nbsp;gp</span>.
-            </info-tooltip>
-          </div>
-          <colored-value [value]="trend()?.week" suffix="%"></colored-value>
-        </section>
+          <section class="py-1 flex flex-col items-center justify-center">
+            <div class="flex">
+              <h2 class="mb-1 text-xl font-normal">Week</h2>
+              <info-tooltip>
+                Compared to the 24-hour average of 7 days ago (UTC), which was
+                <span class="font-bold">{{ trend.value()?.weekValue | number }}&nbsp;gp</span>.
+              </info-tooltip>
+            </div>
+            <colored-value [value]="trend.value()?.week" suffix="%"></colored-value>
+          </section>
 
-        <section class="py-1 flex flex-col items-center justify-center">
-          <div class="flex">
-            <h2 class="mb-1 text-xl font-normal">Today</h2>
-            <info-tooltip>
-              Compared to the 24-hour average of yesterday (UTC), which was
-              <span class="font-bold">{{ trend()?.todayValue | number }}&nbsp;gp</span>.
-            </info-tooltip>
-          </div>
-          <colored-value [value]="trend()?.today" suffix="%"></colored-value>
-        </section>
-      </div>
+          <section class="py-1 flex flex-col items-center justify-center">
+            <div class="flex">
+              <h2 class="mb-1 text-xl font-normal">Today</h2>
+              <info-tooltip>
+                Compared to the 24-hour average of yesterday (UTC), which was
+                <span class="font-bold">{{ trend.value()?.todayValue | number }}&nbsp;gp</span>.
+              </info-tooltip>
+            </div>
+            <colored-value [value]="trend.value()?.today" suffix="%"></colored-value>
+          </section>
+        </div>
+      }
     </article>
 
     <article card>
@@ -76,10 +80,18 @@
       </div>
 
       <div class="block h-72 max-w-full">
-        @defer {
-          <price-chart class="block h-full w-full" [timeSeries]="priceTimeSeries.value()"></price-chart>
-        } @loading {
-          <spinner class="flex h-full items-center justify-center"></spinner>
+        @if (priceTimeSeries.error()) {
+          <load-error
+            source="item-price-chart"
+            message="Couldn't load the price chart."
+            (retry)="priceTimeSeries.reload()"
+          />
+        } @else {
+          @defer {
+            <price-chart class="block h-full w-full" [timeSeries]="priceTimeSeries.value()"></price-chart>
+          } @loading {
+            <spinner class="flex h-full items-center justify-center"></spinner>
+          }
         }
       </div>
     </article>
@@ -109,10 +121,18 @@
       </div>
 
       <div class="block h-72 max-w-full">
-        @defer {
-          <volume-chart class="block h-full w-full" [timeSeries]="volumeTimeSeries.value()"></volume-chart>
-        } @loading {
-          <spinner class="flex h-full items-center justify-center"></spinner>
+        @if (volumeTimeSeries.error()) {
+          <load-error
+            source="item-volume-chart"
+            message="Couldn't load the volume chart."
+            (retry)="volumeTimeSeries.reload()"
+          />
+        } @else {
+          @defer {
+            <volume-chart class="block h-full w-full" [timeSeries]="volumeTimeSeries.value()"></volume-chart>
+          } @loading {
+            <spinner class="flex h-full items-center justify-center"></spinner>
+          }
         }
       </div>
     </article>

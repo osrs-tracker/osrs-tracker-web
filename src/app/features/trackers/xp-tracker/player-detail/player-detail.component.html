@@ -1,22 +1,45 @@
 <div class="container mx-auto my-4 px-4 grid lg:grid-cols-3 2xl:grid-cols-4 gap-8">
   <player-detail-widget [playerDetail]="player()">
-    <player-skills [hiscore]="today()" />
-    <player-clues [hiscore]="today()" />
-    <player-raids [hiscore]="today()" />
-    <player-bosses [hiscore]="today()" />
+    @if (todayResource.error()) {
+      <load-error
+        panel
+        source="player-hiscore"
+        message="Couldn't load the current hiscores."
+        (retry)="todayResource.reload()"
+      />
+    } @else {
+      <player-skills [hiscore]="today()" />
+      <player-clues [hiscore]="today()" />
+      <player-raids [hiscore]="today()" />
+      <player-bosses [hiscore]="today()" />
+    }
   </player-detail-widget>
 
   <section class="lg:col-span-2 2xl:col-span-3">
-    <player-logs [playerDetail]="player()" [today]="today()!" [history]="history()" />
+    @if (firstHistoryPage.error()) {
+      <section class="flex flex-col gap-4">
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Logs</h1>
+        <load-error
+          panel
+          source="player-history"
+          message="Couldn't load the logs."
+          (retry)="firstHistoryPage.reload()"
+        />
+      </section>
+    } @else {
+      <player-logs [playerDetail]="player()" [today]="today()" [history]="history()" />
 
-    @if (hasMoreEntries()) {
-      <footer class="flex justify-center mt-4">
-        @if (loadingMore()) {
-          <spinner class="mt-2.5 mb-3" />
-        } @else {
-          <button class="button--default button--rounded px-16" (click)="loadMore()">Load more data</button>
-        }
-      </footer>
+      @if (hasMoreEntries()) {
+        <footer class="flex justify-center mt-4">
+          @if (loadingMore()) {
+            <spinner class="mt-2.5 mb-3" />
+          } @else if (loadMoreFailed()) {
+            <load-error source="player-history-more" message="Couldn't load more data." (retry)="loadMore()" />
+          } @else {
+            <button class="button--default button--rounded px-16" (click)="loadMore()">Load more data</button>
+          }
+        </footer>
+      }
     }
   </section>
 </div>

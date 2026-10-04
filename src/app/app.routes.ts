@@ -28,6 +28,12 @@ export default [
         loadChildren: () => import('./features/about/about.routes'),
       },
       {
+        path: 'error',
+        title: 'Error - OSRS Tracker',
+        resolve: { metaDescription: () => inject(MetaService).setDefaultMeta() },
+        loadComponent: () => import('./features/error/error.component'),
+      },
+      {
         path: '**',
         pathMatch: 'full',
         title: '404 Not Found - OSRS Tracker',

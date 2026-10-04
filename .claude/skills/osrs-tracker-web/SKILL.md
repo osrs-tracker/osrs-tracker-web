@@ -54,13 +54,19 @@ Match the surrounding code; these are the patterns the codebase already uses:
 - **Async data**: prefer `httpResource` / `rxResource` (they cancel stale requests when params change) over manual
   `subscribe` + `signal.set`. If you do subscribe, handle errors and reset loading state with `finalize`, so a failed
   request can't leave a spinner running.
+- **Failure paths**: every load that can fail shows its failure. A resource's `value()` **throws** in the error state,
+  so check `error()` first (or read through `hasValue()` in a `computed`) and render
+  `<load-error source="…" (retry)="resource.reload()" />` in place of the data (`compact` inside cards, `panel` when it
+  replaces a panel). Never hide a failure with `catchError(() => of(empty))`: it looks like "no data". `<load-error>`
+  reports itself to analytics with its `source`; the `ErrorHandler` only reports uncaught errors.
 - **HTTP**: all calls go through a repository in `common/repositories/`. Use `HttpContext` tokens (`BASE_URL_PREFIX`,
   `LOADING_INDICATOR`) instead of building absolute URLs. Encode path segments with `encodeURIComponent`, and pass query
   values via `params`.
 - **Routing**: lazy `loadComponent` / `loadChildren` with **default-exported** route components; the route `title` is
-  `'<Page> - OSRS Tracker'`. Resolvers turn a 400/404 into `router.navigate(['**'])` followed by
-  `loc.replaceState(<original url>)`. `ParamAwareReuseStrategy` recreates components when route params change, so
-  components can load data on init.
+  `'<Page> - OSRS Tracker'`. Resolvers end with `catchError(resolverErrorHandler(<original url>))`
+  (`core/routing/resolver-error.ts`): a 400/404 shows the not-found page, anything else the `/error` page (503 on SSR),
+  both keeping the original URL in the address bar. `ParamAwareReuseStrategy` recreates components when route params
+  change, so components can load data on init.
 - **Templates**: built-in control flow (`@if`, `@for` with `track`, `@defer`), Tailwind classes. Component selectors are
   unprefixed kebab-case and directive selectors unprefixed camelCase (enforced by ESLint).
 
