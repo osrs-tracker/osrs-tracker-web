@@ -23,7 +23,8 @@ export const XpTrackerStore = signalStore(
       if (!storedValue) return [];
 
       try {
-        return JSON.parse(storedValue);
+        const players: unknown = JSON.parse(storedValue);
+        return Array.isArray(players) ? players : [];
       } catch {
         return [];
       }
@@ -34,11 +35,15 @@ export const XpTrackerStore = signalStore(
 
     return {
       loadFromStorage(): void {
+        // Stored values can be corrupted or edited by hand, fall back to the defaults instead of breaking the page
+        const scrapingOffset = Number(storageService.getItem(StorageKey.XpTrackerScrapingOffset) ?? '0');
+        const viewType = Number(storageService.getItem(StorageKey.XpTrackerViewType) ?? XpTrackerViewType.Skills);
+
         patchState(store, {
-          scrapingOffset: Number(storageService.getItem(StorageKey.XpTrackerScrapingOffset) ?? '0'),
+          scrapingOffset: Number.isInteger(scrapingOffset) ? scrapingOffset : 0,
           recentPlayers: store.readStoredPlayers(StorageKey.XpTrackerRecentPlayers),
           favoritePlayers: store.readStoredPlayers(StorageKey.XpTrackerFavoritePlayers),
-          viewType: Number(storageService.getItem(StorageKey.XpTrackerViewType) ?? XpTrackerViewType.Skills),
+          viewType: viewType in XpTrackerViewType ? viewType : XpTrackerViewType.Skills,
         });
       },
 

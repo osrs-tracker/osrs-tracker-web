@@ -1,5 +1,9 @@
 ## 2026/10/04
 
+- Fixed the price tracker crashing, and player pages showing "not found", when the trackers' saved data in the browser
+  was damaged.
+- Behind-the-scenes maintenance: automated tests for the server's page cache, page pre-rendering, request handling and
+  monitoring.
 - Tightened the site's security policy: scripts can no longer be generated from text at runtime.
 - Fixed item search sometimes showing the results of an earlier search when searching quickly.
 - Removed the old offline mode (disabled since April 2025). Browsers that still had it installed remove it on their next
