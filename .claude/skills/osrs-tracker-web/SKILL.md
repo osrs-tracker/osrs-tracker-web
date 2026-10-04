@@ -10,8 +10,8 @@ description:
 # osrs-tracker-web
 
 Angular 22 SSR app (zoneless, signals, standalone) served by a custom Express server (`src/server/`), deployed as a
-Docker image to Kubernetes. Deliberate trade-offs (production-only config, per-replica pre-rendering, the service worker
-kill switch in `src/ngsw-worker.js`, the CSP nonce) are explained in `docs/decisions.md`; read it before "fixing" one.
+Docker image to Kubernetes. Deliberate trade-offs (production-only config, per-replica pre-rendering, the CSP nonce) are
+explained in `docs/decisions.md`; read it before "fixing" one.
 
 ## Related repos
 

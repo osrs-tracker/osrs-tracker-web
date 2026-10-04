@@ -1,5 +1,6 @@
 ## 2026/10/04
 
+- Removed the last piece of the old offline support (service worker), which was switched off in April 2025.
 - Behind-the-scenes maintenance: updated the code checking and testing tools and the changelog renderer.
 - Behind-the-scenes maintenance: the home page news, the changelog and the loading bar use the site's shared data
   loading code.

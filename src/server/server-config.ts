@@ -42,5 +42,5 @@ export const serverConfig = {
   ],
 
   // These files are served by the static middleware and should not be cached
-  noCacheStaticFiles: ['/ngsw-worker.js', '/manifest.webmanifest', '/sitemap.xml', '/robots.txt'],
+  noCacheStaticFiles: ['/manifest.webmanifest', '/sitemap.xml', '/robots.txt'],
 };
