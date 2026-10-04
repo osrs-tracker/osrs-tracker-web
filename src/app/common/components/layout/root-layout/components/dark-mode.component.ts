@@ -2,7 +2,6 @@ import { Component, HostBinding, inject } from '@angular/core';
 import { ThemeService } from 'src/app/common/services/theme.service';
 
 @Component({
-  standalone: true,
   selector: 'dark-mode',
   template: `
     <button

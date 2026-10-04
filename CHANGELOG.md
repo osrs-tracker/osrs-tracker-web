@@ -1,5 +1,11 @@
 ## 2026/10/04
 
+- Tightened the site's security policy: scripts can no longer be generated from text at runtime.
+- Fixed item search sometimes showing the results of an earlier search when searching quickly.
+- Removed the old offline mode (disabled since April 2025). Browsers that still had it installed remove it on their next
+  visit.
+- Behind-the-scenes maintenance: cleaner server shutdown during updates, server-side page renders no longer share
+  requests with each other, automatic security updates for dependencies, and removed unused code and dependencies.
 - Pages load a little faster: the site's fonts are no longer downloaded twice.
 - Player pages load faster: the skill, boss, raid and clue icons now come with the page instead of as about a hundred
   separate downloads.

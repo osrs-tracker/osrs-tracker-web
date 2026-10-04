@@ -34,7 +34,10 @@ When a separate Claude session owns one of them, send changes there instead of e
   handling, the `WINDOW` token.
 - `src/app/features/<feature>/`: routed features with their own `*.routes.ts`, resolvers and sub-components.
 - `src/server/`: the Express server: `app.ts` (middleware chain, Angular handler, error handler), `middleware/`
-  (`angular-cache`, logging, metrics, security), `utils/` (`auto-generator`, `page-cache`), `server-config.ts`.
+  (`angular-cache`, logging, metrics, `protocol-relative`, security with the CSP), `routers/` (`health`,
+  `no-cache-files`), `utils/` (`auto-generator`, `page-cache`, `route-label`, `shutdown`), `server-config.ts`.
+  `route-label.ts` keeps a copy of the page routes for the metrics labels: update it when adding or renaming a route.
+- `src/ngsw-worker.js`: a kill switch for the service worker that older versions of the site installed. Keep serving it.
 
 ## Angular conventions
 
@@ -170,7 +173,7 @@ only if a step fails.
 1. **PR**: commit on a `<type>/<short-name>` branch (code, `CHANGELOG.md`), push it and `gh pr create --base main`.
 2. **Review the PR's code** (`gh pr diff`): look for bugs, convention violations and leftovers, fix what you find, and
    re-run the verification steps.
-3. **Deploy to production** following the deploy steps below, including the smoke test.
+3. **Deploy to production** following the deploy steps above, including the smoke test.
 4. **Update the PR** with the deploy changes: commit the image digest bump and the regenerated sitemaps to the branch,
    push, and record the deployed digest and the smoke-test results in the PR description. `gh pr edit` can fail on a
    Projects (classic) GraphQL error; use `gh api -X PATCH repos/osrs-tracker/osrs-tracker-web/pulls/<n> -F body=@<file>`
@@ -194,7 +197,8 @@ only if a step fails.
   sitemaps in the same commit as the code they deploy.
 - **Every change gets a `CHANGELOG.md` entry**, including dependency and tooling updates. Use a `## YYYY/MM/DD` heading
   (newest first; add to today's heading if it already exists) followed by short bullets. It's rendered on
-  `/about/changelog` from GitHub `main`, so write the bullets for users, not developers.
+  `/about/changelog` from GitHub `main`, so write the bullets for users, not developers. Exception: Dependabot PRs
+  (security updates only, see `.github/dependabot.yml`) are merged without an entry.
 - Commits are GPG-signed. If signing fails with "Inappropriate ioctl for device", ask the user to unlock the key in
   their own terminal (`echo test | gpg --clearsign > /dev/null`), then commit right away: the cache lasts about 10
   minutes. Never use `--no-gpg-sign`.

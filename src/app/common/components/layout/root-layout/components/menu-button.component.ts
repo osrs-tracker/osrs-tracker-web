@@ -11,7 +11,6 @@ import {
 } from '@angular/core';
 
 @Component({
-  standalone: true,
   selector: 'menu-button',
   template: `
     <button type="button" class="link-states--dark w-6 h-6 lg:hidden" (click)="toggleMenuCollapse()" aria-label="Menu">

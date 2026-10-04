@@ -1,7 +1,6 @@
 import { Component, InputSignal, input } from '@angular/core';
 
 @Component({
-  standalone: true,
   selector: 'page-header',
   template: `
     <header class="container mx-auto pt-20 px-4 pb-16 md:pt-24 md:pb-20 text-center">

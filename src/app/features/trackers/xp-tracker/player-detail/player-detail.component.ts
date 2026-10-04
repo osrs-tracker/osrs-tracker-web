@@ -97,7 +97,7 @@ export default class PlayerDetailComponent implements OnInit {
         this.player()!.username,
         this.xpTrackerStore.scrapingOffset(),
         this.#MORE_SIZE,
-        this.history().flat().length,
+        this.history().length,
       )
       .pipe(
         takeUntilDestroyed(this.destroyRef),

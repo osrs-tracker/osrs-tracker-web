@@ -33,9 +33,6 @@ Thumbs.db
 # Test coverage
 coverage
 
-# Scripts
-scripts/node_modules
-
 # Docker files
 Dockerfile
 .dockerignore

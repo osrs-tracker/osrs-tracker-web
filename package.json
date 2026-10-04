@@ -28,7 +28,6 @@
     "node": ">=24"
   },
   "scripts": {
-    "postinstall": "npm install --prefix ./scripts",
     "prebuild": "npm run sitemap && npm run icons",
     "build": "NG_BUILD_OPTIMIZE_CHUNKS=1 ng build --configuration production",
     "predocker:build": "npm run sitemap && npm run icons",
@@ -56,10 +55,10 @@
     "@angular/platform-browser": "^22.0.8",
     "@angular/platform-server": "^22.0.8",
     "@angular/router": "^22.0.8",
-    "@angular/service-worker": "^22.0.8",
     "@angular/ssr": "^22.0.8",
     "@ngrx/signals": "^22.0.1",
     "@osrs-tracker/hiscores": "^2.1.4",
+    "@osrs-tracker/models": "^0.8.0",
     "chart.js": "^4.5.1",
     "chartjs-adapter-date-fns": "^3.0.0",
     "chartjs-plugin-annotation": "^3.1.0",
@@ -80,7 +79,6 @@
     "@angular/cli": "^22.0.8",
     "@angular/compiler-cli": "^22.0.8",
     "@eslint/js": "^9.39.3",
-    "@osrs-tracker/models": "^0.8.0",
     "@stylistic/eslint-plugin": "^4.4.1",
     "@tailwindcss/forms": "^0.5.11",
     "@tailwindcss/postcss": "^4.2.1",
@@ -91,7 +89,6 @@
     "@types/morgan": "^1.9.10",
     "@types/node": "^24.19.1",
     "angular-eslint": "^22.1.0",
-    "autoprefixer": "^10.4.24",
     "eslint": "^9.39.3",
     "eslint-config-prettier": "^10.1.8",
     "jsdom": "^29.1.1",
@@ -100,7 +97,8 @@
     "tailwindcss": "^4.2.1",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.65.0",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.10",
+    "xml-formatter": "^3.7.0"
   },
   "allowScripts": {
     "unrs-resolver@1.11.1": true,

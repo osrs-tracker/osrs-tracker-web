@@ -3,7 +3,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
-import { finalize } from 'rxjs';
+import { Subscription, finalize } from 'rxjs';
 import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
 import { InfoTooltipComponent } from 'src/app/common/components/general/tooltip/info-tooltip.component';
 import { PageHeaderComponent } from 'src/app/common/components/layout/page-header.component';
@@ -33,6 +33,8 @@ export default class PriceTrackerComponent {
   readonly loading: WritableSignal<boolean> = signal(false);
   readonly results: WritableSignal<Item[]> = signal([]);
 
+  private searchSubscription?: Subscription;
+
   get favoriteItems(): RecentItem[] {
     return this.priceTrackerStorageService.getFavoriteItems();
   }
@@ -49,9 +51,12 @@ export default class PriceTrackerComponent {
   searchItems(): void {
     if (!this.query()) return;
 
+    // Cancel the previous search (before setting loading, as this runs its finalize), so a slow earlier response can't
+    // overwrite a newer one
+    this.searchSubscription?.unsubscribe();
     this.loading.set(true);
 
-    this.osrsTrackerRepo
+    this.searchSubscription = this.osrsTrackerRepo
       .searchItems(this.query())
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({

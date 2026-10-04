@@ -1,6 +1,6 @@
 import { Component, InputSignal, computed, input } from '@angular/core';
-import { SkillEnum } from 'node_modules/@osrs-tracker/hiscores';
-import { HiscoreEntry, HiscoreSkill } from 'node_modules/@osrs-tracker/models/dist/esm';
+import { SkillEnum } from '@osrs-tracker/hiscores';
+import { HiscoreEntry, HiscoreSkill } from '@osrs-tracker/models';
 import { PlayerSkillWidgetComponent } from './player-skill.component';
 
 @Component({

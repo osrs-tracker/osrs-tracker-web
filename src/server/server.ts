@@ -17,13 +17,11 @@ if (isMainModule(import.meta.url)) {
     autoGenerateService.initialize(angularApp); // Initialize auto-generation of pages
   });
 
-  configureGracefulShutdown(server, () => autoGenerateService.shutdown());
-
   const metricsServer = metricsApp.listen(serverConfig.METRICS_PORT, () => {
     console.log(`Metrics server listening on http://localhost:${serverConfig.METRICS_PORT}`);
   });
 
-  configureGracefulShutdown(metricsServer);
+  configureGracefulShutdown([server, metricsServer], () => autoGenerateService.shutdown());
 }
 
 export { angularApp, app, metricsApp, reqHandler };

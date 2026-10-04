@@ -1,10 +1,13 @@
 /* eslint-disable no-console */
 import { Server } from 'http';
 
-export function configureGracefulShutdown(server: Server, cleanupCallback?: () => void): void {
-  // Handle graceful shutdown
+/**
+ * Shut down gracefully on SIGINT/SIGTERM: run the cleanup callback, stop accepting connections on all servers, and exit
+ * once every server has closed (or after 10 seconds).
+ */
+export function configureGracefulShutdown(servers: Server[], cleanupCallback?: () => void): void {
   ['SIGINT', 'SIGTERM'].forEach(signal => {
-    process.on(signal, () => {
+    process.once(signal, () => {
       console.log(`Received ${signal}, shutting down gracefully`);
 
       // Execute cleanup callback if provided
@@ -17,8 +20,8 @@ export function configureGracefulShutdown(server: Server, cleanupCallback?: () =
         }
       }
 
-      server.close(() => {
-        console.log('Server closed');
+      Promise.all(servers.map(server => new Promise(resolve => server.close(resolve)))).then(() => {
+        console.log('Servers closed');
         process.exit(0);
       });
 

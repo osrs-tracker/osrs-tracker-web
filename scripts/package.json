@@ -1,5 +1,3 @@
 {
-  "devDependencies": {
-    "xml-formatter": "^3.6.4"
-  }
+  "type": "commonjs"
 }
