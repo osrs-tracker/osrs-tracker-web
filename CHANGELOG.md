@@ -1,5 +1,7 @@
 ## 2026/10/04
 
+- Pages load faster on repeat visits: skill icons and the homepage images are now cached by the browser instead of
+  downloaded again on every visit.
 - Server logs now record the visitor's IP address, the referring page and the response size, to spot and block abuse.
 - Updated the privacy policy: server logs include IP addresses, kept for up to 30 days for security; attacking IP
   addresses are shared with CrowdSec's community blocklist; and how to exercise your GDPR rights.

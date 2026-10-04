@@ -6,8 +6,8 @@ import { pageCache } from '../utils/page-cache';
  */
 export function angularCacheMiddleware(): RequestHandler {
   return (req, res, next) => {
-    if (/\.(json|js|map|css|png|webmanifest|woff2)$/i.test(req.url)) {
-      // Don't cache static files
+    if (/\.[^/]+$/.test(req.path)) {
+      // Files (anything with an extension) are left to the static middleware and its cache headers
       return next();
     }
 
