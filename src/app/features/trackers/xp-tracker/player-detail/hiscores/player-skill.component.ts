@@ -15,7 +15,7 @@ import { TooltipComponent } from 'src/app/common/components/general/tooltip/tool
       [tooltipUnderline]="false"
     >
       <div
-        class="px-3 pt-1.5 flex items-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700"
+        class="px-3 pt-1.5 flex items-center gap-2 hover:bg-slate-250 dark:hover:bg-slate-700"
         [class]="hasProgressBar() ? 'pb-1' : 'pb-1.5'"
       >
         @if (skill(); as skill) {
@@ -32,12 +32,12 @@ import { TooltipComponent } from 'src/app/common/components/general/tooltip/tool
             </div>
           }
         } @else {
-          <div class="animate-pulse mx-auto h-5 w-20 my-1 rounded-lg bg-slate-300 dark:bg-slate-700"></div>
+          <div class="animate-pulse mx-auto h-5 w-20 my-1 rounded-lg bg-slate-350 dark:bg-slate-700"></div>
         }
       </div>
       @if (hasProgressBar()) {
-        <div class="w-full h-0.5 bg-slate-300 dark:bg-slate-700">
-          <div class="bg-emerald-600 dark:bg-emerald-500 h-0.5" [style.width.%]="percentageToNextLevel"></div>
+        <div class="w-full h-0.5 bg-slate-350 dark:bg-slate-700">
+          <div class="bg-emerald-700 dark:bg-emerald-500 h-0.5" [style.width.%]="percentageToNextLevel"></div>
         </div>
       }
     </div>

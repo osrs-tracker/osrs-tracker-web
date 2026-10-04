@@ -10,7 +10,7 @@ import { Component, InputSignal, input } from '@angular/core';
         <p class="font-bold mb-4">Last updated: {{ lastUpdated() }}</p>
       }
 
-      <div class="bg-slate-300 dark:bg-slate-700 shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      <div class="bg-slate-350 dark:bg-slate-700 shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <ng-content />
       </div>
     </div>

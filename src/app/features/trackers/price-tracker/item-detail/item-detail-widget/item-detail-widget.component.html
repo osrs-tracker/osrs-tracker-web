@@ -7,7 +7,7 @@
 
     <button
       type="button"
-      class="ml-auto shrink-0 self-center flex items-center justify-center size-9 rounded-lg shadow-lg bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white transition-colors hover:bg-slate-200 dark:hover:bg-slate-700"
+      class="ml-auto shrink-0 self-center flex items-center justify-center size-9 rounded-lg shadow-lg bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white transition-colors hover:bg-slate-250 dark:hover:bg-slate-700"
       [attr.aria-label]="isFavorite() ? 'Remove favorite' : 'Add favorite'"
       [attr.aria-pressed]="isFavorite()"
       [title]="isFavorite() ? 'Remove favorite' : 'Add favorite'"
@@ -30,7 +30,7 @@
     </button>
   </header>
 
-  <div class="shadow-lg rounded-lg bg-slate-100 dark:bg-slate-800 p-4 flex flex-col gap-4">
+  <div class="shadow-lg rounded-lg bg-slate-200 dark:bg-slate-800 p-4 flex flex-col gap-4">
     <picture class="relative flex justify-center py-4 h-40">
       <img
         class="object-contain"

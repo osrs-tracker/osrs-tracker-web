@@ -10,6 +10,9 @@
 
 ### Improvements and fixes
 
+- The light theme is softer on the eyes: page backgrounds, cards and inputs are no longer near-white, and greens are
+  less bright.
+- The feature previews on the home page show the current design, and are sharper on high-resolution screens.
 - Favorite and recently viewed items update right away, and the price tracker reads them from the browser only once.
 - The clue scrolls card on player pages no longer shrinks slightly when the hiscores finish loading.
 - Item search no longer shows the results of an earlier search when searching quickly.

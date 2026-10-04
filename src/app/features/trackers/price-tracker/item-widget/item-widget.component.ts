@@ -12,10 +12,10 @@ import { RecentItem } from '../price-tracker.store';
   selector: 'item-widget',
   template: `
     <article
-      class="flex rounded text-lg font-bold bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white
-        cursor-pointer ring-2 ring-transparent hover:ring-emerald-500 dark:hover:ring-emerald-400"
+      class="flex rounded text-lg font-bold bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white
+        cursor-pointer ring-2 ring-transparent hover:ring-emerald-600 dark:hover:ring-emerald-400"
     >
-      <div class="w-1/2 flex gap-3 items-center rounded-l bg-slate-300 dark:bg-slate-700 px-4 py-2">
+      <div class="w-1/2 flex gap-3 items-center rounded-l bg-slate-350 dark:bg-slate-700 px-4 py-2">
         <img icon [name]="recentItem().icon" [wiki]="true" class="w-7 h-7" />
         <h3 class="truncate" [title]="recentItem().name">{{ recentItem().name }}</h3>
       </div>

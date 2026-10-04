@@ -14,24 +14,24 @@ const BOSSES: ReadonlySet<string> = new Set(
 @Component({
   selector: 'player-bosses',
   template: `
-    <section class="p-2 shadow-lg rounded-lg bg-slate-100 dark:bg-slate-800">
+    <section class="p-2 shadow-lg rounded-lg bg-slate-200 dark:bg-slate-800">
       @if (bosses(); as bosses) {
         <div
-          class="overflow-hidden border rounded-xl grid grid-cols-3 gap-px border-slate-300 dark:border-slate-600 bg-slate-300 dark:bg-slate-600"
+          class="overflow-hidden border rounded-xl grid grid-cols-3 gap-px border-slate-350 dark:border-slate-600 bg-slate-350 dark:bg-slate-600"
         >
           @for (boss of bosses; track boss.name) {
-            <player-activity class="bg-slate-100 dark:bg-slate-800" [activity]="boss" scoreLabel="Kill count" />
+            <player-activity class="bg-slate-200 dark:bg-slate-800" [activity]="boss" scoreLabel="Kill count" />
           }
           @for (filler of fillers(); track $index) {
-            <div class="bg-slate-100 dark:bg-slate-800"></div>
+            <div class="bg-slate-200 dark:bg-slate-800"></div>
           }
         </div>
       } @else {
         <div
-          class="overflow-hidden border rounded-xl grid grid-cols-3 gap-px border-slate-300 dark:border-slate-600 bg-slate-300 dark:bg-slate-600"
+          class="overflow-hidden border rounded-xl grid grid-cols-3 gap-px border-slate-350 dark:border-slate-600 bg-slate-350 dark:bg-slate-600"
         >
           @for (skeleton of [].constructor(6); track $index) {
-            <player-activity class="bg-slate-100 dark:bg-slate-800" [activity]="undefined" />
+            <player-activity class="bg-slate-200 dark:bg-slate-800" [activity]="undefined" />
           }
         </div>
       }

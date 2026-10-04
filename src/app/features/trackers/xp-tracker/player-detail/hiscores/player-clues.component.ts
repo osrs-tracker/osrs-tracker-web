@@ -6,16 +6,16 @@ import { PlayerActivityWidgetComponent } from './player-activity.component';
 @Component({
   selector: 'player-clues',
   template: `
-    <section class="p-2 shadow-lg rounded-lg bg-slate-100 dark:bg-slate-800">
+    <section class="p-2 shadow-lg rounded-lg bg-slate-200 dark:bg-slate-800">
       <div
-        class="overflow-hidden border rounded-xl divide-y border-slate-300 dark:border-slate-600 divide-slate-300 dark:divide-slate-600"
+        class="overflow-hidden border rounded-xl divide-y border-slate-350 dark:border-slate-600 divide-slate-350 dark:divide-slate-600"
       >
-        <div class="grid grid-cols-3 divide-x divide-slate-300 dark:divide-slate-600">
+        <div class="grid grid-cols-3 divide-x divide-slate-350 dark:divide-slate-600">
           <player-activity [activity]="beginner()" scoreLabel="Completed" />
           <player-activity [activity]="easy()" scoreLabel="Completed" />
           <player-activity [activity]="medium()" scoreLabel="Completed" />
         </div>
-        <div class="grid grid-cols-3 divide-x divide-slate-300 dark:divide-slate-600">
+        <div class="grid grid-cols-3 divide-x divide-slate-350 dark:divide-slate-600">
           <player-activity [activity]="hard()" scoreLabel="Completed" />
           <player-activity [activity]="elite()" scoreLabel="Completed" />
           <player-activity [activity]="master()" scoreLabel="Completed" />

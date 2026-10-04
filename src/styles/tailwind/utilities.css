@@ -5,11 +5,11 @@
 
   /* Color */
   .accent {
-    @apply text-emerald-500 dark:text-emerald-400;
+    @apply text-emerald-600 dark:text-emerald-400;
   }
   .positive,
   .positive-value {
-    @apply text-positive-600 dark:text-positive-400;
+    @apply text-positive-700 dark:text-positive-400;
   }
   .positive-value::before {
     content: '+';

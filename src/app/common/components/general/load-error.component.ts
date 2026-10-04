@@ -21,7 +21,7 @@ import { AnalyticsService } from '../../services/analytics/analytics.service';
     @if (compact()) {
       <button
         type="button"
-        class="flex items-center justify-center size-8 rounded-full text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700"
+        class="flex items-center justify-center size-8 rounded-full text-slate-900 dark:text-white hover:bg-slate-250 dark:hover:bg-slate-700"
         [title]="message() + ' Click to retry.'"
         [attr.aria-label]="message() + ' Retry'"
         (click)="onRetry($event)"
@@ -52,7 +52,7 @@ import { AnalyticsService } from '../../services/analytics/analytics.service';
     }
   `,
   host: {
-    '[class]': "panel() ? 'block shadow-lg rounded-lg bg-slate-100 dark:bg-slate-800' : ''",
+    '[class]': "panel() ? 'block shadow-lg rounded-lg bg-slate-200 dark:bg-slate-800' : ''",
   },
 })
 export class LoadErrorComponent {

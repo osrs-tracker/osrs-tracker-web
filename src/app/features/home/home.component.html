@@ -34,7 +34,7 @@
     <div>
       <img
         alt="OSRS Tracker"
-        [ngSrc]="isDarkMode() ? '/assets/features/xp-tracker_dark.webp' : '/assets/features/xp-tracker.webp'"
+        [ngSrc]="isDarkMode() ? '/assets/features/xp-tracker_dark.webp?v=2' : '/assets/features/xp-tracker.webp?v=2'"
         width="800"
         height="450"
         priority
@@ -68,7 +68,9 @@
     <div class="-order-1 lg:order-none">
       <img
         alt="OSRS Tracker"
-        [ngSrc]="isDarkMode() ? '/assets/features/price-tracker_dark.webp' : '/assets/features/price-tracker.webp'"
+        [ngSrc]="
+          isDarkMode() ? '/assets/features/price-tracker_dark.webp?v=2' : '/assets/features/price-tracker.webp?v=2'
+        "
         width="800"
         height="450"
       />

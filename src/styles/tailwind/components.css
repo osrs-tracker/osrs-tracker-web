@@ -1,12 +1,12 @@
 @layer components {
   .button-group {
-    @apply text-base font-bold flex rounded-lg bg-slate-100 dark:bg-slate-800;
+    @apply text-base font-bold flex rounded-lg bg-slate-200 dark:bg-slate-800;
 
     button {
       @apply min-w-[64px] rounded-lg px-3 py-0.5;
     }
     button.active {
-      @apply bg-emerald-500 dark:bg-emerald-400 text-white dark:text-slate-900;
+      @apply bg-emerald-600 dark:bg-emerald-400 text-white dark:text-slate-900;
     }
   }
 
@@ -21,7 +21,7 @@
   }
   .button--primary {
     @apply dark:text-slate-900
-      bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 border-emerald-400 hover:border-emerald-500 active:border-emerald-600
+      bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 border-emerald-500 hover:border-emerald-600 active:border-emerald-700
       dark:bg-emerald-400 dark:hover:bg-emerald-500 dark:active:bg-emerald-600 dark:border-emerald-300 dark:hover:border-emerald-400 dark:active:border-emerald-500;
   }
   .button--rounded {
@@ -29,18 +29,18 @@
   }
 
   .link {
-    @apply font-bold active:text-emerald-700 hover:text-emerald-600 text-emerald-500 dark:active:text-emerald-600 dark:hover:text-emerald-500 dark:text-emerald-400;
+    @apply font-bold active:text-emerald-800 hover:text-emerald-700 text-emerald-600 dark:active:text-emerald-600 dark:hover:text-emerald-500 dark:text-emerald-400;
   }
 
   .link-states--light {
-    @apply active:text-emerald-700 hover:text-emerald-600;
+    @apply active:text-emerald-800 hover:text-emerald-700;
   }
   .link-states--dark {
     @apply active:text-emerald-600 hover:text-emerald-500;
   }
 
   .input--default {
-    @apply rounded-full w-full px-6 py-2.5 dark:bg-slate-800 focus:ring-emerald-500 focus:border-emerald-500 dark:focus:ring-emerald-400 dark:focus:border-emerald-400;
+    @apply rounded-full w-full px-6 py-2.5 bg-slate-150 dark:bg-slate-800 focus:ring-emerald-600 focus:border-emerald-600 dark:focus:ring-emerald-400 dark:focus:border-emerald-400;
   }
   select.input--default {
     @apply pr-7;
