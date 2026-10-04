@@ -26,7 +26,11 @@ When a separate Claude session owns one of them, send changes there instead of e
 - **Shared packages** `@osrs-tracker/models` and `@osrs-tracker/hiscores` are published from osrs-tracker-aws.
   `hiscores` peer-depends on `models`, so **bump both together**, with `--prefer-online` right after a publish (the
   registry's dist-tags lag). Type-only bumps don't need a deploy.
-- Use **ToxSick** (the maintainer's old account) as the test player for production checks.
+- Test players on production:
+  - **the fraking** (active, so the data is realistic): use it for **visual** checks of player pages
+    (`/trackers/xp/the%20fraking`).
+  - **ToxSick** (the maintainer's old, inactive account): use it when a test **writes or changes data** (lookups,
+    snapshots, recent lookups), since that has no consequences.
 
 ## Layout
 
