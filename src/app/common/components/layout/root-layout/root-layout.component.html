@@ -72,7 +72,7 @@
     </div>
 
     <!-- full width loading indicator -->
-    @if (loadingIndicatorService.hasOngoingRequests | async) {
+    @if (hasOngoingRequests()) {
       <div class="loading-indicator__container absolute top-0 left-0 w-full h-2 overflow-hidden">
         <div class="h-1 bg-emerald-400 animate-pulse"></div>
         <div class="absolute top-0 w-full loading-indicator">

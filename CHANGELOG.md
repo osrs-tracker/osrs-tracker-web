@@ -1,5 +1,7 @@
 ## 2026/10/04
 
+- Behind-the-scenes maintenance: the home page news, the changelog and the loading bar use the site's shared data
+  loading code.
 - The clue scrolls card on player pages no longer shrinks slightly when the hiscores finish loading.
 - Behind-the-scenes maintenance: simplified the player and item page code.
 - Your favorite and recently viewed items now update right away, and the price tracker reads them from the browser only

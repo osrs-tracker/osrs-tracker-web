@@ -1,6 +1,6 @@
 import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, InputSignal, Signal, computed, input } from '@angular/core';
-import { OsrsNewsItem } from 'src/app/common/repositories/osrs-proxy.repo';
+import { OsrsNewsItem } from 'src/app/common/repositories/osrs-tracker.repo';
 import { config } from 'src/config/config';
 
 @Component({

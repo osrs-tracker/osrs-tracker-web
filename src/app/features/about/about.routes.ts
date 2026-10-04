@@ -1,7 +1,6 @@
-import { HttpClient, HttpContext } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Route } from '@angular/router';
-import { BASE_URL_PREFIX } from 'src/app/core/interceptors/base-url.interceptors';
+import { GithubRepo } from 'src/app/common/repositories/github.repo';
 
 export default [
   {
@@ -10,13 +9,7 @@ export default [
     title: 'Changelog - OSRS Tracker',
     loadComponent: () => import('./changelog/changelog.component'),
     resolve: {
-      changelog: () => {
-        const CHANGELOG_URL = 'https://raw.githubusercontent.com/osrs-tracker/osrs-tracker-web/main/CHANGELOG.md';
-        return inject(HttpClient).get(CHANGELOG_URL, {
-          responseType: 'text',
-          context: new HttpContext().set(BASE_URL_PREFIX, false),
-        });
-      },
+      changelog: () => inject(GithubRepo).getChangelog(),
     },
   },
   {
