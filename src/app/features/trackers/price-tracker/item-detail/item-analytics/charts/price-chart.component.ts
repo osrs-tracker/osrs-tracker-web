@@ -1,44 +1,17 @@
-import { formatNumber, isPlatformBrowser } from '@angular/common';
-import {
-  Component,
-  ElementRef,
-  HostListener,
-  Injector,
-  InputSignal,
-  OnDestroy,
-  OnInit,
-  PLATFORM_ID,
-  Signal,
-  computed,
-  effect,
-  inject,
-  input,
-  runInInjectionContext,
-  viewChild,
-} from '@angular/core';
-import { Chart, Plugin } from 'chart.js';
+import { formatNumber } from '@angular/common';
+import { Component, Signal, computed } from '@angular/core';
+import { Chart, ChartOptions, Point } from 'chart.js';
 import { fromUnixTime } from 'date-fns';
 import { formatNumberLegible } from 'src/app/common/helpers/number.helper';
 import { AveragePricesAtTime } from 'src/app/common/repositories/osrs-prices.repo';
-import { ThemeService } from 'src/app/common/services/theme.service';
-import { config } from 'src/config/config';
-import './chart-setup';
+import { BaseChart } from './base-chart';
 
 @Component({
   selector: 'price-chart',
-  template: '<canvas #priceChart></canvas>',
+  template: '<canvas #chart></canvas>',
 })
-export class PriceChartComponent implements OnInit, OnDestroy {
-  private readonly injector = inject(Injector);
-  private readonly themeService = inject(ThemeService);
-  private readonly platformId = inject(PLATFORM_ID);
-  private readonly isBrowser = isPlatformBrowser(this.platformId);
-
-  priceChart?: Chart;
-  private destroyed = false;
-  readonly priceChartCanvas: Signal<ElementRef<HTMLCanvasElement>> = viewChild.required('priceChart');
-
-  readonly timeSeries: InputSignal<AveragePricesAtTime[]> = input.required();
+export class PriceChartComponent extends BaseChart<'line'> {
+  protected readonly type = 'line';
 
   readonly latestHighPrice: Signal<AveragePricesAtTime> = computed(
     () =>
@@ -53,136 +26,36 @@ export class PriceChartComponent implements OnInit, OnDestroy {
         .slice(-1)[0],
   );
 
-  readonly chartConfig = computed(() => (this.themeService.darkMode() ? config.chart.dark : config.chart.light));
-
-  ngOnInit(): void {
-    if (this.isBrowser) void this.initChart();
-  }
-
-  private async initChart(): Promise<void> {
-    // The zoom plugin is loaded lazily (it needs the browser), so it's passed to the chart instead of registered globally
-    const zoom = (await import('chartjs-plugin-zoom')).default;
-
-    // The component can be destroyed while the zoom plugin is loading
-    if (this.destroyed) return;
-
-    this.createPriceChart([zoom]);
-
-    runInInjectionContext(this.injector, () => {
-      effect(() => this.updatePriceChart(this.timeSeries()));
-      effect(() => (this.themeService.darkMode(), this.priceChart!.update('none')));
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.destroyed = true;
-    this.priceChart?.destroy();
-  }
-
-  // Workaround for chart.js not updating when the size of the canvas shrinks
-  @HostListener('window:resize')
-  onResize(): void {
-    this.priceChart?.resize(1, 1);
-    requestAnimationFrame(() => this.priceChart?.resize());
-  }
-
-  // Workaround for chart.js not closing tooltips when tapping outside the canvas (iOS)
-  @HostListener('document:touchend', ['$event.target'])
-  hideTooltip(target: EventTarget | null): void {
-    if (this.priceChart && target !== this.priceChartCanvas().nativeElement) {
-      this.priceChartCanvas().nativeElement.dispatchEvent(new Event('mouseout'));
-    }
-  }
-
-  private createPriceChart(plugins: Plugin[]): void {
-    this.priceChart = new Chart(this.priceChartCanvas().nativeElement, {
-      type: 'line',
-      data: { datasets: [] },
-      plugins,
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        datasets: {
-          line: {
-            pointRadius: 0,
-            pointHoverRadius: 4,
-            spanGaps: true,
-            borderWidth: 2,
-          },
+  protected chartOptions(): ChartOptions<'line'> {
+    return {
+      datasets: {
+        line: {
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          spanGaps: true,
+          borderWidth: 2,
         },
-        scales: {
-          x: {
-            type: 'timeseries',
-            time: {
-              minUnit: 'hour',
-              displayFormats: {
-                hour: 'HH:mm',
-                day: 'MMMM do',
-                month: 'MMMM yyyy',
-              },
-              tooltipFormat: 'MMMM do - HH:mm',
-            },
-            ticks: {
-              color: () => this.chartConfig().tickColor,
-              source: 'data',
-              maxRotation: 0,
-              includeBounds: false,
-              stepSize: 3,
-            },
-            grid: { color: () => this.chartConfig().gridColor },
-          },
-          y: {
-            type: 'linear',
-            ticks: {
-              color: () => this.chartConfig().tickColor,
-              autoSkipPadding: 20,
-              includeBounds: false,
-              callback: value => formatNumberLegible(Number(value), 3),
-            },
-            grid: { color: () => this.chartConfig().gridColor },
-          },
-        },
-        hover: {
-          mode: 'index',
-          intersect: false,
-        },
-        devicePixelRatio: Math.max(devicePixelRatio, 1.5),
-        plugins: {
-          tooltip: {
-            enabled: true,
-            mode: 'index',
-            intersect: false,
-            usePointStyle: true,
-
-            callbacks: {
-              label: context => ` ${context.dataset.label}: ${formatNumber(context.parsed.y!, 'en-US', '1.0-0')} gp`,
-            },
-          },
-          zoom: {
-            limits: {
-              x: { min: 'original', max: 'original' },
-              y: { min: 'original', max: 'original' },
-            },
-            pan: {
-              enabled: true,
-              threshold: 10,
-              mode: 'x',
-            },
-            zoom: {
-              wheel: { enabled: true },
-              pinch: { enabled: true },
-              mode: 'x',
-            },
+      },
+      scales: {
+        y: {
+          ticks: {
+            autoSkipPadding: 20,
+            callback: value => formatNumberLegible(Number(value), 3),
           },
         },
       },
-    });
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: context => ` ${context.dataset.label}: ${formatNumber(context.parsed.y!, 'en-US', '1.0-0')} gp`,
+          },
+        },
+      },
+    };
   }
 
-  private updatePriceChart(priceTimeSeries: AveragePricesAtTime[]) {
-    if (!this.priceChart) return;
-
-    this.priceChart.data.datasets = [
+  protected setData(chart: Chart<'line', Point[]>, priceTimeSeries: AveragePricesAtTime[]): void {
+    chart.data.datasets = [
       {
         label: 'Buy price',
         data: priceTimeSeries.map(price => ({
@@ -203,7 +76,7 @@ export class PriceChartComponent implements OnInit, OnDestroy {
       },
     ];
 
-    this.priceChart.options.plugins!.annotation = {
+    chart.options.plugins!.annotation = {
       annotations: {
         latestBuy: {
           type: 'line',
@@ -225,8 +98,5 @@ export class PriceChartComponent implements OnInit, OnDestroy {
         },
       },
     };
-
-    this.priceChart.update();
-    this.priceChart.resetZoom();
   }
 }

@@ -1,4 +1,4 @@
-import { Component, ResourceRef, WritableSignal, inject, signal } from '@angular/core';
+import { Component, ResourceRef, Signal, WritableSignal, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -11,7 +11,7 @@ import { PageHeaderComponent } from 'src/app/common/components/layout/page-heade
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
 import { ItemWidgetComponent } from './item-widget/item-widget.component';
-import { PriceTrackerStorageService, RecentItem } from './price-tracker-storage.service';
+import { PriceTrackerStore, RecentItem } from './price-tracker.store';
 
 @Component({
   selector: 'price-tracker',
@@ -29,7 +29,7 @@ import { PriceTrackerStorageService, RecentItem } from './price-tracker-storage.
 })
 export default class PriceTrackerComponent {
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
-  private readonly priceTrackerStorageService = inject(PriceTrackerStorageService);
+  private readonly priceTrackerStore = inject(PriceTrackerStore);
 
   readonly query: WritableSignal<string> = signal('');
   readonly loading: WritableSignal<boolean> = signal(false);
@@ -37,13 +37,8 @@ export default class PriceTrackerComponent {
 
   private searchSubscription?: Subscription;
 
-  get favoriteItems(): RecentItem[] {
-    return this.priceTrackerStorageService.getFavoriteItems();
-  }
-
-  get recentItems(): RecentItem[] {
-    return this.priceTrackerStorageService.getRecentItems();
-  }
+  readonly favoriteItems: Signal<RecentItem[]> = this.priceTrackerStore.favoriteItems;
+  readonly recentItems: Signal<RecentItem[]> = this.priceTrackerStore.recentItems;
 
   readonly recentItemLookups: ResourceRef<Item[]> = rxResource({
     stream: () => this.osrsTrackerRepo.getRecentItemLookups(),

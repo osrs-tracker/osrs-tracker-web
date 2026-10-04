@@ -1,5 +1,8 @@
 ## 2026/10/04
 
+- Your favorite and recently viewed items now update right away, and the price tracker reads them from the browser only
+  once.
+- Behind-the-scenes maintenance: the price and volume charts share their setup code.
 - Behind-the-scenes maintenance: updated the web server to Express 5.
 - Updates to the site no longer cause brief errors while they roll out.
 - Behind-the-scenes maintenance: the server runs with fewer permissions and is taken out of service automatically when

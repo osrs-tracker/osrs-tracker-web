@@ -104,7 +104,7 @@
       <div class="grid gap-4 p-0.5 max-h-87 overflow-y-auto">
         <!-- Deferred because these are read from local storage, which isn't available during SSR -->
         @defer {
-          @for (item of recentItems; track item.id) {
+          @for (item of recentItems(); track item.id) {
             <a [routerLink]="['/trackers/price', item.id]">
               <item-widget [recentItem]="item"></item-widget>
             </a>
@@ -127,7 +127,7 @@
       <div class="grid gap-4 p-0.5 max-h-87 overflow-y-auto">
         <!-- Deferred because these are read from local storage, which isn't available during SSR -->
         @defer {
-          @for (item of favoriteItems; track item.id) {
+          @for (item of favoriteItems(); track item.id) {
             <a [routerLink]="['/trackers/price', item.id]">
               <item-widget [recentItem]="item"></item-widget>
             </a>
