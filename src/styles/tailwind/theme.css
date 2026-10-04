@@ -15,8 +15,12 @@
 
   --color-slate-50: oklch(0.984 0.003 247.858);
   --color-slate-100: oklch(0.968 0.007 247.896);
+  /* Extra light-theme steps (inputs, page, card headers): stock slate jumps too far between 300 and 400. */
+  --color-slate-150: oklch(0.95 0.01 251.7);
   --color-slate-200: oklch(0.929 0.013 255.508);
+  --color-slate-250: oklch(0.89 0.018 254.2);
   --color-slate-300: oklch(0.869 0.022 252.894);
+  --color-slate-350: oklch(0.83 0.028 254.8);
   --color-slate-400: oklch(0.704 0.04 256.788);
   --color-slate-500: oklch(0.554 0.046 257.417);
   --color-slate-600: oklch(0.446 0.043 257.281);

@@ -8,7 +8,7 @@ import { TooltipComponent } from 'src/app/common/components/general/tooltip/tool
   selector: 'player-activity',
   template: `
     <div
-      class="h-full px-3 py-1.5 flex items-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700"
+      class="h-full px-3 py-1.5 flex items-center gap-2 hover:bg-slate-250 dark:hover:bg-slate-700"
       [tooltip]="!!activity()"
       [tooltipTemplate]="tooltipTemplate"
       [tooltipUnderline]="false"
@@ -31,7 +31,7 @@ import { TooltipComponent } from 'src/app/common/components/general/tooltip/tool
       } @else {
         <!-- Same height as the loaded row: the icon row is 28px tall, the total row a 24px line of text -->
         <div
-          class="animate-pulse mx-auto h-5 w-20 rounded-lg bg-slate-300 dark:bg-slate-700"
+          class="animate-pulse mx-auto h-5 w-20 rounded-lg bg-slate-350 dark:bg-slate-700"
           [class]="totalLabel() ? 'my-0.5' : 'my-1'"
         ></div>
       }
