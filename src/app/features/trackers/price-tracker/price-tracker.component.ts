@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
 import { Subscription, finalize } from 'rxjs';
+import { LoadErrorComponent } from 'src/app/common/components/general/load-error.component';
 import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
 import { InfoTooltipComponent } from 'src/app/common/components/general/tooltip/info-tooltip.component';
 import { PageHeaderComponent } from 'src/app/common/components/layout/page-header.component';
@@ -20,6 +21,7 @@ import { PriceTrackerStorageService, RecentItem } from './price-tracker-storage.
     FormsModule,
     IconDirective,
     InfoTooltipComponent,
+    LoadErrorComponent,
     PageHeaderComponent,
     SpinnerComponent,
     ItemWidgetComponent,

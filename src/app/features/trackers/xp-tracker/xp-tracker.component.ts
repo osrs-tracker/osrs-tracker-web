@@ -4,6 +4,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Player } from '@osrs-tracker/models';
+import { LoadErrorComponent } from 'src/app/common/components/general/load-error.component';
 import { TooltipComponent } from 'src/app/common/components/general/tooltip/tooltip.component';
 import { PageHeaderComponent } from 'src/app/common/components/layout/page-header.component';
 import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
@@ -18,6 +19,7 @@ import { XpTrackerStore } from './xp-tracker.store';
     DecimalPipe,
     FormsModule,
     RouterLink,
+    LoadErrorComponent,
     TooltipComponent,
     PageHeaderComponent,
     PlayerWidgetComponent,

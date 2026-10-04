@@ -1,5 +1,10 @@
 ## 2026/10/04
 
+- Player pages, player cards, item price trends and charts, the recent lookups and the home page news now show a message
+  with a retry button when loading fails, instead of loading forever or showing empty data.
+- Opening a player or item page while the site's data is unavailable now shows an error page, instead of the link doing
+  nothing.
+- Behind-the-scenes maintenance: automated tests for page errors and for removing players that no longer exist.
 - Fixed the price tracker crashing, and player pages showing "not found", when the trackers' saved data in the browser
   was damaged.
 - Behind-the-scenes maintenance: automated tests for the server's page cache, page pre-rendering, request handling and
@@ -58,7 +63,8 @@
 - Fixed charts sometimes showing data for the wrong time span after quickly switching.
 - Fixed unknown pages, items and players not returning a proper 404 status.
 - Fixed searching for items or players with special characters in their name.
-- Fixed loading spinners getting stuck when a request failed.
+- Fixed some loading spinners getting stuck when a request failed (player pages and the home page news were fixed on
+  2026/10/04).
 - Fixed the favorite player toggle being reported incorrectly in analytics.
 - Added a page title to the changelog.
 - Updated to Node 24 and updated dependencies, including the latest shared OSRS Tracker packages.

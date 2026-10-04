@@ -72,17 +72,21 @@
       </h2>
 
       <div class="grid gap-4 p-0.5 max-h-87 overflow-y-auto">
-        @for (item of recentItemLookups.value(); track item.id) {
-          <a [routerLink]="['/trackers/price', item.id]">
-            <item-widget [recentItem]="item"></item-widget>
-          </a>
-        } @empty {
-          @if (!recentItemLookups.isLoading()) {
-            <p>No items looked up yet.</p>
-          } @else {
-            <div class="flex justify-center items-center h-87 -m-0.5">
-              <spinner [size]="8" />
-            </div>
+        @if (recentItemLookups.error()) {
+          <load-error source="recent-item-lookups" (retry)="recentItemLookups.reload()" />
+        } @else {
+          @for (item of recentItemLookups.value(); track item.id) {
+            <a [routerLink]="['/trackers/price', item.id]">
+              <item-widget [recentItem]="item"></item-widget>
+            </a>
+          } @empty {
+            @if (!recentItemLookups.isLoading()) {
+              <p>No items looked up yet.</p>
+            } @else {
+              <div class="flex justify-center items-center h-87 -m-0.5">
+                <spinner [size]="8" />
+              </div>
+            }
           }
         }
       </div>

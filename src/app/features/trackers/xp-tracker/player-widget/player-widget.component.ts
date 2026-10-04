@@ -1,24 +1,21 @@
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, isPlatformBrowser } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
-  ChangeDetectorRef,
   Component,
-  Injector,
   InputSignal,
   OnInit,
+  PLATFORM_ID,
+  ResourceRef,
   Signal,
-  WritableSignal,
-  afterNextRender,
   computed,
-  effect,
   inject,
   input,
-  runInInjectionContext,
-  signal,
 } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { SkillEnum, getOverallXpDiff } from '@osrs-tracker/hiscores';
-import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
-import { EMPTY, catchError, finalize, forkJoin } from 'rxjs';
+import { HiscoreEntry, Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
+import { Observable, catchError, forkJoin, map, throwError } from 'rxjs';
+import { LoadErrorComponent } from 'src/app/common/components/general/load-error.component';
 import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
 import { TooltipComponent } from 'src/app/common/components/general/tooltip/tooltip.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
@@ -63,16 +60,21 @@ import { XpTrackerStore } from '../xp-tracker.store';
         <div class="flex items-center">
           @if (loading()) {
             <spinner />
+          } @else if (overallDiffResource.error()) {
+            <load-error
+              compact
+              source="player-widget"
+              message="Couldn't load this player."
+              (retry)="overallDiffResource.reload()"
+            />
           } @else {
             @if (overallDiff() === null) {
               &mdash;
             } @else {
-              <div [tooltip]="!!this.player()" [tooltipTemplate]="tooltip">
-                +&nbsp;{{ overallDiff() | number }}&nbsp;XP
-              </div>
+              <div [tooltip]="!!player()" [tooltipTemplate]="tooltip">+&nbsp;{{ overallDiff() | number }}&nbsp;XP</div>
               <ng-template #tooltip>
                 The XP for this player is calculated since they were last scraped, which is
-                {{ this.player()?.hiscoreEntries?.[0]?.date | timeAgo }}.
+                {{ player()?.hiscoreEntries?.[0]?.date | timeAgo }}.
               </ng-template>
 
               <img class="w-5 h-5 ml-2 mb-1" icon [name]="SkillEnum.Overall" [skill]="true" />
@@ -82,15 +84,22 @@ import { XpTrackerStore } from '../xp-tracker.store';
       </div>
     </article>
   `,
-  imports: [CapitalizePipe, DecimalPipe, TimeAgoPipe, IconDirective, SpinnerComponent, TooltipComponent],
+  imports: [
+    CapitalizePipe,
+    DecimalPipe,
+    TimeAgoPipe,
+    IconDirective,
+    LoadErrorComponent,
+    SpinnerComponent,
+    TooltipComponent,
+  ],
 })
 export class PlayerWidgetComponent implements OnInit {
   private readonly analyticsService = inject(AnalyticsService);
-  private readonly changeDetectorRef = inject(ChangeDetectorRef);
-  private readonly injector = inject(Injector);
   private readonly osrsProxyRepo = inject(OsrsProxyRepo);
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly xpTrackerStore = inject(XpTrackerStore);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   readonly PlayerType: typeof PlayerType = PlayerType;
   readonly PlayerStatus: typeof PlayerStatus = PlayerStatus;
@@ -101,24 +110,25 @@ export class PlayerWidgetComponent implements OnInit {
   readonly scrapingOffset: InputSignal<number> = input.required();
 
   readonly _username: Signal<string> = computed(() => (this.player()?.username ?? this.username())!);
-  readonly formattedOffset: Signal<string> = computed(() => {
-    const offset = this.player()?.hiscoreEntries?.[0]?.scrapingOffset ?? this.scrapingOffset();
-    return offset > 0 ? `+${offset}` : offset.toString();
+
+  /** The XP gained since the last scrape, and the player itself when only a username was given. Browser only. */
+  readonly overallDiffResource: ResourceRef<{ player: Player; overallDiff: number | null } | undefined> = rxResource({
+    params: () =>
+      this.isBrowser ? { username: this.username(), player: this.player(), offset: this.scrapingOffset() } : undefined,
+    stream: ({ params: { username, player, offset } }) =>
+      player ? this.fetchFromPlayer(player, offset) : this.fetchFromUsername(username!, offset),
   });
 
-  readonly playerDetails: WritableSignal<Player | null> = signal(null);
-  readonly overallDiff: WritableSignal<number | null> = signal(null);
-
-  readonly loading = signal(true);
-
-  constructor() {
-    afterNextRender(() =>
-      runInInjectionContext(this.injector, () => {
-        effect(() => this.username() && this.fetchFromUsername(this.username()!));
-        effect(() => this.player() && (this.playerDetails.set(this.player()), this.fetchFromPlayer(this.player()!)));
-      }),
-    );
-  }
+  readonly playerDetails: Signal<Player | null> = computed(
+    () =>
+      this.player() ??
+      (this.overallDiffResource.hasValue() ? (this.overallDiffResource.value()?.player ?? null) : null),
+  );
+  readonly overallDiff: Signal<number | null> = computed(() =>
+    this.overallDiffResource.hasValue() ? (this.overallDiffResource.value()?.overallDiff ?? null) : null,
+  );
+  // The server renders a spinner, the browser fetches
+  readonly loading: Signal<boolean> = computed(() => !this.isBrowser || this.overallDiffResource.isLoading());
 
   ngOnInit(): void {
     if (this.player() === null && this.username() === null) {
@@ -126,63 +136,42 @@ export class PlayerWidgetComponent implements OnInit {
     }
   }
 
-  private fetchFromUsername(username: string): void {
-    this.loading.set(true);
-
-    forkJoin([
-      this.osrsProxyRepo.getPlayerHiscore(username, this.scrapingOffset()),
-      this.osrsTrackerRepo.getPlayerInfo(username, this.scrapingOffset(), {
-        includeLatestHiscoreEntry: true,
-        skipRefresh: true,
+  private fetchFromUsername(
+    username: string,
+    offset: number,
+  ): Observable<{ player: Player; overallDiff: number | null }> {
+    return forkJoin([
+      this.osrsProxyRepo.getPlayerHiscore(username, offset),
+      this.osrsTrackerRepo.getPlayerInfo(username, offset, { includeLatestHiscoreEntry: true, skipRefresh: true }),
+    ]).pipe(
+      map(([hiscore, player]) => ({ player, overallDiff: this.overallXpDiff(hiscore, player) })),
+      catchError(err => {
+        // Only a player that no longer exists is removed, never one that failed to load for another reason
+        if (err instanceof HttpErrorResponse && err.status === 404) this.removeMissingPlayer(username);
+        return throwError(() => err);
       }),
-    ])
-      .pipe(
-        catchError(err => {
-          if (err instanceof HttpErrorResponse && err.status === 404) {
-            this.removeMissingPlayer();
-          }
-          this.loading.set(false);
-          return EMPTY;
-        }),
-      )
-      .subscribe(([hiscore, player]) => {
-        this.playerDetails.set(player);
-
-        if (player.hiscoreEntries?.length) {
-          this.overallDiff.set(getOverallXpDiff(hiscore, player.hiscoreEntries[0]));
-        }
-
-        this.loading.set(false);
-      });
+    );
   }
 
-  private fetchFromPlayer(player: Player): void {
-    this.loading.set(true);
-
-    this.osrsProxyRepo
-      .getPlayerHiscore(player.username, this.scrapingOffset())
-      .pipe(
-        catchError(() => EMPTY),
-        finalize(() => this.loading.set(false)),
-      )
-      .subscribe(hiscore => {
-        if (player.hiscoreEntries?.length) {
-          this.overallDiff.set(getOverallXpDiff(hiscore, player.hiscoreEntries[0]));
-        }
-      });
+  private fetchFromPlayer(player: Player, offset: number): Observable<{ player: Player; overallDiff: number | null }> {
+    return this.osrsProxyRepo
+      .getPlayerHiscore(player.username, offset)
+      .pipe(map(hiscore => ({ player, overallDiff: this.overallXpDiff(hiscore, player) })));
   }
 
-  private removeMissingPlayer(): void {
-    if (this.xpTrackerStore.recentPlayers().includes(this._username())) {
-      this.xpTrackerStore.removeRecentPlayer(this._username());
+  private overallXpDiff(hiscore: HiscoreEntry, player: Player): number | null {
+    return player.hiscoreEntries?.length ? getOverallXpDiff(hiscore, player.hiscoreEntries[0]) : null;
+  }
+
+  private removeMissingPlayer(username: string): void {
+    if (this.xpTrackerStore.recentPlayers().includes(username)) {
+      this.xpTrackerStore.removeRecentPlayer(username);
     }
 
-    if (this.xpTrackerStore.favoritePlayers().includes(this._username())) {
-      this.xpTrackerStore.toggleFavoritePlayer(this._username());
+    if (this.xpTrackerStore.favoritePlayers().includes(username)) {
+      this.xpTrackerStore.toggleFavoritePlayer(username);
     }
 
-    this.analyticsService.trackEvent('remove-missing-player', 'xp-tracker', this._username(), true);
-
-    this.changeDetectorRef.markForCheck();
+    this.analyticsService.trackEvent('remove-missing-player', 'xp-tracker', username, true);
   }
 }

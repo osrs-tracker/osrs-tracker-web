@@ -9,6 +9,7 @@ const PAGE_ROUTES: [RegExp, string][] = [
   [/^\/trackers\/xp$/, '/trackers/xp'],
   [/^\/trackers\/xp\/[^/]+$/, '/trackers/xp/:username'],
   [/^\/about\/(changelog|privacy|terms)$/, '/about/$1'],
+  [/^\/error$/, '/error'],
 ];
 
 /**
