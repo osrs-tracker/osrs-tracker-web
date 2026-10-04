@@ -82,7 +82,7 @@ Match the surrounding code; these are the patterns the codebase already uses:
 ## Verify before handing off
 
 ```bash
-npx ng build --configuration production && npx ng lint && npx prettier --check src && npx ng test --watch=false
+npx ng build --configuration production && npx ng lint && npm run prettier:ci && npx ng test --watch=false
 ```
 
 CI (`.github/workflows/nodejs.yml`) runs lint, `prettier:ci`, build and test on every PR to and push to `main`.
