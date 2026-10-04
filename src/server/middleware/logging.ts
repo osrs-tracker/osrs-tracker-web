@@ -16,6 +16,9 @@ export function loggingMiddleware(): RequestHandler {
       responseTime: tokens['response-time'](req, res) + 'ms',
       cache: tokens['res'](req, res, 'x-cache'),
       userAgent: tokens['user-agent'](req, res),
+      clientIp: tokens['remote-addr'](req, res),
+      referer: tokens['referrer'](req, res),
+      contentLength: tokens['res'](req, res, 'content-length'),
     });
   });
 }

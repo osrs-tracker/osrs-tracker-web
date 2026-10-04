@@ -1,3 +1,7 @@
+## 2026/10/04
+
+- Server logs now record the visitor's IP address, the referring page and the response size, to spot and block abuse.
+
 ## 2026/10/03
 
 - Fixed a flood of proxy header warnings in the server logs since the move to Traefik; a client-sent Forwarded header is
