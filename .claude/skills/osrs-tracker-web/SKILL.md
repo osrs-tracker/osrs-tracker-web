@@ -9,65 +9,56 @@ description:
 
 # osrs-tracker-web
 
-Angular 22 SSR app (zoneless, signals, standalone) served by a custom Express server (`src/server/`), deployed as a
-Docker image to Kubernetes. Deliberate trade-offs (production-only config, per-replica pre-rendering, the CSP nonce) are
-explained in `docs/decisions.md`; read it before "fixing" one.
+Angular 22 SSR app (zoneless, signals, standalone) on a custom Express server (`src/server/`), deployed to Kubernetes.
+Deliberate trade-offs (production-only config, per-replica pre-rendering, CSP nonce) are in `docs/decisions.md`; read it
+before "fixing" one.
 
 ## Related repos
 
-The API (`../osrs-tracker-api`) and the Lambdas and shared packages (`../osrs-tracker-aws`) each have their own skill.
+`../osrs-tracker-api` and `../osrs-tracker-aws` have their own skills.
 
-- **Endpoints** (`src/config/config.ts`, hard-coded to production):
-  - `apiBaseUrl`: osrs-tracker-api. Called during SSR, so its `Cache-Control` matters (see SSR rules).
-  - `awsBaseUrl`: API Gateway proxy to Jagex's hiscores, called **only in the browser**. The API and a Lambda use the
-    same proxy, so changes to it need checking from all three repos.
-- **Shared packages** `@osrs-tracker/models` and `@osrs-tracker/hiscores`: `hiscores` peer-depends on `models`, so
-  **bump both together**, with `--prefer-online` right after a publish (the registry's dist-tags lag).
-- **Test players** on production: **the fraking** (active) for visual checks of player pages; **ToxSick** (inactive) for
-  anything that writes data (lookups, snapshots, recent lookups).
+- `src/config/config.ts` (production only): `apiBaseUrl` is the API, called during SSR, so its `Cache-Control` matters.
+  `awsBaseUrl` is the API Gateway hiscores proxy, browser only; the API and a Lambda share it, so check changes in all
+  three repos.
+- `@osrs-tracker/hiscores` peer-depends on `@osrs-tracker/models`: bump both together, with `--prefer-online` right
+  after a publish.
+- Production test players: **the fraking** (active) for visual checks, **ToxSick** (inactive) for anything that writes.
 
 ## Angular conventions
 
-- **DI**: `inject()` only. Root services use `@Service()`, not `@Injectable({ providedIn: 'root' })`.
-- **Placement**: code used by one feature lives in `src/app/features/<feature>/`; `src/app/common/` is only for code
-  shared between features.
-- **State**: signals everywhere; explicitly type public signal fields (`readonly foo: Signal<Bar> = computed(...)`).
-  localStorage data lives in a per-feature `@ngrx/signals` store (`XpTrackerStore`, `PriceTrackerStore`); components
-  never read localStorage directly.
-- **Async data**: prefer `httpResource` / `rxResource` over manual `subscribe` + `signal.set`. If you do subscribe,
-  reset loading state in `finalize`.
-- **Failure paths**: every load that can fail shows its failure. A resource's `value()` **throws** in the error state,
-  so check `error()` first (or read through `hasValue()`) and render
-  `<load-error source="…" (retry)="resource.reload()" />` in place of the data (`compact` inside cards, `panel` when it
-  replaces a panel). Never `catchError(() => of(empty))`: it looks like "no data".
-- **HTTP**: only through a repository in `common/repositories/`. Use the `HttpContext` tokens (`BASE_URL_PREFIX`,
-  `LOADING_INDICATOR`) instead of absolute URLs; `encodeURIComponent` path segments and pass query values via `params`.
-- **Routing**: lazy routes with **default-exported** components; `title` is `'<Page> - OSRS Tracker'`. Resolvers end
-  with `catchError(resolverErrorHandler(<original url>))`. `ParamAwareReuseStrategy` recreates components when route
-  params change, so components can load data on init. When adding or renaming a route, update
-  `src/server/utils/route-label.ts` (its spec fails CI otherwise).
+- **DI**: `inject()` only; root services use `@Service()`, not `@Injectable({ providedIn: 'root' })`.
+- **Placement**: single-feature code in `src/app/features/<feature>/`; `src/app/common/` only for shared code.
+- **State**: signals, with explicitly typed public fields (`readonly foo: Signal<Bar> = computed(...)`). localStorage
+  goes through a per-feature `@ngrx/signals` store (`XpTrackerStore`, `PriceTrackerStore`), never from components.
+- **Async data**: prefer `httpResource` / `rxResource`; if you subscribe, reset loading state in `finalize`.
+- **Failures**: every failable load shows its failure. `value()` throws in the error state, so check `error()` (or
+  `hasValue()`) first and render `<load-error source="…" (retry)="resource.reload()" />` (`compact` in cards, `panel`
+  for a panel). Never `catchError(() => of(empty))`.
+- **HTTP**: only via repositories in `common/repositories/`, using the `BASE_URL_PREFIX` / `LOADING_INDICATOR`
+  `HttpContext` tokens, not absolute URLs. `encodeURIComponent` path segments; query values go in `params`.
+- **Routing**: lazy routes with default-exported components, `title: '<Page> - OSRS Tracker'`; resolvers end with
+  `catchError(resolverErrorHandler(<original url>))`. `ParamAwareReuseStrategy` recreates components on param change.
+  Adding or renaming a route means updating `src/server/utils/route-label.ts` (its spec fails CI otherwise).
 
-## SSR rules (important)
+## SSR rules
 
-- **Browser-only APIs** (`window`, `localStorage`, canvas): inject `WINDOW` (null on the server) or `StorageService`,
-  check `isPlatformBrowser`, or use `@defer` with a `@placeholder` to avoid layout shift.
-- **CSP**: no `'unsafe-inline'`; inline scripts run via a per-response nonce. Any new path that sends page HTML must
-  call `applyCspNonce`, or every script is blocked. Never use inline event handlers.
-- **Response status**: `inject(RESPONSE_INIT, { optional: true })` (null in the browser), not an Express `RESPONSE`
-  token.
-- **HTTP transfer cache**: server responses only reach the browser if their `Cache-Control` has **no** `no-store`,
-  `no-cache` or `private`; otherwise the browser refetches on hydration and resources flash back to `defaultValue`. When
-  a page refetches after load, check the API's `Cache-Control` first. Verify in `<script id="ng-state">`: HTTP entries
-  have a `u` field with slashes escaped, so grep for `/news`, not `/news`.
-- **Chart.js**: shared registrations live in `charts/chart-setup.ts`. Load browser-only plugins (zoom) lazily and pass
-  them per chart; never `Chart.unregister`. Time series charts extend `charts/base-chart.ts`.
+- **Browser-only APIs**: inject `WINDOW` (null on the server) or `StorageService`, check `isPlatformBrowser`, or use
+  `@defer` with a `@placeholder`.
+- **CSP**: no `'unsafe-inline'` or inline event handlers. Any new path that sends page HTML must call `applyCspNonce`,
+  or every script is blocked.
+- **Response status**: `inject(RESPONSE_INIT, { optional: true })`, not an Express `RESPONSE` token.
+- **Transfer cache**: responses reach the browser only if `Cache-Control` has no `no-store`, `no-cache` or `private`;
+  otherwise the browser refetches on hydration and resources flash to `defaultValue`. When a page refetches, check the
+  API's `Cache-Control` first. Verify in `<script id="ng-state">`, where URLs are escaped: grep `\/news`, not `/news`.
+- **Chart.js**: shared registrations in `charts/chart-setup.ts`; load browser-only plugins (zoom) lazily per chart;
+  never `Chart.unregister`. Time series charts extend `charts/base-chart.ts`.
 - **Icons**: after changing `src/assets/icons/{skills,activities}`, run `npm run icons` and commit
   `local-icons.generated.ts`.
-- **Page cache**: `angular-cache` serves pages pre-rendered by `AutoGenerator`
-  (`server-config.ts → autoGeneratedPages`), keyed by path (query strings ignored, trailing slash misses), 2xx only.
-  Pages refresh on an interval (`/` every 5 min), so after an API change wait or restart the server.
+- **Page cache**: `angular-cache` serves pages pre-rendered by `AutoGenerator` (`serverConfig.autoGeneratedPages`),
+  keyed by path (query ignored, trailing slash misses), 2xx only, refreshed on an interval (`/` every 5 min). After an
+  API change, wait or restart.
 
-## Verify before handing off
+## Verify
 
 ```bash
 npx ng build --configuration production && npx ng lint && npm run prettier:ci && npx ng test --watch=false
@@ -75,82 +66,69 @@ npx ng build --configuration production && npx ng lint && npm run prettier:ci &&
 
 ## Tests
 
-**Only test complex or important logic** where a regression would be costly or invisible; never for coverage. After
-writing a test, break the code it protects once and check that it fails.
+Only for complex or important logic, never for coverage. Break the protected code once to confirm the test fails.
 
-- Specs live next to the code and import from `vitest`. One file: `npx ng test --watch=false --include <path>`.
-- **Server specs** start with `// @vitest-environment node`; see `src/server/app.spec.ts` (mocks `@angular/ssr/node`,
-  requests via `src/server/testing/serve.ts`). `vi.mock` only works for packages, not relative imports.
-- **App specs** use `TestBed` with `provideZonelessChangeDetection()` and `HttpTestingController`. Clear `localStorage`
-  in `afterEach`.
+- Specs sit next to the code and import from `vitest`. One file: `npx ng test --watch=false --include <path>`.
+- Server specs start with `// @vitest-environment node`; follow `src/server/app.spec.ts` and
+  `src/server/testing/serve.ts`. `vi.mock` works for packages, not relative imports.
+- App specs: `TestBed` with `provideZonelessChangeDetection()` and `HttpTestingController`; clear `localStorage` in
+  `afterEach`.
 
 ## Running locally
 
-**The API's CORS only allows `http://localhost:4200`**, so use that port.
+Always port 4200 (the API's CORS allows only that).
 
-- `npm start`: browser-side work. It doesn't run the auto-generator or page cache.
-- Server code (`angular-cache`, auto-generator, error handler) needs the production build:
-  `HOST=localhost PORT=4200 node dist/osrs-tracker-web/server/server.mjs`. Smoke test with
-  `curl -s -D - http://localhost:4200/<path>` (unknown routes return 404, auto-generated pages `x-cache: HIT`). Stop it
-  with `lsof -ti:4200 -sTCP:LISTEN | xargs -r kill`.
+- `npm start` for browser-side work; it has no auto-generator or page cache.
+- Server code needs the production build: `HOST=localhost PORT=4200 node dist/osrs-tracker-web/server/server.mjs`. Smoke
+  test with `curl -s -D - http://localhost:4200/<path>` (unknown routes 404, generated pages `x-cache: HIT`). Stop with
+  `lsof -ti:4200 -sTCP:LISTEN | xargs -r kill`.
 
-## Check in the browser
+## Browser check
 
-For anything visible or that changes requests, check the page with the Playwright MCP tools, locally and on production
-after a deploy (curl only sees server HTML). If the tools aren't available, say so instead of silently using curl.
+For visible or request-changing work, use the Playwright MCP locally and on production after a deploy (curl only sees
+server HTML). If it's unavailable, say so rather than falling back to curl silently.
 
-- Check **dark mode** first (most visitors; the MCP config defaults to it), and light mode too for theme changes.
-- Send the user a screenshot of the changed page (`SendUserFile`), and report the request count, failing requests and
-  console errors. For caching, load the page twice and compare.
-- Close the browser when done and delete `.playwright-mcp/`.
+- Dark mode first (the MCP default and most visitors); light mode too for theme changes.
+- Send a screenshot (`SendUserFile`) and report request count, failed requests and console errors. For caching, load
+  twice and compare.
+- Close the browser and delete `.playwright-mcp/` when done.
 
-## Deploy (Docker → Kubernetes)
+## Deploy
 
-1. Pass the verification steps (in a release, a passing CI run counts).
-2. `npm run docker:build && npm run docker:push`. This also regenerates `src/sitemap*.xml`; commit those.
-3. Put the pushed digest in the `image:` line of `osrs-tracker-web.yaml`.
-4. Check the live image matches the yaml first, so you don't roll back someone else's deploy:
-
-   ```bash
-   kubectl -n osrs-tracker get deploy osrs-tracker-web -o jsonpath='{.spec.template.spec.containers[0].image}'
-   ```
-
-5. `kubectl diff -f osrs-tracker-web.yaml`: expect only the digest (plus `generation`). Applying unreviewed is blocked.
+1. Verify (in a release, passing CI counts).
+2. `npm run docker:build && npm run docker:push`; commit the regenerated `src/sitemap*.xml`.
+3. Put the pushed digest in `osrs-tracker-web.yaml`'s `image:` line.
+4. Confirm the live image matches the yaml, so you don't roll back someone else's deploy:
+   `kubectl -n osrs-tracker get deploy osrs-tracker-web -o jsonpath='{.spec.template.spec.containers[0].image}'`
+5. `kubectl diff -f osrs-tracker-web.yaml`: only the digest (and `generation`) should change.
 6. `kubectl apply -f osrs-tracker-web.yaml && kubectl -n osrs-tracker rollout status deploy/osrs-tracker-web --timeout=300s`
 7. Smoke test `https://osrs-tracker.freekmencke.com`: `/` 200 with `x-cache: HIT`, unknown path 404, an item and a
-   player page 200, the changed pages in the browser, and clean logs
-   (`kubectl -n osrs-tracker logs deploy/osrs-tracker-web --since=5m`).
+   player page 200, changed pages in the browser, clean
+   `kubectl -n osrs-tracker logs deploy/osrs-tracker-web --since=5m`.
 
-Rollback and failure modes are in `docs/runbook.md`. The container has a read-only root filesystem: don't write to disk
-at runtime.
+Rollback and failure modes: `docs/runbook.md`. The root filesystem is read-only; never write to disk at runtime.
 
 ## Release ("release it", "ship it")
 
-Run the whole flow without asking between steps; stop only if a step fails. Verify locally once before committing; after
-that CI is the gate, so don't re-run checks locally.
+Run end to end without asking; stop only on failure. Verify locally once before committing, then CI is the gate.
 
-1. Commit on a `<type>/<short-name>` branch, push, `gh pr create --base main`.
+1. Commit on `<type>/<short-name>`, push, `gh pr create --base main`.
 2. Review `gh pr diff` for bugs and leftovers; fix and push.
-3. In the background, run the Docker build and push alongside `gh pr checks <n> --watch`.
-4. Once CI passes, deploy (steps 3–7 above).
-5. Commit the digest and sitemaps to the branch, push, and put the digest and smoke-test results in the PR description.
-6. Once the checks pass, `gh pr merge <n> --merge`, then switch to `main`, pull, `git branch -d <branch>`,
-   `git fetch --prune`.
+3. In the background, run docker build + push alongside `gh pr checks <n> --watch`.
+4. Once CI passes, deploy (steps 3–7).
+5. Commit digest and sitemaps, push, and add the digest and smoke-test results to the PR description.
+6. When checks pass: `gh pr merge <n> --merge`, switch to `main`, pull, `git branch -d <branch>`, `git fetch --prune`.
 
 ## Commit and push
 
-- Doc-only changes (skills, docs) go straight to `main`. Otherwise, outside a release, **ask every time** whether to
-  commit to `main` or open a PR. The admin account bypasses `main`'s PR rule; after a direct push, watch CI with
-  `gh run watch --exit-status`. After a PR merges, do the switch-back from release step 6.
-- A deploy from a PR branch runs unmerged code: tell the user, and don't deploy from `main` until it's merged.
-- Conventional commits. Commit and push in the same session as a deploy, so production never runs code that isn't on
-  GitHub.
-- **Every change gets a `CHANGELOG.md` entry** (deps and tooling too, not Dependabot PRs) under a `## YYYY/MM/DD`
-  heading, newest first. It's shown on `/about/changelog`, so write for users. Busy days get `###` subtitles
-  (user-facing first, "Behind the scenes" last); extend an existing entry rather than add a near-duplicate, and don't
-  repeat the subtitle in its entries.
-- If GPG signing fails with "Inappropriate ioctl for device", ask the user to run
-  `echo test | gpg --clearsign > /dev/null` in their terminal, then commit right away (the cache lasts ~10 min). Never
-  use `--no-gpg-sign`.
-- `gh pr edit` can fail on a Projects (classic) error; use
+- Conventional commits. Doc-only changes (skills, docs) go straight to `main`; otherwise, outside a release, **ask each
+  time**: `main` or a PR. Admin bypasses `main`'s PR rule; after a direct push, `gh run watch --exit-status`.
+- Commit and push in the same session as a deploy, so production never runs code that isn't on GitHub. A deploy from a
+  PR branch runs unmerged code: tell the user, and don't deploy `main` until it's merged.
+- **Every change gets a `CHANGELOG.md` entry** (deps and tooling too, not Dependabot PRs) under `## YYYY/MM/DD`, newest
+  first. It's shown on `/about/changelog`, so write for users. Busy days get `###` subtitles (user-facing first, "Behind
+  the scenes" last). Extend existing entries over near-duplicates; don't repeat the subtitle in entries.
+- GPG "Inappropriate ioctl for device": ask the user to run `echo test | gpg --clearsign > /dev/null`, then commit
+  within ~10 min. Never `--no-gpg-sign`.
+- If `gh pr edit` fails on a Projects (classic) error, use
   `gh api -X PATCH repos/osrs-tracker/osrs-tracker-web/pulls/<n> -F body=@<file>`.
