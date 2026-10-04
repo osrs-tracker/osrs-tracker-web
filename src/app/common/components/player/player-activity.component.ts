@@ -29,7 +29,11 @@ import { TooltipComponent } from '../general/tooltip/tooltip.component';
           </div>
         }
       } @else {
-        <div class="animate-pulse mx-auto h-5 w-20 my-1 rounded-lg bg-slate-300 dark:bg-slate-700"></div>
+        <!-- Same height as the loaded row: the icon row is 28px tall, the total row a 24px line of text -->
+        <div
+          class="animate-pulse mx-auto h-5 w-20 rounded-lg bg-slate-300 dark:bg-slate-700"
+          [class]="totalLabel() ? 'my-0.5' : 'my-1'"
+        ></div>
       }
     </div>
 

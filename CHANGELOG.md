@@ -1,5 +1,6 @@
 ## 2026/10/04
 
+- The clue scrolls card on player pages no longer shrinks slightly when the hiscores finish loading.
 - Behind-the-scenes maintenance: simplified the player and item page code.
 - Your favorite and recently viewed items now update right away, and the price tracker reads them from the browser only
   once.
