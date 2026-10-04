@@ -1,5 +1,6 @@
 ## 2026/10/04
 
+- Behind-the-scenes maintenance: updated the code checking and testing tools and the changelog renderer.
 - Behind-the-scenes maintenance: the home page news, the changelog and the loading bar use the site's shared data
   loading code.
 - The clue scrolls card on player pages no longer shrinks slightly when the hiscores finish loading.

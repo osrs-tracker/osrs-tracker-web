@@ -1,6 +1,5 @@
 // @ts-check
 import eslint from '@eslint/js';
-import stylistic from '@stylistic/eslint-plugin';
 import angular from 'angular-eslint';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import tseslint from 'typescript-eslint';
@@ -8,7 +7,6 @@ import tseslint from 'typescript-eslint';
 export default tseslint.config(
   {
     files: ['**/*.ts'],
-    plugins: { '@stylistic': stylistic },
     extends: [
       eslint.configs.recommended,
       ...tseslint.configs.recommended,
@@ -33,7 +31,6 @@ export default tseslint.config(
           prefix: '',
         },
       ],
-      '@stylistic/comma-dangle': ['error', 'always-multiline'],
       'no-console': 'error',
     },
   },
