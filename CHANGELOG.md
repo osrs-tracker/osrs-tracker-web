@@ -1,5 +1,6 @@
 ## 2026/10/04
 
+- Behind-the-scenes maintenance: updated the web server to Express 5.
 - Updates to the site no longer cause brief errors while they roll out.
 - Behind-the-scenes maintenance: the server runs with fewer permissions and is taken out of service automatically when
   it stops responding.

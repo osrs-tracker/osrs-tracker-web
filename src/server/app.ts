@@ -37,21 +37,18 @@ export function createApp() {
 
   app.use(express.static(serverConfig.browserDistFolder, { maxAge: '30d' }));
 
-  app.use('*', (req, res, next) => {
-    angularApp
-      .handle(req)
-      .then(async response => {
-        if (!response) return next();
-        if (!response.headers.get('content-type')?.startsWith('text/html'))
-          return writeResponseToNodeResponse(response, res);
+  // Express 5 passes a rejected promise on to the error handler below
+  app.use(async (req, res, next) => {
+    const response = await angularApp.handle(req);
+    if (!response) return next();
+    if (!response.headers.get('content-type')?.startsWith('text/html'))
+      return writeResponseToNodeResponse(response, res);
 
-        // Pages get the response's CSP nonce, which changes their length
-        const html = applyCspNonce(await response.text(), res);
-        const headers = new Headers(response.headers);
-        headers.delete('content-length');
-        return writeResponseToNodeResponse(new globalThis.Response(html, { status: response.status, headers }), res);
-      })
-      .catch(next);
+    // Pages get the response's CSP nonce, which changes their length
+    const html = applyCspNonce(await response.text(), res);
+    const headers = new Headers(response.headers);
+    headers.delete('content-length');
+    return writeResponseToNodeResponse(new globalThis.Response(html, { status: response.status, headers }), res);
   });
 
   // Log errors and respond with a generic 500, Express' default handler leaks the stack trace unless NODE_ENV=production
