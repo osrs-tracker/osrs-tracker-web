@@ -2,6 +2,7 @@ import { AngularNodeAppEngine, createNodeRequestHandler, writeResponseToNodeResp
 import compression from 'compression';
 import express, { NextFunction, Request, Response, Router } from 'express';
 import { angularCacheMiddleware } from './middleware/angular-cache';
+import { applyCspNonce, cspNonceMiddleware } from './middleware/csp-nonce';
 import { loggingMiddleware } from './middleware/logging';
 import { metricsMiddleware } from './middleware/metrics';
 import { protocolRelativeMiddleware } from './middleware/protocol-relative';
@@ -20,9 +21,13 @@ export function createApp() {
     trustProxyHeaders: serverConfig.TRUST_PROXY_HEADERS,
   });
 
+  // Readiness probe on the main port, before logging and metrics so probes don't show up in either
+  app.use('/healthy', createHealthRouter());
+
   app.use(
     metricsMiddleware(metricsApp), // Set up Monitoring
     loggingMiddleware(), // Add request logging
+    cspNonceMiddleware(), // Generate a CSP nonce for this response
     securityMiddleware(), // Add security headers
     protocolRelativeMiddleware(), // 404 for `//host` paths, which Angular SSR rejects with an error
     compression(), // Add compression for better performance
@@ -35,12 +40,16 @@ export function createApp() {
   app.use('*', (req, res, next) => {
     angularApp
       .handle(req)
-      .then(response => {
-        if (response) {
-          writeResponseToNodeResponse(response, res);
-        } else {
-          next();
-        }
+      .then(async response => {
+        if (!response) return next();
+        if (!response.headers.get('content-type')?.startsWith('text/html'))
+          return writeResponseToNodeResponse(response, res);
+
+        // Pages get the response's CSP nonce, which changes their length
+        const html = applyCspNonce(await response.text(), res);
+        const headers = new Headers(response.headers);
+        headers.delete('content-length');
+        return writeResponseToNodeResponse(new globalThis.Response(html, { status: response.status, headers }), res);
       })
       .catch(next);
   });

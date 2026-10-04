@@ -51,6 +51,24 @@ describe('createApp', () => {
     expect(await res.text()).toBe('<html>rendered</html>');
   });
 
+  it('gives rendered and cached pages a fresh CSP nonce that matches the header', async () => {
+    const page = '<html><app-root ngcspnonce="CSP_NONCE_PLACEHOLDER"></app-root><script nonce="CSP_NONCE_PLACEHOLDER">';
+    handle.mockImplementation(async () => new Response(page, { headers: { 'content-type': 'text/html' } }));
+    pageCache.set('/', page);
+
+    const nonces = [];
+    for (const path of ['/', '/', '/trackers/xp/ToxSick']) {
+      const res = await get(path);
+      const nonce = res.headers.get('content-security-policy')!.match(/'nonce-([^']+)'/)![1];
+      const body = await res.text();
+
+      expect(body).not.toContain('CSP_NONCE_PLACEHOLDER');
+      expect(body.match(/\w*nonce="[^"]+"/gi)).toEqual([`ngcspnonce="${nonce}"`, `nonce="${nonce}"`]);
+      nonces.push(nonce);
+    }
+    expect(new Set(nonces).size).toBe(3);
+  });
+
   it('passes the status Angular renders, so unknown routes are a 404', async () => {
     handle.mockImplementation(async () => new Response('<html>not found</html>', { status: 404 }));
 

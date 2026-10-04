@@ -31,9 +31,8 @@ ENV METRICS_PORT=9090
 EXPOSE $PORT
 EXPOSE $METRICS_PORT
 
+# Run as the image's unprivileged user
+USER node
+
 # Command to run the application
 CMD ["node", "dist/osrs-tracker-web/server/server.mjs"]
-
-# Health check using the /healthy endpoint available in server.ts
-HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
-  CMD wget -qO- http://localhost:9090/healthy || exit 1
