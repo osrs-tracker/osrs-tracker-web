@@ -29,16 +29,6 @@ again. Newest first.
   is overkill for a single-maintainer hobby project that only reads public data.
 - **Revisit:** if local work ever needs to write data, or a change has to be tested against an unreleased API.
 
-## Service worker kill switch kept as a static file (2026/10/04)
-
-- **Context:** older versions of the site installed the Angular service worker. It was disabled on 2025/04/13, and
-  `/ngsw-worker.js` has served Angular's safety worker since, so browsers that still have the old worker unregister it
-  and drop its caches.
-- **Decision:** remove `@angular/service-worker`, `ngsw-config.json` and the dead update-check code (done in WP-1), but
-  keep `src/ngsw-worker.js` (a copy of the safety worker) as a static asset with no-cache headers
-  (`serverConfig.noCacheStaticFiles`). It costs nothing and protects returning visitors who haven't been back since.
-- **Revisit:** not needed. It can go once no requests for `/ngsw-worker.js` show up in the logs for a few months.
-
 ## Changelog is for users, plus one maintenance bullet (2026/10/04)
 
 - **Context:** `CHANGELOG.md` is rendered on `/about/changelog`, but every change (dependencies, tooling, server

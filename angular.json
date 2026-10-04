@@ -38,7 +38,6 @@
                 "output": "."
               },
               "src/manifest.webmanifest",
-              "src/ngsw-worker.js",
               "src/robots.txt"
             ],
             "styles": ["@angular/cdk/overlay-prebuilt.css", "src/styles/tailwind.css"],
