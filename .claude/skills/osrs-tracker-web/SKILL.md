@@ -110,10 +110,9 @@ icons, caching, bundles), also check the page in a real browser with the Playwri
 `browser_take_screenshot`, `browser_network_requests`, `browser_console_messages`), locally and on production after a
 deploy:
 
-- Check in **dark mode** first: most visitors use it. The user's MCP config
-  (`~/.config/playwright-mcp/config.json`) starts pages with `prefers-color-scheme: dark`, which the site follows unless
-  `localStorage['dark-mode']` says otherwise. For changes to colours or anything theme-specific, also check light mode
-  (`browser_emulate_media`).
+- Check in **dark mode** first: most visitors use it. The user's MCP config (`~/.config/playwright-mcp/config.json`)
+  starts pages with `prefers-color-scheme: dark`, which the site follows unless `localStorage['dark-mode']` says
+  otherwise. For changes to colours or anything theme-specific, also check light mode (`browser_emulate_media`).
 - Send the user a screenshot of the changed page (with `SendUserFile`).
 - Report the request count and anything failing in the network list, and any console errors.
 - For caching, load the page a second time and compare what was fetched.
