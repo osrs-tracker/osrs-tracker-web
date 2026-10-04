@@ -2,6 +2,7 @@ import { DOCUMENT, Directive, ElementRef, InputSignal, OnInit, effect, inject, i
 import { WINDOW } from 'src/app/core/platform/window.token';
 import { config } from 'src/config/config';
 import { iconMap } from '../../../../config/icon.config';
+import { LOCAL_ICONS } from './local-icons.token';
 
 /** Factor the pixel art is upscaled to before the browser smoothly scales it down to `scale`. */
 const SHARP_FACTOR = 4;
@@ -19,6 +20,7 @@ export class IconDirective implements OnInit {
   private readonly elementRef = inject(ElementRef);
   private readonly document = inject(DOCUMENT);
   private readonly window = inject(WINDOW);
+  private readonly localIcons = inject(LOCAL_ICONS, { optional: true });
 
   readonly name: InputSignal<string> = input.required();
   readonly skill: InputSignal<boolean> = input(false);
@@ -110,9 +112,15 @@ export class IconDirective implements OnInit {
 
   private iconUrl(): string {
     if (this.wiki()) return `${config.wikiBaseUrl}/images/${this.name().replaceAll(/\s/g, '_')}`;
-    if (this.skill()) return `/assets/icons/skills/skill_icon_${this.norm(this.name())}1.gif`;
-    if (this.activity()) return `/assets/icons/activities/game_icon_${this.norm(this.name())}.png`;
-    return '/assets/icons' + iconMap[this.name()];
+
+    const path = this.skill()
+      ? `/skills/skill_icon_${this.norm(this.name())}1.gif`
+      : this.activity()
+        ? `/activities/game_icon_${this.norm(this.name())}.png`
+        : iconMap[this.name()];
+
+    // The server keeps the file URL, so the rendered HTML (which isn't cached) doesn't carry the data URIs.
+    return (this.window && this.localIcons?.[path]) || '/assets/icons' + path;
   }
 
   private norm(name: string): string {

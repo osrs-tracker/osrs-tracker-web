@@ -20,6 +20,8 @@ import { PlayerBossesWidgetComponent } from 'src/app/common/components/player/pl
 import { PlayerCluesWidgetComponent } from 'src/app/common/components/player/player-clues.component';
 import { PlayerRaidsWidgetComponent } from 'src/app/common/components/player/player-raids.component';
 import { PlayerSkillsWidgetComponent } from 'src/app/common/components/player/player-skills.component';
+import { localIcons } from 'src/app/common/directives/icon/local-icons.generated';
+import { LOCAL_ICONS } from 'src/app/common/directives/icon/local-icons.token';
 import { OsrsProxyRepo } from 'src/app/common/repositories/osrs-proxy.repo';
 import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
 import { XpTrackerStore } from '../xp-tracker.store';
@@ -38,6 +40,8 @@ import { PlayerLogsComponent } from './player-logs/player-logs.component';
     PlayerLogsComponent,
     SpinnerComponent,
   ],
+  // every skill and activity icon is shown here, so they come with this chunk instead of ~100 separate requests
+  providers: [{ provide: LOCAL_ICONS, useValue: localIcons }],
 })
 export default class PlayerDetailComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
