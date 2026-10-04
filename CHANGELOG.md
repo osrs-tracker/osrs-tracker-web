@@ -1,6 +1,8 @@
 ## 2026/10/04
 
 - Server logs now record the visitor's IP address, the referring page and the response size, to spot and block abuse.
+- Updated the privacy policy: server logs include IP addresses, kept for up to 30 days for security; attacking IP
+  addresses are shared with CrowdSec's community blocklist; and how to exercise your GDPR rights.
 
 ## 2026/10/03
 
