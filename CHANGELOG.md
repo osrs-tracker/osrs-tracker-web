@@ -1,5 +1,6 @@
 ## 2026/10/04
 
+- Pages load a little faster: the site's fonts are no longer downloaded twice.
 - Player pages load faster: the skill, boss, raid and clue icons now come with the page instead of as about a hundred
   separate downloads.
 - Pages load faster on repeat visits: skill icons and the homepage images are now cached by the browser instead of
