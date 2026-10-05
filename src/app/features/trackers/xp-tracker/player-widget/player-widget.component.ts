@@ -2,7 +2,9 @@ import { DecimalPipe, isPlatformBrowser } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
+  booleanAttribute,
   InputSignal,
+  InputSignalWithTransform,
   OnInit,
   PLATFORM_ID,
   ResourceRef,
@@ -30,12 +32,21 @@ import { XpTrackerStore } from '../xp-tracker.store';
   selector: 'player-widget',
   template: `
     <article
-      class="
-        flex rounded text-lg font-bold bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white
-        cursor-pointer ring-2 ring-transparent hover:ring-emerald-600 dark:hover:ring-emerald-400
+      class="flex font-bold text-slate-900 dark:text-white cursor-pointer"
+      [class]="
+        flat()
+          ? 'group items-center gap-4 min-h-13 py-3 text-base'
+          : 'rounded text-lg bg-slate-200 dark:bg-slate-800 ring-2 ring-transparent hover:ring-emerald-600 dark:hover:ring-emerald-400'
       "
     >
-      <div class="w-1/2 flex items-center justify-between  rounded-l bg-slate-350 dark:bg-slate-700 px-4 py-2">
+      <div
+        class="flex items-center gap-2"
+        [class]="
+          flat()
+            ? 'min-w-0 flex-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400'
+            : 'w-1/2 justify-between rounded-l bg-slate-350 dark:bg-slate-700 px-4 py-2'
+        "
+      >
         <h3 class="truncate" [title]="_username()">
           {{ _username() | capitalizeWords }}
         </h3>
@@ -54,7 +65,7 @@ import { XpTrackerStore } from '../xp-tracker.store';
           </div>
         }
       </div>
-      <div class="w-1/2 flex px-4 py-2 justify-end">
+      <div class="flex justify-end" [class]="flat() ? 'shrink-0' : 'w-1/2 px-4 py-2'">
         <div class="flex items-center">
           @if (loading()) {
             <spinner />
@@ -106,6 +117,8 @@ export class PlayerWidgetComponent implements OnInit {
   readonly username: InputSignal<string | null> = input<string | null>(null);
   readonly player: InputSignal<Player | null> = input<Player | null>(null);
   readonly scrapingOffset: InputSignal<number> = input.required();
+  /** A borderless row for lists inside a card, instead of a standalone widget. */
+  readonly flat: InputSignalWithTransform<boolean, unknown> = input(false, { transform: booleanAttribute });
 
   readonly _username: Signal<string> = computed(() => (this.player()?.username ?? this.username())!);
 
