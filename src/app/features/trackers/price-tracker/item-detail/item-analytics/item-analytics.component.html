@@ -88,7 +88,7 @@
           />
         } @else {
           @defer {
-            <price-chart class="block h-full w-full" [timeSeries]="priceTimeSeries.value()"></price-chart>
+            <price-chart class="block h-full w-full" [data]="priceTimeSeries.value()"></price-chart>
           } @loading {
             <spinner class="flex h-full items-center justify-center"></spinner>
           }
@@ -129,7 +129,7 @@
           />
         } @else {
           @defer {
-            <volume-chart class="block h-full w-full" [timeSeries]="volumeTimeSeries.value()"></volume-chart>
+            <volume-chart class="block h-full w-full" [data]="volumeTimeSeries.value()"></volume-chart>
           } @loading {
             <spinner class="flex h-full items-center justify-center"></spinner>
           }

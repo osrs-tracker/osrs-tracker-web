@@ -113,19 +113,18 @@ export class IconDirective implements OnInit {
     if (this.wiki()) return `${config.wikiBaseUrl}/images/${this.name().replaceAll(/\s/g, '_')}`;
 
     const path = this.skill()
-      ? `/skills/skill_icon_${this.norm(this.name())}1.gif`
+      ? iconPath(this.name(), 'skill')
       : this.activity()
-        ? `/activities/game_icon_${this.norm(this.name())}.png`
+        ? iconPath(this.name(), 'activity')
         : iconMap[this.name()];
 
     // The server keeps the file URL, so the rendered HTML (which isn't cached) doesn't carry the data URIs.
     return (this.window && this.localIcons?.[path]) || '/assets/icons' + path;
   }
+}
 
-  private norm(name: string): string {
-    return name
-      .toLocaleLowerCase()
-      .replace(/[^a-z]/g, '')
-      .toLowerCase();
-  }
+/** Path under `/assets/icons` of a skill or activity icon */
+export function iconPath(name: string, kind: 'skill' | 'activity'): string {
+  const norm = name.toLowerCase().replace(/[^a-z]/g, '');
+  return kind === 'skill' ? `/skills/skill_icon_${norm}1.gif` : `/activities/game_icon_${norm}.png`;
 }

@@ -18,7 +18,6 @@ import {
 } from '@angular/core';
 import { Chart, ChartOptions, Plugin, Point } from 'chart.js';
 import { merge } from 'chart.js/helpers';
-import { AveragePricesAtTime } from 'src/app/common/repositories/osrs-prices.repo';
 import { ThemeService } from 'src/app/common/services/theme.service';
 import { config } from 'src/config/config';
 import './chart-setup';
@@ -27,10 +26,10 @@ export type ChartColors = typeof config.chart.dark;
 
 /**
  * Lifecycle, workarounds and shared options of the time series charts. Subclasses render `<canvas #chart></canvas>` and
- * only add their chart type, own options and datasets.
+ * only add their chart type, own options and datasets (built from `data`).
  */
 @Directive()
-export abstract class BaseChart<TType extends 'line' | 'bar'> implements OnInit, OnDestroy {
+export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements OnInit, OnDestroy {
   private readonly injector = inject(Injector);
   private readonly themeService = inject(ThemeService);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -39,8 +38,9 @@ export abstract class BaseChart<TType extends 'line' | 'bar'> implements OnInit,
   private destroyed = false;
   private readonly canvas: Signal<ElementRef<HTMLCanvasElement>> = viewChild.required('chart');
 
-  readonly timeSeries: InputSignal<AveragePricesAtTime[]> = input.required();
+  readonly data: InputSignal<TData> = input.required();
 
+  protected readonly darkMode: Signal<boolean> = this.themeService.darkMode;
   protected readonly chartConfig: Signal<ChartColors> = computed(() =>
     this.themeService.darkMode() ? config.chart.dark : config.chart.light,
   );
@@ -51,7 +51,7 @@ export abstract class BaseChart<TType extends 'line' | 'bar'> implements OnInit,
   protected abstract chartOptions(): ChartOptions<TType>;
 
   /** Replaces the chart's datasets (and anything else that depends on the data), the chart is redrawn afterwards */
-  protected abstract setData(chart: Chart<TType, Point[]>, timeSeries: AveragePricesAtTime[]): void;
+  protected abstract setData(chart: Chart<TType, Point[]>, data: TData): void;
 
   ngOnInit(): void {
     if (this.isBrowser) void this.initChart();
@@ -87,7 +87,7 @@ export abstract class BaseChart<TType extends 'line' | 'bar'> implements OnInit,
     this.chart = this.createChart([zoom]);
 
     runInInjectionContext(this.injector, () => {
-      effect(() => this.updateChart(this.chart!, this.timeSeries()));
+      effect(() => this.updateChart(this.chart!, this.data()));
       effect(() => (this.themeService.darkMode(), this.chart!.update('none')));
     });
   }
@@ -165,8 +165,8 @@ export abstract class BaseChart<TType extends 'line' | 'bar'> implements OnInit,
     });
   }
 
-  private updateChart(chart: Chart<TType, Point[]>, timeSeries: AveragePricesAtTime[]): void {
-    this.setData(chart, timeSeries);
+  private updateChart(chart: Chart<TType, Point[]>, data: TData): void {
+    this.setData(chart, data);
 
     chart.update();
     chart.resetZoom();

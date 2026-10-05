@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'article[card]',
   template: `
-    <div class="flex justify-between rounded-t-lg bg-slate-350 dark:bg-slate-700 px-4 py-2">
+    <div class="flex justify-between gap-4 rounded-t-lg bg-slate-350 dark:bg-slate-700 px-4 py-2">
       <div class="font-bold text-slate-900 dark:text-white">
         <ng-content select="[title]" />
       </div>

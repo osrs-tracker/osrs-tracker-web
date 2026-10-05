@@ -1,15 +1,7 @@
 import { Component, InputSignal, Signal, computed, input } from '@angular/core';
-import { ActivityEnum } from '@osrs-tracker/hiscores';
 import { HiscoreActivity, HiscoreEntry } from '@osrs-tracker/models';
+import { BOSSES } from '../../activity-categories';
 import { PlayerActivityWidgetComponent } from './player-activity.component';
-import { RAIDS } from './player-raids.component';
-
-// Every activity from Chambers of Xeric onwards is a boss (bosses and boss-like minigames such as Wintertodt),
-// except the raids, which have their own card.
-const ACTIVITIES = Object.values(ActivityEnum);
-const BOSSES: ReadonlySet<string> = new Set(
-  ACTIVITIES.slice(ACTIVITIES.indexOf(ActivityEnum.ChambersOfXeric)).filter(activity => !RAIDS.has(activity)),
-);
 
 @Component({
   selector: 'player-bosses',

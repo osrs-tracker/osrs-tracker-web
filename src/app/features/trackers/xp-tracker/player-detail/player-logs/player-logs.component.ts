@@ -7,6 +7,8 @@ import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { ShortDatePipe } from 'src/app/common/pipes/date-fns.pipe';
 import { XpTrackerViewType } from '../../xp-tracker-view-type';
 import { XpTrackerStore } from '../../xp-tracker.store';
+import { ActivityChartComponent } from './activity-chart.component';
+import { XpGainedChartComponent } from './xp-gained-chart.component';
 
 /** A single day's diff, or a run of consecutive days in which nothing happened. */
 type LogGroup = { type: 'day'; diff: HiscoreEntry } | { type: 'empty'; from: Date; to: Date; days: number };
@@ -14,7 +16,7 @@ type LogGroup = { type: 'day'; diff: HiscoreEntry } | { type: 'empty'; from: Dat
 @Component({
   selector: 'player-logs',
   templateUrl: './player-logs.component.html',
-  imports: [CardComponent, DecimalPipe, IconDirective, ShortDatePipe],
+  imports: [ActivityChartComponent, CardComponent, DecimalPipe, IconDirective, ShortDatePipe, XpGainedChartComponent],
 })
 export class PlayerLogsComponent {
   private readonly XpTrackerStore = inject(XpTrackerStore);
