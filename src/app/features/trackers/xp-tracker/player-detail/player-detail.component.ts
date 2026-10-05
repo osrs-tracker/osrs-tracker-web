@@ -58,6 +58,8 @@ export default class PlayerDetailComponent implements OnInit {
   readonly #morePages: WritableSignal<HiscoreEntry[][]> = signal([]);
 
   readonly player = input.required<Player>();
+  /** Below the two-column layout only; there they're always shown */
+  readonly showActivities: WritableSignal<boolean> = signal(false);
 
   /** The live hiscores, only fetched in the browser. */
   readonly todayResource: ResourceRef<HiscoreEntry | undefined> = rxResource({

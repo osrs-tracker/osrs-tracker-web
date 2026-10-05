@@ -1,6 +1,7 @@
 <section class="flex flex-col gap-4">
-  <header class="flex justify-between">
-    <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Logs</h1>
+  <!-- same height as the player widget's header, so the first cards line up -->
+  <header class="flex items-center justify-between h-9">
+    <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Progress</h1>
 
     <div class="button-group">
       <button
@@ -18,20 +19,45 @@
     </div>
   </header>
 
+  <!-- charts -->
+  @if (isPlayerTracked) {
+    @if (hiscoreDiffs().length > 1) {
+      <article card>
+        <h2 title>{{ xpTrackerViewType() === XpTrackerViewType.Skills ? 'XP gained' : 'Activity' }}</h2>
+        @if (xpTrackerViewType() === XpTrackerViewType.Skills) {
+          <xp-gained-chart [data]="hiscoreDiffs()" />
+        } @else {
+          <activity-chart [data]="hiscoreDiffs()" />
+        }
+      </article>
+    } @else if (!hiscoreDiffs().length) {
+      <article card>
+        <div title class="rounded-t-lg bg-slate-350 dark:bg-slate-700">
+          <div class="animate-pulse h-5 w-28 my-1 rounded-xl bg-slate-250 dark:bg-slate-600"></div>
+        </div>
+        <div class="animate-pulse h-72 rounded-lg bg-slate-350 dark:bg-slate-700"></div>
+      </article>
+    }
+  }
+
   <!-- XP view -->
   @if (isPlayerTracked && xpTrackerViewType() === XpTrackerViewType.Skills) {
     @for (group of skillLogs(); track $index) {
       @if (group.type === 'day') {
         @let diff = group.diff;
         <article card>
-          <h2 title>{{ diff.date | shortDate }}</h2>
+          <h2 title>
+            <span class="sm:hidden">{{ diff.date | shortDate: 'short' }}</span
+            ><span class="hidden sm:inline">{{ diff.date | shortDate }}</span>
+          </h2>
 
           @let overallDiff = overall(diff);
           @if (overallDiff && overallDiff.xp > 0) {
             <div actions class="self-center flex items-center gap-3">
               @if (overallDiff.level > 0) {
                 <span class="font-bold positive-value"
-                  >{{ overallDiff.level }} {{ overallDiff.level === 1 ? 'level' : 'levels' }}</span
+                  >{{ overallDiff.level }}
+                  <span class="hidden sm:inline">{{ overallDiff.level === 1 ? 'level' : 'levels' }}</span></span
                 >
                 <div class="h-4 w-px bg-slate-400 dark:bg-slate-500"></div>
               }
@@ -65,9 +91,13 @@
           <div class="flex justify-between gap-4 px-4 py-2 border-b border-slate-350 dark:border-slate-700">
             <h2 class="font-bold text-slate-600 dark:text-slate-300">
               @if (group.days === 1) {
-                {{ group.to | shortDate }}
+                <span class="sm:hidden">{{ group.to | shortDate: 'short' }}</span
+                ><span class="hidden sm:inline">{{ group.to | shortDate }}</span>
               } @else {
-                {{ group.from | shortDate }} – {{ group.to | shortDate }}
+                <span class="sm:hidden">{{ group.from | shortDate: 'short' }}</span
+                ><span class="hidden sm:inline">{{ group.from | shortDate }}</span> –
+                <span class="sm:hidden">{{ group.to | shortDate: 'short' }}</span
+                ><span class="hidden sm:inline">{{ group.to | shortDate }}</span>
               }
             </h2>
             @if (group.days > 1) {
@@ -108,7 +138,10 @@
       @if (group.type === 'day') {
         @let diff = group.diff;
         <article card>
-          <h2 title>{{ diff.date | shortDate }}</h2>
+          <h2 title>
+            <span class="sm:hidden">{{ diff.date | shortDate: 'short' }}</span
+            ><span class="hidden sm:inline">{{ diff.date | shortDate }}</span>
+          </h2>
 
           <!-- other diffs -->
           <section class="flex flex-col gap-1">
@@ -132,9 +165,13 @@
           <div class="flex justify-between gap-4 px-4 py-2 border-b border-slate-350 dark:border-slate-700">
             <h2 class="font-bold text-slate-600 dark:text-slate-300">
               @if (group.days === 1) {
-                {{ group.to | shortDate }}
+                <span class="sm:hidden">{{ group.to | shortDate: 'short' }}</span
+                ><span class="hidden sm:inline">{{ group.to | shortDate }}</span>
               } @else {
-                {{ group.from | shortDate }} – {{ group.to | shortDate }}
+                <span class="sm:hidden">{{ group.from | shortDate: 'short' }}</span
+                ><span class="hidden sm:inline">{{ group.from | shortDate }}</span> –
+                <span class="sm:hidden">{{ group.to | shortDate: 'short' }}</span
+                ><span class="hidden sm:inline">{{ group.to | shortDate }}</span>
               }
             </h2>
             @if (group.days > 1) {

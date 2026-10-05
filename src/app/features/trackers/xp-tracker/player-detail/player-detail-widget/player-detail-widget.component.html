@@ -60,7 +60,8 @@
   </header>
 
   <div class="shadow-lg rounded-lg bg-slate-200 dark:bg-slate-800 p-4 flex">
-    <div class="flex flex-col flex-1 font-bold gap-y-1">
+    <!-- labels take their own width, so the values have room to stay on one line -->
+    <div class="flex flex-col pr-4 font-bold gap-y-1 whitespace-nowrap">
       <div>Username:</div>
       <div>Combat level:</div>
       <div>Mode:</div>
@@ -91,7 +92,13 @@
         <div class="negative">{{ playerDetail().status }}</div>
       }
       @if (playerDetail().type !== PlayerType.Normal) {
-        <div>{{ playerDetail().lastModified | date: 'MMMM dd, HH:mm' }}</div>
+        <div>
+          <!-- the two-column layout makes this card narrow up to xl -->
+          <span class="sm:hidden lg:inline xl:hidden">{{ playerDetail().lastModified | date: 'MMM d, HH:mm' }}</span
+          ><span class="hidden sm:inline lg:hidden xl:inline">{{
+            playerDetail().lastModified | date: 'MMMM dd, HH:mm'
+          }}</span>
+        </div>
       }
     </div>
   </div>

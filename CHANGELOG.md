@@ -1,5 +1,12 @@
 ## 2026/10/05
 
+- Player pages show a chart above the logs. Skills: the XP gained per skill over the loaded days, in RuneLite's skill
+  colours, with the top 6 shown and the rest toggled from the legend. Other: daily bosses, raids, clues or minigames
+  side by side, picked with a category toggle, each coloured after its icon, with the collection log in every category.
+  Tooltips show the skill or activity icons.
+- Player page layout: the logs are titled "Progress" and line up with the player card; on phones and tablets the clue,
+  raid and boss cards are collapsed behind a button, so the progress is closer to the top; phones show short dates, and
+  the chart legend shows the top skills with a "+N" chip for the rest. "Last checked" no longer wraps.
 - Updated the SOLIX font to version 2.21, now loaded as a single variable font: one smaller download covers every
   weight.
 

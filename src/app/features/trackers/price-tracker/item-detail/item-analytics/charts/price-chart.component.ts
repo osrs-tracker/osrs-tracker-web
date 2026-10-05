@@ -4,24 +4,24 @@ import { Chart, ChartOptions, Point } from 'chart.js';
 import { fromUnixTime } from 'date-fns';
 import { formatNumberLegible } from 'src/app/common/helpers/number.helper';
 import { AveragePricesAtTime } from 'src/app/common/repositories/osrs-prices.repo';
-import { BaseChart } from './base-chart';
+import { BaseChart } from 'src/app/common/components/charts/base-chart';
 
 @Component({
   selector: 'price-chart',
   template: '<canvas #chart></canvas>',
 })
-export class PriceChartComponent extends BaseChart<'line'> {
+export class PriceChartComponent extends BaseChart<'line', AveragePricesAtTime[]> {
   protected readonly type = 'line';
 
   readonly latestHighPrice: Signal<AveragePricesAtTime> = computed(
     () =>
-      this.timeSeries()
+      this.data()
         .filter(v => v.avgHighPrice)
         .slice(-1)[0],
   );
   readonly latestLowPrice: Signal<AveragePricesAtTime> = computed(
     () =>
-      this.timeSeries()
+      this.data()
         .filter(v => v.avgLowPrice)
         .slice(-1)[0],
   );

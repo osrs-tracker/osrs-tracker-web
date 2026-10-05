@@ -4,13 +4,13 @@ import { Chart, ChartOptions, Point } from 'chart.js';
 import { fromUnixTime } from 'date-fns';
 import { formatNumberLegible } from 'src/app/common/helpers/number.helper';
 import { AveragePricesAtTime } from 'src/app/common/repositories/osrs-prices.repo';
-import { BaseChart } from './base-chart';
+import { BaseChart } from 'src/app/common/components/charts/base-chart';
 
 @Component({
   selector: 'volume-chart',
   template: '<canvas #chart></canvas>',
 })
-export class VolumeChartComponent extends BaseChart<'bar'> {
+export class VolumeChartComponent extends BaseChart<'bar', AveragePricesAtTime[]> {
   protected readonly type = 'bar';
 
   // Sell volume is drawn below the axis as negative values, so ticks and tooltips show absolute values

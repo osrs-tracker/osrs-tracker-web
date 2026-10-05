@@ -3,15 +3,6 @@ import { ActivityEnum } from '@osrs-tracker/hiscores';
 import { HiscoreActivity, HiscoreEntry } from '@osrs-tracker/models';
 import { PlayerActivityWidgetComponent } from './player-activity.component';
 
-export const RAIDS: ReadonlySet<string> = new Set([
-  ActivityEnum.ChambersOfXeric,
-  ActivityEnum.ChambersOfXericChallengeMode,
-  ActivityEnum.TheatreOfBlood,
-  ActivityEnum.TheatreOfBloodHardMode,
-  ActivityEnum.TombsOfAmascut,
-  ActivityEnum.TombsOfAmascutExpertMode,
-]);
-
 // Normal modes on the first row, their harder modes below
 const RAID_LAYOUT: ActivityEnum[] = [
   ActivityEnum.ChambersOfXeric,

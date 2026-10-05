@@ -50,8 +50,9 @@ before "fixing" one.
 - **Transfer cache**: responses reach the browser only if `Cache-Control` has no `no-store`, `no-cache` or `private`;
   otherwise the browser refetches on hydration and resources flash to `defaultValue`. When a page refetches, check the
   API's `Cache-Control` first. Verify in `<script id="ng-state">`, where URLs are escaped: grep `\/news`, not `/news`.
-- **Chart.js**: shared registrations in `charts/chart-setup.ts`; load browser-only plugins (zoom) lazily per chart;
-  never `Chart.unregister`. Time series charts extend `charts/base-chart.ts`.
+- **Chart.js**: shared registrations and the date adapter in `common/components/charts/chart-setup.ts`; load
+  browser-only plugins (zoom) lazily per chart; never `Chart.unregister`. Time series charts extend
+  `common/components/charts/base-chart.ts`.
 - **Icons**: after changing `src/assets/icons/{skills,activities}`, run `npm run icons` and commit
   `local-icons.generated.ts`.
 - **Font**: SOLIX comes from the private [FreekMencke/solix](https://github.com/FreekMencke/solix) releases

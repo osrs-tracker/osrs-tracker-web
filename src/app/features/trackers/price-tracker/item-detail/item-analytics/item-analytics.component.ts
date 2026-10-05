@@ -12,7 +12,6 @@ import {
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Item } from '@osrs-tracker/models';
-import 'chartjs-adapter-date-fns';
 import { subDays } from 'date-fns';
 import { Observable, forkJoin, map, of, shareReplay } from 'rxjs';
 import { CardComponent } from 'src/app/common/components/general/card.component';

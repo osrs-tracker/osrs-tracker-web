@@ -9,10 +9,11 @@ import {
   TimeSeriesScale,
   Tooltip,
 } from 'chart.js';
+import 'chartjs-adapter-date-fns';
 import Annotation from 'chartjs-plugin-annotation';
 
 /**
- * Shared Chart.js registrations, imported for its side effects by every chart component.
+ * Shared Chart.js registrations and the date adapter, imported for its side effects by every chart component.
  *
  * Registration happens once at import time, so it's guaranteed to happen before any chart is created:
  * the annotation plugin needs to be registered globally (it registers its annotation element types on register),
