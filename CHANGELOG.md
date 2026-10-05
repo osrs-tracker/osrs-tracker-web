@@ -1,3 +1,8 @@
+## 2026/10/05
+
+- Updated the SOLIX font to version 2.21, now loaded as a single variable font: one smaller download covers every
+  weight.
+
 ## 2026/10/04
 
 ### Error handling
