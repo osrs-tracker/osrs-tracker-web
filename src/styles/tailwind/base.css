@@ -18,35 +18,12 @@
     cursor: pointer;
   }
 
+  /* SOLIX, from the releases of https://github.com/FreekMencke/solix */
   @font-face {
     font-family: 'SOLIX';
     font-style: normal;
-    font-weight: 300;
+    font-weight: 300 700;
     font-display: block;
-    src: url(/assets/fonts/solix_light.woff2?v=3) format('woff2');
-  }
-
-  @font-face {
-    font-family: 'SOLIX';
-    font-style: normal;
-    font-weight: 400;
-    font-display: block;
-    src: url(/assets/fonts/solix.woff2?v=3) format('woff2');
-  }
-
-  @font-face {
-    font-family: 'SOLIX';
-    font-style: normal;
-    font-weight: 500;
-    font-display: block;
-    src: url(/assets/fonts/solix_medium.woff2?v=3) format('woff2');
-  }
-
-  @font-face {
-    font-family: 'SOLIX';
-    font-style: normal;
-    font-weight: 700;
-    font-display: block;
-    src: url(/assets/fonts/solix_bold.woff2?v=3) format('woff2');
+    src: url(/assets/fonts/SOLIX-Variable.woff2?v=2.21) format('woff2');
   }
 }
