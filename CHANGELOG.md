@@ -7,6 +7,8 @@
 - Player page layout: the logs are titled "Progress" and line up with the player card; on phones and tablets the clue,
   raid and boss cards are collapsed behind a button, so the progress is closer to the top; phones show short dates, and
   the chart legend shows the top skills with a "+N" chip for the rest. "Last checked" no longer wraps.
+- The home page feature previews are replaced by XP and Price Tracker cards, each with the real search and the five most
+  recently looked up players or items.
 - Updated the SOLIX font to version 2.21, now loaded as a single variable font: one smaller download covers every
   weight.
 

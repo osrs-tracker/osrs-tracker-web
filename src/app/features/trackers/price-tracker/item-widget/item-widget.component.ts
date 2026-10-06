@@ -1,4 +1,14 @@
-import { Component, InputSignal, OnInit, WritableSignal, inject, input, signal } from '@angular/core';
+import {
+  Component,
+  booleanAttribute,
+  InputSignal,
+  InputSignalWithTransform,
+  OnInit,
+  WritableSignal,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { subDays } from 'date-fns';
 import { catchError, forkJoin, map, of } from 'rxjs';
 import { ColoredValueComponent } from 'src/app/common/components/general/colored-value.component';
@@ -12,14 +22,25 @@ import { RecentItem } from '../price-tracker.store';
   selector: 'item-widget',
   template: `
     <article
-      class="flex rounded text-lg font-bold bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white
-        cursor-pointer ring-2 ring-transparent hover:ring-emerald-600 dark:hover:ring-emerald-400"
+      class="flex font-bold text-slate-900 dark:text-white cursor-pointer"
+      [class]="
+        flat()
+          ? 'group items-center gap-4 min-h-13 py-3 text-base'
+          : 'rounded text-lg bg-slate-200 dark:bg-slate-800 ring-2 ring-transparent hover:ring-emerald-600 dark:hover:ring-emerald-400'
+      "
     >
-      <div class="w-1/2 flex gap-3 items-center rounded-l bg-slate-350 dark:bg-slate-700 px-4 py-2">
+      <div
+        class="flex gap-3 items-center"
+        [class]="
+          flat()
+            ? 'min-w-0 flex-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400'
+            : 'w-1/2 rounded-l bg-slate-350 dark:bg-slate-700 px-4 py-2'
+        "
+      >
         <img icon [name]="recentItem().icon" [wiki]="true" class="w-7 h-7" />
         <h3 class="truncate" [title]="recentItem().name">{{ recentItem().name }}</h3>
       </div>
-      <div class="w-1/2 flex items-center justify-end px-4 py-2">
+      <div class="flex items-center justify-end" [class]="flat() ? 'shrink-0' : 'w-1/2 px-4 py-2'">
         @if (loading()) {
           <spinner></spinner>
         } @else {
@@ -37,6 +58,8 @@ export class ItemWidgetComponent implements OnInit {
   readonly trend: WritableSignal<number | undefined> = signal(undefined);
 
   readonly recentItem: InputSignal<RecentItem> = input.required();
+  /** A borderless row for lists inside a card, instead of a standalone widget. */
+  readonly flat: InputSignalWithTransform<boolean, unknown> = input(false, { transform: booleanAttribute });
 
   ngOnInit(): void {
     this.fetchPrice();

@@ -4,23 +4,7 @@
     <div>Stay motivated by tracking both your and your friends' progress!</div>
   </div>
 
-  <form autocomplete="off" class="relative max-w-md w-full mx-4">
-    <input
-      type="text"
-      class="w-full input--default"
-      placeholder="Enter player name"
-      name="player"
-      [(ngModel)]="usernameQuery"
-      autocomplete="hidden"
-    />
-    <button
-      type="submit"
-      class="absolute right-0 button--primary button--rounded"
-      [routerLink]="usernameQuery() ? ['/trackers/xp', usernameQuery()] : '.'"
-    >
-      Search
-    </button>
-
+  <player-search class="max-w-md mx-4">
     <div class="absolute mt-2 flex justify-center w-full">
       <div class="flex gap-4 items-center">
         <div class="whitespace-nowrap flex text-xs">
@@ -50,7 +34,7 @@
         </select>
       </div>
     </div>
-  </form>
+  </player-search>
 </page-header>
 
 <div class="container mx-auto mb-8 px-4">

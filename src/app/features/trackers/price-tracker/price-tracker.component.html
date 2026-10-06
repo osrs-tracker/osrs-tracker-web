@@ -4,60 +4,7 @@
     <div>Stay ahead and make smart decisions with the latest pricing info!</div>
   </div>
 
-  <form autocomplete="off" class="relative max-w-md w-full mx-4">
-    <input
-      type="text"
-      class="z-20 relative w-full input--default"
-      placeholder="Enter search term"
-      name="query"
-      [(ngModel)]="query"
-      autocomplete="hidden"
-    />
-
-    <button type="submit" class="z-20 absolute right-0 button--primary button--rounded" (click)="searchItems()">
-      <span [class.invisible]="loading()">Search</span>
-
-      @if (loading()) {
-        <spinner class="absolute top-0 left-0 w-full h-full flex items-center justify-center"></spinner>
-      }
-    </button>
-
-    @if (results().length) {
-      <div
-        class="z-10 absolute rounded-3xl bg-slate-150 dark:bg-slate-800 border border-slate-400 dark:border-slate-700 shadow-2xl top-0 w-full overflow-hidden"
-      >
-        <div class="mt-10 pt-px max-h-60 overflow-y-auto scroll-bar">
-          <ul>
-            @for (item of results(); track item.id) {
-              <li>
-                <a
-                  class="group flex items-center px-4 py-2 hover:bg-slate-250 dark:hover:bg-slate-700 text-slate-900 dark:text-white rounded-r-full"
-                  [routerLink]="['/trackers/price', item.id]"
-                >
-                  <div class="w-8 h-8 mr-3 flex justify-center items-center">
-                    <img icon [name]="item.icon" [wiki]="true" />
-                  </div>
-                  <div class="grow text-left text-lg">{{ item.name }}</div>
-                  <div class="hidden group-hover:block">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="2"
-                      stroke="currentColor"
-                      class="w-6 h-6"
-                    >
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                    </svg>
-                  </div>
-                </a>
-              </li>
-            }
-          </ul>
-        </div>
-      </div>
-    }
-  </form>
+  <item-search class="max-w-md mx-4" />
 </page-header>
 
 <div class="container mx-auto mb-8 px-4">
