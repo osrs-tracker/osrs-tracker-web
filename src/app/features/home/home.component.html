@@ -60,14 +60,21 @@
 
         <player-search />
 
-        <div class="-my-3 divide-y divide-line">
-          @if (recentPlayerLookups.error()) {
+        <div class="-mx-5 -mb-4 rounded-b-2xl overflow-hidden">
+          @if (recentPlayerLookups.isLoading()) {
+            @for (index of SKELETON_ROWS; track index) {
+              <list-row-skeleton kind="player" [index]="index" />
+            }
+          } @else if (recentPlayerLookups.error()) {
             <load-error source="home-recent-players" (retry)="recentPlayerLookups.reload()" />
           } @else {
             @for (player of recentPlayerLookups.value().slice(0, 5); track player.username) {
-              <a class="block" [routerLink]="['/trackers/xp', player.username]">
-                <player-widget [player]="player" [scrapingOffset]="scrapingOffset()" flat />
-              </a>
+              <a
+                player-row
+                [routerLink]="['/trackers/xp', player.username]"
+                [player]="player"
+                [scrapingOffset]="scrapingOffset()"
+              ></a>
             }
           }
         </div>
@@ -103,14 +110,16 @@
 
         <item-search />
 
-        <div class="-my-3 divide-y divide-line">
-          @if (recentItemLookups.error()) {
+        <div class="-mx-5 -mb-4 rounded-b-2xl overflow-hidden">
+          @if (recentItemLookups.isLoading()) {
+            @for (index of SKELETON_ROWS; track index) {
+              <list-row-skeleton kind="item" [index]="index" />
+            }
+          } @else if (recentItemLookups.error()) {
             <load-error source="home-recent-items" (retry)="recentItemLookups.reload()" />
           } @else {
             @for (item of recentItemLookups.value().slice(0, 5); track item.id) {
-              <a class="block" [routerLink]="['/trackers/price', item.id]">
-                <item-widget [recentItem]="item" flat />
-              </a>
+              <a item-row [routerLink]="['/trackers/price', item.id]" [item]="item"></a>
             }
           }
         </div>

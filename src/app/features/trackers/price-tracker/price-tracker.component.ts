@@ -1,14 +1,13 @@
-import { Component, ResourceRef, Signal, inject } from '@angular/core';
+import { Component, ResourceRef, Signal, computed, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
-import { LoadErrorComponent } from 'src/app/common/components/general/load-error.component';
-import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
+import { ListCardComponent, ListCardState, listCardState } from 'src/app/common/components/general/list-card.component';
 import { InfoTooltipComponent } from 'src/app/common/components/general/tooltip/info-tooltip.component';
 import { PageHeaderComponent } from 'src/app/common/components/layout/page-header.component';
 import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
 import { ItemSearchComponent } from './item-search.component';
-import { ItemWidgetComponent } from './item-widget/item-widget.component';
+import { ItemRowComponent } from './item-row/item-row.component';
 import { PriceTrackerStore, RecentItem } from './price-tracker.store';
 
 @Component({
@@ -17,11 +16,10 @@ import { PriceTrackerStore, RecentItem } from './price-tracker.store';
   imports: [
     RouterLink,
     InfoTooltipComponent,
-    LoadErrorComponent,
+    ListCardComponent,
     PageHeaderComponent,
-    SpinnerComponent,
     ItemSearchComponent,
-    ItemWidgetComponent,
+    ItemRowComponent,
   ],
 })
 export default class PriceTrackerComponent {
@@ -35,4 +33,5 @@ export default class PriceTrackerComponent {
     stream: () => this.osrsTrackerRepo.getRecentItemLookups(),
     defaultValue: [],
   });
+  readonly recentItemLookupsState: Signal<ListCardState> = computed(() => listCardState(this.recentItemLookups));
 }

@@ -78,7 +78,7 @@ export class XpGainedChartComponent extends BaseChart<'line', HiscoreEntry[]> {
         line: { pointRadius: 0, pointHoverRadius: 4, borderWidth: 2 },
       },
       scales: {
-        y: { ticks: { autoSkipPadding: 20, callback: value => formatNumberLegible(Number(value), 3) } },
+        y: { ticks: { autoSkipPadding: 20, callback: value => formatNumberLegible(Number(value)) } },
       },
       plugins: {
         tooltip: {

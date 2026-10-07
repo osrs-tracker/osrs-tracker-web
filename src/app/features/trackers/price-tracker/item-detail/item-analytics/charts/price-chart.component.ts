@@ -40,7 +40,7 @@ export class PriceChartComponent extends BaseChart<'line', AveragePricesAtTime[]
         y: {
           ticks: {
             autoSkipPadding: 20,
-            callback: value => formatNumberLegible(Number(value), 3),
+            callback: value => formatNumberLegible(Number(value)),
           },
         },
       },

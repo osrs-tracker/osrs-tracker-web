@@ -8,6 +8,12 @@
   logo, with the current page underlined, instead of behind a menu button. The loading bar is a thin sweep that only
   shows when loading takes a moment, and stands still if you've asked your device to reduce motion. The GitHub link
   moved to the footer and the X/Twitter link is gone.
+- New player and item lists on Home and the trackers. Each list is a card with a short description and, for your own
+  lists, a count. Players show their account type, total level and the XP gained since they were last tracked, or "No XP
+  gained". Items show a short price ("1.4M gp", the full price on hover) and their change since yesterday as a green or
+  red percentage. Lists show placeholder rows while loading instead of a spinner, and items whose price fails to load
+  now say so with a retry button instead of showing a dash. Prices on the item charts use the same short form ("1.61B",
+  "2.54K").
 - The item search shows a message with a retry button when searching fails, instead of looking like nothing was found.
 - Every page loads a 23% smaller stylesheet: the changelog no longer uses a styling plugin for its text, which also
   fixes a security warning. The changelog's list bullets are easier to see in the light theme.
