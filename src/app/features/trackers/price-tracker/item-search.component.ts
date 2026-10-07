@@ -1,4 +1,15 @@
-import { Component, ResourceRef, Signal, WritableSignal, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  InputSignal,
+  ResourceRef,
+  Signal,
+  WritableSignal,
+  afterNextRender,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -14,7 +25,7 @@ import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
 
 /**
  * Item name search with a floating dropdown of matching items and their prices, linking to their price pages.
- * `[leading]` content (e.g. a mode switch) goes before the input.
+ * `[leading]` content (e.g. a mode switch) goes before the input. An `initialQuery` is searched for straight away.
  */
 @Component({
   selector: 'item-search',
@@ -102,6 +113,9 @@ export class ItemSearchComponent {
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
 
+  /** E.g. the name searched for on an item page that wasn't found */
+  readonly initialQuery: InputSignal<string> = input('');
+
   readonly query: WritableSignal<string> = signal('');
   readonly loading: WritableSignal<boolean> = signal(false);
   readonly results: WritableSignal<Item[]> = signal([]);
@@ -130,6 +144,15 @@ export class ItemSearchComponent {
   );
 
   private searchSubscription?: Subscription;
+
+  constructor() {
+    // Browser only: the page is cached without its query string, so the server never sees it
+    afterNextRender(() => {
+      if (!this.initialQuery()) return;
+      this.query.set(this.initialQuery());
+      this.searchItems();
+    });
+  }
 
   shortPrice(price: number): string {
     return formatNumberLegible(price);
