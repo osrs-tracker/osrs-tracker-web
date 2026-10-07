@@ -1,0 +1,23 @@
+name: GE tax check
+
+# Jagex changes the GE tax in unpolled updates, so compare ge-tax.ts with the OSRS Wiki every month. A failed run is the
+# reminder: GitHub emails it to the repository owner. See "Recheck the GE tax rules" in docs/runbook.md.
+on:
+  schedule:
+    - cron: '0 9 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+      # The script needs no dependencies, only Node 24 to import the .ts helper
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.x'
+      - run: npm run check:ge-tax

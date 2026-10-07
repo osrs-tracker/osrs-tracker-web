@@ -47,8 +47,9 @@ Choices that look like accidents without their context: what was decided, why, a
   `features/trackers/price-tracker/item-detail/ge-tax.ts`, which links the
   [Wiki section](https://oldschool.runescape.wiki/w/Grand_Exchange#Convenience_fee_and_item_sink) and says when it was
   last checked.
-- **Revisit:** check the Wiki section when a GE or game-integrity update ships, and at least every few months; update
-  the helper's "last checked" date each time.
+- **Revisit:** check the Wiki section when a GE or game-integrity update ships; a monthly workflow runs
+  `npm run check:ge-tax`, which compares the helper with the Wiki (steps in `docs/runbook.md`). Update the helper's
+  "last checked" date each time.
 
 ## Per-request CSP nonce for inline scripts (2026/10/04)
 
