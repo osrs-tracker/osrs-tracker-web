@@ -33,6 +33,7 @@
     "predocker:build": "npm run sitemap && npm run icons",
     "docker:build": "docker build -t freekmencke/osrs-tracker-web:latest .",
     "docker:push": "docker push freekmencke/osrs-tracker-web:latest",
+    "check:ge-tax": "node scripts/ge-tax/check-ge-tax.mjs",
     "icons": "node scripts/icons/local-icons.js",
     "sitemap": "npm run sitemap:items && npm run sitemap:site && npm run sitemap:index",
     "sitemap:index": "node ./scripts/sitemap/sitemap-index.js",

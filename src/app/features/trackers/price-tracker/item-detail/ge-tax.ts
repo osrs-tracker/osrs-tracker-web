@@ -2,8 +2,8 @@
  * The Grand Exchange tax ("convenience fee") on selling an item, per the OSRS Wiki:
  * https://oldschool.runescape.wiki/w/Grand_Exchange#Convenience_fee_and_item_sink (last checked 2026-10-07).
  *
- * Jagex changes these rules in unpolled game-integrity updates, so check that section when a GE update ships, and at
- * least every few months (see "GE tax rules are hard-coded" in docs/decisions.md).
+ * Jagex changes these rules in unpolled game-integrity updates. `npm run check:ge-tax` compares them with the Wiki, and
+ * runs monthly in CI; see "Recheck the GE tax rules" in docs/runbook.md.
  */
 
 /** 2% of the sale price per item, since 29 May 2025 (1% before); a whole percentage keeps the maths exact */

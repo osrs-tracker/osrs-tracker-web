@@ -69,6 +69,8 @@
   installed dependencies until they change.
 - Behind the scenes: Claude Code gets Angular's documentation for the installed version, and notes on code navigation in
   the project's guide.
+- Behind the scenes: a monthly check compares the Grand Exchange tax rules used for "Margin after tax" and the profit
+  calculator with the OSRS Wiki, so a change to the rate, cap or exempt items gets noticed.
 - Behind the scenes: removed a deprecated Angular hydration setting that's now on by default.
 - Behind the scenes: removed the old styles and colours the new look no longer uses, and documented the design system
   and the reasons behind it for future changes.
