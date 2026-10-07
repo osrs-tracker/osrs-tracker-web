@@ -89,13 +89,13 @@ export class ItemSearchComponent {
   private searchSubscription?: Subscription;
 
   searchItems(): void {
+    this.error.set(false);
     if (!this.query()) return;
 
     // Cancel the previous search (before setting loading, as this runs its finalize), so a slow earlier response can't
     // overwrite a newer one
     this.searchSubscription?.unsubscribe();
     this.loading.set(true);
-    this.error.set(false);
 
     this.searchSubscription = this.osrsTrackerRepo
       .searchItems(this.query())
