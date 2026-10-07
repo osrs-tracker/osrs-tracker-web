@@ -17,6 +17,9 @@
 - New XP Tracker and Price Tracker pages: a header with a bigger search box, and your recent lookups and favourites as
   three equal lists below it. On the XP Tracker the tracking offset sits under the search and says which hour's hiscores
   you're seeing. The item search shows each match's price, and says so when nothing matches.
+- A new Home page: one big search for players or items, with the tracking offset under it for players and your first
+  three favourite items for items, next to an example of a player's stats. The latest news cards are clickable as a
+  whole, and the XP Tracker and Price Tracker cards list the five most recent lookups with a link to open each tracker.
 - The item search shows a message with a retry button when searching fails, instead of looking like nothing was found.
 - Every page loads a 23% smaller stylesheet: the changelog no longer uses a styling plugin for its text, which also
   fixes a security warning. The changelog's list bullets are easier to see in the light theme.

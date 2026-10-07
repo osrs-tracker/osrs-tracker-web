@@ -1,25 +1,21 @@
-<article class="flex flex-col h-full rounded-2xl bg-card">
-  <img
-    class="rounded-t-2xl cursor-pointer"
-    [ngSrc]="imageSrc()"
-    [alt]="osrsNewsItem().title"
-    [width]="628"
-    [height]="354"
-    (click)="openLink(osrsNewsItem().link)"
-    priority
-  />
+<article
+  class="group relative flex flex-col h-full rounded-2xl bg-card overflow-hidden hover:bg-row focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent"
+>
+  <img class="w-full bg-row object-cover" [ngSrc]="imageSrc()" alt="" [width]="628" [height]="354" priority />
   <div class="flex flex-col grow p-4">
-    <div class="flex justify-between text-muted mb-2 font-light">
-      <small>{{ osrsNewsItem().pubDate | date: 'MMMM dd, yyyy' }}</small>
-      <small>{{ osrsNewsItem().category }}</small>
+    <div class="flex justify-between gap-2 mb-2 text-sm/5 text-muted">
+      <span>{{ osrsNewsItem().pubDate | date: 'MMMM dd, yyyy' }}</span>
+      <span>{{ osrsNewsItem().category }}</span>
     </div>
-    <h3 class="font-bold mb-2 truncate" [innerHTML]="osrsNewsItem().title"></h3>
-    <div class="line-clamp-2 mb-2" [innerHTML]="osrsNewsItem().description"></div>
-    <div class="mt-auto">
-      <a class="link" [href]="osrsNewsItem().link" target="_blank">
-        Read more
-        <span class="absolute overflow-hidden w-px h-px">&ngsp;about "{{ osrsNewsItem().title }}".</span>
-      </a>
-    </div>
+    <h3 class="mb-2 text-lg/6 font-bold line-clamp-2">
+      <a
+        class="text-strong group-hover:text-accent after:absolute after:inset-0 focus-visible:outline-none"
+        [href]="osrsNewsItem().link"
+        target="_blank"
+        rel="noopener"
+        [innerHTML]="osrsNewsItem().title"
+      ></a>
+    </h3>
+    <p class="line-clamp-2" [innerHTML]="osrsNewsItem().description"></p>
   </div>
 </article>

@@ -7,6 +7,7 @@ import {
   model,
   ModelSignal,
 } from '@angular/core';
+import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 
 export interface SegmentedOption<T> {
   value: T;
@@ -14,6 +15,8 @@ export interface SegmentedOption<T> {
   /** Shown on hover */
   title?: string;
   disabled?: boolean;
+  /** A decorative icon before the label */
+  icon?: { name: string; skill?: boolean };
 }
 
 /**
@@ -26,7 +29,7 @@ export interface SegmentedOption<T> {
     @for (option of options(); track option.value) {
       <button
         type="button"
-        class="font-bold whitespace-nowrap disabled:opacity-40 disabled:cursor-default"
+        class="flex items-center justify-center gap-1.5 font-bold whitespace-nowrap disabled:opacity-40 disabled:cursor-default"
         [class]="
           variant() === 'slate'
             ? 'h-10 px-3.5 rounded-xl text-base ' +
@@ -38,6 +41,9 @@ export interface SegmentedOption<T> {
         [disabled]="option.disabled"
         (click)="value.set(option.value)"
       >
+        @if (option.icon; as icon) {
+          <img class="h-4 w-auto" icon [name]="icon.name" [skill]="!!icon.skill" aria-hidden="true" />
+        }
         {{ option.label }}
       </button>
     }
@@ -49,6 +55,7 @@ export interface SegmentedOption<T> {
       "(stretch() ? 'grid grid-flow-col auto-cols-fr ' : 'flex w-fit max-w-full overflow-x-auto ') + " +
       "(variant() === 'slate' ? 'gap-1 p-1 rounded-2xl bg-ground' : 'p-1 rounded-full bg-inner')",
   },
+  imports: [IconDirective],
 })
 export class SegmentedComponent<T> {
   readonly options: InputSignal<SegmentedOption<T>[]> = input.required();

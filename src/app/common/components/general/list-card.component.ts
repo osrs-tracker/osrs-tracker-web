@@ -12,13 +12,15 @@ export function listCardState(resource: Resource<readonly unknown[] | undefined>
 }
 
 /**
- * A card with a list of player or item rows (the projected content), a two-line header with an optional `[info]`
- * tooltip and count, and loading (skeleton rows), empty and error states. The list scrolls past 390px.
+ * A card with a list of player or item rows (the projected content), a two-line header with an optional `[icon]`,
+ * `[info]` tooltip, count and `[actions]`, and loading (skeleton rows), empty and error states. The list scrolls past
+ * 390px.
  */
 @Component({
   selector: 'section[list-card]',
   template: `
     <div class="flex items-center gap-3 px-5 py-4 border-b border-line">
+      <ng-content select="[icon]" />
       <div class="flex-1 min-w-0">
         <h2 class="flex items-center text-xl/6 font-bold text-strong">
           {{ heading() }}
@@ -35,6 +37,7 @@ export function listCardState(resource: Resource<readonly unknown[] | undefined>
           {{ count() }}
         </span>
       }
+      <ng-content select="[actions]" />
     </div>
 
     @switch (state()) {

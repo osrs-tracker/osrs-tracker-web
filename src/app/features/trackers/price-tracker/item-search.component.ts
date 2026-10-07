@@ -12,12 +12,16 @@ import { formatNumberLegible } from 'src/app/common/helpers/number.helper';
 import { OsrsPricesRepo } from 'src/app/common/repositories/osrs-prices.repo';
 import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
 
-/** Item name search with a floating dropdown of matching items and their prices, linking to their price pages. */
+/**
+ * Item name search with a floating dropdown of matching items and their prices, linking to their price pages.
+ * `[leading]` content (e.g. a mode switch) goes before the input.
+ */
 @Component({
   selector: 'item-search',
   host: { class: 'relative block w-full' },
   template: `
     <form autocomplete="off" class="search-box">
+      <ng-content select="[leading]" />
       <label for="item-search" class="sr-only">Item name</label>
       <input
         id="item-search"

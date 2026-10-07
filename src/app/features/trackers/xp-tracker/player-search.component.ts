@@ -2,12 +2,13 @@ import { Component, WritableSignal, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
-/** Player name search that opens the player's page. */
+/** Player name search that opens the player's page; `[leading]` content (e.g. a mode switch) goes before the input. */
 @Component({
   selector: 'player-search',
   host: { class: 'block w-full' },
   template: `
     <form autocomplete="off" class="search-box">
+      <ng-content select="[leading]" />
       <label for="player-search" class="sr-only">Player name</label>
       <input
         id="player-search"
