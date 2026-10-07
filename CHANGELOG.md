@@ -5,6 +5,9 @@
   fixes a security warning. The changelog's list bullets are easier to see in the light theme.
 - The XP gained in the recently looked up players lists is measured from your selected tracking offset. Players tracked
   at more than one offset could show the XP gained since another offset's last update.
+- The recently looked up items and players lists only show what people looked up, not what search engines and other bots
+  visited, and bots no longer start tracking new players. Lookups are recorded by your browser once the page has loaded.
+  A newly tracked player's first entry shows up on their page right away.
 - Updated the SOLIX font to version 2.22: minus signs and arrows now use the site font, so negative changes like "−0.6%"
   are the same width and height as positive ones.
 - Behind the scenes: the security policy no longer allows background workers, a leftover from the service worker that

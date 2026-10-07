@@ -20,7 +20,7 @@
   </header>
 
   <!-- charts -->
-  @if (isPlayerTracked) {
+  @if (isPlayerTracked()) {
     @if (hiscoreDiffs().length > 1) {
       <article card>
         <h2 title>{{ xpTrackerViewType() === XpTrackerViewType.Skills ? 'XP gained' : 'Activity' }}</h2>
@@ -41,7 +41,7 @@
   }
 
   <!-- XP view -->
-  @if (isPlayerTracked && xpTrackerViewType() === XpTrackerViewType.Skills) {
+  @if (isPlayerTracked() && xpTrackerViewType() === XpTrackerViewType.Skills) {
     @for (group of skillLogs(); track $index) {
       @if (group.type === 'day') {
         @let diff = group.diff;
@@ -133,7 +133,7 @@
   }
 
   <!-- Other view -->
-  @if (isPlayerTracked && xpTrackerViewType() === XpTrackerViewType.Other) {
+  @if (isPlayerTracked() && xpTrackerViewType() === XpTrackerViewType.Other) {
     @for (group of otherLogs(); track $index) {
       @if (group.type === 'day') {
         @let diff = group.diff;
