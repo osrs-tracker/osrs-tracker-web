@@ -18648,4 +18648,8 @@
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/34428</loc>
     <priority>0.5</priority>
   </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/34631</loc>
+    <priority>0.5</priority>
+  </url>
 </urlset>
