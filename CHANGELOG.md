@@ -5,6 +5,8 @@
   fixes a security warning. The changelog's list bullets are easier to see in the light theme.
 - Updated the SOLIX font to version 2.22: minus signs and arrows now use the site font, so negative changes like "−0.6%"
   are the same width and height as positive ones.
+- Behind the scenes: updated the shared OSRS Tracker data models and hiscores packages, preparing for the player page's
+  "History since" date and a notice when the hiscores aren't responding.
 - Behind the scenes: code changes are formatted automatically and checked for lint and formatting errors before they're
   pushed, and reviewed against the project's conventions before release. The automatic build and tests only run when the
   code or its dependencies change (or the previous run didn't pass), not for releases or documentation, and reuse the
