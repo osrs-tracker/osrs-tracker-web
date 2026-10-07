@@ -1,5 +1,5 @@
-import { DecimalPipe } from '@angular/common';
-import { Component, InputSignal, ResourceRef, Signal, computed, inject, input } from '@angular/core';
+import { DecimalPipe, isPlatformBrowser } from '@angular/common';
+import { Component, InputSignal, PLATFORM_ID, ResourceRef, Signal, computed, inject, input } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { subDays } from 'date-fns';
 import { forkJoin, map } from 'rxjs';
@@ -35,7 +35,7 @@ interface ItemRowPrice {
 
     <span class="flex flex-1 flex-col gap-1 min-w-0">
       <span class="truncate text-lg/5 font-bold text-strong">{{ item().name }}</span>
-      @if (priceResource.isLoading()) {
+      @if (loading()) {
         <skeleton class="h-3 w-16 my-0.5" />
       } @else if (priceResource.error()) {
         <span class="truncate text-sm/4 text-muted">Couldn't load the price.</span>
@@ -48,7 +48,7 @@ interface ItemRowPrice {
       }
     </span>
 
-    @if (priceResource.isLoading()) {
+    @if (loading()) {
       <skeleton class="h-6 w-18 rounded-full" />
     } @else if (priceResource.error()) {
       <load-error compact source="item-row" message="Couldn't load the price." (retry)="priceResource.reload()" />
@@ -70,11 +70,16 @@ interface ItemRowPrice {
 })
 export class ItemRowComponent {
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   readonly item: InputSignal<RecentItem> = input.required();
 
+  /**
+   * Browser only: `/latest` and `/24h` return every item, and the server would embed both (about 730KB) in the page's
+   * transfer state.
+   */
   readonly priceResource: ResourceRef<ItemRowPrice | undefined> = rxResource({
-    params: () => ({ id: this.item().id }),
+    params: () => (this.isBrowser ? { id: this.item().id } : undefined),
     stream: ({ params: { id } }) =>
       forkJoin([
         this.osrsPricesRepo.getLatestPrices(id),
@@ -87,6 +92,9 @@ export class ItemRowComponent {
         }),
       ),
   });
+
+  // The server renders skeletons, the browser fetches
+  readonly loading: Signal<boolean> = computed(() => !this.isBrowser || this.priceResource.isLoading());
 
   private readonly data: Signal<ItemRowPrice | null> = computed(() =>
     this.priceResource.hasValue() ? (this.priceResource.value() ?? null) : null,

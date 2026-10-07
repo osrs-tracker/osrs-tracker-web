@@ -243,7 +243,11 @@ export class ProfitCalculatorComponent {
             tone: 'down',
             info: 'GE tax is 2% of the sell price, rounded down and capped at 5M per item.',
           },
-      { label: 'Return on investment', value: buy ? `${((perItem / buy) * 100).toFixed(2)}%` : '–' },
+      {
+        label: 'Return on investment',
+        // a true minus, as in the other numbers
+        value: buy ? `${((perItem / buy) * 100).toFixed(2).replace('-', '−')}%` : '–',
+      },
       {
         label: 'Break-even sell price',
         value: formatWhole(breakEvenSellPrice(id, buy)),
