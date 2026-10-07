@@ -61,7 +61,8 @@
 - Behind the scenes: the security policy no longer allows background workers, a leftover from the service worker that
   was turned off in 2025.
 - Behind the scenes: updated the shared OSRS Tracker data models and hiscores packages, preparing for the player page's
-  "History since" date and a notice when the hiscores aren't responding.
+  "History since" date and a notice when the hiscores aren't responding, and correcting their description of when a
+  player was last looked up.
 - Behind the scenes: code changes are formatted automatically and checked for lint and formatting errors before they're
   pushed, and reviewed against the project's conventions before release. The automatic build and tests only run when the
   code or its dependencies change (or the previous run didn't pass), not for releases or documentation, and reuse the
