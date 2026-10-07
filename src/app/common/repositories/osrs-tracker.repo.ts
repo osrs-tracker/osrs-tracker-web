@@ -57,15 +57,18 @@ export class OsrsTrackerRepo {
       .pipe(map(hiscoreEntries => (hiscoreEntries ?? []).map(entry => ({ ...entry, date: new Date(entry.date) }))));
   }
 
-  getRecentPlayerLookups(): Observable<Player[]> {
-    return this.httpClient.get<Player[]>('/players', { params: { limit: config.maxStoredPlayers } }).pipe(
-      map(players =>
-        players.map(player => ({
-          ...player,
-          hiscoreEntries: player.hiscoreEntries?.map(entry => ({ ...entry, date: new Date(entry.date) })),
-        })),
-      ),
-    );
+  /** Each player's `hiscoreEntries` holds only their newest entry for `scrapingOffset`, or none */
+  getRecentPlayerLookups(scrapingOffset: number): Observable<Player[]> {
+    return this.httpClient
+      .get<Player[]>('/players', { params: { limit: config.maxStoredPlayers, scrapingOffset } })
+      .pipe(
+        map(players =>
+          players.map(player => ({
+            ...player,
+            hiscoreEntries: player.hiscoreEntries?.map(entry => ({ ...entry, date: new Date(entry.date) })),
+          })),
+        ),
+      );
   }
 
   //
