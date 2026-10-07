@@ -1,14 +1,15 @@
 import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreEntry } from '@osrs-tracker/models';
 import { describe, expect, it } from 'vitest';
+import { Gains } from '../player-summary';
 import { activitySeries, xpGainedSeries } from './log-chart-series';
 
-const diff = (day: number, skills: Record<string, number>, activities: Record<string, number> = {}): HiscoreEntry =>
+const diff = (day: number, skills: Record<string, number>, activities: Record<string, number> = {}, days = 1): Gains =>
   ({
     date: new Date(2026, 9, day),
+    days,
     skills: Object.entries(skills).map(([name, xp]) => ({ name, xp, level: 0, rank: 0 })),
     activities: Object.entries(activities).map(([name, score]) => ({ name, score, rank: 0 })),
-  }) as HiscoreEntry;
+  }) as Gains;
 
 describe('xpGainedSeries', () => {
   it('adds up the daily gains oldest first, without Overall or skills that gained nothing', () => {
@@ -22,6 +23,15 @@ describe('xpGainedSeries', () => {
     expect(xpGainedSeries(diffs).map(({ name, total, points }) => [name, total, points.map(p => p.y)])).toEqual([
       [SkillEnum.Magic, 200, [0, 0, 200]],
       [SkillEnum.Attack, 150, [50, 50, 150]],
+    ]);
+  });
+
+  it('puts the gains across a gap in the history on its last day', () => {
+    const diffs = [diff(8, { [SkillEnum.Attack]: 10 }), diff(3, { [SkillEnum.Attack]: 500 }, {}, 5)];
+
+    expect(xpGainedSeries(diffs)[0].points).toEqual([
+      { x: new Date(2026, 9, 7).getTime(), y: 500, from: new Date(2026, 9, 3).getTime() },
+      { x: new Date(2026, 9, 8).getTime(), y: 510 },
     ]);
   });
 });

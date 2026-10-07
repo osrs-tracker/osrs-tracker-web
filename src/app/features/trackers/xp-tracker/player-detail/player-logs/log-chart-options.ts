@@ -1,4 +1,6 @@
 import { ChartOptions } from 'chart.js';
+import { format } from 'date-fns';
+import { LogPoint } from './log-chart-series';
 import { MARKER_HEIGHT, MARKER_WIDTH, TooltipMarkers } from './tooltip-markers';
 
 /** Options shared by the log charts: a day axis, tooltips with the icon markers and no zoom. */
@@ -7,7 +9,7 @@ export function logChartOptions<TType extends 'line' | 'bar'>(markers: TooltipMa
   const options: ChartOptions<'bar'> = {
     scales: {
       x: {
-        time: { unit: 'day', displayFormats: { day: 'MMM d' }, tooltipFormat: 'MMMM do' },
+        time: { unit: 'day', displayFormats: { day: 'MMM d' } },
         // room between the day labels, so narrow charts skip some instead of crowding them
         ticks: { autoSkipPadding: 16 },
       },
@@ -21,6 +23,12 @@ export function logChartOptions<TType extends 'line' | 'bar'>(markers: TooltipMa
         boxHeight: MARKER_HEIGHT,
         boxPadding: 4,
         callbacks: {
+          // the day, or the days a gap in the history covers
+          title: ([item]) => {
+            if (!item) return '';
+            const { x, from } = item.raw as LogPoint;
+            return from === undefined ? format(x, 'MMMM do') : `${format(from, 'MMMM do')} – ${format(x, 'MMMM do')}`;
+          },
           labelPointStyle: context => ({
             pointStyle: markers.get(context.dataset.borderColor as string, context.dataset.label!),
             rotation: 0,

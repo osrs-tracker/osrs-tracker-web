@@ -188,6 +188,7 @@
         class="order-2 md:col-start-2 md:row-start-1"
         [diffs]="periodDiffs()"
         [current]="current()"
+        [since]="summary()?.since"
         [state]="chartState()"
         [minigame]="chartedMinigame()"
         [emptyText]="emptyChartText()"

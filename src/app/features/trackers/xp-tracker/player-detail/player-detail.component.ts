@@ -19,8 +19,9 @@ import {
 } from '@angular/core';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ActivityEnum, SkillEnum, hiscoreDiff, parseHiscores } from '@osrs-tracker/hiscores';
+import { ActivityEnum, SkillEnum, parseHiscores } from '@osrs-tracker/hiscores';
 import { HiscoreEntry, HiscoreSkill, Player } from '@osrs-tracker/models';
+import { format } from 'date-fns';
 import { EMPTY, catchError, finalize, map } from 'rxjs';
 import { LoadErrorComponent } from 'src/app/common/components/general/load-error.component';
 import { SegmentedComponent, SegmentedOption } from 'src/app/common/components/general/segmented.component';
@@ -45,7 +46,7 @@ import { PlayerChartComponent } from './player-chart.component';
 import { isNotFound } from './player-detail.resolver';
 import { PlayerHeaderComponent, TrackingState } from './player-header/player-header.component';
 import { LogNotice, PlayerLogsComponent } from './player-logs/player-logs.component';
-import { PeriodSummary, periodSummary } from './player-summary';
+import { Gains, PeriodSummary, dailyGains, periodStart, periodSummary } from './player-summary';
 import { BottomTab, PlayerView, TopTab } from './player-view';
 
 interface StatTile {
@@ -169,16 +170,16 @@ export default class PlayerDetailComponent implements OnInit {
   });
 
   /** Each day's gains, newest first; the first is today's so far when the live hiscores are in */
-  readonly diffs: Signal<HiscoreEntry[]> = computed(() => {
-    let previous = this.today() ?? this.history()[0];
-    return this.history().map(hiscore => {
-      const diff = hiscoreDiff(previous, hiscore);
-      previous = hiscore;
-      return diff;
-    });
+  readonly diffs: Signal<Gains[]> = computed(() => {
+    const current = this.current();
+    return current ? dailyGains(current, this.history()) : [];
   });
   /** The days the chart and tiles cover: the period's days and today so far, newest first */
-  readonly periodDiffs: Signal<HiscoreEntry[]> = computed(() => this.diffs().slice(0, this.playerView.period() + 1));
+  readonly periodDiffs: Signal<Gains[]> = computed(() => {
+    const current = this.current();
+    if (!current || !this.history().length) return [];
+    return this.diffs().slice(0, periodStart(current, this.history(), this.playerView.period()).index + 1);
+  });
   readonly chartState: Signal<'loading' | 'empty' | 'ready'> = computed(() => {
     if (!this.historyLoaded()) return 'loading';
     return this.history().length > 1 ? 'ready' : 'empty';
@@ -271,7 +272,8 @@ export default class PlayerDetailComponent implements OnInit {
       tone: 'muted',
     };
     const summary = this.summary();
-    const xpLabel = `XP last ${this.playerView.period()} days`;
+    const since = summary?.since;
+    const xpLabel = since ? `XP since ${format(since, 'd MMM')}` : `XP last ${this.playerView.period()} days`;
     if (!summary) {
       return [
         totalLevel,

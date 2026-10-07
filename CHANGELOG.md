@@ -61,6 +61,10 @@
 - Home and the Price Tracker load faster: their item lists fetch prices in your browser, so the page no longer carries
   every item's price with it (about 730KB less). The profit calculator writes a negative return on investment with a
   true minus, like the other numbers.
+- The player page counts its 7, 30 and 60 days by date. When a player has days without stats (off the hiscores, or not
+  checked), the tiles and chart say where they actually start ("XP since 12 Sep") and only compare periods of the same
+  length, and the gains from those days show as one date range in the chart and the day log, instead of on the day
+  before the gap.
 - Behind the scenes: the security policy no longer allows background workers, a leftover from the service worker that
   was turned off in 2025.
 - Behind the scenes: updated the shared OSRS Tracker data models and hiscores packages, preparing for the player page's
