@@ -5,6 +5,7 @@ import { HiscoreEntry, HiscoreSkill, Player } from '@osrs-tracker/models';
 import { CardComponent } from 'src/app/common/components/general/card.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { ShortDatePipe } from 'src/app/common/pipes/date-fns.pipe';
+import { isTrackedFor } from '../../player-tracking';
 import { XpTrackerViewType } from '../../xp-tracker-view-type';
 import { XpTrackerStore } from '../../xp-tracker.store';
 import { ActivityChartComponent } from './activity-chart.component';
@@ -27,9 +28,9 @@ export class PlayerLogsComponent {
 
   readonly playerDetail: InputSignal<Player> = input.required();
 
-  get isPlayerTracked(): boolean {
-    return !!this.playerDetail().scrapingOffsets?.length;
-  }
+  readonly isPlayerTracked: Signal<boolean> = computed(() =>
+    isTrackedFor(this.playerDetail(), this.XpTrackerStore.scrapingOffset()),
+  );
 
   readonly today: InputSignal<HiscoreEntry | undefined> = input();
   readonly history: InputSignal<HiscoreEntry[]> = input.required();

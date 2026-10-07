@@ -41,12 +41,17 @@ export class OsrsTrackerRepo {
           ...(options?.skipRefresh ? { skipRefresh: true } : {}),
         },
       })
-      .pipe(
-        map(player => ({
-          ...player,
-          hiscoreEntries: player.hiscoreEntries?.map(entry => ({ ...entry, date: new Date(entry.date) })),
-        })),
-      );
+      .pipe(map(player => this.#parsePlayer(player)));
+  }
+
+  /**
+   * Records the lookup and starts tracking the player for `scrapingOffset`, or refreshes them when stale. Returns the
+   * player like `getPlayerInfo`, or `null` when the API took us for a bot. Only call it for `isHumanVisitor()`.
+   */
+  trackPlayer(username: string, scrapingOffset: number): Observable<Player | null> {
+    return this.httpClient
+      .post<Player | null>(`/players/${encodeURIComponent(username)}/lookup`, null, { params: { scrapingOffset } })
+      .pipe(map(player => (player ? this.#parsePlayer(player) : null)));
   }
 
   getPlayerHiscores(username: string, scrapingOffset: number, size: number, skip: number): Observable<HiscoreEntry[]> {
@@ -61,14 +66,14 @@ export class OsrsTrackerRepo {
   getRecentPlayerLookups(scrapingOffset: number): Observable<Player[]> {
     return this.httpClient
       .get<Player[]>('/players', { params: { limit: config.maxStoredPlayers, scrapingOffset } })
-      .pipe(
-        map(players =>
-          players.map(player => ({
-            ...player,
-            hiscoreEntries: player.hiscoreEntries?.map(entry => ({ ...entry, date: new Date(entry.date) })),
-          })),
-        ),
-      );
+      .pipe(map(players => players.map(player => this.#parsePlayer(player))));
+  }
+
+  #parsePlayer(player: Player): Player {
+    return {
+      ...player,
+      hiscoreEntries: player.hiscoreEntries?.map(entry => ({ ...entry, date: new Date(entry.date) })),
+    };
   }
 
   //
@@ -83,6 +88,11 @@ export class OsrsTrackerRepo {
     return this.httpClient.get<Item>(`/items/${itemId}`, {
       context: new HttpContext().set(LOADING_INDICATOR, options?.loadingIndicator),
     });
+  }
+
+  /** Adds the item to the recent lookups. Only call it for `isHumanVisitor()`. */
+  recordItemLookup(itemId: number): Observable<void> {
+    return this.httpClient.post<void>(`/items/${itemId}/lookup`, null);
   }
 
   getRecentItemLookups(): Observable<Item[]> {
