@@ -19,8 +19,8 @@
     --amber: var(--color-amber-600);
     --orange: var(--color-orange-500);
     --float-shadow: oklch(0.208 0.042 265.755 / 0.12);
-    /* The hero dot grid; --row is too close to --deep here, this keeps the dark theme's contrast */
-    --dot: color-mix(in oklch, var(--muted) 30%, var(--deep));
+    /* The hero dot grid: --row is too close to --deep in the light theme, so the dots get a darker step */
+    --dot: var(--color-slate-350);
   }
 
   .dark {
