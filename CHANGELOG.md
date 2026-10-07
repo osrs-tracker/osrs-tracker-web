@@ -7,6 +7,8 @@
   at more than one offset could show the XP gained since another offset's last update.
 - Updated the SOLIX font to version 2.22: minus signs and arrows now use the site font, so negative changes like "−0.6%"
   are the same width and height as positive ones.
+- Behind the scenes: the security policy no longer allows background workers, a leftover from the service worker that
+  was turned off in 2025.
 - Behind the scenes: updated the shared OSRS Tracker data models and hiscores packages, preparing for the player page's
   "History since" date and a notice when the hiscores aren't responding.
 - Behind the scenes: code changes are formatted automatically and checked for lint and formatting errors before they're
