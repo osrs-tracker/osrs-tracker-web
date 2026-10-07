@@ -88,6 +88,7 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
 
     runInInjectionContext(this.injector, () => {
       effect(() => this.updateChart(this.chart!, this.data()));
+      // Redraw on a theme change: the colours come from the theme's tokens (chart-setup.ts)
       effect(() => (this.themeService.darkMode(), this.chart!.update('none')));
     });
   }
@@ -109,21 +110,17 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
             tooltipFormat: 'MMMM do - HH:mm',
           },
           ticks: {
-            color: () => this.chartConfig().tickColor,
             source: 'data',
             maxRotation: 0,
             includeBounds: false,
             stepSize: 3,
           },
-          grid: { color: () => this.chartConfig().gridColor },
         },
         y: {
           type: 'linear',
           ticks: {
-            color: () => this.chartConfig().tickColor,
             includeBounds: false,
           },
-          grid: { color: () => this.chartConfig().gridColor },
         },
       },
       hover: {

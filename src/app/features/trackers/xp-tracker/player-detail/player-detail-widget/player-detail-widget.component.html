@@ -1,6 +1,6 @@
 <section class="flex flex-col gap-4">
   <header class="flex items-center gap-2">
-    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ playerDetail().username | capitalizeWords }}</h2>
+    <h2 class="text-2xl font-bold text-strong">{{ playerDetail().username | capitalizeWords }}</h2>
 
     <div class="flex gap-2">
       @if (playerDetail().type !== PlayerType.Normal) {
@@ -17,7 +17,7 @@
 
     <div class="ml-auto flex gap-2">
       <a
-        class="flex items-center justify-center size-9 rounded-lg shadow-lg bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white transition-colors hover:bg-slate-250 dark:hover:bg-slate-700"
+        class="flex items-center justify-center size-9 rounded-xl bg-card text-strong transition-colors hover:bg-row"
         target="_blank"
         rel="noopener"
         [href]="hiscoreUrl()"
@@ -35,7 +35,7 @@
 
       <button
         type="button"
-        class="flex items-center justify-center size-9 rounded-lg shadow-lg bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white transition-colors hover:bg-slate-250 dark:hover:bg-slate-700"
+        class="flex items-center justify-center size-9 rounded-xl bg-card text-strong transition-colors hover:bg-row"
         [attr.aria-label]="isFavorite() ? 'Remove favorite' : 'Add favorite'"
         [attr.aria-pressed]="isFavorite()"
         [title]="isFavorite() ? 'Remove favorite' : 'Add favorite'"
@@ -59,7 +59,7 @@
     </div>
   </header>
 
-  <div class="shadow-lg rounded-lg bg-slate-200 dark:bg-slate-800 p-4 flex">
+  <div class="rounded-2xl bg-card p-4 flex">
     <!-- labels take their own width, so the values have room to stay on one line -->
     <div class="flex flex-col pr-4 font-bold gap-y-1 whitespace-nowrap">
       <div>Username:</div>
@@ -77,7 +77,7 @@
     </div>
     <div class="flex flex-col flex-1 font-bold gap-y-1">
       <div>{{ playerDetail().username | capitalizeWords }}</div>
-      <div>{{ playerDetail().combatLevel }}</div>
+      <div class="tabular-nums">{{ playerDetail().combatLevel }}</div>
       <div>{{ playerDetail().type }}</div>
       @if (playerDetail().type === PlayerType.Hardcore) {
         <div>

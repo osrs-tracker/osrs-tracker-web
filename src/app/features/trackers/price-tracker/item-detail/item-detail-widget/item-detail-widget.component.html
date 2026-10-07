@@ -1,13 +1,13 @@
 <section class="flex flex-col gap-4">
   <header class="flex items-baseline">
-    <h2 class="text-2xl font-bold text-slate-900 dark:text-white truncate">
+    <h2 class="text-2xl font-bold text-strong truncate">
       <span>{{ itemDetail().name }}</span>
     </h2>
     <div class="ml-2 opacity-70 text-xs whitespace-nowrap">ID: {{ itemDetail().id }}</div>
 
     <button
       type="button"
-      class="ml-auto shrink-0 self-center flex items-center justify-center size-9 rounded-lg shadow-lg bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white transition-colors hover:bg-slate-250 dark:hover:bg-slate-700"
+      class="ml-auto shrink-0 self-center flex items-center justify-center size-9 rounded-xl bg-card text-strong transition-colors hover:bg-row"
       [attr.aria-label]="isFavorite() ? 'Remove favorite' : 'Add favorite'"
       [attr.aria-pressed]="isFavorite()"
       [title]="isFavorite() ? 'Remove favorite' : 'Add favorite'"
@@ -30,7 +30,7 @@
     </button>
   </header>
 
-  <div class="shadow-lg rounded-lg bg-slate-200 dark:bg-slate-800 p-4 flex flex-col gap-4">
+  <div class="rounded-2xl bg-card p-4 flex flex-col gap-4">
     <picture class="relative flex justify-center py-4 h-40">
       <img
         class="object-contain"
@@ -45,7 +45,7 @@
 
     <section class="text-lg">
       <h3 class="font-bold">Examine:</h3>
-      <p class="text-slate-900 dark:text-white">{{ itemDetail().examine }}</p>
+      <p class="text-strong">{{ itemDetail().examine }}</p>
     </section>
 
     <section>
@@ -54,17 +54,17 @@
       <div class="flex flex-col gap-1">
         <section class="flex justify-between">
           <h3 class="font-bold">Value</h3>
-          <div class="text-slate-900 dark:text-white">{{ itemDetail().value | number }}&ngsp;gp</div>
+          <div class="text-strong tabular-nums">{{ itemDetail().value | number }}&ngsp;gp</div>
         </section>
 
         <section class="flex justify-between">
           <h3 class="font-bold">High alc</h3>
-          <div class="text-slate-900 dark:text-white">{{ itemDetail().highalch | number }}&ngsp;gp</div>
+          <div class="text-strong tabular-nums">{{ itemDetail().highalch | number }}&ngsp;gp</div>
         </section>
 
         <section class="flex justify-between">
           <h3 class="font-bold">Low alc</h3>
-          <div class="text-slate-900 dark:text-white">{{ itemDetail().lowalch | number }}&ngsp;gp</div>
+          <div class="text-strong tabular-nums">{{ itemDetail().lowalch | number }}&ngsp;gp</div>
         </section>
       </div>
     </section>
@@ -78,7 +78,7 @@
             <div>Buy price</div>
             <info-tooltip>The price of the latest instant buy.</info-tooltip>
           </h3>
-          <div class="text-slate-900 dark:text-white" tooltip [tooltipTemplate]="highTimeTooltip">
+          <div class="text-strong tabular-nums" tooltip [tooltipTemplate]="highTimeTooltip">
             {{ latestPrices().high | number }}&ngsp;gp
           </div>
           <ng-template #highTimeTooltip>Last trade was {{ latestPrices().highTime | timeAgo }}.</ng-template>
@@ -89,7 +89,7 @@
             <div>Sell price</div>
             <info-tooltip>The price of the latest instant sell.</info-tooltip>
           </h3>
-          <div class="text-slate-900 dark:text-white" tooltip [tooltipTemplate]="lowTimeTooltip">
+          <div class="text-strong tabular-nums" tooltip [tooltipTemplate]="lowTimeTooltip">
             {{ latestPrices().low | number }}&ngsp;gp
           </div>
           <ng-template #lowTimeTooltip>Last trade was {{ latestPrices().lowTime | timeAgo }}.</ng-template>
@@ -100,7 +100,7 @@
             <div>Daily volume</div>
             <info-tooltip>The number of times the item has been traded within the last 24 hours.</info-tooltip>
           </h3>
-          <div class="text-slate-900 dark:text-white">{{ dailyVolume() | number }}</div>
+          <div class="text-strong tabular-nums">{{ dailyVolume() | number }}</div>
         </section>
 
         <section class="flex justify-between">
@@ -108,7 +108,7 @@
             <div>Limit</div>
             <info-tooltip>The amount of times the item can be bought every 4 hours.</info-tooltip>
           </h3>
-          <div class="text-slate-900 dark:text-white">{{ itemDetail().limit | number }}</div>
+          <div class="text-strong tabular-nums">{{ itemDetail().limit | number }}</div>
         </section>
       </div>
     </section>

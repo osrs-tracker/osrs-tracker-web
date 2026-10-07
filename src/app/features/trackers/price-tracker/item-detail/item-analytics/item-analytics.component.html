@@ -1,6 +1,6 @@
 <section class="flex flex-col gap-4">
   <header class="flex items-center justify-between">
-    <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Analytics</h1>
+    <h1 class="text-2xl font-bold text-strong">Analytics</h1>
   </header>
 
   <div class="flex flex-col gap-8">
@@ -61,23 +61,7 @@
     <article card>
       <h2 title>Price</h2>
 
-      <div actions class="button-group">
-        <button [class.active]="priceTimeSpan() === TimeSpan.DAY" (click)="priceTimeSpan.set(TimeSpan.DAY)">
-          Year
-        </button>
-        <button [class.active]="priceTimeSpan() === TimeSpan.SIX_HOURS" (click)="priceTimeSpan.set(TimeSpan.SIX_HOURS)">
-          Quarter
-        </button>
-        <button [class.active]="priceTimeSpan() === TimeSpan.HOUR" (click)="priceTimeSpan.set(TimeSpan.HOUR)">
-          Week
-        </button>
-        <button
-          [class.active]="priceTimeSpan() === TimeSpan.FIVE_MINUTES"
-          (click)="priceTimeSpan.set(TimeSpan.FIVE_MINUTES)"
-        >
-          Day
-        </button>
-      </div>
+      <segmented actions label="Period" [options]="timeSpanOptions" [(value)]="priceTimeSpan" />
 
       <div class="block h-72 max-w-full">
         @if (priceTimeSeries.error()) {
@@ -99,26 +83,7 @@
     <article card>
       <h2 title>Volume</h2>
 
-      <div actions class="button-group">
-        <button [class.active]="volumeTimeSpan() === TimeSpan.DAY" (click)="volumeTimeSpan.set(TimeSpan.DAY)">
-          Year
-        </button>
-        <button
-          [class.active]="volumeTimeSpan() === TimeSpan.SIX_HOURS"
-          (click)="volumeTimeSpan.set(TimeSpan.SIX_HOURS)"
-        >
-          Quarter
-        </button>
-        <button [class.active]="volumeTimeSpan() === TimeSpan.HOUR" (click)="volumeTimeSpan.set(TimeSpan.HOUR)">
-          Week
-        </button>
-        <button
-          [class.active]="volumeTimeSpan() === TimeSpan.FIVE_MINUTES"
-          (click)="volumeTimeSpan.set(TimeSpan.FIVE_MINUTES)"
-        >
-          Day
-        </button>
-      </div>
+      <segmented actions label="Period" [options]="timeSpanOptions" [(value)]="volumeTimeSpan" />
 
       <div class="block h-72 max-w-full">
         @if (volumeTimeSeries.error()) {

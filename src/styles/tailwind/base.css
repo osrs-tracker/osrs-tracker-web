@@ -1,7 +1,45 @@
 @layer base {
-  /* Equal-width digits everywhere, so numbers line up in columns. */
-  html {
-    font-variant-numeric: tabular-nums;
+  /* The light theme, the default; `.dark` on <html> (set by index.html before render) swaps in the dark one */
+  :root {
+    --ground: var(--color-slate-100);
+    --card: var(--color-white);
+    --line: var(--color-slate-250);
+    --row: var(--color-slate-200);
+    --inner: var(--color-slate-50);
+    --deep: var(--color-slate-150);
+    --border: var(--color-slate-300);
+    --muted: var(--color-slate-600);
+    --text: var(--color-slate-800);
+    --strong: var(--color-slate-900);
+    --accent: var(--color-emerald-700);
+    --accent-hover: var(--color-emerald-800);
+    --on-accent: var(--color-white);
+    --up: var(--color-positive-700);
+    --down: var(--color-negative-700);
+    --amber: var(--color-amber-600);
+    --orange: var(--color-orange-500);
+    --float-shadow: oklch(0.208 0.042 265.755 / 0.12);
+  }
+
+  .dark {
+    --ground: var(--color-slate-900);
+    --card: var(--color-slate-800);
+    --line: var(--color-slate-700);
+    --row: var(--color-slate-750);
+    --inner: var(--color-slate-850);
+    --deep: var(--color-slate-925);
+    --border: var(--color-slate-600);
+    --muted: var(--color-slate-400);
+    --text: var(--color-slate-300);
+    --strong: var(--color-white);
+    --accent: var(--color-emerald-400);
+    --accent-hover: var(--color-emerald-500);
+    --on-accent: var(--color-slate-900);
+    --up: var(--color-positive-400);
+    --down: var(--color-negative-400);
+    --amber: var(--color-amber-400);
+    --orange: var(--color-orange-400);
+    --float-shadow: oklch(0.1 0.03 265 / 0.6);
   }
 
   body::-webkit-scrollbar,
@@ -10,7 +48,7 @@
   }
   body::-webkit-scrollbar-thumb,
   .scroll-bar::-webkit-scrollbar-thumb {
-    @apply rounded-lg border-4 border-solid border-transparent bg-clip-content dark:bg-slate-600 bg-slate-800;
+    @apply rounded-lg border-4 border-solid border-transparent bg-clip-content bg-border;
   }
 
   button:not(:disabled),

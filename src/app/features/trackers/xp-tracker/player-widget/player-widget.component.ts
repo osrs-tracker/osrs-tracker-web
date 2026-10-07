@@ -32,19 +32,17 @@ import { XpTrackerStore } from '../xp-tracker.store';
   selector: 'player-widget',
   template: `
     <article
-      class="flex font-bold text-slate-900 dark:text-white cursor-pointer"
+      class="flex font-bold text-strong cursor-pointer"
       [class]="
         flat()
           ? 'group items-center gap-4 min-h-13 py-3 text-base'
-          : 'rounded text-lg bg-slate-200 dark:bg-slate-800 ring-2 ring-transparent hover:ring-emerald-600 dark:hover:ring-emerald-400'
+          : 'rounded-2xl text-lg bg-card ring-2 ring-transparent hover:ring-accent'
       "
     >
       <div
         class="flex items-center gap-2"
         [class]="
-          flat()
-            ? 'min-w-0 flex-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400'
-            : 'w-1/2 justify-between rounded-l bg-slate-350 dark:bg-slate-700 px-4 py-2'
+          flat() ? 'min-w-0 flex-1 group-hover:text-accent' : 'w-1/2 justify-between rounded-l-2xl bg-row px-4 py-2'
         "
       >
         <h3 class="truncate" [title]="_username()">
@@ -80,7 +78,9 @@ import { XpTrackerStore } from '../xp-tracker.store';
             @if (overallDiff() === null) {
               &mdash;
             } @else {
-              <div [tooltip]="!!player()" [tooltipTemplate]="tooltip">+&nbsp;{{ overallDiff() | number }}&nbsp;XP</div>
+              <div class="tabular-nums" [tooltip]="!!player()" [tooltipTemplate]="tooltip">
+                +&nbsp;{{ overallDiff() | number }}&nbsp;XP
+              </div>
               <ng-template #tooltip>
                 The XP for this player is calculated since they were last scraped, which is
                 {{ player()?.hiscoreEntries?.[0]?.date | timeAgo }}.

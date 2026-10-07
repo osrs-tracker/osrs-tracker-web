@@ -4,6 +4,7 @@ import { SkillEnum, calculateXPForSkillLevel, calculateXPToNextLevel } from '@os
 import { HiscoreSkill } from '@osrs-tracker/models';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { TooltipComponent } from 'src/app/common/components/general/tooltip/tooltip.component';
+import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
 
 @Component({
   selector: 'player-skill',
@@ -14,30 +15,27 @@ import { TooltipComponent } from 'src/app/common/components/general/tooltip/tool
       [tooltipTemplate]="tooltipTemplate"
       [tooltipUnderline]="false"
     >
-      <div
-        class="px-3 pt-1.5 flex items-center gap-2 hover:bg-slate-250 dark:hover:bg-slate-700"
-        [class]="hasProgressBar() ? 'pb-1' : 'pb-1.5'"
-      >
+      <div class="px-3 pt-1.5 flex items-center gap-2 hover:bg-row" [class]="hasProgressBar() ? 'pb-1' : 'pb-1.5'">
         @if (skill(); as skill) {
           @if (skill.name === SkillEnum.Overall) {
             <div class="text-center flex-1 text-lg">
-              Total level: <span class="font-bold">{{ skill.level }}</span>
+              Total level: <span class="font-bold tabular-nums">{{ skill.level }}</span>
             </div>
           } @else {
             <div class="mx-auto w-full max-w-15 flex items-center gap-2">
               <div class="size-7 shrink-0 flex items-center justify-center">
                 <img icon [name]="skill.name" [skill]="true" [scale]="1.5" />
               </div>
-              <div class="ml-auto text-lg font-bold">{{ skill.level }}</div>
+              <div class="ml-auto text-lg font-bold tabular-nums">{{ skill.level }}</div>
             </div>
           }
         } @else {
-          <div class="animate-pulse mx-auto h-5 w-20 my-1 rounded-lg bg-slate-350 dark:bg-slate-700"></div>
+          <skeleton class="mx-auto h-5 w-20 my-1" />
         }
       </div>
       @if (hasProgressBar()) {
-        <div class="w-full h-0.5 bg-slate-350 dark:bg-slate-700">
-          <div class="bg-emerald-700 dark:bg-emerald-500 h-0.5" [style.width.%]="percentageToNextLevel"></div>
+        <div class="w-full h-0.5 bg-row">
+          <div class="bg-accent h-0.5" [style.width.%]="percentageToNextLevel"></div>
         </div>
       }
     </div>
@@ -51,7 +49,7 @@ import { TooltipComponent } from 'src/app/common/components/general/tooltip/tool
             <div>Remaining XP:</div>
           }
         </div>
-        <div class="text-right">
+        <div class="text-right tabular-nums">
           <div>{{ skill()?.xp | number }}</div>
           @if (showXpDetails) {
             <div>{{ xpForNextLevel | number }}</div>
@@ -66,7 +64,7 @@ import { TooltipComponent } from 'src/app/common/components/general/tooltip/tool
       }
     </ng-template>
   `,
-  imports: [IconDirective, TooltipComponent, DecimalPipe],
+  imports: [IconDirective, TooltipComponent, DecimalPipe, SkeletonComponent],
 })
 export class PlayerSkillWidgetComponent {
   readonly SkillEnum: typeof SkillEnum = SkillEnum;

@@ -18,7 +18,7 @@ import { RouterLink } from '@angular/router';
       />
       <button
         type="submit"
-        class="absolute right-0 button--primary button--rounded"
+        class="absolute right-0 button--primary rounded-xl"
         [routerLink]="usernameQuery() ? ['/trackers/xp', usernameQuery()] : '.'"
       >
         Search

@@ -5,21 +5,21 @@
 
   /* Color */
   .accent {
-    @apply text-emerald-600 dark:text-emerald-400;
+    @apply text-accent;
   }
   .positive,
   .positive-value {
-    @apply text-positive-700 dark:text-positive-400;
+    @apply text-up;
   }
   .positive-value::before {
     content: '+';
   }
   .negative,
   .negative-value {
-    @apply text-negative-600 dark:text-negative-400;
+    @apply text-down;
   }
   .negative-value::before {
-    content: '-';
+    content: '−';
   }
 
   /* safe-area-inset */

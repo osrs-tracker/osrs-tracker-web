@@ -12,6 +12,7 @@ import { ChartLegendComponent, LegendItem } from './chart-legend.component';
 import { logChartOptions, toggled } from './log-chart-options';
 import { activitySeries, ChartSeries } from './log-chart-series';
 import { TooltipMarkers } from './tooltip-markers';
+import { SegmentedComponent, SegmentedOption } from 'src/app/common/components/general/segmented.component';
 
 interface ActivityCategory {
   label: string;
@@ -30,18 +31,13 @@ const CATEGORIES: ActivityCategory[] = [
 @Component({
   selector: 'activity-chart',
   template: `
-    <div class="button-group w-fit max-w-full overflow-x-auto mb-4">
-      @for (category of CATEGORIES; track category.label) {
-        <button
-          class="disabled:opacity-40"
-          [class.active]="category === selected()"
-          [disabled]="!categoriesWithData().includes(category)"
-          (click)="select(category)"
-        >
-          {{ category.label }}
-        </button>
-      }
-    </div>
+    <segmented
+      class="mb-4"
+      label="Category"
+      [options]="categoryOptions()"
+      [value]="selected()"
+      (valueChange)="select($event!)"
+    />
 
     <div class="relative h-72">
       <canvas #chart></canvas>
@@ -55,7 +51,7 @@ const CATEGORIES: ActivityCategory[] = [
       <chart-legend class="block mt-4" kind="activity" [items]="legendItems()" (toggled)="toggle($event)" />
     }
   `,
-  imports: [ChartLegendComponent],
+  imports: [ChartLegendComponent, SegmentedComponent],
 })
 export class ActivityChartComponent extends BaseChart<'bar', HiscoreEntry[]> {
   protected readonly type = 'bar';
@@ -69,6 +65,15 @@ export class ActivityChartComponent extends BaseChart<'bar', HiscoreEntry[]> {
       this.data().some(diff => diff.activities.some(a => a.score > 0 && category.activities.has(a.name))),
     ),
   );
+
+  readonly categoryOptions: Signal<SegmentedOption<ActivityCategory>[]> = computed(() =>
+    CATEGORIES.map(category => ({
+      value: category,
+      label: category.label,
+      disabled: !this.categoriesWithData().includes(category),
+    })),
+  );
+
   /** Stays on the chosen category while it has data, e.g. when more days are loaded */
   readonly selected: WritableSignal<ActivityCategory | undefined> = linkedSignal({
     source: this.categoriesWithData,

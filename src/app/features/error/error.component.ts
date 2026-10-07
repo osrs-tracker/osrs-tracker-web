@@ -9,7 +9,7 @@ import { AnalyticsService } from 'src/app/common/services/analytics/analytics.se
   template: `
     <header class="container mx-auto py-48 sm:py-72">
       <h1 class="flex flex-col items-center text-center">
-        <span class="text-7xl sm:text-8xl lg:text-9xl font-bold text-slate-900 dark:text-white">Oops</span>
+        <span class="text-7xl sm:text-8xl lg:text-9xl font-bold text-strong">Oops</span>
         <span class="accent text-2xl sm:text-3xl lg:text-4xl font-bold mt-2 sm:mt-3 lg:mt-4">SOMETHING WENT WRONG</span>
       </h1>
       <div class="flex justify-center mt-8 sm:mt-12">

@@ -23,7 +23,7 @@ import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
         autocomplete="hidden"
       />
 
-      <button type="submit" class="z-20 absolute right-0 button--primary button--rounded" (click)="searchItems()">
+      <button type="submit" class="z-20 absolute right-0 button--primary rounded-xl" (click)="searchItems()">
         <span [class.invisible]="loading()">Search</span>
 
         @if (loading()) {
@@ -32,23 +32,19 @@ import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
       </button>
 
       @if (error()) {
-        <div
-          class="z-10 absolute rounded-3xl bg-slate-150 dark:bg-slate-800 border border-slate-400 dark:border-slate-700 shadow-2xl top-0 w-full overflow-hidden"
-        >
+        <div class="z-10 absolute rounded-xl bg-card border border-line shadow-float top-0 w-full overflow-hidden">
           <div class="mt-10 pt-px">
             <load-error source="item-search" message="Couldn't search items." (retry)="searchItems()" />
           </div>
         </div>
       } @else if (results().length) {
-        <div
-          class="z-10 absolute rounded-3xl bg-slate-150 dark:bg-slate-800 border border-slate-400 dark:border-slate-700 shadow-2xl top-0 w-full overflow-hidden"
-        >
+        <div class="z-10 absolute rounded-xl bg-card border border-line shadow-float top-0 w-full overflow-hidden">
           <div class="mt-10 pt-px max-h-60 overflow-y-auto scroll-bar">
             <ul>
               @for (item of results(); track item.id) {
                 <li>
                   <a
-                    class="group flex items-center px-4 py-2 hover:bg-slate-250 dark:hover:bg-slate-700 text-slate-900 dark:text-white rounded-r-full"
+                    class="group flex items-center px-4 py-2 hover:bg-row text-strong"
                     [routerLink]="['/trackers/price', item.id]"
                   >
                     <div class="w-8 h-8 mr-3 flex justify-center items-center">
