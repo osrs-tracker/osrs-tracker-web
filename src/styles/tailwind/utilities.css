@@ -3,6 +3,12 @@
     image-rendering: pixelated;
   }
 
+  /* The tracker heroes' background pattern */
+  .dot-grid {
+    background-image: radial-gradient(var(--row) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
   /* Color */
   .accent {
     @apply text-accent;

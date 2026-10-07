@@ -2,29 +2,41 @@ import { Component, WritableSignal, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
-/** Player name search that opens the player's page. Projected content (e.g. the tracking offset) goes below it. */
+/** Player name search that opens the player's page. */
 @Component({
   selector: 'player-search',
   host: { class: 'block w-full' },
   template: `
-    <form autocomplete="off" class="relative">
+    <form autocomplete="off" class="search-box">
+      <label for="player-search" class="sr-only">Player name</label>
       <input
-        type="text"
-        class="w-full input--default"
-        placeholder="Enter player name"
+        id="player-search"
+        type="search"
+        class="search-box-input"
+        placeholder="Player name, e.g. Zezima"
         name="player"
         [(ngModel)]="usernameQuery"
         autocomplete="hidden"
       />
       <button
         type="submit"
-        class="absolute right-0 button--primary rounded-xl"
+        class="button--primary"
         [routerLink]="usernameQuery() ? ['/trackers/xp', usernameQuery()] : '.'"
       >
+        <svg
+          class="size-4.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
         Search
       </button>
-
-      <ng-content />
     </form>
   `,
   imports: [FormsModule, RouterLink],

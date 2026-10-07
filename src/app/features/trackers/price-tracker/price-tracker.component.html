@@ -1,14 +1,15 @@
-<page-header headerText="Price Tracker">
-  <div class="mb-8 flex flex-col gap-2">
-    <div>Track real-time Old School RuneScape prices and market trends with OSRS Price Tracker.</div>
-    <div>Stay ahead and make smart decisions with the latest pricing info!</div>
-  </div>
+<header
+  tracker-hero
+  subject="Price"
+  intro="Real-time Grand Exchange prices and market trends for every tradeable item. Stay ahead and make smart decisions with the latest prices."
+>
+  <img icon name="coin stack" [scale]="2" />
 
-  <item-search class="max-w-md mx-4" />
-</page-header>
+  <item-search class="max-w-160" />
+</header>
 
-<div class="container mx-auto mb-8 px-4">
-  <div class="mx-auto grid lg:grid-cols-3 items-start gap-6">
+<div class="max-w-page mx-auto px-4 sm:px-6 pt-10 pb-18">
+  <div class="grid md:grid-cols-2 xl:grid-cols-3 items-start gap-6">
     <section
       list-card
       heading="Global recent lookups"
