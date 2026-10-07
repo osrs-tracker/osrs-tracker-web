@@ -16,12 +16,10 @@ const RAID_LAYOUT: ActivityEnum[] = [
 @Component({
   selector: 'player-raids',
   template: `
-    <section class="p-2 shadow-lg rounded-lg bg-slate-200 dark:bg-slate-800">
-      <div
-        class="overflow-hidden border rounded-xl grid grid-cols-3 gap-px border-slate-350 dark:border-slate-600 bg-slate-350 dark:bg-slate-600"
-      >
+    <section class="p-2 rounded-2xl bg-card">
+      <div class="overflow-hidden border rounded-xl grid grid-cols-3 gap-px border-line bg-line">
         @for (raid of raids(); track $index) {
-          <player-activity class="bg-slate-200 dark:bg-slate-800" [activity]="raid" scoreLabel="Completed" />
+          <player-activity class="bg-card" [activity]="raid" scoreLabel="Completed" />
         }
       </div>
     </section>

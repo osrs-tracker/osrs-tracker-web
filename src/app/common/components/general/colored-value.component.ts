@@ -5,7 +5,7 @@ import { Component, InputSignal, computed, input } from '@angular/core';
   selector: 'colored-value',
   template: `
     @if (value() != null) {
-      <span [class.positive-value]="isPositive()" [class.negative-value]="isNegative()">
+      <span class="tabular-nums" [class.positive-value]="isPositive()" [class.negative-value]="isNegative()">
         {{ absValue() | number: '1.1-1' }}
         @if (suffix()) {
           {{ suffix() }}

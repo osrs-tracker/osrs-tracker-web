@@ -28,5 +28,9 @@ export class ThemeService {
     this.analyticsService.trackEvent('toggle_dark_mode', 'theming', 'dark_mode', this.darkMode());
 
     document.documentElement.classList.toggle('dark', this.darkMode());
+    // The page ground (slate-900 / slate-100), as index.html sets it on load
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', this.darkMode() ? '#0f172a' : '#f1f5f9');
   }
 }

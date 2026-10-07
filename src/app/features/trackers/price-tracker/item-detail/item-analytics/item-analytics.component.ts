@@ -29,6 +29,7 @@ import { SpinnerComponent } from 'src/app/common/components/general/spinner.comp
 import { PriceChartComponent } from './charts/price-chart.component';
 import { VolumeChartComponent } from './charts/volume-chart.component';
 import { Trend } from './item-analytics.model';
+import { SegmentedComponent, SegmentedOption } from 'src/app/common/components/general/segmented.component';
 
 @Component({
   selector: 'item-analytics',
@@ -37,6 +38,7 @@ import { Trend } from './item-analytics.model';
     DecimalPipe,
     CardComponent,
     ColoredValueComponent,
+    SegmentedComponent,
     InfoTooltipComponent,
     LoadErrorComponent,
     PriceChartComponent,
@@ -48,6 +50,13 @@ export class ItemAnalyticsComponent {
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
 
   readonly TimeSpan = TimeSpan;
+
+  readonly timeSpanOptions: SegmentedOption<TimeSpan>[] = [
+    { value: TimeSpan.DAY, label: 'Year' },
+    { value: TimeSpan.SIX_HOURS, label: 'Quarter' },
+    { value: TimeSpan.HOUR, label: 'Week' },
+    { value: TimeSpan.FIVE_MINUTES, label: 'Day' },
+  ];
 
   readonly priceTimeSpan: WritableSignal<TimeSpan> = signal(TimeSpan.FIVE_MINUTES);
   readonly volumeTimeSpan: WritableSignal<TimeSpan> = signal(TimeSpan.FIVE_MINUTES);

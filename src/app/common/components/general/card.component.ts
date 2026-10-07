@@ -1,22 +1,36 @@
-import { Component } from '@angular/core';
+import { Component, input, InputSignal } from '@angular/core';
 
+/**
+ * A flat card with a header: a 56px one-line header (title and `[actions]`, e.g. a segmented control), or a two-line
+ * one when there's a `subtitle`.
+ */
 @Component({
   selector: 'article[card]',
   template: `
-    <div class="flex justify-between gap-4 rounded-t-lg bg-slate-350 dark:bg-slate-700 px-4 py-2">
-      <div class="font-bold text-slate-900 dark:text-white">
-        <ng-content select="[title]" />
+    <div
+      class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2.5 px-5 border-b border-line"
+      [class]="subtitle() ? 'py-4' : 'py-1.5 min-h-14'"
+    >
+      <div class="min-w-0">
+        <div class="text-xl/6 font-bold text-strong">
+          <ng-content select="[title]" />
+        </div>
+        @if (subtitle()) {
+          <p class="mt-1 text-sm/4.5 text-muted">{{ subtitle() }}</p>
+        }
       </div>
 
       <ng-content select="[actions]" />
     </div>
 
-    <div class="p-4">
+    <div class="px-5 py-4">
       <ng-content />
     </div>
   `,
   host: {
-    class: 'text-lg shadow-lg rounded-lg bg-slate-200 dark:bg-slate-800',
+    class: 'block rounded-2xl bg-card',
   },
 })
-export class CardComponent {}
+export class CardComponent {
+  readonly subtitle: InputSignal<string | undefined> = input();
+}

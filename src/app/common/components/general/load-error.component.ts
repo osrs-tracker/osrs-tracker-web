@@ -13,7 +13,7 @@ import { AnalyticsService } from '../../services/analytics/analytics.service';
 /**
  * Shown in place of data that failed to load, with a retry button. Reports itself to analytics once it's visible in the
  * browser, labelled with `source`, so failures users actually see can be counted. `panel` gives it the same surface as
- * the panels around it, for when it replaces one.
+ * the cards around it, for when it replaces one; `compact` is a lone retry icon, for when it replaces a single value.
  */
 @Component({
   selector: 'load-error',
@@ -21,7 +21,7 @@ import { AnalyticsService } from '../../services/analytics/analytics.service';
     @if (compact()) {
       <button
         type="button"
-        class="flex items-center justify-center size-8 rounded-full text-slate-900 dark:text-white hover:bg-slate-250 dark:hover:bg-slate-700"
+        class="flex items-center justify-center size-8 rounded-full text-strong hover:bg-row"
         [title]="message() + ' Click to retry.'"
         [attr.aria-label]="message() + ' Retry'"
         (click)="onRetry($event)"
@@ -43,16 +43,21 @@ import { AnalyticsService } from '../../services/analytics/analytics.service';
         </svg>
       </button>
     } @else {
-      <div role="alert" class="flex flex-col items-center justify-center gap-3 h-full py-6 text-center">
-        <p>{{ message() }}</p>
-        <button type="button" class="button--default button--rounded px-16 text-base" (click)="onRetry($event)">
-          Retry
+      <div role="alert" class="flex flex-col items-center justify-center gap-1 h-full px-5 py-8 text-center">
+        <p class="font-bold text-strong">{{ message() }}</p>
+        <p class="text-sm text-muted">{{ hint() }}</p>
+        <button
+          type="button"
+          class="mt-3 h-9 px-4 rounded-full border border-border text-sm font-bold text-strong hover:bg-row"
+          (click)="onRetry($event)"
+        >
+          Try again
         </button>
       </div>
     }
   `,
   host: {
-    '[class]': "panel() ? 'block shadow-lg rounded-lg bg-slate-200 dark:bg-slate-800' : ''",
+    '[class]': "panel() ? 'block rounded-2xl bg-card' : ''",
   },
 })
 export class LoadErrorComponent {
@@ -60,6 +65,7 @@ export class LoadErrorComponent {
 
   readonly source: InputSignal<string> = input.required();
   readonly message: InputSignal<string> = input("Couldn't load this data.");
+  readonly hint: InputSignal<string> = input('Check your connection, then try again.');
   readonly compact: InputSignalWithTransform<boolean, unknown> = input(false, { transform: booleanAttribute });
   readonly panel: InputSignalWithTransform<boolean, unknown> = input(false, { transform: booleanAttribute });
 

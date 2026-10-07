@@ -39,6 +39,10 @@
         darkModeSetting !== null ? darkModeSetting === 'true' : matchMedia('(prefers-color-scheme: dark)').matches;
 
       document.documentElement.classList.toggle('dark', darkModeEnabled);
+      // The page ground (slate-900 / slate-100), as ThemeService sets it on toggle
+      document
+        .querySelector('meta[name="theme-color"]')
+        .setAttribute('content', darkModeEnabled ? '#0f172a' : '#f1f5f9');
 
       gtag('event', 'load_theme', {
         event_category: 'theming',
@@ -59,7 +63,7 @@
     <link rel="preconnect" href="https://cdn.runescape.com" />
     <link rel="preconnect" href="https://oldschool.runescape.wiki" />
   </head>
-  <body class="antialiased text-slate-600 dark:text-slate-300 bg-slate-250 dark:bg-slate-900">
+  <body class="antialiased text-text bg-ground">
     <app-root ngCspNonce="CSP_NONCE_PLACEHOLDER"></app-root>
   </body>
 </html>

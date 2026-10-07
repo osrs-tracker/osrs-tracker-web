@@ -1,6 +1,6 @@
 <header class="container mx-auto py-24">
   <h1 class="flex flex-col items-center text-center">
-    <span class="text-5xl sm:text-6xl lg:text-7xl font-bold text-slate-900 dark:text-white">OSRS Tracker</span>
+    <span class="text-5xl sm:text-6xl lg:text-7xl font-bold text-strong">OSRS Tracker</span>
     &ngsp;
     <span class="accent text-3xl sm:text-4xl lg:text-5xl font-bold mt-2 sm:mt-3 lg:mt-4">
       Track your OSRS progress.
@@ -9,7 +9,7 @@
 </header>
 
 <section class="container mx-auto mb-24 px-4">
-  <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Latest OSRS News</h2>
+  <h2 class="text-2xl font-bold text-strong mb-4">Latest OSRS News</h2>
 
   @if (osrsNewsItems.error()) {
     <load-error source="home-news" message="Couldn't load the latest news." (retry)="osrsNewsItems.reload()" />
@@ -28,7 +28,7 @@
 </section>
 
 <section class="container mx-auto mb-16 px-4">
-  <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Trackers</h2>
+  <h2 class="text-2xl font-bold text-strong mb-4">Trackers</h2>
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
     <article card>
@@ -55,12 +55,12 @@
         </svg>
       </a>
 
-      <div class="flex flex-col gap-6 text-base dark:[&_input]:bg-slate-900">
+      <div class="flex flex-col gap-6 text-base">
         <p>Track daily OSRS XP gains, clue scrolls and boss kills for you and your friends.</p>
 
         <player-search />
 
-        <div class="-my-3 divide-y divide-slate-300 dark:divide-slate-700">
+        <div class="-my-3 divide-y divide-line">
           @if (recentPlayerLookups.error()) {
             <load-error source="home-recent-players" (retry)="recentPlayerLookups.reload()" />
           } @else {
@@ -98,12 +98,12 @@
         </svg>
       </a>
 
-      <div class="flex flex-col gap-6 text-base dark:[&_input]:bg-slate-900">
+      <div class="flex flex-col gap-6 text-base">
         <p>Follow real-time OSRS Grand Exchange prices and market trends for every item.</p>
 
         <item-search />
 
-        <div class="-my-3 divide-y divide-slate-300 dark:divide-slate-700">
+        <div class="-my-3 divide-y divide-line">
           @if (recentItemLookups.error()) {
             <load-error source="home-recent-items" (retry)="recentItemLookups.reload()" />
           } @else {

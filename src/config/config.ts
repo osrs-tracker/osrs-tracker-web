@@ -8,16 +8,10 @@ export const config = {
     dark: {
       buyColor: '#f59e0b',
       sellColor: '#10b981',
-
-      tickColor: '#ffffff',
-      gridColor: '#475569',
     },
     light: {
       buyColor: '#d97706',
       sellColor: '#059669',
-
-      tickColor: '#475569',
-      gridColor: '#cbd5e1',
     },
   },
 

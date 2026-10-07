@@ -19,12 +19,10 @@ const SKILL_LAYOUT: SkillEnum[] = [
 @Component({
   selector: 'player-skills',
   template: `
-    <section class="p-2 shadow-lg rounded-lg bg-slate-200 dark:bg-slate-800">
-      <div
-        class="overflow-hidden border rounded-xl grid grid-cols-3 gap-px border-slate-350 dark:border-slate-600 bg-slate-350 dark:bg-slate-600"
-      >
+    <section class="p-2 rounded-2xl bg-card">
+      <div class="overflow-hidden border rounded-xl grid grid-cols-3 gap-px border-line bg-line">
         @for (skill of skills(); track $index) {
-          <player-skill class="bg-slate-200 dark:bg-slate-800" [class.col-span-3]="$last" [skill]="skill" />
+          <player-skill class="bg-card" [class.col-span-3]="$last" [skill]="skill" />
         }
       </div>
     </section>

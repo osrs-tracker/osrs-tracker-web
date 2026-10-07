@@ -10,6 +10,8 @@ import { XpTrackerViewType } from '../../xp-tracker-view-type';
 import { XpTrackerStore } from '../../xp-tracker.store';
 import { ActivityChartComponent } from './activity-chart.component';
 import { XpGainedChartComponent } from './xp-gained-chart.component';
+import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
+import { SegmentedComponent, SegmentedOption } from 'src/app/common/components/general/segmented.component';
 
 /** A single day's diff, or a run of consecutive days in which nothing happened. */
 type LogGroup = { type: 'day'; diff: HiscoreEntry } | { type: 'empty'; from: Date; to: Date; days: number };
@@ -17,7 +19,16 @@ type LogGroup = { type: 'day'; diff: HiscoreEntry } | { type: 'empty'; from: Dat
 @Component({
   selector: 'player-logs',
   templateUrl: './player-logs.component.html',
-  imports: [ActivityChartComponent, CardComponent, DecimalPipe, IconDirective, ShortDatePipe, XpGainedChartComponent],
+  imports: [
+    ActivityChartComponent,
+    CardComponent,
+    DecimalPipe,
+    IconDirective,
+    SegmentedComponent,
+    ShortDatePipe,
+    SkeletonComponent,
+    XpGainedChartComponent,
+  ],
 })
 export class PlayerLogsComponent {
   private readonly XpTrackerStore = inject(XpTrackerStore);
@@ -25,6 +36,10 @@ export class PlayerLogsComponent {
   readonly XpTrackerViewType: typeof XpTrackerViewType = XpTrackerViewType;
   readonly SkillEnum: typeof SkillEnum = SkillEnum;
   readonly xpTrackerViewType = this.XpTrackerStore.viewType;
+  readonly viewOptions: SegmentedOption<XpTrackerViewType>[] = [
+    { value: XpTrackerViewType.Skills, label: 'Skills' },
+    { value: XpTrackerViewType.Other, label: 'Other' },
+  ];
 
   readonly playerDetail: InputSignal<Player> = input.required();
 

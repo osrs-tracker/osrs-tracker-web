@@ -18,7 +18,7 @@ export interface LegendItem {
         <li [class]="!expanded() && i >= collapseAfter() ? 'hidden sm:block' : ''">
           <button
             type="button"
-            class="flex items-center gap-1.5 rounded-md px-1.5 py-0.5 bg-slate-250 dark:bg-slate-700 transition-opacity"
+            class="flex items-center gap-1.5 rounded-md px-1.5 py-0.5 bg-row transition-opacity"
             [class.opacity-40]="item.hidden"
             [attr.aria-pressed]="!item.hidden"
             [attr.title]="showNames() ? null : item.name"
@@ -33,7 +33,7 @@ export interface LegendItem {
               [activity]="kind() === 'activity'"
             />
             <span [class.sr-only]="!showNames()">{{ item.name }}</span>
-            <span class="font-medium text-slate-900 dark:text-white">{{ prefix() }}{{ item.total | number }}</span>
+            <span class="font-medium text-strong tabular-nums">{{ prefix() }}{{ item.total | number }}</span>
           </button>
         </li>
       }
@@ -41,7 +41,7 @@ export interface LegendItem {
         <li class="sm:hidden">
           <button
             type="button"
-            class="rounded-md px-1.5 py-0.5 font-medium bg-slate-250 dark:bg-slate-700"
+            class="rounded-md px-1.5 py-0.5 font-medium bg-row"
             [attr.aria-expanded]="expanded()"
             (click)="expanded.set(!expanded())"
           >

@@ -29,7 +29,7 @@ import { Subject, debounceTime, fromEvent } from 'rxjs';
 
     <ng-template #tooltipTemplateContainer>
       <div
-        class="max-w-xs shadow-lg text-slate-900 bg-slate-200 py-2 px-3 rounded-lg mb-2 "
+        class="max-w-xs mb-2 px-3 py-2 rounded-xl border border-line bg-card text-sm text-text shadow-float"
         (mouseenter)="onMouseEnter()"
         (mouseleave)="onMouseLeave()"
       >
@@ -40,7 +40,7 @@ import { Subject, debounceTime, fromEvent } from 'rxjs';
     <ng-template #tooltipTemplateArrow>
       <div class="relative mb-2">
         <div
-          class="before:content-[''] before:absolute before:border-8 before:border-transparent before:border-t-slate-100 before:left-1/2 before:-translate-x-1/2 before:top-full"
+          class="before:content-[''] before:absolute before:border-8 before:border-transparent before:border-t-line before:left-1/2 before:-translate-x-1/2 before:top-full"
           (mouseenter)="onMouseEnter()"
           (mouseleave)="onMouseLeave()"
         ></div>

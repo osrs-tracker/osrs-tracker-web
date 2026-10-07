@@ -1,22 +1,9 @@
 <section class="flex flex-col gap-4">
   <!-- same height as the player widget's header, so the first cards line up -->
   <header class="flex items-center justify-between h-9">
-    <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Progress</h1>
+    <h1 class="text-2xl font-bold text-strong">Progress</h1>
 
-    <div class="button-group">
-      <button
-        [class.active]="xpTrackerViewType() === XpTrackerViewType.Skills"
-        (click)="setView(XpTrackerViewType.Skills)"
-      >
-        Skills
-      </button>
-      <button
-        [class.active]="xpTrackerViewType() === XpTrackerViewType.Other"
-        (click)="setView(XpTrackerViewType.Other)"
-      >
-        Other
-      </button>
-    </div>
+    <segmented label="View" [options]="viewOptions" [value]="xpTrackerViewType()" (valueChange)="setView($event)" />
   </header>
 
   <!-- charts -->
@@ -32,10 +19,8 @@
       </article>
     } @else if (!hiscoreDiffs().length) {
       <article card>
-        <div title class="rounded-t-lg bg-slate-350 dark:bg-slate-700">
-          <div class="animate-pulse h-5 w-28 my-1 rounded-xl bg-slate-250 dark:bg-slate-600"></div>
-        </div>
-        <div class="animate-pulse h-72 rounded-lg bg-slate-350 dark:bg-slate-700"></div>
+        <skeleton title class="h-5 w-28" />
+        <skeleton class="h-72 w-full rounded-xl" />
       </article>
     }
   }
@@ -55,13 +40,13 @@
           @if (overallDiff && overallDiff.xp > 0) {
             <div actions class="self-center flex items-center gap-3">
               @if (overallDiff.level > 0) {
-                <span class="font-bold positive-value"
+                <span class="font-bold tabular-nums positive-value"
                   >{{ overallDiff.level }}
                   <span class="hidden sm:inline">{{ overallDiff.level === 1 ? 'level' : 'levels' }}</span></span
                 >
-                <div class="h-4 w-px bg-slate-400 dark:bg-slate-500"></div>
+                <div class="h-4 w-px bg-border"></div>
               }
-              <span class="font-bold text-slate-900 dark:text-white">+{{ overallDiff.xp | number }}</span>
+              <span class="font-bold text-strong tabular-nums">+{{ overallDiff.xp | number }}</span>
               <img class="size-5 -ml-1 mb-1" icon [name]="SkillEnum.Overall" [skill]="true" />
             </div>
           }
@@ -77,19 +62,19 @@
                   <span class="flex items-baseline gap-1.5">
                     {{ skill.name }}
                     @if (skill.level > 0) {
-                      <span class="font-bold text-base positive-value">{{ skill.level }}</span>
+                      <span class="font-bold text-base tabular-nums positive-value">{{ skill.level }}</span>
                     }
                   </span>
-                  <span class="ml-auto font-medium text-slate-900 dark:text-white"> +{{ skill.xp | number }} </span>
+                  <span class="ml-auto font-medium text-strong tabular-nums"> +{{ skill.xp | number }} </span>
                 </div>
               }
             }
           </div>
         </article>
       } @else {
-        <article class="text-lg rounded-lg border border-slate-350 dark:border-slate-700">
-          <div class="flex justify-between gap-4 px-4 py-2 border-b border-slate-350 dark:border-slate-700">
-            <h2 class="font-bold text-slate-600 dark:text-slate-300">
+        <article class="rounded-2xl border border-line">
+          <div class="flex items-center justify-between gap-4 px-5 py-1.5 min-h-14 border-b border-line">
+            <h2 class="text-xl font-bold text-text">
               @if (group.days === 1) {
                 <span class="sm:hidden">{{ group.to | shortDate: 'short' }}</span
                 ><span class="hidden sm:inline">{{ group.to | shortDate }}</span>
@@ -101,12 +86,12 @@
               }
             </h2>
             @if (group.days > 1) {
-              <span class="self-center text-slate-600 dark:text-slate-300">{{ group.days }} days</span>
+              <span class="text-muted">{{ group.days }} days</span>
             }
           </div>
 
-          <div class="p-4">
-            <p class="text-base opacity-70">Nothing interesting happened.</p>
+          <div class="px-5 py-4">
+            <p class="text-muted">Nothing interesting happened.</p>
           </div>
         </article>
       }
@@ -114,16 +99,14 @@
       <!-- skeleton loader -->
       @for (skills of [].constructor(7); track i; let i = $index) {
         <article card>
-          <div title class="rounded-t-lg bg-slate-350 dark:bg-slate-700">
-            <div class="animate-pulse h-5 w-20 my-1 rounded-xl bg-slate-250 dark:bg-slate-600"></div>
-          </div>
+          <skeleton title class="h-5 w-20" />
 
           <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-10 gap-y-1">
             @for (skills of [].constructor(((i * 3) % 9) + 3); track $index) {
               <div class="flex items-center gap-2 h-7">
-                <div class="animate-pulse size-5 rounded-md bg-slate-350 dark:bg-slate-700"></div>
-                <div class="animate-pulse h-4 w-20 rounded-xl bg-slate-350 dark:bg-slate-700"></div>
-                <div class="animate-pulse ml-auto h-4 w-16 rounded-xl bg-slate-350 dark:bg-slate-700"></div>
+                <skeleton class="size-5" />
+                <skeleton class="h-4 w-20" />
+                <skeleton class="ml-auto h-4 w-16" />
               </div>
             }
           </div>
@@ -152,7 +135,7 @@
                     <img icon [name]="$any(activity).name" [activity]="true" [scale]="1.25" />
                   </div>
                   <div>{{ activity.name }}:</div>
-                  <div class="font-medium text-slate-900 dark:text-white">
+                  <div class="font-medium text-strong tabular-nums">
                     {{ activity.score | number }}
                   </div>
                 </div>
@@ -161,9 +144,9 @@
           </section>
         </article>
       } @else {
-        <article class="text-lg rounded-lg border border-slate-350 dark:border-slate-700">
-          <div class="flex justify-between gap-4 px-4 py-2 border-b border-slate-350 dark:border-slate-700">
-            <h2 class="font-bold text-slate-600 dark:text-slate-300">
+        <article class="rounded-2xl border border-line">
+          <div class="flex items-center justify-between gap-4 px-5 py-1.5 min-h-14 border-b border-line">
+            <h2 class="text-xl font-bold text-text">
               @if (group.days === 1) {
                 <span class="sm:hidden">{{ group.to | shortDate: 'short' }}</span
                 ><span class="hidden sm:inline">{{ group.to | shortDate }}</span>
@@ -175,12 +158,12 @@
               }
             </h2>
             @if (group.days > 1) {
-              <span class="self-center text-slate-600 dark:text-slate-300">{{ group.days }} days</span>
+              <span class="text-muted">{{ group.days }} days</span>
             }
           </div>
 
-          <div class="p-4">
-            <p class="text-base opacity-70">Nothing interesting happened.</p>
+          <div class="px-5 py-4">
+            <p class="text-muted">Nothing interesting happened.</p>
           </div>
         </article>
       }
@@ -188,17 +171,15 @@
       <!-- skeleton loader -->
       @for (skills of [].constructor(7); track i; let i = $index) {
         <article card>
-          <div title class="rounded-t-lg bg-slate-350 dark:bg-slate-700">
-            <div class="animate-pulse h-5 w-24 my-1 rounded-xl bg-slate-250 dark:bg-slate-600"></div>
-          </div>
+          <skeleton title class="h-5 w-24" />
 
           <div class="flex flex-col gap-2">
             @for (skills of [].constructor((i % 3) + 1); track $index) {
               <div>
-                <div class="animate-pulse h-4 w-20 mt-1.5 rounded-xl bg-slate-350 dark:bg-slate-700"></div>
-                <div class="animate-pulse h-4 w-48 my-4 rounded-xl bg-slate-350 dark:bg-slate-700"></div>
-                <div class="animate-pulse h-4 w-32 my-4 rounded-xl bg-slate-350 dark:bg-slate-700"></div>
-                <div class="animate-pulse h-4 w-40 mb-1.5 rounded-xl bg-slate-350 dark:bg-slate-700"></div>
+                <skeleton class="h-4 w-20 mt-1.5" />
+                <skeleton class="h-4 w-48 my-4" />
+                <skeleton class="h-4 w-32 my-4" />
+                <skeleton class="h-4 w-40 mb-1.5" />
               </div>
             }
           </div>
