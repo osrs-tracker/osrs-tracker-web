@@ -4,8 +4,9 @@ import { RouterLink } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
 import { ListCardComponent, ListCardState, listCardState } from 'src/app/common/components/general/list-card.component';
 import { InfoTooltipComponent } from 'src/app/common/components/general/tooltip/info-tooltip.component';
-import { PageHeaderComponent } from 'src/app/common/components/layout/page-header.component';
+import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
+import { TrackerHeroComponent } from '../tracker-hero.component';
 import { ItemSearchComponent } from './item-search.component';
 import { ItemRowComponent } from './item-row/item-row.component';
 import { PriceTrackerStore, RecentItem } from './price-tracker.store';
@@ -17,7 +18,8 @@ import { PriceTrackerStore, RecentItem } from './price-tracker.store';
     RouterLink,
     InfoTooltipComponent,
     ListCardComponent,
-    PageHeaderComponent,
+    IconDirective,
+    TrackerHeroComponent,
     ItemSearchComponent,
     ItemRowComponent,
   ],

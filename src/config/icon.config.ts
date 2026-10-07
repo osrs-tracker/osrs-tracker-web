@@ -2,6 +2,7 @@ import { PlayerStatus, PlayerType } from '@osrs-tracker/models';
 
 export const iconMap: Record<string, string> = {
   ['coins']: '/coins.png',
+  ['coin stack']: '/coin_stack.png',
   ['combat']: '/combat.png',
   ['dead']: '/skull.png',
 

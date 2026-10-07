@@ -28,6 +28,14 @@
     @apply h-8 px-3 text-sm;
   }
 
+  /* The big search: a borderless input and a `.button--primary` in one rounded box */
+  .search-box {
+    @apply flex flex-wrap items-center gap-1.5 p-1.5 rounded-3xl bg-card border border-border focus-within:border-accent;
+  }
+  .search-box-input {
+    @apply grow basis-50 min-w-0 h-12 px-3.5 border-0 bg-transparent text-lg text-strong placeholder:text-muted focus:ring-0 focus:outline-none;
+  }
+
   /* The `<skeleton>` block; a component class, so utilities on the element (e.g. its radius) override it */
   .skeleton {
     @apply block shrink-0 max-w-full rounded-md bg-row animate-skeleton motion-reduce:animate-none;

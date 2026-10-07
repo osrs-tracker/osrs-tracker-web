@@ -14,6 +14,9 @@
   red percentage. Lists show placeholder rows while loading instead of a spinner, and items whose price fails to load
   now say so with a retry button instead of showing a dash. Prices on the item charts use the same short form ("1.61B",
   "2.54K").
+- New XP Tracker and Price Tracker pages: a header with a bigger search box, and your recent lookups and favourites as
+  three equal lists below it. On the XP Tracker the tracking offset sits under the search and says which hour's hiscores
+  you're seeing. The item search shows each match's price, and says so when nothing matches.
 - The item search shows a message with a retry button when searching fails, instead of looking like nothing was found.
 - Every page loads a 23% smaller stylesheet: the changelog no longer uses a styling plugin for its text, which also
   fixes a security warning. The changelog's list bullets are easier to see in the light theme.

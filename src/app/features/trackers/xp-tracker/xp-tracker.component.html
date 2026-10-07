@@ -1,44 +1,41 @@
-<page-header headerText="XP Tracker">
-  <div class="mb-8 flex flex-col gap-2">
-    <div>Track your Old School RuneScape XP gains, Clue scrolls, Boss kills easily with OSRS Tracker.</div>
-    <div>Stay motivated by tracking both your and your friends' progress!</div>
-  </div>
+<header
+  tracker-hero
+  subject="XP"
+  intro="Track XP gains, clue scrolls and boss kills for you and your friends. Stay motivated by following everyone's progress."
+>
+  <img icon class="size-7.5" name="overall" [skill]="true" />
 
-  <player-search class="max-w-md mx-4">
-    <div class="absolute mt-2 flex justify-center w-full">
-      <div class="flex gap-4 items-center">
-        <div class="whitespace-nowrap flex text-xs">
-          <span tooltip [tooltipTemplate]="scrapingOffsetTooltip">Tracking offset:</span>
-          <ng-template #scrapingOffsetTooltip>
-            <div class="pb-1">
-              The tracking offset indicates which set of hiscores is being shown: a tracking offset of +02:00 UTC will
-              only show hiscores that were tracked at 02:00 UTC.
-            </div>
-            <div>
-              Since we only start tracking a player the first time they are looked up, it's possible that there are no
-              hiscores yet for a selected tracking offset.
-            </div>
-          </ng-template>
+  <player-search class="max-w-160" />
+
+  <div class="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted">
+    <label for="xp-offset" class="flex items-center">
+      Tracking offset
+      <info-tooltip>
+        <div class="pb-1">
+          The tracking offset picks which set of hiscores is shown: +02:00 UTC only shows hiscores tracked at 02:00 UTC.
         </div>
-        <select
-          class="input--default input--small"
-          name="scrapingOffset"
-          [ngModel]="scrapingOffset()"
-          (ngModelChange)="updateScrapingOffset($event)"
-        >
-          @for (offset of SCRAPING_OFFSETS; track offset) {
-            <option class="font-mono" [ngValue]="offset">
-              {{ offset === 0 ? '&nbsp;' : offset > 0 ? '+' : '' }}{{ offset | number: '2.0-0' }}:00 UTC
-            </option>
-          }
-        </select>
-      </div>
-    </div>
-  </player-search>
-</page-header>
+        <div>
+          A player is only tracked from the first time they are looked up, so a new offset may have no hiscores yet.
+        </div>
+      </info-tooltip>
+    </label>
+    <select
+      id="xp-offset"
+      class="h-11 pl-3 pr-9 rounded-xl border-line bg-card font-bold text-strong tabular-nums cursor-pointer focus:border-accent focus:ring-accent"
+      name="scrapingOffset"
+      [ngModel]="scrapingOffset()"
+      (ngModelChange)="updateScrapingOffset($event)"
+    >
+      @for (offset of SCRAPING_OFFSETS; track offset) {
+        <option [ngValue]="offset">{{ offsetLabel(offset) }}</option>
+      }
+    </select>
+    <span>Showing hiscores tracked at {{ trackedAt() }}</span>
+  </div>
+</header>
 
-<div class="container mx-auto mb-8 px-4">
-  <div class="mx-auto grid lg:grid-cols-3 items-start gap-6">
+<div class="max-w-page mx-auto px-4 sm:px-6 pt-10 pb-18">
+  <div class="grid md:grid-cols-2 xl:grid-cols-3 items-start gap-6">
     <section
       list-card
       heading="Global recent lookups"
