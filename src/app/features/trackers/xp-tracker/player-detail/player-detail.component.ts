@@ -15,6 +15,7 @@ import {
   input,
   linkedSignal,
   signal,
+  untracked,
 } from '@angular/core';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -54,9 +55,6 @@ interface StatTile {
   tone: 'muted' | 'up' | 'down';
   tip?: string;
 }
-
-/** The stat tiles cover the last week */
-const SUMMARY_DAYS = 7;
 
 const ACTIVITIES = Object.values(ActivityEnum);
 
@@ -99,10 +97,13 @@ export default class PlayerDetailComponent implements OnInit {
   readonly username: string = inject(ActivatedRoute).snapshot.params['username'];
   readonly #pageErrorHandler = resolverErrorHandler('/trackers/xp/' + this.username);
 
-  /** 15 entries: the last week and the week before it, for the stat tiles */
+  /** 15 entries: the last week and the week before it, for the stat tiles. 30D and 60D load up to 61. */
   readonly #DEFAULT_SIZE = 15;
   readonly #MORE_SIZE = 7;
-  readonly #morePages: WritableSignal<HiscoreEntry[][]> = signal([]);
+  /** The history is kept for about 60 days, so 60 days and today is all there is (and 30D's previous period fits) */
+  readonly #PERIOD_SIZE = 61;
+  /** Pages loaded after the first, with the size each asked for: a shorter page is the end of the history */
+  readonly #morePages: WritableSignal<{ entries: HiscoreEntry[]; size: number }[]> = signal([]);
 
   /** `null` when there's no such player */
   readonly player = input.required<Player | null>();
@@ -117,10 +118,9 @@ export default class PlayerDetailComponent implements OnInit {
 
   /** The live hiscores, only fetched in the browser. */
   readonly todayResource: ResourceRef<HiscoreEntry | undefined> = rxResource({
-    params: () => {
-      const player = this.playerDetail();
-      return this.isBrowser && player ? { username: player.username, offset: this.scrapingOffset() } : undefined;
-    },
+    // the resolved player, not playerDetail: trackPlayer replacing it mustn't restart the request
+    params: () =>
+      this.isBrowser && this.player() ? { username: this.username, offset: this.scrapingOffset() } : undefined,
     stream: ({ params: { username, offset } }) =>
       this.osrsProxyRepo.getPlayerHiscore(username, offset).pipe(map(hiscore => parseHiscores([hiscore])[0])),
   });
@@ -139,11 +139,11 @@ export default class PlayerDetailComponent implements OnInit {
   readonly historyLoaded: Signal<boolean> = computed(() => this.firstHistoryPage.hasValue());
   readonly history: Signal<HiscoreEntry[]> = computed(() => [
     ...(this.firstHistoryPage.hasValue() ? (this.firstHistoryPage.value() ?? []) : []),
-    ...this.#morePages().flat(),
+    ...this.#morePages().flatMap(page => page.entries),
   ]);
   readonly hasMoreEntries: Signal<boolean> = computed(() => {
     const lastMorePage = this.#morePages().at(-1);
-    if (lastMorePage) return lastMorePage.length === this.#MORE_SIZE;
+    if (lastMorePage) return lastMorePage.entries.length === lastMorePage.size;
     return this.firstHistoryPage.hasValue() && this.firstHistoryPage.value()?.length === this.#DEFAULT_SIZE;
   });
 
@@ -177,6 +177,8 @@ export default class PlayerDetailComponent implements OnInit {
       return diff;
     });
   });
+  /** The days the chart and tiles cover: the period's days and today so far, newest first */
+  readonly periodDiffs: Signal<HiscoreEntry[]> = computed(() => this.diffs().slice(0, this.playerView.period() + 1));
   readonly chartState: Signal<'loading' | 'empty' | 'ready'> = computed(() => {
     if (!this.historyLoaded()) return 'loading';
     return this.history().length > 1 ? 'ready' : 'empty';
@@ -210,13 +212,13 @@ export default class PlayerDetailComponent implements OnInit {
 
   readonly summary: Signal<PeriodSummary | undefined> = computed(() => {
     const current = this.current();
-    return current && periodSummary(current, this.history(), SUMMARY_DAYS);
+    return current && periodSummary(current, this.history(), this.playerView.period());
   });
 
-  /** Each activity's gains over the loaded days */
+  /** Each activity's gains over the period */
   readonly activityGains: Signal<ReadonlyMap<string, number>> = computed(() => {
     const gains = new Map<string, number>();
-    this.diffs().forEach(diff =>
+    this.periodDiffs().forEach(diff =>
       diff.activities.forEach(({ name, score }) => {
         if (score > 0) gains.set(name, (gains.get(name) ?? 0) + score);
       }),
@@ -269,10 +271,11 @@ export default class PlayerDetailComponent implements OnInit {
       tone: 'muted',
     };
     const summary = this.summary();
+    const xpLabel = `XP last ${this.playerView.period()} days`;
     if (!summary) {
       return [
         totalLevel,
-        { label: 'XP last 7 days', value: '–', sub: 'From the next check', tone: 'muted' },
+        { label: xpLabel, value: '–', sub: 'From the next check', tone: 'muted' },
         { label: 'Levels gained', value: '–', sub: '', tone: 'muted' },
         { label: 'Boss kills', value: '–', sub: '', tone: 'muted' },
       ];
@@ -283,10 +286,10 @@ export default class PlayerDetailComponent implements OnInit {
     return [
       totalLevel,
       {
-        label: 'XP last 7 days',
+        label: xpLabel,
         value: formatNumberLegible(summary.xp),
         tip: `${summary.xp.toLocaleString('en-US')} XP`,
-        ...this.weekComparison(summary),
+        ...this.periodComparison(summary),
       },
       { label: 'Levels gained', value: String(levelCount), sub: levels, tip: levels, tone: 'muted' },
       {
@@ -302,6 +305,15 @@ export default class PlayerDetailComponent implements OnInit {
     // Only during SSR: the page is a 404 when there's no such player
     effect(() => {
       if (this.responseInit && !this.playerDetail()) this.responseInit.status = 404;
+    });
+
+    // A longer period loads the history it needs: its days and the period before them, as far as the history goes
+    effect(() => {
+      const needed = Math.min(this.playerView.period() * 2 + 1, this.#PERIOD_SIZE);
+      if (!this.historyLoaded() || this.history().length >= needed || !this.hasMoreEntries()) return;
+      untracked(() => {
+        if (!this.loadingMore()) this.loadMore(needed - this.history().length);
+      });
     });
   }
 
@@ -348,31 +360,36 @@ export default class PlayerDetailComponent implements OnInit {
       });
   }
 
-  loadMore(): void {
+  /** Loads the next `size` days of history, a week by default */
+  loadMore(size: number = this.#MORE_SIZE): void {
     this.loadingMore.set(true);
     this.loadMoreFailed.set(false);
 
     this.osrsTrackerRepo
-      .getPlayerHiscores(this.username, this.scrapingOffset(), this.#MORE_SIZE, this.history().length)
+      .getPlayerHiscores(this.username, this.scrapingOffset(), size, this.history().length)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.loadingMore.set(false)),
       )
       .subscribe({
-        next: scrapedHiscores => this.#morePages.update(pages => [...pages, parseHiscores(scrapedHiscores)]),
+        next: scrapedHiscores =>
+          this.#morePages.update(pages => [...pages, { entries: parseHiscores(scrapedHiscores), size }]),
         error: () => this.loadMoreFailed.set(true),
       });
   }
 
-  private weekComparison(summary: PeriodSummary): Pick<StatTile, 'sub' | 'tone'> {
+  /** Compared with the period before it, e.g. "+24% vs previous week"; 60 days back is as far as the history goes */
+  private periodComparison(summary: PeriodSummary): Pick<StatTile, 'sub' | 'tone'> {
     const { xp, previousXp } = summary;
+    const previous = this.playerView.period() === 7 ? 'week' : `${this.playerView.period()} days`;
     if (previousXp === undefined) return { sub: '', tone: 'muted' };
-    if (!previousXp) return { sub: xp ? 'None the week before' : 'None the week before either', tone: 'muted' };
+    if (!previousXp)
+      return { sub: xp ? `None the ${previous} before` : `None the ${previous} before either`, tone: 'muted' };
 
     const change = Math.round(((xp - previousXp) / previousXp) * 100);
-    if (!change) return { sub: 'Same as previous week', tone: 'muted' };
+    if (!change) return { sub: `Same as previous ${previous}`, tone: 'muted' };
     return {
-      sub: `${change > 0 ? '+' : '−'}${Math.abs(change)}% vs previous week`,
+      sub: `${change > 0 ? '+' : '−'}${Math.abs(change)}% vs previous ${previous}`,
       tone: change > 0 ? 'up' : 'down',
     };
   }
