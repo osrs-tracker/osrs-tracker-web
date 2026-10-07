@@ -9,25 +9,6 @@
     background-size: 22px 22px;
   }
 
-  /* Color */
-  .accent {
-    @apply text-accent;
-  }
-  .positive,
-  .positive-value {
-    @apply text-up;
-  }
-  .positive-value::before {
-    content: '+';
-  }
-  .negative,
-  .negative-value {
-    @apply text-down;
-  }
-  .negative-value::before {
-    content: '−';
-  }
-
   /* safe-area-inset */
   .sa-t {
     padding-top: env(safe-area-inset-top);

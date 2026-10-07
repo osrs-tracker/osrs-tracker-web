@@ -41,6 +41,45 @@ there, not in the agent.
   `catchError(resolverErrorHandler(<original url>))`. `ParamAwareReuseStrategy` recreates components on param change.
   Adding or renaming a route means updating `src/server/utils/route-label.ts` (its spec fails CI otherwise).
 
+## Design system
+
+Built from the [OSRS Tracker Design canvas](https://claude.ai/artifact/SptGtqgrh6RE8cVzLJJhom) (read it with the
+Artifact tool); why it looks like this is in `docs/decisions.md`. Tailwind classes only, no arbitrary `[...]` values: a
+value the scale lacks becomes a token in `src/styles/tailwind/theme.css`.
+
+- **Colours:** semantic tokens that swap under `.dark` (`base.css`), never `dark:` pairs: `ground` page, `card`, `line`
+  dividers, `row` row lines and hover, `inner` inner tiles, `deep` hero band and icon tiles, `border` controls,
+  `muted`/`text`/`strong` text, `accent` (+ `accent-hover`, `on-accent`) links and primary actions, `up`/`down` changes
+  (a true green in the dark theme, apart from the emerald accent), `amber`/`orange` warnings. Charts read them through
+  `token()` in `chart-setup.ts`, which lists the ones they use.
+- **Surfaces:** cards are flat; only floating layers (dropdowns, tooltips, Home's preview card) get `shadow-float`.
+  Hover changes the background, never adds a shadow.
+- **Radii:** `rounded-3xl` hero surfaces (search box, preview card), `rounded-2xl` cards, stat tiles and buttons in the
+  search box, `rounded-xl` inner tiles, inputs and icon tiles, `rounded-full` pills and standalone buttons.
+- **Type:** Tailwind's `text-xs`…`text-6xl` with whole-pixel line heights (`text-xl/6`). Page titles
+  `text-2xl sm:text-3xl`, landing heroes `text-4xl md:text-5xl` (Home up to `lg:text-6xl`), card titles `text-xl`.
+  `tabular-nums` on standalone values only (prices, XP, levels, tiles, axes), never on numbers in text or a page root.
+- **Spacing:** steps of 4, 8, 12, 16, 24, 32, 48, 72px; card padding 20px (`px-5`). 24px between cards and sections,
+  16px between stat tiles; pages `max-w-page mx-auto px-4 sm:px-6`, 48px from the nav (`pt-12`) and 72px above the
+  footer (`pb-18`); reading pages narrow to `max-w-3xl`.
+- **Classes** (`components.css`): `.button--primary` (accent) and `.button--default` (outlined), `.button--rounded` for
+  standalone ones; `.link` for accent links; `.search-box`/`.search-box-input` for the big search; `.markdown` for
+  reading text (changelog, privacy, terms).
+
+Which component to use (`common/components/general/` unless noted):
+
+| Need                                                 | Use                                                                                     |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| A titled section                                     | `article[card]`: 56px header, `[title]` and `[actions]` slots, `subtitle` for two lines |
+| A list of players or items                           | `section[list-card]` with its loading, empty and error states; `list-row-skeleton` rows |
+| One headline number                                  | `stat-tile` (`compact` for six in a row, `loading`, `tone` for a change)                |
+| A choice of views or periods                         | `segmented` (32px pills; `variant="slate"` beside an accent button)                     |
+| A whole page's state (not found, unavailable, error) | `status-panel`, with a back button or other actions as content                          |
+| Something failed to load                             | `load-error` (default, `panel` or `compact`; see Failures above)                        |
+| Something is loading                                 | `skeleton` blocks sized like the content, never a spinner                               |
+| A short explanation                                  | `info-tooltip`, or `[tooltip]` on any element                                           |
+| A reading page                                       | `information-page` (`common/components/layout/`) around `<div class="markdown">`        |
+
 ## Code navigation
 
 Use the `LSP` tool for type info and navigation in `.ts` files, but it's plain TypeScript without Angular's language

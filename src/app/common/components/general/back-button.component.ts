@@ -11,11 +11,9 @@ import { Router, RouterLink } from '@angular/router';
   imports: [RouterLink],
   template: `
     @if (hasPrevious) {
-      <button type="button" class="button--default button--rounded px-16 text-base" (click)="location.back()">
-        Go back
-      </button>
+      <button type="button" class="button--default button--rounded px-8" (click)="location.back()">Go back</button>
     } @else {
-      <a routerLink="/" class="button--default button--rounded px-16 text-base">Back to home</a>
+      <a routerLink="/" class="button--default button--rounded px-8">Back to home</a>
     }
   `,
 })

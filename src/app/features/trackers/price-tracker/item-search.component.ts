@@ -17,7 +17,6 @@ import { Item } from '@osrs-tracker/models';
 import { Subscription, finalize, forkJoin, map, of } from 'rxjs';
 import { LoadErrorComponent } from 'src/app/common/components/general/load-error.component';
 import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
-import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { formatNumberLegible } from 'src/app/common/helpers/number.helper';
 import { OsrsPricesRepo } from 'src/app/common/repositories/osrs-prices.repo';
@@ -44,26 +43,20 @@ import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
         autocomplete="hidden"
       />
 
-      <button type="submit" class="relative button--primary" (click)="searchItems()">
-        <span class="flex items-center gap-2" [class.invisible]="loading()">
-          <svg
-            class="size-4.5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            aria-hidden="true"
-          >
-            <circle cx="11" cy="11" r="7" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          Search
-        </span>
-
-        @if (loading()) {
-          <spinner class="absolute inset-0 flex items-center justify-center"></spinner>
-        }
+      <button type="submit" class="button--primary" (click)="searchItems()">
+        <svg
+          class="size-4.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        Search
       </button>
     </form>
 
@@ -71,7 +64,18 @@ import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
       <div
         class="absolute inset-x-0 top-full z-10 mt-2 rounded-2xl bg-card border border-border shadow-float overflow-hidden"
       >
-        @if (error()) {
+        @if (loading()) {
+          <div class="py-1.5" aria-busy="true">
+            <span class="sr-only">Searching…</span>
+            @for (width of skeletonWidths; track $index) {
+              <div class="flex items-center gap-3 min-h-11 px-4 py-1.5" aria-hidden="true">
+                <skeleton class="size-8 rounded-lg" />
+                <span class="flex-1 min-w-0"><skeleton class="h-4" [class]="width" /></span>
+                <skeleton class="h-3 w-14" />
+              </div>
+            }
+          </div>
+        } @else if (error()) {
           <load-error source="item-search" message="Couldn't search items." (retry)="searchItems()" />
         } @else if (results().length) {
           <ul class="py-1.5 max-h-70 overflow-y-auto scroll-bar">
@@ -107,7 +111,7 @@ import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
       </div>
     }
   `,
-  imports: [FormsModule, RouterLink, IconDirective, LoadErrorComponent, SkeletonComponent, SpinnerComponent],
+  imports: [FormsModule, RouterLink, IconDirective, LoadErrorComponent, SkeletonComponent],
 })
 export class ItemSearchComponent {
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
@@ -123,10 +127,13 @@ export class ItemSearchComponent {
   /** The query of the last finished search, for the "No items match" message. */
   readonly searchedQuery: WritableSignal<string | null> = signal(null);
 
-  /** Shown once a search has finished or failed, and hidden again when the input is cleared. */
+  /** Shown while searching and once a search has finished or failed, and hidden again when the input is cleared. */
   readonly open: Signal<boolean> = computed(
-    () => !!this.query().trim() && (this.error() || this.searchedQuery() !== null),
+    () => !!this.query().trim() && (this.loading() || this.error() || this.searchedQuery() !== null),
   );
+
+  /** Name bar widths of the rows shown while searching, varied like `list-row-skeleton`'s */
+  readonly skeletonWidths: string[] = ['w-32', 'w-24', 'w-36'];
 
   /** The latest instant-sell price per result; the requests share one fetch of all latest prices. */
   readonly pricesResource: ResourceRef<Record<number, number | undefined>> = rxResource({

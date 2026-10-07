@@ -2,6 +2,32 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## Semantic colour tokens instead of `dark:` pairs (2026/10/07)
+
+- **Context:** the redesign ([#78](https://github.com/osrs-tracker/osrs-tracker-web/issues/78)) has 18 colours per
+  theme. Writing each as a `slate-*` class with a `dark:` partner doubled the classes in every template and let the two
+  themes drift apart.
+- **Decision:** Tailwind tokens (`bg-card`, `text-muted`, `border-line`, `text-up`…) backed by CSS variables that swap
+  under `.dark` in `base.css`. Templates match the design canvas one to one and stay Tailwind-only (no arbitrary
+  values). The extra slate steps and the true green behind them live in `theme.css`; every other colour is Tailwind's
+  own.
+- **Revisit:** if a third theme is added (it's one more variable block), or a component needs a colour that isn't a
+  token: add a token rather than a one-off.
+
+## Features dropped in the redesign (2026/10/07)
+
+- **Context:** the redesign was a chance to remove things that cost more than they gave.
+- **Decision:**
+  - **Price "Trend" card:** the item page's 1Y price range shows the same trend with real data.
+  - **X/Twitter link:** removed from the nav, which now holds only the three pages and the theme toggle; GitHub moved to
+    the footer.
+  - **Hamburger menu:** with three destinations it only hid them. Phones get a row of three tabs under the logo, and the
+    nav is sticky from `sm` up only, as the two-row phone nav is too tall to pin.
+  - **Sparklines in item lists:** a price history per row would need a heavy backend call per item; the chart stays on
+    the item page.
+  - **Spinners:** loading shows skeletons sized like the content, so pages don't jump when data arrives.
+- **Revisit:** a fourth top-level page (the tab row fits three), or a cheap bulk price-history endpoint (sparklines).
+
 ## Item page volumes and averages come from the hourly series (2026/10/07)
 
 - **Context:** the item page needs yesterday's 24-hour average (for the change in its header), the volume over the last

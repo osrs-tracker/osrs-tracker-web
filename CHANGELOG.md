@@ -43,6 +43,9 @@
   skill you pick, with chips under the chart to add or remove skills and the day's gain on hover. Bosses, raids and
   clues show each day's gains stacked per activity, with chips to hide or show them. Minigames chart one running total
   at a time.
+- The new look reaches the last pages. The changelog, privacy policy and terms are a narrower card that's easier to
+  read. The "not found" and error pages are a panel like the item and player ones, and the error page has a "Try again"
+  button that reloads what failed. The item search shows placeholder rows while searching instead of a spinner.
 - The dotted background behind the Home, XP Tracker and Price Tracker headers is easier to see in the light theme.
 - The item search shows a message with a retry button when searching fails, instead of looking like nothing was found.
 - Every page loads a 23% smaller stylesheet: the changelog no longer uses a styling plugin for its text, which also
@@ -65,6 +68,8 @@
 - Behind the scenes: Claude Code gets Angular's documentation for the installed version, and notes on code navigation in
   the project's guide.
 - Behind the scenes: removed a deprecated Angular hydration setting that's now on by default.
+- Behind the scenes: removed the old styles and colours the new look no longer uses, and documented the design system
+  and the reasons behind it for future changes.
 - Behind the scenes: Claude Code loads a short project summary with the commands and hard rules in every session; the
   project's guide keeps the details without repeating them.
 
