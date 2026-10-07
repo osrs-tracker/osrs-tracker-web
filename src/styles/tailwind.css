@@ -4,6 +4,8 @@
 
 @import './tailwind/theme' layer(theme);
 @custom-variant dark (&:where(.dark, .dark *));
+/* The current page's nav link (`ariaCurrentWhenActive="page"`) */
+@custom-variant current (&[aria-current='page']);
 
 @import './tailwind/base' layer(base);
 @import './tailwind/components' layer(components);

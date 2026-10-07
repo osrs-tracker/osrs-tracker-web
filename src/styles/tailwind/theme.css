@@ -1,6 +1,12 @@
 @theme {
   --font-sans: 'SOLIX';
 
+  /* Phones under 390px, where "Price Tracker" needs 14px text to fit its nav tab */
+  --breakpoint-xs: 24.375rem;
+
+  /* The page width: nav, footer and page content (24px gutters, 16px on phones) */
+  --container-page: 75rem;
+
   --color-emerald-50: oklch(0.979 0.021 166.113);
   --color-emerald-100: oklch(0.95 0.052 163.051);
   --color-emerald-200: oklch(0.905 0.093 164.15);
@@ -65,6 +71,27 @@
   @keyframes skeleton {
     50% {
       opacity: 0.5;
+    }
+  }
+
+  /* The loading bar: one indeterminate sweep, hidden for its first 200ms so fast requests don't flash it */
+  --animate-loading-sweep: loading-sweep 1.4s ease-in-out infinite;
+  --animate-show-delayed: show-delayed 0s 200ms both;
+
+  @keyframes loading-sweep {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(250%);
+    }
+  }
+  @keyframes show-delayed {
+    from {
+      visibility: hidden;
+    }
+    to {
+      visibility: visible;
     }
   }
 }

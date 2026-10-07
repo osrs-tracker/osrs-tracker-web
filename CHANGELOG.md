@@ -4,6 +4,10 @@
   rounded corners and bigger headings, pill-shaped switches for periods and views, and restyled buttons, inputs, info
   tooltips and charts. Failed loads say what went wrong with a "Try again" button. Changes up are a brighter green, and
   numbers in text are no longer spaced out like the values in tables.
+- A new navigation bar and footer. On phones, Home, XP Tracker and Price Tracker sit side by side as tabs under the
+  logo, with the current page underlined, instead of behind a menu button. The loading bar is a thin sweep that only
+  shows when loading takes a moment, and stands still if you've asked your device to reduce motion. The GitHub link
+  moved to the footer and the X/Twitter link is gone.
 - The item search shows a message with a retry button when searching fails, instead of looking like nothing was found.
 - Every page loads a 23% smaller stylesheet: the changelog no longer uses a styling plugin for its text, which also
   fixes a security warning. The changelog's list bullets are easier to see in the light theme.
