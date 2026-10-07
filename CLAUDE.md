@@ -23,5 +23,7 @@ holds the Angular conventions, SSR rules, deploy and release steps. Keep detail 
 
 - `src/app/features/<feature>/` single-feature code; `src/app/common/` shared code, HTTP only via
   `common/repositories/`.
+- `src/app/core/` app-wide plumbing: interceptors, routing (reuse strategy, resolver errors), platform (`WINDOW`,
+  `isHumanVisitor`).
 - `docs/decisions.md` trade-offs, `docs/runbook.md` rollback and failure modes.
 - `.claude/agents/conventions-reviewer.md` reviews diffs against the skill and this file.
