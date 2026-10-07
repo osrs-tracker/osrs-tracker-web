@@ -1,33 +1,25 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
-import { catchError, forkJoin } from 'rxjs';
-import {
-  AveragePricesAtTime,
-  LatestPrices,
-  OsrsPricesRepo,
-  TimeSpan,
-} from 'src/app/common/repositories/osrs-prices.repo';
+import { catchError, Observable, of, throwError } from 'rxjs';
 import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
 import { resolverErrorHandler } from 'src/app/core/routing/resolver-error';
 
-export interface ItemDetail {
-  item: Item;
-  latestPrices: LatestPrices;
-  dailyVolume: number;
-  timeSeriesToday: AveragePricesAtTime[];
-}
+/**
+ * The item, or `null` when there's no such item (the page shows its not-found state in place). Prices load on the page
+ * itself, behind skeletons. Other failures show the error page.
+ */
+export const itemDetailResolver: ResolveFn<Item | null> = (route: ActivatedRouteSnapshot) => {
+  const handleError = resolverErrorHandler('/trackers/price/' + route.params['id']);
 
-export const itemDetailResolver: ResolveFn<ItemDetail | null> = (route: ActivatedRouteSnapshot) => {
-  const osrsTrackerRepo = inject(OsrsTrackerRepo);
-  const osrsPricesRepo = inject(OsrsPricesRepo);
-
-  return forkJoin({
-    item: osrsTrackerRepo.getItemInfo(route.params['id'], { loadingIndicator: true }),
-    latestPrices: osrsPricesRepo.getLatestPrices(route.params['id'], { fetchSingle: true, loadingIndicator: true }),
-    dailyVolume: osrsPricesRepo.getVolume(route.params['id'], { loadingIndicator: true }),
-    timeSeriesToday: osrsPricesRepo.getPriceTimeSeries(route.params['id'], TimeSpan.FIVE_MINUTES, {
-      loadingIndicator: true,
-    }),
-  }).pipe(catchError(resolverErrorHandler('/trackers/price/' + route.params['id'])));
+  return inject(OsrsTrackerRepo)
+    .getItemInfo(route.params['id'], { loadingIndicator: true })
+    .pipe(
+      catchError((err: unknown): Observable<null> => {
+        const notFound = err instanceof HttpErrorResponse && [400, 404].includes(err.status);
+        return notFound ? of(null) : throwError(() => err);
+      }),
+      catchError(handleError),
+    );
 };

@@ -2,6 +2,28 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## Item page volumes and averages come from the hourly series (2026/10/07)
+
+- **Context:** the item page needs yesterday's 24-hour average (for the change in its header), the volume over the last
+  24 hours and 14 days of daily volumes. The Wiki's `/24h` and `/volumes` endpoints return every item (about 390KB and
+  50KB), and SSR would embed them in the page's transfer state. Its `24h` time series lags a day or two behind.
+- **Decision:** derive all three from the item's `1h` time series (365 hours), which the page loads anyway for the 1W
+  price range: volume-weighted per UTC day, which matches `/24h` exactly. The item lists still use `/24h` (in the
+  browser, shared between rows).
+- **Revisit:** if the Wiki shortens the `1h` series below 15 days, or the numbers drift from the lists.
+
+## GE tax rules are hard-coded (2026/10/07)
+
+- **Context:** "Margin after tax" and the profit calculator need the Grand Exchange tax: 2% of the sale price, rounded
+  down, capped at 5M per item, with a list of exempt items. No API publishes these rules, and Jagex changes them in
+  unpolled game-integrity updates (1% to 2% in May 2025, edits to the sink and exempt lists).
+- **Decision:** keep the rate, cap and exempt item ids in one helper,
+  `features/trackers/price-tracker/item-detail/ge-tax.ts`, which links the
+  [Wiki section](https://oldschool.runescape.wiki/w/Grand_Exchange#Convenience_fee_and_item_sink) and says when it was
+  last checked.
+- **Revisit:** check the Wiki section when a GE or game-integrity update ships, and at least every few months; update
+  the helper's "last checked" date each time.
+
 ## Per-request CSP nonce for inline scripts (2026/10/04)
 
 - **Context:** the CSP allowed `'unsafe-inline'` scripts. Angular SSR adds its own inline scripts (event replay,

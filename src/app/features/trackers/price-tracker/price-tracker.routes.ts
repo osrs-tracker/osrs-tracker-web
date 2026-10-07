@@ -14,6 +14,6 @@ export default [
     path: ':id',
     pathMatch: 'full',
     loadComponent: () => import('./item-detail/item-detail.component'),
-    resolve: { itemDetail: itemDetailResolver },
+    resolve: { item: itemDetailResolver },
   },
 ] as Route[];

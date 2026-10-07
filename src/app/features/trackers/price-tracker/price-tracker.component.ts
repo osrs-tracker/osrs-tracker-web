@@ -1,4 +1,4 @@
-import { Component, ResourceRef, Signal, computed, inject } from '@angular/core';
+import { Component, InputSignal, ResourceRef, Signal, computed, inject, input } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
@@ -27,6 +27,9 @@ import { PriceTrackerStore, RecentItem } from './price-tracker.store';
 export default class PriceTrackerComponent {
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly priceTrackerStore = inject(PriceTrackerStore);
+
+  /** A search to run straight away, from `?q=` (e.g. from an item page that wasn't found) */
+  readonly q: InputSignal<string | undefined> = input<string>();
 
   readonly favoriteItems: Signal<RecentItem[]> = this.priceTrackerStore.favoriteItems;
   readonly recentItems: Signal<RecentItem[]> = this.priceTrackerStore.recentItems;

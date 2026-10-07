@@ -1,14 +1,107 @@
-<div class="container mx-auto mt-4 mb-8 px-4 grid lg:grid-cols-3 2xl:grid-cols-4 gap-8">
-  <item-detail-widget
-    [itemDetail]="itemDetail().item"
-    [latestPrices]="itemDetail().latestPrices"
-    [dailyVolume]="itemDetail().dailyVolume"
-  ></item-detail-widget>
-
-  <item-analytics
-    class="lg:col-span-2 2xl:col-span-3"
-    [itemDetail]="itemDetail().item"
-    [latestPrices]="itemDetail().latestPrices"
-    [timeSeriesToday]="itemDetail().timeSeriesToday"
-  ></item-analytics>
+<div class="max-w-page mx-auto px-4 sm:px-6 pt-4">
+  <a routerLink="/trackers/price" class="link inline-flex items-center gap-1.5 min-h-11">
+    <svg
+      class="size-4.5"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <line x1="19" y1="12" x2="5" y2="12" />
+      <polyline points="11 6 5 12 11 18" />
+    </svg>
+    Price Tracker
+  </a>
 </div>
+
+@if (item(); as item) {
+  <header
+    item-header
+    [item]="item"
+    [price]="sellPrice()"
+    [average]="yesterdayAverage()"
+    [loading]="latest.isLoading() || hourly.isLoading()"
+    [error]="!!latest.error()"
+    [averageError]="!!hourly.error()"
+    (retry)="latest.reload()"
+    (retryAverage)="hourly.reload()"
+  ></header>
+
+  <main class="max-w-page mx-auto flex flex-col gap-6 px-4 sm:px-6 pt-6 pb-18">
+    <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
+      @for (stat of stats(); track stat.label) {
+        <stat-tile
+          compact
+          [label]="stat.label"
+          [value]="stat.value"
+          [sub]="stat.sub"
+          [info]="stat.info"
+          [tip]="stat.tip ?? ''"
+          [loading]="!!stat.loading"
+        />
+      }
+    </div>
+
+    <article card>
+      <h2 title>Price</h2>
+      <segmented actions label="Range" [options]="rangeOptions" [(value)]="range" />
+
+      @if (priceSeries.error()) {
+        <load-error
+          class="block h-70"
+          source="item-price-chart"
+          message="Couldn't load the price chart."
+          (retry)="priceSeries.reload()"
+        />
+      } @else if (priceSeries.isLoading()) {
+        <skeleton class="h-70 w-full rounded-xl" />
+      } @else {
+        @defer {
+          <price-chart class="block h-70" role="img" [attr.aria-label]="priceChartLabel()" [data]="priceChartData()" />
+        } @placeholder {
+          <skeleton class="h-70 w-full rounded-xl" />
+        }
+      }
+
+      <div class="flex flex-wrap gap-5 mt-4 text-sm" aria-hidden="true">
+        <span class="flex items-center gap-2"><span class="w-4.5 h-0.75 bg-accent"></span>Instant buy</span>
+        <span class="flex items-center gap-2"
+          ><span class="w-4.5 border-t-2 border-dashed border-muted"></span>Instant sell</span
+        >
+      </div>
+    </article>
+
+    <div class="grid lg:grid-cols-2 gap-6">
+      <article
+        item-volume
+        [volumes]="volumes()"
+        [loading]="hourly.isLoading()"
+        [error]="!!hourly.error()"
+        (retry)="hourly.reload()"
+      ></article>
+
+      <article
+        profit-calculator
+        [item]="item"
+        [latestPrices]="latest.hasValue() ? latest.value() : undefined"
+        [loading]="latest.isLoading()"
+        [error]="!!latest.error()"
+      ></article>
+    </div>
+  </main>
+} @else {
+  <main class="max-w-page mx-auto px-4 sm:px-6 pt-12 pb-18">
+    <status-panel
+      icon="search"
+      action="search"
+      heading="This item isn’t on the Grand Exchange"
+      message="The link may be wrong, or the item can’t be traded. Search for it by name instead."
+      placeholder="Item name, e.g. Abyssal whip"
+      searchLabel="Item name"
+      (searched)="searchItem($event)"
+    />
+  </main>
+}
