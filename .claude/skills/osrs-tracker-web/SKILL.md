@@ -11,7 +11,8 @@ description:
 
 Angular 22 SSR app (zoneless, signals, standalone) on a custom Express server (`src/server/`), deployed to Kubernetes.
 Deliberate trade-offs (production-only config, per-replica pre-rendering, CSP nonce) are in `docs/decisions.md`; read it
-before "fixing" one.
+before "fixing" one. The `conventions-reviewer` agent reviews diffs against this file at runtime, so keep code rules
+here, not in the agent.
 
 ## Related repos
 
@@ -32,8 +33,9 @@ before "fixing" one.
   goes through a per-feature `@ngrx/signals` store (`XpTrackerStore`, `PriceTrackerStore`), never from components.
 - **Async data**: prefer `httpResource` / `rxResource`; if you subscribe, reset loading state in `finalize`.
 - **Failures**: every failable load shows its failure. `value()` throws in the error state, so check `error()` (or
-  `hasValue()`) first and render `<load-error source="…" (retry)="resource.reload()" />` (`compact` in cards, `panel`
-  for a panel). Never `catchError(() => of(empty))`.
+  `hasValue()`) first and render `<load-error source="…" (retry)="resource.reload()" />`: `compact` when it replaces a
+  single value in a row or widget, the default when it replaces a list or section, `panel` for a panel. Never
+  `catchError(() => of(empty))` or an `error` callback that only empties the data.
 - **HTTP**: only via repositories in `common/repositories/`, using the `BASE_URL_PREFIX` / `LOADING_INDICATOR`
   `HttpContext` tokens, not absolute URLs. `encodeURIComponent` path segments; query values go in `params`.
 - **Routing**: lazy routes with default-exported components, `title: '<Page> - OSRS Tracker'`; resolvers end with
@@ -49,7 +51,8 @@ before "fixing" one.
 - **Response status**: `inject(RESPONSE_INIT, { optional: true })`, not an Express `RESPONSE` token.
 - **Transfer cache**: responses reach the browser only if `Cache-Control` has no `no-store`, `no-cache` or `private`;
   otherwise the browser refetches on hydration and resources flash to `defaultValue`. When a page refetches, check the
-  API's `Cache-Control` first. Verify in `<script id="ng-state">`, where URLs are escaped: grep `\/news`, not `/news`.
+  API's `Cache-Control` first. Verify in `<script id="ng-state">`: entries are keyed by a hash, not the URL, so look for
+  the response body (a news title, an item name), not the path.
 - **Chart.js**: shared registrations and the date adapter in `common/components/charts/chart-setup.ts`; load
   browser-only plugins (zoom) lazily per chart; never `Chart.unregister`. Time series charts extend
   `common/components/charts/base-chart.ts`.
@@ -119,7 +122,7 @@ Rollback and failure modes: `docs/runbook.md`. The root filesystem is read-only;
 Run end to end without asking; stop only on failure. Verify locally once before committing, then CI is the gate.
 
 1. Commit on `<type>/<short-name>`, push, `gh pr create --base main`.
-2. Review `gh pr diff` for bugs and leftovers; fix and push.
+2. Review `gh pr diff` for bugs and leftovers while the `conventions-reviewer` agent checks the PR; fix both and push.
 3. In the background, run docker build + push alongside `gh pr checks <n> --watch`.
 4. Once CI passes, deploy (steps 3–7).
 5. Commit digest and sitemaps, push, and add the digest and smoke-test results to the PR description.

@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
 import { Subscription, finalize } from 'rxjs';
+import { LoadErrorComponent } from 'src/app/common/components/general/load-error.component';
 import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
@@ -30,7 +31,15 @@ import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
         }
       </button>
 
-      @if (results().length) {
+      @if (error()) {
+        <div
+          class="z-10 absolute rounded-3xl bg-slate-150 dark:bg-slate-800 border border-slate-400 dark:border-slate-700 shadow-2xl top-0 w-full overflow-hidden"
+        >
+          <div class="mt-10 pt-px">
+            <load-error source="item-search" message="Couldn't search items." (retry)="searchItems()" />
+          </div>
+        </div>
+      } @else if (results().length) {
         <div
           class="z-10 absolute rounded-3xl bg-slate-150 dark:bg-slate-800 border border-slate-400 dark:border-slate-700 shadow-2xl top-0 w-full overflow-hidden"
         >
@@ -67,7 +76,7 @@ import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
       }
     </form>
   `,
-  imports: [FormsModule, RouterLink, IconDirective, SpinnerComponent],
+  imports: [FormsModule, RouterLink, IconDirective, LoadErrorComponent, SpinnerComponent],
 })
 export class ItemSearchComponent {
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
@@ -75,10 +84,12 @@ export class ItemSearchComponent {
   readonly query: WritableSignal<string> = signal('');
   readonly loading: WritableSignal<boolean> = signal(false);
   readonly results: WritableSignal<Item[]> = signal([]);
+  readonly error: WritableSignal<boolean> = signal(false);
 
   private searchSubscription?: Subscription;
 
   searchItems(): void {
+    this.error.set(false);
     if (!this.query()) return;
 
     // Cancel the previous search (before setting loading, as this runs its finalize), so a slow earlier response can't
@@ -91,7 +102,10 @@ export class ItemSearchComponent {
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: items => this.results.set(items ?? []),
-        error: () => this.results.set([]),
+        error: () => {
+          this.results.set([]);
+          this.error.set(true);
+        },
       });
   }
 }

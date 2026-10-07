@@ -1,3 +1,11 @@
+## 2026/10/07
+
+- The item search shows a message with a retry button when searching fails, instead of looking like nothing was found.
+- Behind the scenes: code changes are formatted automatically and checked for lint and formatting errors before they're
+  pushed, and reviewed against the project's conventions before release. The automatic build and tests only run when the
+  code or its dependencies change (or the previous run didn't pass), not for releases or documentation, and reuse the
+  installed dependencies until they change.
+
 ## 2026/10/05
 
 - Player pages show a chart above the logs. Skills: the XP gained per skill over the loaded days, in RuneLite's skill

@@ -1,0 +1,30 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=$(jq -r '.tool_input.file_path // empty'); case \"$f\" in \"$CLAUDE_PROJECT_DIR\"/*) \"$CLAUDE_PROJECT_DIR\"/node_modules/.bin/prettier --write --ignore-unknown \"$f\" >/dev/null 2>&1 ;; esac; exit 0",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git push*)",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && out=$({ npm run -s lint && npm run -s prettier:ci; } 2>&1) || { printf 'Push blocked: lint or prettier check failed.\\n%s\\n' \"$(printf '%s' \"$out\" | tail -40)\" >&2; exit 2; }",
+            "timeout": 300,
+            "statusMessage": "Running lint and prettier check before push"
+          }
+        ]
+      }
+    ]
+  }
+}
