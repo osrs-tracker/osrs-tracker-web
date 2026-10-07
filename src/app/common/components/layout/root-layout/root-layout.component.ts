@@ -1,15 +1,12 @@
-import { NgClass } from '@angular/common';
 import { Component, Signal, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { LoadingIndicatorService } from 'src/app/core/interceptors/loading-indicator.interceptor';
 import { DarkModeComponent } from './components/dark-mode.component';
-import { MenuButtonComponent } from './components/menu-button.component';
 
 @Component({
   selector: 'app-root-layout',
   templateUrl: './root-layout.component.html',
-  styleUrls: ['./root-layout.component.scss'],
-  imports: [NgClass, RouterLink, RouterLinkActive, RouterOutlet, DarkModeComponent, MenuButtonComponent],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, DarkModeComponent],
 })
 export default class RootLayoutComponent {
   readonly hasOngoingRequests: Signal<boolean> = inject(LoadingIndicatorService).hasOngoingRequests;
@@ -22,14 +19,12 @@ export default class RootLayoutComponent {
       name: 'Home',
     },
     {
-      path: '/trackers/price',
-      name: 'Price Tracker',
-    },
-    {
       path: '/trackers/xp',
       name: 'XP Tracker',
     },
+    {
+      path: '/trackers/price',
+      name: 'Price Tracker',
+    },
   ];
-
-  menuCollapsed = true;
 }

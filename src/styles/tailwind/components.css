@@ -18,13 +18,6 @@
     @apply font-bold text-accent hover:text-accent-hover;
   }
 
-  .link-states--light {
-    @apply active:text-emerald-800 hover:text-emerald-700;
-  }
-  .link-states--dark {
-    @apply active:text-emerald-600 hover:text-emerald-500;
-  }
-
   .input--default {
     @apply w-full h-12 px-3.5 rounded-xl border border-line bg-inner text-strong placeholder:text-muted focus:border-accent focus:ring-accent;
   }
