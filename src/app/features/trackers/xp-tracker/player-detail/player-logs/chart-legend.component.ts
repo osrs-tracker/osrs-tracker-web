@@ -1,51 +1,69 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, input, InputSignal, output, OutputEmitterRef, signal, WritableSignal } from '@angular/core';
+import {
+  Component,
+  computed,
+  input,
+  InputSignal,
+  output,
+  OutputEmitterRef,
+  Signal,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 
 export interface LegendItem {
   name: string;
   color: string;
-  total: number;
-  hidden: boolean;
+  /** Shown after the name, e.g. the period total */
+  total?: number;
+  on: boolean;
 }
 
-/** Chart legend with the skill or activity icons; clicking an item toggles its series. */
+/**
+ * The chart's chips: the skill or activity icon and name in its series colour; picking one toggles its series. Past
+ * `collapseAfter` items, the rest wait behind a "+N" chip, so the plot keeps its room.
+ */
 @Component({
   selector: 'chart-legend',
   template: `
-    <ul class="flex flex-wrap gap-1.5 text-sm">
-      @for (item of items(); track item.name; let i = $index) {
-        <li [class]="!expanded() && i >= collapseAfter() ? 'hidden sm:block' : ''">
+    <ul class="flex flex-wrap gap-2 text-sm">
+      @for (item of shown(); track item.name) {
+        <li>
           <button
             type="button"
-            class="flex items-center gap-1.5 rounded-md px-1.5 py-0.5 bg-row transition-opacity"
-            [class.opacity-40]="item.hidden"
-            [attr.aria-pressed]="!item.hidden"
-            [attr.title]="showNames() ? null : item.name"
+            class="flex items-center gap-1.5 h-9 pl-2 pr-3 rounded-full border font-bold transition-colors"
+            [class]="item.on ? 'text-strong' : 'border-line text-muted hover:text-strong'"
+            [style.border-color]="item.on ? 'color-mix(in oklch, ' + item.color + ' 55%, transparent)' : null"
+            [style.background]="item.on ? 'color-mix(in oklch, ' + item.color + ' 14%, transparent)' : null"
+            [attr.aria-pressed]="item.on"
             (click)="toggled.emit(item.name)"
           >
-            <span class="size-2 shrink-0 rounded-full" [style.background-color]="item.color"></span>
-            <img
-              class="size-4 object-contain"
-              icon
-              [name]="item.name"
-              [skill]="kind() === 'skill'"
-              [activity]="kind() === 'activity'"
-            />
-            <span [class.sr-only]="!showNames()">{{ item.name }}</span>
-            <span class="font-medium text-strong tabular-nums">{{ prefix() }}{{ item.total | number }}</span>
+            <span class="flex items-center justify-center size-5.5 shrink-0">
+              <img
+                class="max-h-5.5 max-w-5.5"
+                icon
+                [name]="item.name"
+                [skill]="kind() === 'skill'"
+                [activity]="kind() === 'activity'"
+              />
+            </span>
+            {{ item.name }}
+            @if (item.total !== undefined) {
+              <span class="tabular-nums">{{ prefix() }}{{ item.total | number }}</span>
+            }
           </button>
         </li>
       }
       @if (items().length > collapseAfter()) {
-        <li class="sm:hidden">
+        <li>
           <button
             type="button"
-            class="rounded-md px-1.5 py-0.5 font-medium bg-row"
+            class="h-9 px-3 rounded-full border border-line font-bold text-muted hover:text-strong"
             [attr.aria-expanded]="expanded()"
             (click)="expanded.set(!expanded())"
           >
-            {{ expanded() ? 'Less' : '+' + (items().length - collapseAfter()) }}
+            {{ expanded() ? 'Fewer' : '+' + (items().length - shown().length) }}
           </button>
         </li>
       }
@@ -57,12 +75,13 @@ export class ChartLegendComponent {
   readonly items: InputSignal<LegendItem[]> = input.required();
   readonly kind: InputSignal<'skill' | 'activity'> = input.required();
   readonly prefix: InputSignal<string> = input('');
-  /** Off when the icons identify the items, e.g. skills */
-  readonly showNames: InputSignal<boolean> = input(true);
-  /** On phones, items past this one are collapsed behind a "+N" chip */
   readonly collapseAfter: InputSignal<number> = input(Infinity);
 
   readonly toggled: OutputEmitterRef<string> = output();
 
   readonly expanded: WritableSignal<boolean> = signal(false);
+  /** Collapsed: the first items, and any that are on */
+  readonly shown: Signal<LegendItem[]> = computed(() =>
+    this.expanded() ? this.items() : this.items().filter((item, i) => i < this.collapseAfter() || item.on),
+  );
 }

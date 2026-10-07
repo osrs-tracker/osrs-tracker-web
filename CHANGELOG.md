@@ -37,6 +37,12 @@
   Wars Zeal, Bounty Hunter) are charted. The day log lists XP, levels and activity gains together. When the hiscores
   aren't responding, a notice says how old the stats are. A player who doesn't exist gets a search box to try another
   name, and a player whose tracking just started gets an explanation instead of an empty chart.
+- New player charts. Pick the last 7, 30 or 60 days: the chart and the XP, levels and boss kill tiles all follow, with
+  the XP compared to the period before. Above the chart, what it shows and its total for the period, such as "Total XP
+  gained +3.72M" or "Zulrah kills, kill count 4,812". XP gained is a running total: Overall on its own, or one line per
+  skill you pick, with chips under the chart to add or remove skills and the day's gain on hover. Bosses, raids and
+  clues show each day's gains stacked per activity, with chips to hide or show them. Minigames chart one running total
+  at a time.
 - The dotted background behind the Home, XP Tracker and Price Tracker headers is easier to see in the light theme.
 - The item search shows a message with a retry button when searching fails, instead of looking like nothing was found.
 - Every page loads a 23% smaller stylesheet: the changelog no longer uses a styling plugin for its text, which also

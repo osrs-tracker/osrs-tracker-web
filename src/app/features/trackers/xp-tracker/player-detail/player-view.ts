@@ -7,6 +7,8 @@ export type BottomTab = 'clues' | 'minigames';
 /** What the chart shows: XP, or one activity category */
 export type ChartView = TopTab | BottomTab;
 export type ActivityView = Exclude<ChartView, 'skills'>;
+/** Days the chart and the stat tiles cover */
+export type Period = 7 | 30 | 60;
 
 /**
  * What the player page shows: the tab of each hiscores card and what the chart follows, the last chartable pick (a tab,
@@ -17,6 +19,7 @@ export class PlayerView {
   readonly top: WritableSignal<TopTab> = signal('skills');
   readonly bottom: WritableSignal<BottomTab> = signal('clues');
   readonly chart: WritableSignal<ChartView> = signal('skills');
+  readonly period: WritableSignal<Period> = signal(7);
 
   /** Overall alone, or the skills being compared */
   readonly skills: WritableSignal<ReadonlySet<string>> = signal(new Set([SkillEnum.Overall]));

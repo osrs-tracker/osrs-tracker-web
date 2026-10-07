@@ -1,9 +1,16 @@
 import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core';
+import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
 import { HiscoreEntry } from '@osrs-tracker/models';
+import { SegmentedComponent, SegmentedOption } from 'src/app/common/components/general/segmented.component';
 import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
+import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
+import { formatNumberLegible } from 'src/app/common/helpers/number.helper';
+import { percentageToNextLevel } from '../skill-progress';
 import { ActivityChartComponent } from './player-logs/activity-chart.component';
+import { CHART_CATEGORIES } from './player-logs/chart-categories';
+import { activitySeries, xpGainedSeries } from './player-logs/log-chart-series';
 import { XpGainedChartComponent } from './player-logs/xp-gained-chart.component';
-import { ActivityView, ChartView, PlayerView } from './player-view';
+import { ActivityView, ChartView, Period, PlayerView } from './player-view';
 
 const TITLES: Record<ChartView, string> = {
   skills: 'XP gained',
@@ -13,15 +20,69 @@ const TITLES: Record<ChartView, string> = {
   minigames: 'Minigames',
 };
 
+interface CategoryCopy {
+  title: string;
+  /** "All 5 bosses with gains" */
+  noun: string;
+  icon: ChartHeading['icon'];
+  /** The title when one activity is shown, e.g. "Zulrah kills" */
+  single: (name: string) => string;
+  scoreLabel: string;
+}
+
+const CATEGORY_COPY: Record<Exclude<ActivityView, 'minigames'>, CategoryCopy> = {
+  bosses: {
+    title: 'Boss kills',
+    noun: 'bosses',
+    icon: { name: 'combat', activity: false },
+    single: name => `${name} kills`,
+    scoreLabel: 'Kill count',
+  },
+  raids: {
+    title: 'Raids completed',
+    noun: 'raids',
+    icon: { name: ActivityEnum.ChambersOfXeric, activity: true },
+    single: name => `${name} completions`,
+    scoreLabel: 'Completed',
+  },
+  clues: {
+    title: 'Clues completed',
+    noun: 'tiers',
+    icon: { name: ActivityEnum.ClueScrollsMaster, activity: true },
+    // "Clue Scrolls (hard)" becomes "Hard clues completed"
+    single: name =>
+      `${name.replace(/^.*\((\w)(\w*)\)$/, (_, first: string, rest: string) => first.toUpperCase() + rest)} clues completed`,
+    scoreLabel: 'Completed',
+  },
+};
+
+/** The line above the chart: what's shown, for which period, and its total */
+interface ChartHeading {
+  icon: { name: string; skill?: boolean; activity?: boolean };
+  title: string;
+  sub: string;
+  total: string;
+}
+
 /**
- * The chart card: it follows the page's last chartable pick (a tab, a skill or an activity). From 1024px up it's as tall
- * as the Skills card beside it, and the plot takes what the legend leaves.
+ * The chart card: it follows the page's last chartable pick (a tab, a skill or an activity) over the picked period.
+ * From 1024px up it's as tall as the Skills card beside it, and the plot takes what the chips leave.
  */
 @Component({
   selector: 'player-chart',
   template: `
-    <div class="flex items-center min-h-14 px-5 py-1.5 border-b border-line">
+    <div
+      class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2.5 min-h-14 px-5 py-1.5 border-b border-line"
+    >
       <h2 class="text-xl font-bold text-strong">{{ title() }}</h2>
+      @if (state() === 'ready') {
+        <segmented
+          label="Period"
+          [options]="periods"
+          [value]="playerView.period()"
+          (valueChange)="playerView.period.set($event)"
+        />
+      }
     </div>
 
     @switch (state()) {
@@ -66,7 +127,27 @@ const TITLES: Record<ChartView, string> = {
         </div>
       }
       @case ('ready') {
-        <div class="flex flex-col grow min-h-0 px-5 py-4.5">
+        <div class="flex flex-col grow min-h-0 gap-4 px-5 py-4.5">
+          @let h = heading();
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="flex items-center justify-center size-11 shrink-0 rounded-xl bg-inner">
+                <img
+                  class="max-h-7 max-w-7"
+                  icon
+                  [name]="h.icon.name"
+                  [skill]="!!h.icon.skill"
+                  [activity]="!!h.icon.activity"
+                />
+              </span>
+              <div class="flex flex-col gap-1 min-w-0">
+                <h3 class="text-lg/6 font-bold text-strong">{{ h.title }}</h3>
+                <span class="text-sm text-muted">{{ h.sub }}</span>
+              </div>
+            </div>
+            <span class="text-3xl font-bold text-strong tabular-nums">{{ h.total }}</span>
+          </div>
+
           @if (activityView(); as category) {
             <activity-chart [data]="diffs()" [category]="category" [minigame]="minigame()" />
           } @else {
@@ -77,13 +158,21 @@ const TITLES: Record<ChartView, string> = {
     }
   `,
   host: { class: 'flex flex-col min-w-0 rounded-2xl bg-card overflow-hidden lg:h-115.5' },
-  imports: [ActivityChartComponent, SkeletonComponent, XpGainedChartComponent],
+  imports: [ActivityChartComponent, IconDirective, SegmentedComponent, SkeletonComponent, XpGainedChartComponent],
 })
 export class PlayerChartComponent {
   readonly playerView = inject(PlayerView);
 
-  /** The daily diffs, newest first */
+  readonly periods: SegmentedOption<Period>[] = ([7, 30, 60] as const).map(days => ({
+    value: days,
+    label: `${days}D`,
+    title: `Last ${days} days`,
+  }));
+
+  /** The period's daily diffs, newest first */
   readonly diffs: InputSignal<HiscoreEntry[]> = input.required();
+  /** The current stats, for levels and all-time scores */
+  readonly current: InputSignal<HiscoreEntry | undefined> = input();
   /** `empty` until there's a second entry to compare with */
   readonly state: InputSignal<'loading' | 'empty' | 'ready'> = input.required();
   readonly emptyText: InputSignal<string> = input('');
@@ -95,4 +184,73 @@ export class PlayerChartComponent {
     const chart = this.playerView.chart();
     return chart === 'skills' ? undefined : chart;
   });
+
+  readonly heading: Signal<ChartHeading> = computed(() => {
+    const period = `last ${this.playerView.period()} days`;
+    const view = this.activityView();
+    return view ? this.activityHeading(view, period) : this.xpHeading(period);
+  });
+
+  private xpHeading(period: string): ChartHeading {
+    const skills = [...this.playerView.skills()];
+    const xp = xpGainedSeries(this.diffs(), skills).reduce((sum, series) => sum + series.total, 0);
+    const total = xp ? `+${formatNumberLegible(xp)}` : 'No XP';
+
+    if (skills.length > 1) {
+      const icon = { name: SkillEnum.Overall, skill: true };
+      return { icon, title: `${skills.length} skills compared`, sub: `Combined, ${period}`, total };
+    }
+
+    const [name] = skills;
+    if (name === SkillEnum.Overall) {
+      return { icon: { name, skill: true }, title: 'Total XP gained', sub: `All skills, ${period}`, total };
+    }
+
+    const skill = this.current()?.skills.find(s => s.name === name);
+    const level = !skill
+      ? ''
+      : skill.level < 99
+        ? `Level ${skill.level} · ${Math.floor(percentageToNextLevel(skill.xp, skill.level))}% to ${skill.level + 1} · `
+        : 'Level 99 · ';
+    return { icon: { name, skill: true }, title: `${name} XP gained`, sub: level + period, total };
+  }
+
+  private activityHeading(view: ActivityView, period: string): ChartHeading {
+    const series = activitySeries(this.diffs(), CHART_CATEGORIES[view]);
+    const hidden = this.playerView.hidden();
+    const shown =
+      view === 'minigames'
+        ? series.filter(({ name }) => name === this.minigame())
+        : series.filter(({ name }) => !hidden.has(name));
+    const sum = shown.reduce((total, { total: gained }) => total + gained, 0);
+    const total = sum ? `+${sum.toLocaleString('en-US')}` : 'None';
+    const score = (name: string): string => {
+      const value = this.current()?.activities.find(activity => activity.name === name)?.score ?? -1;
+      return value > 0 ? value.toLocaleString('en-US') : '–';
+    };
+
+    if (view === 'minigames') {
+      const name = this.minigame();
+      if (!name) {
+        const icon = { name: ActivityEnum.RiftsClosed, activity: true };
+        return { icon, title: 'Minigames', sub: `No running totals gained · ${period}`, total };
+      }
+      const sub = `Total ${score(name)} · ${period}, one minigame at a time`;
+      return { icon: { name, activity: true }, title: name, sub, total };
+    }
+
+    const copy = CATEGORY_COPY[view];
+    if (shown.length === 1) {
+      const [{ name }] = shown;
+      const sub = `${copy.scoreLabel} ${score(name)} · ${period}`;
+      return { icon: { name, activity: true }, title: copy.single(name), sub, total };
+    }
+
+    const count = !series.length
+      ? `No ${copy.noun} with gains`
+      : shown.length === series.length
+        ? `All ${series.length} ${copy.noun} with gains`
+        : `${shown.length} of ${series.length} ${copy.noun} with gains`;
+    return { icon: copy.icon, title: copy.title, sub: `${count} · ${period}`, total };
+  }
 }

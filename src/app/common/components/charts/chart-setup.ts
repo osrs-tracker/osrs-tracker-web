@@ -48,8 +48,15 @@ export function token(name: 'line' | 'muted' | 'text' | 'strong' | 'card' | 'bor
   return (colors.values[name] ??= getComputedStyle(document.documentElement).getPropertyValue(`--${name}`).trim());
 }
 
-/** `color` (an `oklch(…)` token) at `alpha` opacity, e.g. for the area under a line */
+/** `color` (an `oklch(…)` token or a `#rrggbb` hex colour) at `alpha` opacity, e.g. for the area under a line */
 export function withAlpha(color: string, alpha: number): string {
+  if (color.startsWith('#'))
+    return (
+      color +
+      Math.round(alpha * 255)
+        .toString(16)
+        .padStart(2, '0')
+    );
   return color.replace(/\)$/, ` / ${alpha})`);
 }
 

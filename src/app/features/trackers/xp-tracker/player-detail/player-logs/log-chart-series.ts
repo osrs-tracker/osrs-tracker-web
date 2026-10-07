@@ -1,7 +1,6 @@
 import { SkillEnum } from '@osrs-tracker/hiscores';
 import { HiscoreEntry } from '@osrs-tracker/models';
 import { Point } from 'chart.js';
-import { ChartSkill } from '../../skill-colors';
 
 export interface ChartSeries<TName extends string = string> {
   name: TName;
@@ -10,10 +9,14 @@ export interface ChartSeries<TName extends string = string> {
   points: Point[];
 }
 
-/** Per skill that gained XP, the XP gained so far on each day, largest total first. Takes the newest diff first. */
-export function xpGainedSeries(diffs: HiscoreEntry[]): ChartSeries<ChartSkill>[] {
+const SKILLS: string[] = Object.values(SkillEnum).filter(skill => skill !== SkillEnum.Overall);
+
+/**
+ * Per skill that gained XP, the XP gained so far on each day, largest total first. Takes the newest diff first; all
+ * skills but Overall by default.
+ */
+export function xpGainedSeries(diffs: HiscoreEntry[], skills: readonly string[] = SKILLS): ChartSeries[] {
   const days = [...diffs].reverse();
-  const skills = Object.values(SkillEnum).filter((skill): skill is ChartSkill => skill !== SkillEnum.Overall);
 
   return skills
     .map(name => {

@@ -181,7 +181,8 @@
     } @else {
       <player-chart
         class="order-2 md:col-start-2 md:row-start-1"
-        [diffs]="diffs()"
+        [diffs]="periodDiffs()"
+        [current]="current()"
         [state]="chartState()"
         [minigame]="chartedMinigame()"
         [emptyText]="emptyChartText()"
