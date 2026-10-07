@@ -1,14 +1,26 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, computed, input, InputSignal, Signal } from '@angular/core';
 import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreActivity, HiscoreEntry, HiscoreSkill } from '@osrs-tracker/models';
+import { HiscoreActivity, HiscoreSkill } from '@osrs-tracker/models';
+import { addDays } from 'date-fns';
 import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { ShortDatePipe } from 'src/app/common/pipes/date-fns.pipe';
+import { Gains } from '../player-summary';
 
-/** A day with gains, or a run of consecutive days in which nothing happened. */
+/**
+ * A day with gains (or the days a gap in the history covers, `to` its last), or a run of consecutive days in which
+ * nothing happened.
+ */
 type LogGroup =
-  | { type: 'day'; date: Date; overall?: HiscoreSkill; skills: HiscoreSkill[]; activities: HiscoreActivity[] }
+  | {
+      type: 'day';
+      date: Date;
+      to?: Date;
+      overall?: HiscoreSkill;
+      skills: HiscoreSkill[];
+      activities: HiscoreActivity[];
+    }
   | { type: 'empty'; from: Date; to: Date; days: number };
 
 export interface LogNotice {
@@ -28,19 +40,19 @@ export class PlayerLogsComponent {
   readonly SkillEnum: typeof SkillEnum = SkillEnum;
 
   /** The daily diffs, newest first; empty while they load */
-  readonly diffs: InputSignal<HiscoreEntry[]> = input.required();
+  readonly diffs: InputSignal<Gains[]> = input.required();
   readonly loading: InputSignal<boolean> = input(false);
   /** Shown instead of the days while there are none: tracking just started, or the player isn't tracked */
   readonly notice: InputSignal<LogNotice | undefined> = input();
 
   readonly groups: Signal<LogGroup[]> = computed(() => {
     const groups: LogGroup[] = [];
-    let run: Date[] = [];
+    let run: Extract<LogGroup, { type: 'empty' }> | undefined;
 
     // merges each run of consecutive empty days (including a single day) into one group
     const flushRun = (): void => {
-      if (run.length) groups.push({ type: 'empty', from: run[run.length - 1], to: run[0], days: run.length });
-      run = [];
+      if (run) groups.push(run);
+      run = undefined;
     };
 
     this.diffs().forEach(diff => {
@@ -50,12 +62,15 @@ export class PlayerLogsComponent {
         activity => activity.score > 0 && activity.name !== ActivityEnum.ClueScrollsAll,
       );
 
+      const to = diff.days > 1 ? addDays(diff.date, diff.days - 1) : undefined;
+
       if (!skills.length && !activities.length) {
-        run.push(diff.date);
+        // newest first, so each diff extends the run back
+        run = { type: 'empty', from: diff.date, to: run?.to ?? to ?? diff.date, days: (run?.days ?? 0) + diff.days };
       } else {
         flushRun();
         const overall = diff.skills.find(skill => skill.name === SkillEnum.Overall);
-        groups.push({ type: 'day', date: diff.date, overall, skills, activities });
+        groups.push({ type: 'day', date: diff.date, to, overall, skills, activities });
       }
     });
     flushRun();

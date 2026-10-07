@@ -1,6 +1,7 @@
 import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core';
 import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
 import { HiscoreEntry } from '@osrs-tracker/models';
+import { format } from 'date-fns';
 import { SegmentedComponent, SegmentedOption } from 'src/app/common/components/general/segmented.component';
 import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
@@ -10,6 +11,7 @@ import { ActivityChartComponent } from './player-logs/activity-chart.component';
 import { CHART_CATEGORIES } from './player-logs/chart-categories';
 import { activitySeries, xpGainedSeries } from './player-logs/log-chart-series';
 import { XpGainedChartComponent } from './player-logs/xp-gained-chart.component';
+import { Gains } from './player-summary';
 import { ActivityView, ChartView, Period, PlayerView } from './player-view';
 
 const TITLES: Record<ChartView, string> = {
@@ -170,9 +172,11 @@ export class PlayerChartComponent {
   }));
 
   /** The period's daily diffs, newest first */
-  readonly diffs: InputSignal<HiscoreEntry[]> = input.required();
+  readonly diffs: InputSignal<Gains[]> = input.required();
   /** The current stats, for levels and all-time scores */
   readonly current: InputSignal<HiscoreEntry | undefined> = input();
+  /** Where the diffs start, when it isn't the period's first day: the history is shorter, or has a gap there */
+  readonly since: InputSignal<Date | undefined> = input();
   /** `empty` until there's a second entry to compare with */
   readonly state: InputSignal<'loading' | 'empty' | 'ready'> = input.required();
   readonly emptyText: InputSignal<string> = input('');
@@ -186,7 +190,8 @@ export class PlayerChartComponent {
   });
 
   readonly heading: Signal<ChartHeading> = computed(() => {
-    const period = `last ${this.playerView.period()} days`;
+    const since = this.since();
+    const period = since ? `since ${format(since, 'd MMM')}` : `last ${this.playerView.period()} days`;
     const view = this.activityView();
     return view ? this.activityHeading(view, period) : this.xpHeading(period);
   });

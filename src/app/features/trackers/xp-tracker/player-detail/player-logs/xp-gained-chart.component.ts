@@ -1,7 +1,6 @@
 import { formatNumber } from '@angular/common';
 import { DOCUMENT, Component, computed, inject, Signal } from '@angular/core';
 import { SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreEntry } from '@osrs-tracker/models';
 import { Chart, ChartOptions, Point } from 'chart.js';
 import { merge } from 'chart.js/helpers';
 import { BaseChart } from 'src/app/common/components/charts/base-chart';
@@ -9,6 +8,7 @@ import { token, withAlpha } from 'src/app/common/components/charts/chart-setup';
 import { LOCAL_ICONS } from 'src/app/common/directives/icon/local-icons.token';
 import { formatNumberLegible } from 'src/app/common/helpers/number.helper';
 import { ChartSkill, SKILL_COLORS } from '../../skill-colors';
+import { Gains } from '../player-summary';
 import { PlayerView } from '../player-view';
 import { ChartLegendComponent, LegendItem } from './chart-legend.component';
 import { logChartOptions } from './log-chart-options';
@@ -47,7 +47,7 @@ const CHIPS_SHOWN = 7;
   host: { class: 'flex flex-col grow min-h-0' },
   imports: [ChartLegendComponent],
 })
-export class XpGainedChartComponent extends BaseChart<'line', HiscoreEntry[]> {
+export class XpGainedChartComponent extends BaseChart<'line', Gains[]> {
   protected readonly type = 'line';
 
   readonly playerView = inject(PlayerView);

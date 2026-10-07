@@ -1,11 +1,11 @@
 import { formatNumber } from '@angular/common';
 import { DOCUMENT, Component, computed, inject, input, InputSignal, Signal } from '@angular/core';
-import { HiscoreEntry } from '@osrs-tracker/models';
 import { Chart, ChartOptions, Point } from 'chart.js';
 import { merge } from 'chart.js/helpers';
 import { BaseChart } from 'src/app/common/components/charts/base-chart';
 import { LOCAL_ICONS } from 'src/app/common/directives/icon/local-icons.token';
 import { ACTIVITY_COLORS, ChartActivity } from '../../activity-colors';
+import { Gains } from '../player-summary';
 import { ActivityView, PlayerView } from '../player-view';
 import { CHART_CATEGORIES } from './chart-categories';
 import { ChartLegendComponent, LegendItem } from './chart-legend.component';
@@ -47,7 +47,7 @@ const CHIPS_SHOWN = 8;
   host: { class: 'flex flex-col grow min-h-0' },
   imports: [ChartLegendComponent],
 })
-export class ActivityChartComponent extends BaseChart<'bar', HiscoreEntry[]> {
+export class ActivityChartComponent extends BaseChart<'bar', Gains[]> {
   protected readonly type = 'bar';
 
   private readonly playerView = inject(PlayerView);
@@ -110,7 +110,7 @@ export class ActivityChartComponent extends BaseChart<'bar', HiscoreEntry[]> {
   protected setData(chart: Chart<'bar', Point[]>): void {
     chart.data.datasets = this.series().map(series => ({
       label: series.name,
-      data: series.points.map(({ x, y }) => ({ x, y: y || null })) as Point[],
+      data: series.points.map(point => ({ ...point, y: point.y || null })) as Point[],
       borderColor: this.color(series.name),
       backgroundColor: this.color(series.name),
     }));
