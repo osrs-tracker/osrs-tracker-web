@@ -1,129 +1,155 @@
-<header class="container mx-auto py-24">
-  <h1 class="flex flex-col items-center text-center">
-    <span class="text-5xl sm:text-6xl lg:text-7xl font-bold text-strong">OSRS Tracker</span>
-    &ngsp;
-    <span class="accent text-3xl sm:text-4xl lg:text-5xl font-bold mt-2 sm:mt-3 lg:mt-4">
-      Track your OSRS progress.
-    </span>
-  </h1>
-</header>
+<!-- Above the page content, so the item search's dropdown can overlap it -->
+<header class="relative z-10 bg-deep dot-grid border-b border-line">
+  <div class="max-w-page mx-auto flex flex-wrap items-center gap-10 px-4 sm:px-6 py-12">
+    <div class="flex flex-1 basis-130 flex-col gap-6 min-w-0">
+      <h1 class="text-4xl/none md:text-5xl/none lg:text-6xl/none font-bold text-strong">
+        Track your OSRS <span class="text-accent">progress.</span>
+      </h1>
+      <p class="max-w-130 text-lg text-muted">
+        Daily XP, boss kills and clue scrolls for you and your friends, and live Grand Exchange prices for every item.
+      </p>
 
-<section class="container mx-auto mb-24 px-4">
-  <h2 class="text-2xl font-bold text-strong mb-4">Latest OSRS News</h2>
-
-  @if (osrsNewsItems.error()) {
-    <load-error source="home-news" message="Couldn't load the latest news." (retry)="osrsNewsItems.reload()" />
-  } @else {
-    <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
-      @for (newsItem of osrsNewsItems.value(); track newsItem.link) {
-        <osrs-news-card [osrsNewsItem]="newsItem" />
-      } @empty {
-        <osrs-news-card-skeleton />
-        <osrs-news-card-skeleton />
-        <osrs-news-card-skeleton />
-        <osrs-news-card-skeleton />
+      <!-- The switch is recreated with the search it sits in, so setSearchMode() keeps its focus -->
+      @if (searchMode() === 'player') {
+        <player-search class="max-w-160">
+          <segmented
+            leading
+            variant="slate"
+            label="Search for"
+            [options]="SEARCH_MODES"
+            [value]="searchMode()"
+            (valueChange)="setSearchMode($event)"
+          />
+        </player-search>
+        <tracking-offset />
+      } @else {
+        <item-search class="max-w-160">
+          <segmented
+            leading
+            variant="slate"
+            label="Search for"
+            [options]="SEARCH_MODES"
+            [value]="searchMode()"
+            (valueChange)="setSearchMode($event)"
+          />
+        </item-search>
+        <div class="flex flex-wrap items-center gap-2 min-h-11 text-sm">
+          <span class="max-sm:basis-full text-muted">Your favourites:</span>
+          @for (item of favoriteItems(); track item.id) {
+            <a
+              class="px-3 py-1.5 rounded-full bg-card font-bold text-strong hover:bg-row"
+              [routerLink]="['/trackers/price', item.id]"
+            >
+              {{ item.name }}
+            </a>
+          } @empty {
+            <span class="text-muted">Star an item on its page to pin it here.</span>
+          }
+        </div>
       }
     </div>
-  }
-</section>
 
-<section class="container mx-auto mb-16 px-4">
-  <h2 class="text-2xl font-bold text-strong mb-4">Trackers</h2>
-
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    <article card>
-      <h3 title>XP Tracker</h3>
-      <a
-        actions
-        aria-label="Open XP Tracker"
-        [routerLink]="['trackers', 'xp']"
-        class="link text-base self-center flex items-center gap-1"
-      >
-        <span>Open</span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          class="size-5"
-          aria-hidden="true"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </a>
-
-      <div class="flex flex-col gap-6 text-base">
-        <p>Track daily OSRS XP gains, clue scrolls and boss kills for you and your friends.</p>
-
-        <player-search />
-
-        <div class="-mx-5 -mb-4 rounded-b-2xl overflow-hidden">
-          @if (recentPlayerLookups.isLoading()) {
-            @for (index of SKELETON_ROWS; track index) {
-              <list-row-skeleton kind="player" [index]="index" />
-            }
-          } @else if (recentPlayerLookups.error()) {
-            <load-error source="home-recent-players" (retry)="recentPlayerLookups.reload()" />
-          } @else {
-            @for (player of recentPlayerLookups.value().slice(0, 5); track player.username) {
-              <a
-                player-row
-                [routerLink]="['/trackers/xp', player.username]"
-                [player]="player"
-                [scrapingOffset]="scrapingOffset()"
-              ></a>
-            }
-          }
-        </div>
-      </div>
-    </article>
-
-    <article card>
-      <h3 title>Price Tracker</h3>
-      <a
-        actions
-        aria-label="Open Price Tracker"
-        [routerLink]="['trackers', 'price']"
-        class="link text-base self-center flex items-center gap-1"
-      >
-        <span>Open</span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          class="size-5"
-          aria-hidden="true"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </a>
-
-      <div class="flex flex-col gap-6 text-base">
-        <p>Follow real-time OSRS Grand Exchange prices and market trends for every item.</p>
-
-        <item-search />
-
-        <div class="-mx-5 -mb-4 rounded-b-2xl overflow-hidden">
-          @if (recentItemLookups.isLoading()) {
-            @for (index of SKELETON_ROWS; track index) {
-              <list-row-skeleton kind="item" [index]="index" />
-            }
-          } @else if (recentItemLookups.error()) {
-            <load-error source="home-recent-items" (retry)="recentItemLookups.reload()" />
-          } @else {
-            @for (item of recentItemLookups.value().slice(0, 5); track item.id) {
-              <a item-row [routerLink]="['/trackers/price', item.id]" [item]="item"></a>
-            }
-          }
-        </div>
-      </div>
-    </article>
+    <preview-card class="flex-1 basis-90 max-w-110 mx-auto" />
   </div>
-</section>
+</header>
+
+<div class="max-w-page mx-auto flex flex-col gap-10 px-4 sm:px-6 pt-10 pb-18">
+  <section>
+    <div class="flex items-baseline justify-between gap-4 mb-5">
+      <h2 class="text-2xl sm:text-3xl font-bold text-strong">Latest OSRS news</h2>
+      <a class="link" href="https://secure.runescape.com/m=news/archive?oldschool=1" target="_blank" rel="noopener">
+        All news
+      </a>
+    </div>
+
+    @if (osrsNewsItems.error()) {
+      <load-error source="home-news" message="Couldn't load the latest news." (retry)="osrsNewsItems.reload()" />
+    } @else {
+      <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-6">
+        @for (newsItem of osrsNewsItems.value(); track newsItem.link) {
+          <osrs-news-card [osrsNewsItem]="newsItem" />
+        } @empty {
+          @for (index of NEWS_SKELETONS; track index) {
+            <osrs-news-card-skeleton />
+          }
+        }
+      </div>
+    }
+  </section>
+
+  <div class="grid lg:grid-cols-2 items-start gap-6">
+    <section
+      list-card
+      heading="XP Tracker"
+      subtitle="Recently looked up players"
+      kind="player"
+      [state]="recentPlayerLookupsState()"
+      emptyText="No players looked up yet."
+      errorSource="home-recent-players"
+      errorText="Recent lookups didn't load."
+      (retry)="recentPlayerLookups.reload()"
+    >
+      <span icon class="flex items-center justify-center size-11 shrink-0 rounded-xl bg-ground" aria-hidden="true">
+        <img class="size-6 -mt-0.5" icon name="overall" [skill]="true" />
+      </span>
+      <a actions class="link flex items-center gap-1.5 min-h-11" routerLink="/trackers/xp">
+        Open
+        <span class="sr-only">the XP Tracker</span>
+        <ng-container *ngTemplateOutlet="arrow" />
+      </a>
+      <!-- Projected content is created in every state, and value() throws in the error state -->
+      @if (recentPlayerLookups.hasValue()) {
+        @for (player of recentPlayerLookups.value().slice(0, 5); track player.username) {
+          <a
+            player-row
+            [routerLink]="['/trackers/xp', player.username]"
+            [player]="player"
+            [scrapingOffset]="scrapingOffset()"
+          ></a>
+        }
+      }
+    </section>
+
+    <section
+      list-card
+      heading="Price Tracker"
+      subtitle="Recently looked up items"
+      kind="item"
+      [state]="recentItemLookupsState()"
+      emptyText="No items looked up yet."
+      errorSource="home-recent-items"
+      errorText="Recent lookups didn't load."
+      (retry)="recentItemLookups.reload()"
+    >
+      <span icon class="flex items-center justify-center size-11 shrink-0 rounded-xl bg-ground" aria-hidden="true">
+        <img icon name="coin stack" [scale]="2" />
+      </span>
+      <a actions class="link flex items-center gap-1.5 min-h-11" routerLink="/trackers/price">
+        Open
+        <span class="sr-only">the Price Tracker</span>
+        <ng-container *ngTemplateOutlet="arrow" />
+      </a>
+      @if (recentItemLookups.hasValue()) {
+        @for (item of recentItemLookups.value().slice(0, 5); track item.id) {
+          <a item-row [routerLink]="['/trackers/price', item.id]" [item]="item"></a>
+        }
+      }
+    </section>
+  </div>
+</div>
+
+<ng-template #arrow>
+  <svg
+    class="size-4.5"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <line x1="5" y1="12" x2="19" y2="12" />
+    <polyline points="13 6 19 12 13 18" />
+  </svg>
+</ng-template>
