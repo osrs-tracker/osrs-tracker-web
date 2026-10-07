@@ -27,6 +27,7 @@
   works out the profit of flipping or high alching the item, using the Grand Exchange's 2% tax (rounded down, at most 5M
   per item, none on exempt items like bonds). Prices show placeholders while loading, and a link to an unknown item
   offers a search instead of the 404 page. The trend card is gone; the year view covers it.
+- The dotted background behind the Home, XP Tracker and Price Tracker headers is easier to see in the light theme.
 - The item search shows a message with a retry button when searching fails, instead of looking like nothing was found.
 - Every page loads a 23% smaller stylesheet: the changelog no longer uses a styling plugin for its text, which also
   fixes a security warning. The changelog's list bullets are easier to see in the light theme.
