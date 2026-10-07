@@ -24,6 +24,8 @@ there, not in the agent.
 - `@osrs-tracker/hiscores` peer-depends on `@osrs-tracker/models`: bump both together, with `--prefer-online` right
   after a publish.
 - Production test players: **the fraking** (active) for visual checks, **ToxSick** (inactive) for anything that writes.
+- The GE tax rules in `item-detail/ge-tax.ts` are copied from the OSRS Wiki: `npm run check:ge-tax` compares them
+  (monthly in CI), and "Recheck the GE tax rules" in `docs/runbook.md` says what to fix.
 
 ## Angular conventions
 
