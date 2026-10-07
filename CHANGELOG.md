@@ -75,7 +75,8 @@
   code or its dependencies change (or the previous run didn't pass), not for releases or documentation, and reuse the
   installed dependencies until they change.
 - Behind the scenes: Claude Code gets Angular's documentation for the installed version, and notes on code navigation in
-  the project's guide.
+  the project's guide. The guide also notes which data loads only in the browser: lookups and player tracking (for
+  people, not crawlers) and large price lists.
 - Behind the scenes: a monthly check compares the Grand Exchange tax rules used for "Margin after tax" and the profit
   calculator with the OSRS Wiki, so a change to the rate, cap or exempt items gets noticed.
 - Behind the scenes: removed a deprecated Angular hydration setting that's now on by default.

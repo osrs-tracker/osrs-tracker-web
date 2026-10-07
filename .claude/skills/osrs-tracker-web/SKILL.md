@@ -103,6 +103,11 @@ the angular.dev docs for the installed major version.
   otherwise the browser refetches on hydration and resources flash to `defaultValue`. When a page refetches, check the
   API's `Cache-Control` first. Verify in `<script id="ng-state">`: entries are keyed by a hash, not the URL, so look for
   the response body (a news title, an item name), not the path.
+- **Transfer state size**: every SSR response is embedded in the page. Load large payloads the first paint doesn't need
+  (the Wiki's `/latest` and `/24h`, every item's prices) in the browser only and render skeletons on the server, like
+  item and player rows.
+- **Writes**: requests that record something (lookups, starting to track a player) run only when `isHumanVisitor()`
+  (`core/platform/human-visitor.ts`): never during SSR or for crawlers, which would fill the recent lookups.
 - **Chart.js**: shared registrations and the date adapter in `common/components/charts/chart-setup.ts`; load
   browser-only plugins (zoom) lazily per chart; never `Chart.unregister`. Time series charts extend
   `common/components/charts/base-chart.ts`.
