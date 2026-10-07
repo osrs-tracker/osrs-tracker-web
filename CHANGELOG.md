@@ -7,6 +7,7 @@
   installed dependencies until they change.
 - Behind the scenes: Claude Code gets Angular's documentation for the installed version, and notes on code navigation in
   the project's guide.
+- Behind the scenes: removed a deprecated Angular hydration setting that's now on by default.
 
 ## 2026/10/05
 

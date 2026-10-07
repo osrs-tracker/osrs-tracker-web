@@ -7,7 +7,7 @@ import {
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
 } from '@angular/core';
-import { provideClientHydration, withEventReplay, withIncrementalHydration } from '@angular/platform-browser';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideRouter, RouteReuseStrategy, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import appRoutes from './app.routes';
 import { AnalyticsService } from './common/services/analytics/analytics.service';
@@ -34,7 +34,7 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
     ),
 
-    provideClientHydration(withEventReplay(), withIncrementalHydration()),
+    provideClientHydration(withEventReplay()),
 
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
