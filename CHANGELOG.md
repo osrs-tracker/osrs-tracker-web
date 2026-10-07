@@ -58,6 +58,9 @@
   A newly tracked player's first entry shows up on their page right away.
 - Updated the SOLIX font to version 2.22: minus signs and arrows now use the site font, so negative changes like "−0.6%"
   are the same width and height as positive ones.
+- Home and the Price Tracker load faster: their item lists fetch prices in your browser, so the page no longer carries
+  every item's price with it (about 730KB less). The profit calculator writes a negative return on investment with a
+  true minus, like the other numbers.
 - Behind the scenes: the security policy no longer allows background workers, a leftover from the service worker that
   was turned off in 2025.
 - Behind the scenes: updated the shared OSRS Tracker data models and hiscores packages, preparing for the player page's
