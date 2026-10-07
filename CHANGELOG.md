@@ -28,15 +28,16 @@
   per item, none on exempt items like bonds). Prices show placeholders while loading, and a link to an unknown item
   offers a search instead of the 404 page. The trend card is gone; the year view covers it.
 - A new player page layout. The header shows the account type (tap it for details on a phone), the name linking to the
-  official hiscores, the combat level and how far back the history goes. Four tiles sum up the total level and rank, the
-  XP gained in the last 7 days compared with the week before, the levels gained and the boss kills. Skills, bosses and
-  raids share one card with tabs, and clues and minigames another; picking a skill, a tab or an activity switches the
-  chart to it, and you can pick several skills to compare them. Skills show their progress to the next level, and
-  activities with gains are outlined in their chart colour. Minigames only list what the player is ranked in, Legacy
-  Bounty Hunter and Deadman points get an icon instead of a broken image, and only running totals (Rifts closed, Soul
-  Wars Zeal, Bounty Hunter) are charted. The day log lists XP, levels and activity gains together. When the hiscores
-  aren't responding, a notice says how old the stats are. A player who doesn't exist gets a search box to try another
-  name, and a player whose tracking just started gets an explanation instead of an empty chart.
+  official hiscores, the combat level, how far back the history goes and when the daily check last stored their stats.
+  Four tiles sum up the total level and rank, the XP gained in the last 7 days compared with the week before, the levels
+  gained and the boss kills. Skills, bosses and raids share one card with tabs, and clues and minigames another; picking
+  a skill, a tab or an activity switches the chart to it, and you can pick several skills to compare them. Skills show
+  their progress to the next level, and activities with gains are outlined in their chart colour. Minigames only list
+  what the player is ranked in, Legacy Bounty Hunter and Deadman points get an icon instead of a broken image, and only
+  running totals (Rifts closed, Soul Wars Zeal, Bounty Hunter) are charted. The day log lists XP, levels and activity
+  gains together. When the hiscores aren't responding, a notice says how old the stats are. A player who doesn't exist
+  gets a search box to try another name, and a player whose tracking just started gets an explanation instead of an
+  empty chart.
 - New player charts. Pick the last 7, 30 or 60 days: the chart and the XP, levels and boss kill tiles all follow, with
   the XP compared to the period before. Above the chart, what it shows and its total for the period, such as "Total XP
   gained +3.72M" or "Zulrah kills, kill count 4,812". XP gained is a running total: Overall on its own, or one line per
