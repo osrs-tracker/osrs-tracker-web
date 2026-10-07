@@ -39,7 +39,7 @@
         </svg>
         <p class="grow basis-70 text-base/6 text-strong">
           The hiscores aren’t responding, so these are {{ player.username | capitalizeWords }}’s stats from
-          {{ staleSince() | timeAgo }}.
+          {{ lastCheckedAt() | timeAgo }}.
         </p>
         <button
           type="button"
@@ -53,7 +53,12 @@
   }
 
   <header class="max-w-page mx-auto px-4 sm:px-6 pt-2 flex flex-col gap-6">
-    <player-header [playerDetail]="player" [trackingState]="trackingState()" [trackedAt]="trackedAt()" />
+    <player-header
+      [playerDetail]="player"
+      [trackingState]="trackingState()"
+      [trackedAt]="trackedAt()"
+      [lastCheckedAt]="lastCheckedAt()"
+    />
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
       @if (statTiles(); as tiles) {

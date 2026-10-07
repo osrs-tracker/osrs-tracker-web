@@ -101,8 +101,10 @@ const TYPE_LABELS: Record<PlayerType, string> = {
       <p class="text-base text-muted">
         @switch (trackingState()) {
           @case ('tracked') {
-            History since {{ player.trackedSince | date: 'd MMM' }} · Last checked
-            {{ player.lastHiscoreFetch ?? player.lastModified | timeAgo }}
+            History since {{ player.trackedSince | date: 'd MMM' }}
+            @if (lastCheckedAt(); as lastCheckedAt) {
+              · Last checked {{ lastCheckedAt | timeAgo }}
+            }
           }
           @case ('started') {
             Tracking started {{ player.trackedSince | timeAgo }} · Checked daily at {{ trackedAt() }}
@@ -148,6 +150,8 @@ export class PlayerHeaderComponent {
   readonly trackingState: InputSignal<TrackingState> = input.required();
   /** The UTC hour the visitor's offset is checked at, e.g. "02:00 UTC" */
   readonly trackedAt: InputSignal<string> = input.required();
+  /** When the daily check last stored the player's stats; unknown while the history loads */
+  readonly lastCheckedAt: InputSignal<Date | undefined> = input.required();
 
   readonly isFavorite: Signal<boolean> = computed(() =>
     this.xpTrackerStore.isFavoritePlayer(this.playerDetail().username),

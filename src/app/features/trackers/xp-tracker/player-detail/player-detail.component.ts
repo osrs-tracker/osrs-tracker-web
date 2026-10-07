@@ -159,8 +159,8 @@ export default class PlayerDetailComponent implements OnInit {
       !!this.history().length &&
       (!!this.todayResource.error() || !!this.playerDetail()?.refreshFailed),
   );
-  /** When the stats shown instead were tracked */
-  readonly staleSince: Signal<Date | undefined> = computed(() => this.history()[0]?.date);
+  /** When the daily check last stored the player's stats (a failed check stores nothing): the newest entry's date */
+  readonly lastCheckedAt: Signal<Date | undefined> = computed(() => this.history()[0]?.date);
 
   readonly trackingState: Signal<TrackingState> = computed(() => {
     const player = this.playerDetail();
