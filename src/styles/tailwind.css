@@ -9,4 +9,5 @@
 
 @import './tailwind/base' layer(base);
 @import './tailwind/components' layer(components);
-@import './tailwind/utilities' layer(utilities);
+/* not imported into a layer: it holds `@utility` rules, which can't be nested, besides its own `@layer utilities` */
+@import './tailwind/utilities';

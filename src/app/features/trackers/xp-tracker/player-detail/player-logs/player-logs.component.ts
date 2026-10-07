@@ -1,109 +1,65 @@
-import { DecimalPipe } from '@angular/common';
-import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core';
-import { hiscoreDiff, SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreEntry, HiscoreSkill, Player } from '@osrs-tracker/models';
-import { CardComponent } from 'src/app/common/components/general/card.component';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { Component, computed, input, InputSignal, Signal } from '@angular/core';
+import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
+import { HiscoreActivity, HiscoreEntry, HiscoreSkill } from '@osrs-tracker/models';
+import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { ShortDatePipe } from 'src/app/common/pipes/date-fns.pipe';
-import { isTrackedFor } from '../../player-tracking';
-import { XpTrackerViewType } from '../../xp-tracker-view-type';
-import { XpTrackerStore } from '../../xp-tracker.store';
-import { ActivityChartComponent } from './activity-chart.component';
-import { XpGainedChartComponent } from './xp-gained-chart.component';
-import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
-import { SegmentedComponent, SegmentedOption } from 'src/app/common/components/general/segmented.component';
 
-/** A single day's diff, or a run of consecutive days in which nothing happened. */
-type LogGroup = { type: 'day'; diff: HiscoreEntry } | { type: 'empty'; from: Date; to: Date; days: number };
+/** A day with gains, or a run of consecutive days in which nothing happened. */
+type LogGroup =
+  | { type: 'day'; date: Date; overall?: HiscoreSkill; skills: HiscoreSkill[]; activities: HiscoreActivity[] }
+  | { type: 'empty'; from: Date; to: Date; days: number };
 
+export interface LogNotice {
+  date: Date;
+  label: string;
+  text: string;
+}
+
+/** The day log: per day the XP, levels and activity scores gained, newest first. */
 @Component({
   selector: 'player-logs',
   templateUrl: './player-logs.component.html',
-  imports: [
-    ActivityChartComponent,
-    CardComponent,
-    DecimalPipe,
-    IconDirective,
-    SegmentedComponent,
-    ShortDatePipe,
-    SkeletonComponent,
-    XpGainedChartComponent,
-  ],
+  host: { class: 'flex flex-col gap-6' },
+  imports: [DatePipe, DecimalPipe, IconDirective, ShortDatePipe, SkeletonComponent],
 })
 export class PlayerLogsComponent {
-  private readonly XpTrackerStore = inject(XpTrackerStore);
-
-  readonly XpTrackerViewType: typeof XpTrackerViewType = XpTrackerViewType;
   readonly SkillEnum: typeof SkillEnum = SkillEnum;
-  readonly xpTrackerViewType = this.XpTrackerStore.viewType;
-  readonly viewOptions: SegmentedOption<XpTrackerViewType>[] = [
-    { value: XpTrackerViewType.Skills, label: 'Skills' },
-    { value: XpTrackerViewType.Other, label: 'Other' },
-  ];
 
-  readonly playerDetail: InputSignal<Player> = input.required();
+  /** The daily diffs, newest first; empty while they load */
+  readonly diffs: InputSignal<HiscoreEntry[]> = input.required();
+  readonly loading: InputSignal<boolean> = input(false);
+  /** Shown instead of the days while there are none: tracking just started, or the player isn't tracked */
+  readonly notice: InputSignal<LogNotice | undefined> = input();
 
-  readonly isPlayerTracked: Signal<boolean> = computed(() =>
-    isTrackedFor(this.playerDetail(), this.XpTrackerStore.scrapingOffset()),
-  );
-
-  readonly today: InputSignal<HiscoreEntry | undefined> = input();
-  readonly history: InputSignal<HiscoreEntry[]> = input.required();
-
-  readonly hiscoreDiffs: Signal<HiscoreEntry[]> = computed(() => {
-    let previousHiscore = this.today() ?? this.history()[0];
-
-    return this.history().map(hiscore => {
-      const diff = hiscoreDiff(previousHiscore, hiscore);
-      previousHiscore = hiscore;
-      return diff;
-    });
-  });
-
-  readonly skillLogs: Signal<LogGroup[]> = computed(() =>
-    this.groupEmptyDays(this.hiscoreDiffs(), diff => this.hasXpDiff(diff)),
-  );
-
-  readonly otherLogs: Signal<LogGroup[]> = computed(() =>
-    this.groupEmptyDays(this.hiscoreDiffs(), diff => this.hasActivityDiff(diff)),
-  );
-
-  /** Merges each run of consecutive empty days (including a single day) into one group. */
-  private groupEmptyDays(diffs: HiscoreEntry[], hasDiff: (diff: HiscoreEntry) => boolean): LogGroup[] {
+  readonly groups: Signal<LogGroup[]> = computed(() => {
     const groups: LogGroup[] = [];
-    let run: HiscoreEntry[] = [];
+    let run: Date[] = [];
 
+    // merges each run of consecutive empty days (including a single day) into one group
     const flushRun = (): void => {
-      if (run.length) groups.push({ type: 'empty', from: run[run.length - 1].date, to: run[0].date, days: run.length });
+      if (run.length) groups.push({ type: 'empty', from: run[run.length - 1], to: run[0], days: run.length });
       run = [];
     };
 
-    diffs.forEach(diff => {
-      if (hasDiff(diff)) {
-        flushRun();
-        groups.push({ type: 'day', diff });
+    this.diffs().forEach(diff => {
+      const skills = diff.skills.filter(skill => skill.xp > 0 && skill.name !== SkillEnum.Overall);
+      // the total of all clue tiers would count them twice
+      const activities = diff.activities.filter(
+        activity => activity.score > 0 && activity.name !== ActivityEnum.ClueScrollsAll,
+      );
+
+      if (!skills.length && !activities.length) {
+        run.push(diff.date);
       } else {
-        run.push(diff);
+        flushRun();
+        const overall = diff.skills.find(skill => skill.name === SkillEnum.Overall);
+        groups.push({ type: 'day', date: diff.date, overall, skills, activities });
       }
     });
     flushRun();
 
     return groups;
-  }
-
-  overall(hiscore: HiscoreEntry): HiscoreSkill | undefined {
-    return hiscore.skills.find(skill => skill.name === SkillEnum.Overall);
-  }
-
-  hasXpDiff(hiscore: HiscoreEntry): boolean {
-    return hiscore.skills.some(skill => skill.xp > 0);
-  }
-
-  hasActivityDiff(hiscore: HiscoreEntry): boolean {
-    return hiscore.activities.some(activity => activity.score > 0);
-  }
-
-  setView(viewType: XpTrackerViewType): void {
-    this.XpTrackerStore.setViewType(viewType);
-  }
+  });
 }

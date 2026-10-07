@@ -3,13 +3,11 @@ import { patchState, signalStore, withHooks, withMethods, withState } from '@ngr
 import { StorageKey } from 'src/app/common/services/storage/storage';
 import { StorageService } from 'src/app/common/services/storage/storage.service';
 import { config } from 'src/config/config';
-import { XpTrackerViewType } from './xp-tracker-view-type';
 
 export class XpTrackerState {
   scrapingOffset = 0;
   recentPlayers: string[] = [];
   favoritePlayers: string[] = [];
-  viewType: XpTrackerViewType = XpTrackerViewType.Skills;
 }
 
 export const XpTrackerStore = signalStore(
@@ -37,13 +35,11 @@ export const XpTrackerStore = signalStore(
       loadFromStorage(): void {
         // Stored values can be corrupted or edited by hand, fall back to the defaults instead of breaking the page
         const scrapingOffset = Number(storageService.getItem(StorageKey.XpTrackerScrapingOffset) ?? '0');
-        const viewType = Number(storageService.getItem(StorageKey.XpTrackerViewType) ?? XpTrackerViewType.Skills);
 
         patchState(store, {
           scrapingOffset: Number.isInteger(scrapingOffset) ? scrapingOffset : 0,
           recentPlayers: store.readStoredPlayers(StorageKey.XpTrackerRecentPlayers),
           favoritePlayers: store.readStoredPlayers(StorageKey.XpTrackerFavoritePlayers),
-          viewType: viewType in XpTrackerViewType ? viewType : XpTrackerViewType.Skills,
         });
       },
 
@@ -93,11 +89,6 @@ export const XpTrackerStore = signalStore(
 
         storageService.setItem(StorageKey.XpTrackerFavoritePlayers, JSON.stringify(favoritePlayers));
         patchState(store, { favoritePlayers });
-      },
-
-      setViewType(viewType: XpTrackerViewType): void {
-        storageService.setItem(StorageKey.XpTrackerViewType, viewType.toString());
-        patchState(store, { viewType });
       },
     };
   }),

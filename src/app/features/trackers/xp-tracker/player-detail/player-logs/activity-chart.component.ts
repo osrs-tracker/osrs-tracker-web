@@ -1,48 +1,37 @@
 import { formatNumber } from '@angular/common';
-import { DOCUMENT, Component, computed, inject, linkedSignal, Signal, signal, WritableSignal } from '@angular/core';
-import { ActivityEnum } from '@osrs-tracker/hiscores';
+import { DOCUMENT, Component, computed, inject, input, InputSignal, Signal } from '@angular/core';
 import { HiscoreEntry } from '@osrs-tracker/models';
 import { Chart, ChartOptions, Point } from 'chart.js';
 import { merge } from 'chart.js/helpers';
 import { BaseChart } from 'src/app/common/components/charts/base-chart';
 import { LOCAL_ICONS } from 'src/app/common/directives/icon/local-icons.token';
-import { BOSSES, CLUES, MINIGAMES, RAIDS } from '../../activity-categories';
+import { BOSSES, CLUES, MINIGAMES, RAIDS, UNCHARTED_MINIGAMES } from '../../activity-categories';
 import { ACTIVITY_COLORS, ChartActivity } from '../../activity-colors';
 import { ChartLegendComponent, LegendItem } from './chart-legend.component';
-import { logChartOptions, toggled } from './log-chart-options';
+import { logChartOptions } from './log-chart-options';
 import { activitySeries, ChartSeries } from './log-chart-series';
 import { TooltipMarkers } from './tooltip-markers';
-import { SegmentedComponent, SegmentedOption } from 'src/app/common/components/general/segmented.component';
+import { ActivityView, PlayerView } from '../player-view';
 
-interface ActivityCategory {
-  label: string;
-  activities: ReadonlySet<string>;
-}
+// Each category gets its own chart, so large point totals don't bury kill counts. Minigames only chart running totals.
+const CATEGORIES: Record<ActivityView, ReadonlySet<string>> = {
+  bosses: BOSSES,
+  raids: RAIDS,
+  clues: CLUES,
+  minigames: new Set([...MINIGAMES].filter(name => !(name in UNCHARTED_MINIGAMES))),
+};
 
-// Each category gets its own chart, so large point totals don't bury kill counts
-const CATEGORIES: ActivityCategory[] = [
-  { label: 'Bosses', activities: BOSSES },
-  { label: 'Raids', activities: RAIDS },
-  { label: 'Clues', activities: CLUES },
-  { label: 'Minigames', activities: MINIGAMES },
-];
-
-/** Daily scores of one activity category as grouped bars, over the loaded days. Takes the daily diffs, newest first. */
+/**
+ * Daily scores of one activity category as grouped bars, over the loaded days: the activities the page doesn't hide,
+ * or for minigames the one picked. Takes the daily diffs, newest first.
+ */
 @Component({
   selector: 'activity-chart',
   template: `
-    <segmented
-      class="mb-4"
-      label="Category"
-      [options]="categoryOptions()"
-      [value]="selected()"
-      (valueChange)="select($event!)"
-    />
-
-    <div class="relative h-72">
+    <div class="relative h-55 lg:h-auto lg:grow lg:min-h-0">
       <canvas #chart></canvas>
       @if (!series().length) {
-        <p class="absolute inset-0 flex items-center justify-center text-base opacity-70">
+        <p class="absolute inset-0 flex items-center justify-center text-base text-muted">
           Nothing interesting happened in these days.
         </p>
       }
@@ -51,61 +40,43 @@ const CATEGORIES: ActivityCategory[] = [
       <chart-legend class="block mt-4" kind="activity" [items]="legendItems()" (toggled)="toggle($event)" />
     }
   `,
-  imports: [ChartLegendComponent, SegmentedComponent],
+  host: { class: 'flex flex-col grow min-h-0' },
+  imports: [ChartLegendComponent],
 })
 export class ActivityChartComponent extends BaseChart<'bar', HiscoreEntry[]> {
   protected readonly type = 'bar';
 
   readonly #markers = new TooltipMarkers(inject(DOCUMENT), 'activity', inject(LOCAL_ICONS, { optional: true }));
 
-  readonly CATEGORIES = CATEGORIES;
+  private readonly playerView = inject(PlayerView);
 
-  readonly categoriesWithData: Signal<ActivityCategory[]> = computed(() =>
-    CATEGORIES.filter(category =>
-      this.data().some(diff => diff.activities.some(a => a.score > 0 && category.activities.has(a.name))),
-    ),
+  readonly category: InputSignal<ActivityView> = input.required();
+  /** The charted minigame */
+  readonly minigame: InputSignal<string | undefined> = input();
+
+  /** Every activity of the category with gains; minigames only the picked one */
+  readonly #allSeries: Signal<ChartSeries[]> = computed(() => activitySeries(this.data(), CATEGORIES[this.category()]));
+  readonly series: Signal<ChartSeries[]> = computed(() =>
+    this.category() === 'minigames'
+      ? this.#allSeries().filter(series => series.name === this.minigame())
+      : this.#allSeries(),
   );
-
-  readonly categoryOptions: Signal<SegmentedOption<ActivityCategory>[]> = computed(() =>
-    CATEGORIES.map(category => ({
-      value: category,
-      label: category.label,
-      disabled: !this.categoriesWithData().includes(category),
-    })),
-  );
-
-  /** Stays on the chosen category while it has data, e.g. when more days are loaded */
-  readonly selected: WritableSignal<ActivityCategory | undefined> = linkedSignal({
-    source: this.categoriesWithData,
-    computation: (categories, previous) =>
-      previous?.value && categories.includes(previous.value) ? previous.value : categories[0],
-  });
-  /** Hidden activities of the selected category */
-  readonly #hidden: WritableSignal<ReadonlySet<string>> = signal(new Set());
-
-  readonly series: Signal<ChartSeries[]> = computed(() => {
-    const category = this.selected();
-    // collection log slots come from every category, so each chart shows them (but they don't enable a category)
-    return category
-      ? activitySeries(this.data(), new Set([...category.activities, ActivityEnum.CollectionsLogged]))
-      : [];
-  });
   readonly legendItems: Signal<LegendItem[]> = computed(() =>
-    this.series().map(series => ({
+    (this.category() === 'minigames' ? this.#allSeries() : this.series()).map(series => ({
       name: series.name,
       color: this.color(series.name),
       total: series.total,
-      hidden: this.#hidden().has(series.name),
+      hidden: this.hidden(series.name),
     })),
   );
 
-  select(category: ActivityCategory): void {
-    this.selected.set(category);
-    this.#hidden.set(new Set());
+  /** Picks a minigame, or toggles an activity of the other categories */
+  toggle(name: string): void {
+    this.playerView.pickActivity(this.category(), name);
   }
 
-  toggle(name: string): void {
-    this.#hidden.update(hidden => toggled(hidden, name));
+  private hidden(name: string): boolean {
+    return this.category() === 'minigames' ? name !== this.minigame() : this.playerView.hidden().has(name);
   }
 
   private color(name: string): string {
@@ -138,7 +109,7 @@ export class ActivityChartComponent extends BaseChart<'bar', HiscoreEntry[]> {
       data: series.points.map(({ x, y }) => ({ x, y: y || null })) as Point[],
       borderColor: this.color(series.name),
       backgroundColor: this.color(series.name),
-      hidden: this.#hidden().has(series.name),
+      hidden: this.hidden(series.name),
     }));
   }
 }
