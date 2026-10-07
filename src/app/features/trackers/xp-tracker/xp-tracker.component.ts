@@ -36,7 +36,8 @@ export default class XpTrackerComponent {
   readonly scrapingOffset = this.xpTrackerStore.scrapingOffset;
 
   readonly recentPlayerLookups: ResourceRef<Player[]> = rxResource({
-    stream: () => this.osrsTrackerRepo.getRecentPlayerLookups(),
+    params: () => ({ offset: this.scrapingOffset() }),
+    stream: ({ params: { offset } }) => this.osrsTrackerRepo.getRecentPlayerLookups(offset),
     defaultValue: [],
   });
 

@@ -3,6 +3,8 @@
 - The item search shows a message with a retry button when searching fails, instead of looking like nothing was found.
 - Every page loads a 23% smaller stylesheet: the changelog no longer uses a styling plugin for its text, which also
   fixes a security warning. The changelog's list bullets are easier to see in the light theme.
+- The XP gained in the recently looked up players lists is measured from your selected tracking offset. Players tracked
+  at more than one offset could show the XP gained since another offset's last update.
 - Updated the SOLIX font to version 2.22: minus signs and arrows now use the site font, so negative changes like "−0.6%"
   are the same width and height as positive ones.
 - Behind the scenes: updated the shared OSRS Tracker data models and hiscores packages, preparing for the player page's
