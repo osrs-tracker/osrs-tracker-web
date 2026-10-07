@@ -48,4 +48,30 @@
   .input--small {
     @apply text-xs rounded-full w-full px-4 py-1;
   }
+
+  /* Rendered Markdown (the changelog). Colours are inherited, like the other information pages. */
+  .markdown {
+    @apply leading-7;
+
+    h2 {
+      @apply text-2xl/8 font-bold mt-12 mb-6;
+    }
+    h3 {
+      @apply text-xl/8 font-semibold mt-8 mb-3;
+    }
+    ul {
+      @apply list-disc pl-6;
+    }
+    li + li {
+      @apply mt-2;
+    }
+    code {
+      @apply font-mono text-sm;
+    }
+
+    > :first-child,
+    h2 + h3 {
+      @apply mt-0;
+    }
+  }
 }
