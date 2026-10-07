@@ -9,7 +9,6 @@ import {
   OnInit,
   PLATFORM_ID,
   Signal,
-  computed,
   effect,
   inject,
   input,
@@ -19,10 +18,7 @@ import {
 import { Chart, ChartOptions, Plugin, Point } from 'chart.js';
 import { merge } from 'chart.js/helpers';
 import { ThemeService } from 'src/app/common/services/theme.service';
-import { config } from 'src/config/config';
 import './chart-setup';
-
-export type ChartColors = typeof config.chart.dark;
 
 /**
  * Lifecycle, workarounds and shared options of the time series charts. Subclasses render `<canvas #chart></canvas>` and
@@ -41,9 +37,6 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
   readonly data: InputSignal<TData> = input.required();
 
   protected readonly darkMode: Signal<boolean> = this.themeService.darkMode;
-  protected readonly chartConfig: Signal<ChartColors> = computed(() =>
-    this.themeService.darkMode() ? config.chart.dark : config.chart.light,
-  );
 
   protected abstract readonly type: TType;
 

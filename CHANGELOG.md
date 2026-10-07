@@ -20,6 +20,13 @@
 - A new Home page: one big search for players or items, with the tracking offset under it for players and your first
   three favourite items for items, next to an example of a player's stats. The latest news cards are clickable as a
   whole, and the XP Tracker and Price Tracker cards list the five most recent lookups with a link to open each tracker.
+- A new item page: a header with the item's icon, its name linking to the OSRS Wiki, the examine text and the instant
+  sell price with its change since yesterday, then six tiles with the instant buy and sell prices, the margin after GE
+  tax, the daily volume, the buy limit and the high alch value. The price chart switches between the last day, week,
+  month and year, and the daily volume shows what was bought and sold over the last 14 days. A new profit calculator
+  works out the profit of flipping or high alching the item, using the Grand Exchange's 2% tax (rounded down, at most 5M
+  per item, none on exempt items like bonds). Prices show placeholders while loading, and a link to an unknown item
+  offers a search instead of the 404 page. The trend card is gone; the year view covers it.
 - The item search shows a message with a retry button when searching fails, instead of looking like nothing was found.
 - Every page loads a 23% smaller stylesheet: the changelog no longer uses a styling plugin for its text, which also
   fixes a security warning. The changelog's list bullets are easier to see in the light theme.

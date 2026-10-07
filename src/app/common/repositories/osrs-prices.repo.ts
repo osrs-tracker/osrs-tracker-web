@@ -65,14 +65,6 @@ export class OsrsPricesRepo {
       );
   }
 
-  getVolume(id: number, options?: { loadingIndicator?: boolean }): Observable<number> {
-    return this.httpClient
-      .get<{ data: Record<string, number> }>(`${config.pricesBaseUrl}/api/v1/osrs/volumes`, {
-        context: new HttpContext().set(BASE_URL_PREFIX, false).set(LOADING_INDICATOR, options?.loadingIndicator),
-      })
-      .pipe(map(response => response.data[id]));
-  }
-
   getPriceTimeSeries(
     id: number,
     timeSpan: TimeSpan,
