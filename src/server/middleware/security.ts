@@ -36,7 +36,7 @@ export function securityMiddleware(): RequestHandler {
         ],
         fontSrc: ["'self'"],
         objectSrc: ["'none'"],
-        workerSrc: ["'self'"],
+        workerSrc: ["'none'"], // no service or web workers; set back to 'self' if the service worker returns
         upgradeInsecureRequests: [],
       },
     },
