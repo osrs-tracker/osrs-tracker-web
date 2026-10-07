@@ -1,7 +1,6 @@
 @import 'tailwindcss';
 
 @plugin "@tailwindcss/forms";
-@plugin "@tailwindcss/typography";
 
 @import './tailwind/theme' layer(theme);
 @custom-variant dark (&:where(.dark, .dark *));
