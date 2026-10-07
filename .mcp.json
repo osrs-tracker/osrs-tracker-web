@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "angular-cli": {
+      "command": "npx",
+      "args": ["ng", "mcp", "--read-only"]
+    }
+  }
+}

@@ -42,6 +42,16 @@ here, not in the agent.
   `catchError(resolverErrorHandler(<original url>))`. `ParamAwareReuseStrategy` recreates components on param change.
   Adding or renaming a route means updating `src/server/utils/route-label.ts` (its spec fails CI otherwise).
 
+## Code navigation
+
+Use the `LSP` tool for type info and navigation in `.ts` files, but it's plain TypeScript without Angular's language
+service: `findReferences` misses usages in templates (inline or `.html`), such as inputs, outputs, methods and pipes.
+Before renaming or deleting a member, grep the templates too (e.g. `grep -rn "(retry)=" src/app`). Go-to-definition
+doesn't reach `node_modules`; hover shows library signatures and docs instead.
+
+For Angular API questions, use the `angular-cli` MCP server's `search_documentation` (pass `version: 22`): it searches
+the angular.dev docs for the installed major version.
+
 ## SSR rules
 
 - **Browser-only APIs**: inject `WINDOW` (null on the server) or `StorageService`, check `isPlatformBrowser`, or use

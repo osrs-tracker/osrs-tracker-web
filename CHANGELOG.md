@@ -5,6 +5,8 @@
   pushed, and reviewed against the project's conventions before release. The automatic build and tests only run when the
   code or its dependencies change (or the previous run didn't pass), not for releases or documentation, and reuse the
   installed dependencies until they change.
+- Behind the scenes: Claude Code gets Angular's documentation for the installed version, and notes on code navigation in
+  the project's guide.
 
 ## 2026/10/05
 
