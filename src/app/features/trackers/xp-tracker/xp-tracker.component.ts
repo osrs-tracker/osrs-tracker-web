@@ -1,16 +1,15 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, ResourceRef, inject } from '@angular/core';
+import { Component, ResourceRef, Signal, computed, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Player } from '@osrs-tracker/models';
-import { LoadErrorComponent } from 'src/app/common/components/general/load-error.component';
+import { ListCardComponent, ListCardState, listCardState } from 'src/app/common/components/general/list-card.component';
 import { TooltipComponent } from 'src/app/common/components/general/tooltip/tooltip.component';
 import { PageHeaderComponent } from 'src/app/common/components/layout/page-header.component';
 import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
-import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
 import { PlayerSearchComponent } from './player-search.component';
-import { PlayerWidgetComponent } from './player-widget/player-widget.component';
+import { PlayerRowComponent } from './player-row/player-row.component';
 import { XpTrackerStore } from './xp-tracker.store';
 
 @Component({
@@ -20,12 +19,11 @@ import { XpTrackerStore } from './xp-tracker.store';
     DecimalPipe,
     FormsModule,
     RouterLink,
-    LoadErrorComponent,
+    ListCardComponent,
     TooltipComponent,
     PageHeaderComponent,
     PlayerSearchComponent,
-    PlayerWidgetComponent,
-    SpinnerComponent,
+    PlayerRowComponent,
   ],
 })
 export default class XpTrackerComponent {
@@ -40,6 +38,7 @@ export default class XpTrackerComponent {
     stream: ({ params: { offset } }) => this.osrsTrackerRepo.getRecentPlayerLookups(offset),
     defaultValue: [],
   });
+  readonly recentPlayerLookupsState: Signal<ListCardState> = computed(() => listCardState(this.recentPlayerLookups));
 
   updateScrapingOffset(offset: number): void {
     this.xpTrackerStore.setScrapingOffset(offset);

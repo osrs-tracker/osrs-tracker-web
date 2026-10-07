@@ -6,12 +6,12 @@ import { GTAG_TOKEN } from 'src/app/common/services/analytics/analytics.token';
 import { StorageKey } from 'src/app/common/services/storage/storage';
 import { afterEach, describe, expect, it } from 'vitest';
 import { XpTrackerStore } from '../xp-tracker.store';
-import { PlayerWidgetComponent } from './player-widget.component';
+import { PlayerRowComponent } from './player-row.component';
 
-describe('PlayerWidgetComponent', () => {
+describe('PlayerRowComponent', () => {
   afterEach(() => localStorage.clear());
 
-  /** Renders a widget for ToxSick, a recent and favorite player, and fails its player request with `status` */
+  /** Renders a row for ToxSick, a recent and favorite player, and fails its player request with `status` */
   async function failPlayerRequest(
     status: number,
   ): Promise<{ store: InstanceType<typeof XpTrackerStore>; element: HTMLElement }> {
@@ -26,7 +26,7 @@ describe('PlayerWidgetComponent', () => {
       ],
     });
 
-    const fixture = TestBed.createComponent(PlayerWidgetComponent);
+    const fixture = TestBed.createComponent(PlayerRowComponent);
     fixture.componentRef.setInput('username', 'ToxSick');
     fixture.componentRef.setInput('scrapingOffset', 0);
     TestBed.tick();

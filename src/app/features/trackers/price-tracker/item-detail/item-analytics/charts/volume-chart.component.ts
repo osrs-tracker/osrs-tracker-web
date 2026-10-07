@@ -26,7 +26,7 @@ export class VolumeChartComponent extends BaseChart<'bar', AveragePricesAtTime[]
             callback: (value, index, array) => {
               const indexOfZero = array.findIndex(v => v.value === 0);
               const rest = indexOfZero % 2;
-              return rest === index % 2 ? formatNumberLegible(Math.abs(Number(value)), 3) : '';
+              return rest === index % 2 ? formatNumberLegible(Math.abs(Number(value))) : '';
             },
           },
         },
