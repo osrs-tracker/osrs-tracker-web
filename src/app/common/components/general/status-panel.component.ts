@@ -3,7 +3,8 @@ import { FormsModule } from '@angular/forms';
 
 /**
  * A centred panel for a page-level state, such as a player that doesn't exist or data that's unavailable: an icon, a
- * heading, a message and an optional action (a search box or a retry button).
+ * heading, a message and an optional action (a search box or a retry button). Other actions, such as a back button,
+ * go in as content, after the built-in one.
  */
 @Component({
   selector: 'status-panel',
@@ -86,6 +87,8 @@ import { FormsModule } from '@angular/forms';
         <button type="button" class="button--default button--rounded px-8" (click)="retry.emit()">Try again</button>
       }
     }
+
+    <ng-content />
   `,
   host: {
     class: 'flex flex-col items-center gap-6 w-full max-w-160 mx-auto px-8 py-10 rounded-2xl bg-card text-center',

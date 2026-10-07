@@ -1,19 +1,20 @@
 import { Component, inject, RESPONSE_INIT } from '@angular/core';
 import { BackButtonComponent } from 'src/app/common/components/general/back-button.component';
+import { StatusPanelComponent } from 'src/app/common/components/general/status-panel.component';
 
 @Component({
   selector: 'not-found-404',
-  imports: [BackButtonComponent],
+  imports: [BackButtonComponent, StatusPanelComponent],
   template: `
-    <header class="container mx-auto py-48 sm:py-72">
-      <h1 class="flex flex-col items-center text-center">
-        <span class="text-7xl sm:text-8xl lg:text-9xl font-bold text-strong">404</span>
-        <span class="accent text-2xl sm:text-3xl lg:text-4xl font-bold mt-2 sm:mt-3 lg:mt-4">NOT FOUND</span>
-      </h1>
-      <div class="flex justify-center mt-8 sm:mt-12">
+    <main class="max-w-page mx-auto px-4 sm:px-6 pt-12 pb-18">
+      <status-panel
+        icon="search"
+        heading="Page not found"
+        message="This page doesn’t exist. The link may be wrong, or the page has moved."
+      >
         <back-button />
-      </div>
-    </header>
+      </status-panel>
+    </main>
   `,
 })
 export default class NotFoundComponent {

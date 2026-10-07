@@ -14,8 +14,8 @@
     --accent: var(--color-emerald-700);
     --accent-hover: var(--color-emerald-800);
     --on-accent: var(--color-white);
-    --up: var(--color-positive-700);
-    --down: var(--color-negative-700);
+    --up: var(--color-green-700);
+    --down: var(--color-red-700);
     --amber: var(--color-amber-600);
     --orange: var(--color-orange-500);
     --float-shadow: oklch(0.208 0.042 265.755 / 0.12);
@@ -37,8 +37,8 @@
     --accent: var(--color-emerald-400);
     --accent-hover: var(--color-emerald-500);
     --on-accent: var(--color-slate-900);
-    --up: var(--color-positive-400);
-    --down: var(--color-negative-400);
+    --up: var(--color-true-green);
+    --down: var(--color-red-400);
     --amber: var(--color-amber-400);
     --orange: var(--color-orange-400);
     --float-shadow: oklch(0.1 0.03 265 / 0.6);
