@@ -20,6 +20,7 @@
 - A new Home page: one big search for players or items, with the tracking offset under it for players and your first
   three favourite items for items, next to an example of a player's stats. The latest news cards are clickable as a
   whole, and the XP Tracker and Price Tracker cards list the five most recent lookups with a link to open each tracker.
+- The dotted background behind the Home, XP Tracker and Price Tracker headers is easier to see in the light theme.
 - The item search shows a message with a retry button when searching fails, instead of looking like nothing was found.
 - Every page loads a 23% smaller stylesheet: the changelog no longer uses a styling plugin for its text, which also
   fixes a security warning. The changelog's list bullets are easier to see in the light theme.
