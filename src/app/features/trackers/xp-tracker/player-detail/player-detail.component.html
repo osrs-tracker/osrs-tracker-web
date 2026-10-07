@@ -1,55 +1,223 @@
-<div class="container mx-auto my-4 px-4 grid lg:grid-cols-3 2xl:grid-cols-4 gap-8">
-  <player-detail-widget [playerDetail]="playerDetail()">
-    @if (todayResource.error()) {
+<div class="max-w-page mx-auto px-4 sm:px-6 pt-4">
+  <a routerLink="/trackers/xp" class="link inline-flex items-center gap-1.5 min-h-11 text-base">
+    <svg
+      class="size-4.5"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <line x1="19" y1="12" x2="5" y2="12" />
+      <polyline points="11 6 5 12 11 18" />
+    </svg>
+    XP Tracker
+  </a>
+</div>
+
+@if (playerDetail(); as player) {
+  @if (stale()) {
+    <div class="max-w-page mx-auto px-4 sm:px-6 py-2">
+      <div
+        role="status"
+        class="flex flex-wrap items-center gap-x-4 gap-y-3 py-3 pl-4 pr-3 rounded-xl border border-amber/40 bg-amber/12"
+      >
+        <svg
+          class="size-5 shrink-0 stroke-amber"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
+          <line x1="12" y1="9" x2="12" y2="13" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+        <p class="grow basis-70 text-base/6 text-strong">
+          The hiscores aren’t responding, so these are {{ player.username | capitalizeWords }}’s stats from
+          {{ staleSince() | timeAgo }}.
+        </p>
+        <button
+          type="button"
+          class="h-9 px-4 rounded-full border border-border text-sm font-bold text-strong hover:bg-row"
+          (click)="todayResource.reload()"
+        >
+          Try again
+        </button>
+      </div>
+    </div>
+  }
+
+  <header class="max-w-page mx-auto px-4 sm:px-6 pt-2 flex flex-col gap-6">
+    <player-header [playerDetail]="player" [trackingState]="trackingState()" [trackedAt]="trackedAt()" />
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
+      @if (statTiles(); as tiles) {
+        @for (tile of tiles; track tile.label) {
+          <stat-tile
+            [label]="tile.label"
+            [value]="tile.value"
+            [sub]="tile.sub"
+            [tone]="tile.tone"
+            [tip]="tile.tip ?? ''"
+          />
+        }
+      } @else {
+        @for (tile of [0, 1, 2, 3]; track tile) {
+          <stat-tile loading />
+        }
+      }
+    </div>
+  </header>
+
+  <main class="max-w-page mx-auto px-4 sm:px-6 pt-6 pb-18 grid items-start gap-6 md:grid-player-tablet lg:grid-player">
+    <aside class="contents md:flex md:flex-col md:gap-6 md:col-start-1 md:row-start-1 md:row-span-2 min-w-0">
+      <!-- Skills, Bosses or Raids: beside the chart, so on phones it comes first -->
+      <article class="order-1 min-w-0 pb-4 rounded-2xl bg-card overflow-hidden">
+        <div class="flex items-center min-h-14 px-4 py-1.5 border-b border-line">
+          <segmented
+            class="grow"
+            stretch
+            label="Hiscores category"
+            [options]="topTabs"
+            [value]="playerView.top()"
+            (valueChange)="playerView.showTop($event)"
+          />
+        </div>
+        <div class="px-4 pt-4">
+          <!-- without live hiscores the newest tracked entry stands in, so this only shows when there's none either -->
+          @if (!current() && todayResource.error() && (historyLoaded() || firstHistoryPage.error())) {
+            <load-error source="player-hiscore" message="Couldn't load the hiscores." (retry)="retryHiscores()" />
+          } @else {
+            @switch (playerView.top()) {
+              @case ('skills') {
+                <skill-grid [hiscore]="current()" />
+              }
+              @case ('bosses') {
+                <activity-grid
+                  view="bosses"
+                  scoreLabel="Kill count"
+                  [layout]="bossLayout"
+                  [hiscore]="current()"
+                  [gains]="activityGains()"
+                />
+              }
+              @case ('raids') {
+                <activity-grid
+                  view="raids"
+                  scoreLabel="Completed"
+                  [layout]="raidLayout"
+                  [hiscore]="current()"
+                  [gains]="activityGains()"
+                />
+              }
+            }
+          }
+        </div>
+      </article>
+
+      <!-- Clues or Minigames: on phones after the chart -->
+      <article class="order-3 min-w-0 pb-4 rounded-2xl bg-card overflow-hidden">
+        <div class="flex items-center min-h-14 px-4 py-1.5 border-b border-line">
+          <segmented
+            class="grow"
+            stretch
+            label="Clues and minigames"
+            [options]="bottomTabs"
+            [value]="playerView.bottom()"
+            (valueChange)="playerView.showBottom($event)"
+          />
+        </div>
+        <div class="px-4 pt-4">
+          @if (playerView.bottom() === 'clues') {
+            <activity-grid
+              view="clues"
+              scoreLabel="Completed"
+              [layout]="clueLayout"
+              [hiscore]="current()"
+              [gains]="activityGains()"
+              [hasFooter]="true"
+            >
+              <div class="col-span-3 flex items-center justify-center gap-1.5 h-11 bg-inner text-base">
+                @if (clueTotal() !== undefined) {
+                  <span>Total clues:</span>
+                  <span class="font-bold text-strong tabular-nums">{{
+                    clueTotal()! > 0 ? (clueTotal() | number) : '–'
+                  }}</span>
+                } @else {
+                  <skeleton class="h-5 w-32" />
+                }
+              </div>
+            </activity-grid>
+          } @else if (!current() || minigameLayout().length) {
+            <activity-grid
+              view="minigames"
+              [layout]="current() ? minigameLayout() : minigameSkeleton"
+              [hiscore]="current()"
+              [gains]="activityGains()"
+              [minigame]="chartedMinigame()"
+            />
+          } @else {
+            <p class="py-3 text-center text-base text-muted">
+              {{ player.username | capitalizeWords }} isn’t ranked in any minigame.
+            </p>
+          }
+        </div>
+      </article>
+    </aside>
+
+    @if (firstHistoryPage.error()) {
       <load-error
+        class="order-2 md:col-start-2 md:row-start-1"
         panel
-        source="player-hiscore"
-        message="Couldn't load the current hiscores."
-        (retry)="todayResource.reload()"
+        source="player-history"
+        message="Couldn't load the history."
+        (retry)="firstHistoryPage.reload()"
       />
     } @else {
-      <player-skills [hiscore]="today()" />
-      <!-- in one column the activities would push the progress far down, so they're collapsed there -->
-      <button
-        class="lg:hidden button--default button--rounded"
-        [attr.aria-expanded]="showActivities()"
-        (click)="showActivities.set(!showActivities())"
-      >
-        {{ showActivities() ? 'Hide' : 'Show' }} clues, raids & bosses
-      </button>
-      <div class="flex-col gap-4 lg:flex" [class.flex]="showActivities()" [class.hidden]="!showActivities()">
-        <player-clues [hiscore]="today()" />
-        <player-raids [hiscore]="today()" />
-        <player-bosses [hiscore]="today()" />
-      </div>
-    }
-  </player-detail-widget>
+      <player-chart
+        class="order-2 md:col-start-2 md:row-start-1"
+        [diffs]="diffs()"
+        [state]="chartState()"
+        [minigame]="chartedMinigame()"
+        [emptyText]="emptyChartText()"
+      />
 
-  <section class="lg:col-span-2 2xl:col-span-3">
-    @if (firstHistoryPage.error()) {
-      <section class="flex flex-col gap-4">
-        <h1 class="flex items-center h-9 text-2xl font-bold text-strong">Progress</h1>
-        <load-error
-          panel
-          source="player-history"
-          message="Couldn't load the logs."
-          (retry)="firstHistoryPage.reload()"
-        />
-      </section>
-    } @else {
-      <player-logs [playerDetail]="playerDetail()" [today]="today()" [history]="history()" />
+      <section class="order-4 md:col-start-2 md:row-start-2 min-w-0 flex flex-col gap-6" aria-label="Day log">
+        <player-logs [diffs]="diffs()" [loading]="!historyLoaded()" [notice]="logNotice()" />
 
-      @if (hasMoreEntries()) {
-        <footer class="flex justify-center mt-4">
-          @if (loadingMore()) {
-            <spinner class="mt-2.5 mb-3" />
-          } @else if (loadMoreFailed()) {
-            <load-error source="player-history-more" message="Couldn't load more data." (retry)="loadMore()" />
+        @if (hasMoreEntries()) {
+          @if (loadMoreFailed()) {
+            <load-error source="player-history-more" message="Couldn't load more days." (retry)="loadMore()" />
           } @else {
-            <button class="button--default button--rounded px-16" (click)="loadMore()">Load more data</button>
+            <button
+              type="button"
+              class="button--default button--rounded self-center px-12 bg-card disabled:opacity-60"
+              [disabled]="loadingMore()"
+              (click)="loadMore()"
+            >
+              {{ loadingMore() ? 'Loading…' : 'Load more days' }}
+            </button>
           }
-        </footer>
-      }
+        }
+      </section>
     }
-  </section>
-</div>
+  </main>
+} @else {
+  <main class="max-w-page mx-auto px-4 sm:px-6 pt-12 pb-18">
+    <status-panel
+      icon="search"
+      action="search"
+      [heading]="'No player called “' + username + '”'"
+      message="Check the spelling. An account only appears on the hiscores once it’s ranked in at least one skill or activity."
+      [initialQuery]="username"
+      placeholder="Player name, e.g. Zezima"
+      searchLabel="Player name"
+      (searched)="search($event)"
+    />
+  </main>
+}

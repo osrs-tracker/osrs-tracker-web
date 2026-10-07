@@ -1,190 +1,93 @@
-<section class="flex flex-col gap-4">
-  <!-- same height as the player widget's header, so the first cards line up -->
-  <header class="flex items-center justify-between h-9">
-    <h1 class="text-2xl font-bold text-strong">Progress</h1>
-
-    <segmented label="View" [options]="viewOptions" [value]="xpTrackerViewType()" (valueChange)="setView($event)" />
-  </header>
-
-  <!-- charts -->
-  @if (isPlayerTracked()) {
-    @if (hiscoreDiffs().length > 1) {
-      <article card>
-        <h2 title>{{ xpTrackerViewType() === XpTrackerViewType.Skills ? 'XP gained' : 'Activity' }}</h2>
-        @if (xpTrackerViewType() === XpTrackerViewType.Skills) {
-          <xp-gained-chart [data]="hiscoreDiffs()" />
-        } @else {
-          <activity-chart [data]="hiscoreDiffs()" />
+@if (notice(); as notice) {
+  <article class="rounded-2xl border border-line">
+    <div class="flex flex-wrap items-center justify-between gap-2 min-h-14 px-5 py-1.5 border-b border-line text-muted">
+      <h3 class="text-base font-bold">{{ notice.date | shortDate }}</h3>
+      <span class="text-sm">{{ notice.label }}</span>
+    </div>
+    <p class="px-5 py-3.5 text-base text-muted">{{ notice.text }}</p>
+  </article>
+} @else if (loading()) {
+  <!-- skeleton loader -->
+  @for (card of [0, 1]; track card) {
+    <article class="rounded-2xl bg-card" aria-hidden="true">
+      <div class="flex items-center justify-between gap-3 min-h-14 px-5 py-1.5 border-b border-line">
+        <skeleton class="h-5 w-37.5" />
+        <skeleton class="h-4 w-30" />
+      </div>
+      <div class="grid grid-cols-log gap-x-6 gap-y-2 px-5 py-4">
+        @for (row of [0, 1, 2, 3]; track row) {
+          <skeleton class="h-6 w-full" />
         }
-      </article>
-    } @else if (!hiscoreDiffs().length) {
-      <article card>
-        <skeleton title class="h-5 w-28" />
-        <skeleton class="h-72 w-full rounded-xl" />
-      </article>
-    }
+      </div>
+    </article>
   }
-
-  <!-- XP view -->
-  @if (isPlayerTracked() && xpTrackerViewType() === XpTrackerViewType.Skills) {
-    @for (group of skillLogs(); track $index) {
-      @if (group.type === 'day') {
-        @let diff = group.diff;
-        <article card>
-          <h2 title>
-            <span class="sm:hidden">{{ diff.date | shortDate: 'short' }}</span
-            ><span class="hidden sm:inline">{{ diff.date | shortDate }}</span>
-          </h2>
-
-          @let overallDiff = overall(diff);
-          @if (overallDiff && overallDiff.xp > 0) {
-            <div actions class="self-center flex items-center gap-3">
-              @if (overallDiff.level > 0) {
-                <span class="font-bold tabular-nums positive-value"
-                  >{{ overallDiff.level }}
-                  <span class="hidden sm:inline">{{ overallDiff.level === 1 ? 'level' : 'levels' }}</span></span
+} @else {
+  @for (group of groups(); track $index) {
+    @if (group.type === 'day') {
+      <article class="rounded-2xl bg-card">
+        <div class="flex flex-wrap items-center justify-between gap-2 min-h-14 px-5 py-1.5 border-b border-line">
+          <h3 class="text-xl font-bold text-strong">{{ group.date | shortDate }}</h3>
+          @if (group.overall; as overall) {
+            <div class="flex items-center gap-3.5">
+              @if (overall.level > 0) {
+                <span class="text-sm font-bold text-accent tabular-nums"
+                  >+{{ overall.level }} {{ overall.level === 1 ? 'level' : 'levels' }}</span
                 >
-                <div class="h-4 w-px bg-border"></div>
               }
-              <span class="font-bold text-strong tabular-nums">+{{ overallDiff.xp | number }}</span>
-              <img class="size-5 -ml-1 mb-1" icon [name]="SkillEnum.Overall" [skill]="true" />
+              @if (overall.xp > 0) {
+                <span class="flex items-center gap-1.5 font-bold text-strong tabular-nums">
+                  <img class="h-4.5 w-auto" icon [name]="SkillEnum.Overall" [skill]="true" />+{{ overall.xp | number }}
+                  <span class="sr-only">XP</span>
+                </span>
+              }
             </div>
           }
+        </div>
 
-          <!-- hiscore diffs -->
-          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-10 gap-y-1">
-            @for (skill of diff.skills; track skill.name) {
-              @if (skill.xp > 0 && skill.name !== SkillEnum.Overall) {
-                <div class="flex items-center gap-2">
-                  <div class="size-6 shrink-0 flex items-center justify-center">
-                    <img icon [name]="skill.name" [skill]="true" [scale]="1.25" />
-                  </div>
-                  <span class="flex items-baseline gap-1.5">
-                    {{ skill.name }}
-                    @if (skill.level > 0) {
-                      <span class="font-bold text-base tabular-nums positive-value">{{ skill.level }}</span>
-                    }
-                  </span>
-                  <span class="ml-auto font-medium text-strong tabular-nums"> +{{ skill.xp | number }} </span>
-                </div>
-              }
+        <ul class="grid grid-cols-log gap-x-6 gap-y-2 px-5 py-4">
+          @for (skill of group.skills; track skill.name) {
+            <li class="flex items-center gap-2.5 min-h-6">
+              <span class="flex items-center justify-center size-6 shrink-0">
+                <img class="max-h-6 w-auto" icon [name]="skill.name" [skill]="true" />
+              </span>
+              <span>{{ skill.name }}</span>
+              <span class="mr-auto text-sm font-bold text-accent tabular-nums">
+                @if (skill.level > 0) {
+                  +{{ skill.level }}<span class="sr-only"> {{ skill.level === 1 ? 'level' : 'levels' }}</span>
+                }
+              </span>
+              <span class="font-bold text-strong tabular-nums">+{{ skill.xp | number }}</span>
+            </li>
+          }
+          @for (activity of group.activities; track activity.name) {
+            <li class="flex items-center gap-2.5 min-h-6">
+              <span class="flex items-center justify-center size-6 shrink-0">
+                <img class="max-h-6 max-w-6" icon [name]="activity.name" [activity]="true" />
+              </span>
+              <span class="mr-auto">{{ activity.name }}</span>
+              <span class="font-bold text-strong tabular-nums">+{{ activity.score | number }}</span>
+            </li>
+          }
+        </ul>
+      </article>
+    } @else {
+      <article class="rounded-2xl border border-line">
+        <div
+          class="flex flex-wrap items-center justify-between gap-2 min-h-14 px-5 py-1.5 border-b border-line text-muted"
+        >
+          <h3 class="text-base font-bold">
+            @if (group.days === 1) {
+              {{ group.to | shortDate }}
+            } @else {
+              {{ group.from | date: 'EEE d MMM' }} – {{ group.to | date: 'EEE d MMM' }}
             }
-          </div>
-        </article>
-      } @else {
-        <article class="rounded-2xl border border-line">
-          <div class="flex items-center justify-between gap-4 px-5 py-1.5 min-h-14 border-b border-line">
-            <h2 class="text-xl font-bold text-text">
-              @if (group.days === 1) {
-                <span class="sm:hidden">{{ group.to | shortDate: 'short' }}</span
-                ><span class="hidden sm:inline">{{ group.to | shortDate }}</span>
-              } @else {
-                <span class="sm:hidden">{{ group.from | shortDate: 'short' }}</span
-                ><span class="hidden sm:inline">{{ group.from | shortDate }}</span> –
-                <span class="sm:hidden">{{ group.to | shortDate: 'short' }}</span
-                ><span class="hidden sm:inline">{{ group.to | shortDate }}</span>
-              }
-            </h2>
-            @if (group.days > 1) {
-              <span class="text-muted">{{ group.days }} days</span>
-            }
-          </div>
-
-          <div class="px-5 py-4">
-            <p class="text-muted">Nothing interesting happened.</p>
-          </div>
-        </article>
-      }
-    } @empty {
-      <!-- skeleton loader -->
-      @for (skills of [].constructor(7); track i; let i = $index) {
-        <article card>
-          <skeleton title class="h-5 w-20" />
-
-          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-10 gap-y-1">
-            @for (skills of [].constructor(((i * 3) % 9) + 3); track $index) {
-              <div class="flex items-center gap-2 h-7">
-                <skeleton class="size-5" />
-                <skeleton class="h-4 w-20" />
-                <skeleton class="ml-auto h-4 w-16" />
-              </div>
-            }
-          </div>
-        </article>
-      }
+          </h3>
+          @if (group.days > 1) {
+            <span class="text-sm">{{ group.days }} days</span>
+          }
+        </div>
+        <p class="px-5 py-3.5 text-base text-muted">Nothing interesting happened.</p>
+      </article>
     }
   }
-
-  <!-- Other view -->
-  @if (isPlayerTracked() && xpTrackerViewType() === XpTrackerViewType.Other) {
-    @for (group of otherLogs(); track $index) {
-      @if (group.type === 'day') {
-        @let diff = group.diff;
-        <article card>
-          <h2 title>
-            <span class="sm:hidden">{{ diff.date | shortDate: 'short' }}</span
-            ><span class="hidden sm:inline">{{ diff.date | shortDate }}</span>
-          </h2>
-
-          <!-- other diffs -->
-          <section class="flex flex-col gap-1">
-            @for (activity of diff.activities; track activity.name) {
-              @if (activity.score) {
-                <div class="flex items-center gap-2">
-                  <div class="size-6 shrink-0 flex items-center justify-center">
-                    <img icon [name]="$any(activity).name" [activity]="true" [scale]="1.25" />
-                  </div>
-                  <div>{{ activity.name }}:</div>
-                  <div class="font-medium text-strong tabular-nums">
-                    {{ activity.score | number }}
-                  </div>
-                </div>
-              }
-            }
-          </section>
-        </article>
-      } @else {
-        <article class="rounded-2xl border border-line">
-          <div class="flex items-center justify-between gap-4 px-5 py-1.5 min-h-14 border-b border-line">
-            <h2 class="text-xl font-bold text-text">
-              @if (group.days === 1) {
-                <span class="sm:hidden">{{ group.to | shortDate: 'short' }}</span
-                ><span class="hidden sm:inline">{{ group.to | shortDate }}</span>
-              } @else {
-                <span class="sm:hidden">{{ group.from | shortDate: 'short' }}</span
-                ><span class="hidden sm:inline">{{ group.from | shortDate }}</span> –
-                <span class="sm:hidden">{{ group.to | shortDate: 'short' }}</span
-                ><span class="hidden sm:inline">{{ group.to | shortDate }}</span>
-              }
-            </h2>
-            @if (group.days > 1) {
-              <span class="text-muted">{{ group.days }} days</span>
-            }
-          </div>
-
-          <div class="px-5 py-4">
-            <p class="text-muted">Nothing interesting happened.</p>
-          </div>
-        </article>
-      }
-    } @empty {
-      <!-- skeleton loader -->
-      @for (skills of [].constructor(7); track i; let i = $index) {
-        <article card>
-          <skeleton title class="h-5 w-24" />
-
-          <div class="flex flex-col gap-2">
-            @for (skills of [].constructor((i % 3) + 1); track $index) {
-              <div>
-                <skeleton class="h-4 w-20 mt-1.5" />
-                <skeleton class="h-4 w-48 my-4" />
-                <skeleton class="h-4 w-32 my-4" />
-                <skeleton class="h-4 w-40 mb-1.5" />
-              </div>
-            }
-          </div>
-        </article>
-      }
-    }
-  }
-</section>
+}

@@ -2,7 +2,6 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { StorageKey } from 'src/app/common/services/storage/storage';
 import { afterEach, describe, expect, it } from 'vitest';
-import { XpTrackerViewType } from './xp-tracker-view-type';
 import { XpTrackerStore } from './xp-tracker.store';
 
 describe('XpTrackerStore', () => {
@@ -19,13 +18,11 @@ describe('XpTrackerStore', () => {
       [StorageKey.XpTrackerRecentPlayers]: '["ToxSick"]',
       [StorageKey.XpTrackerFavoritePlayers]: '["the fraking"]',
       [StorageKey.XpTrackerScrapingOffset]: '2',
-      [StorageKey.XpTrackerViewType]: String(XpTrackerViewType.Other),
     });
 
     expect(store.recentPlayers()).toEqual(['ToxSick']);
     expect(store.favoritePlayers()).toEqual(['the fraking']);
     expect(store.scrapingOffset()).toBe(2);
-    expect(store.viewType()).toBe(XpTrackerViewType.Other);
   });
 
   it('falls back to the defaults when the stored state is corrupt', () => {
@@ -33,12 +30,10 @@ describe('XpTrackerStore', () => {
       [StorageKey.XpTrackerRecentPlayers]: '["ToxSick"',
       [StorageKey.XpTrackerFavoritePlayers]: '{"0":"ToxSick"}',
       [StorageKey.XpTrackerScrapingOffset]: 'abc',
-      [StorageKey.XpTrackerViewType]: '7',
     });
 
     expect(store.recentPlayers()).toEqual([]);
     expect(store.favoritePlayers()).toEqual([]);
     expect(store.scrapingOffset()).toBe(0);
-    expect(store.viewType()).toBe(XpTrackerViewType.Skills);
   });
 });

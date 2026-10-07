@@ -50,7 +50,7 @@ describe('IconDirective', () => {
     fixture.componentRef.setInput('name', 'combat');
     await fixture.whenStable();
 
-    expect(img.src).toContain('/combat.png');
+    expect(img.src).toContain('/combat.gif');
     expect(img.alt).toBe('combat icon');
   });
 

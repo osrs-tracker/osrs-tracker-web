@@ -1,88 +1,131 @@
-import { isPlatformBrowser } from '@angular/common';
+import { DecimalPipe, isPlatformBrowser } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
   DestroyRef,
   OnInit,
   PLATFORM_ID,
+  RESPONSE_INIT,
   ResourceRef,
   Signal,
   WritableSignal,
   computed,
+  effect,
   inject,
   input,
   linkedSignal,
   signal,
 } from '@angular/core';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute } from '@angular/router';
-import { parseHiscores } from '@osrs-tracker/hiscores';
-import { HiscoreEntry, Player } from '@osrs-tracker/models';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivityEnum, SkillEnum, hiscoreDiff, parseHiscores } from '@osrs-tracker/hiscores';
+import { HiscoreEntry, HiscoreSkill, Player } from '@osrs-tracker/models';
 import { EMPTY, catchError, finalize, map } from 'rxjs';
-import { isHumanVisitor } from 'src/app/core/platform/human-visitor';
-import { resolverErrorHandler } from 'src/app/core/routing/resolver-error';
 import { LoadErrorComponent } from 'src/app/common/components/general/load-error.component';
-import { SpinnerComponent } from 'src/app/common/components/general/spinner.component';
-import { PlayerBossesWidgetComponent } from './hiscores/player-bosses.component';
-import { PlayerCluesWidgetComponent } from './hiscores/player-clues.component';
-import { PlayerRaidsWidgetComponent } from './hiscores/player-raids.component';
-import { PlayerSkillsWidgetComponent } from './hiscores/player-skills.component';
+import { SegmentedComponent, SegmentedOption } from 'src/app/common/components/general/segmented.component';
+import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
+import { StatTileComponent } from 'src/app/common/components/general/stat-tile.component';
+import { StatusPanelComponent } from 'src/app/common/components/general/status-panel.component';
 import { localIcons } from 'src/app/common/directives/icon/local-icons.generated';
 import { LOCAL_ICONS } from 'src/app/common/directives/icon/local-icons.token';
+import { formatNumberLegible } from 'src/app/common/helpers/number.helper';
+import { CapitalizePipe } from 'src/app/common/pipes/capitalize.pipe';
+import { TimeAgoPipe } from 'src/app/common/pipes/time-ago.pipe';
 import { OsrsProxyRepo } from 'src/app/common/repositories/osrs-proxy.repo';
 import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
+import { isHumanVisitor } from 'src/app/core/platform/human-visitor';
+import { resolverErrorHandler } from 'src/app/core/routing/resolver-error';
+import { BOSSES, CLUES, MINIGAME_ROWS, RAID_LAYOUT, UNCHARTED_MINIGAMES } from '../activity-categories';
 import { isTrackedFor } from '../player-tracking';
 import { XpTrackerStore } from '../xp-tracker.store';
-import { PlayerDetailWidgetComponent } from './player-detail-widget/player-detail-widget.component';
-import { PlayerLogsComponent } from './player-logs/player-logs.component';
+import { ActivityGridComponent } from './hiscores/activity-grid.component';
+import { SkillGridComponent } from './hiscores/skill-grid.component';
+import { PlayerChartComponent } from './player-chart.component';
+import { isNotFound } from './player-detail.resolver';
+import { PlayerHeaderComponent, TrackingState } from './player-header/player-header.component';
+import { LogNotice, PlayerLogsComponent } from './player-logs/player-logs.component';
+import { PeriodSummary, periodSummary } from './player-summary';
+import { BottomTab, PlayerView, TopTab } from './player-view';
+
+interface StatTile {
+  label: string;
+  value: string;
+  sub: string;
+  tone: 'muted' | 'up' | 'down';
+  tip?: string;
+}
+
+/** The stat tiles cover the last week */
+const SUMMARY_DAYS = 7;
+
+const ACTIVITIES = Object.values(ActivityEnum);
 
 @Component({
   selector: 'player-detail',
   templateUrl: './player-detail.component.html',
   imports: [
-    PlayerSkillsWidgetComponent,
-    PlayerCluesWidgetComponent,
-    PlayerRaidsWidgetComponent,
-    PlayerBossesWidgetComponent,
-    PlayerDetailWidgetComponent,
-    PlayerLogsComponent,
+    ActivityGridComponent,
+    CapitalizePipe,
+    DecimalPipe,
     LoadErrorComponent,
-    SpinnerComponent,
+    PlayerChartComponent,
+    PlayerHeaderComponent,
+    PlayerLogsComponent,
+    RouterLink,
+    SegmentedComponent,
+    SkeletonComponent,
+    SkillGridComponent,
+    StatTileComponent,
+    StatusPanelComponent,
+    TimeAgoPipe,
   ],
-  // every skill and activity icon is shown here, so they come with this chunk instead of ~100 separate requests
-  providers: [{ provide: LOCAL_ICONS, useValue: localIcons }],
+  providers: [
+    PlayerView,
+    // every skill and activity icon is shown here, so they come with this chunk instead of ~100 separate requests
+    { provide: LOCAL_ICONS, useValue: localIcons },
+  ],
 })
 export default class PlayerDetailComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
   private readonly osrsProxyRepo = inject(OsrsProxyRepo);
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly xpTrackerStore = inject(XpTrackerStore);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly isHumanVisitor = isHumanVisitor();
+  private readonly responseInit = inject(RESPONSE_INIT, { optional: true });
+  readonly playerView = inject(PlayerView);
 
-  readonly #pageErrorHandler = resolverErrorHandler(
-    '/trackers/xp/' + inject(ActivatedRoute).snapshot.params['username'],
-  );
+  readonly username: string = inject(ActivatedRoute).snapshot.params['username'];
+  readonly #pageErrorHandler = resolverErrorHandler('/trackers/xp/' + this.username);
 
-  readonly #DEFAULT_SIZE = 14;
+  /** 15 entries: the last week and the week before it, for the stat tiles */
+  readonly #DEFAULT_SIZE = 15;
   readonly #MORE_SIZE = 7;
   readonly #morePages: WritableSignal<HiscoreEntry[][]> = signal([]);
 
-  readonly player = input.required<Player>();
-  /** The resolved player, until `trackPlayer` returns a fresh one. */
-  readonly playerDetail: WritableSignal<Player> = linkedSignal(() => this.player());
-  /** Below the two-column layout only; there they're always shown */
-  readonly showActivities: WritableSignal<boolean> = signal(false);
+  /** `null` when there's no such player */
+  readonly player = input.required<Player | null>();
+  /** The resolved player, until `trackPlayer` returns a fresh one (or finds they no longer exist) */
+  readonly playerDetail: WritableSignal<Player | null> = linkedSignal(() => this.player());
+
+  readonly scrapingOffset: Signal<number> = this.xpTrackerStore.scrapingOffset;
+  /** The UTC hour the visitor's offset is checked at, e.g. "02:00 UTC" */
+  readonly trackedAt: Signal<string> = computed(
+    () => `${String((this.scrapingOffset() + 24) % 24).padStart(2, '0')}:00 UTC`,
+  );
 
   /** The live hiscores, only fetched in the browser. */
   readonly todayResource: ResourceRef<HiscoreEntry | undefined> = rxResource({
-    params: () =>
-      this.isBrowser ? { username: this.player().username, offset: this.xpTrackerStore.scrapingOffset() } : undefined,
+    params: () => {
+      const player = this.playerDetail();
+      return this.isBrowser && player ? { username: player.username, offset: this.scrapingOffset() } : undefined;
+    },
     stream: ({ params: { username, offset } }) =>
       this.osrsProxyRepo.getPlayerHiscore(username, offset).pipe(map(hiscore => parseHiscores([hiscore])[0])),
   });
   readonly firstHistoryPage: ResourceRef<HiscoreEntry[] | undefined> = rxResource({
-    params: () => ({ username: this.player().username, offset: this.xpTrackerStore.scrapingOffset() }),
+    params: () => (this.player() ? { username: this.username, offset: this.scrapingOffset() } : undefined),
     stream: ({ params: { username, offset } }) =>
       this.osrsTrackerRepo
         .getPlayerHiscores(username, offset, this.#DEFAULT_SIZE, 0)
@@ -93,6 +136,7 @@ export default class PlayerDetailComponent implements OnInit {
   readonly today: Signal<HiscoreEntry | undefined> = computed(() =>
     this.todayResource.hasValue() ? this.todayResource.value() : undefined,
   );
+  readonly historyLoaded: Signal<boolean> = computed(() => this.firstHistoryPage.hasValue());
   readonly history: Signal<HiscoreEntry[]> = computed(() => [
     ...(this.firstHistoryPage.hasValue() ? (this.firstHistoryPage.value() ?? []) : []),
     ...this.#morePages().flat(),
@@ -106,31 +150,196 @@ export default class PlayerDetailComponent implements OnInit {
   readonly loadingMore: WritableSignal<boolean> = signal(false);
   readonly loadMoreFailed: WritableSignal<boolean> = signal(false);
 
+  /** The live hiscores; until they load (or when they fail) the newest tracked entry */
+  readonly current: Signal<HiscoreEntry | undefined> = computed(() => this.today() ?? this.history()[0]);
+  /** The stats shown are the last tracked ones because the hiscores didn't respond (to the API or the browser) */
+  readonly stale: Signal<boolean> = computed(
+    () =>
+      !this.today() &&
+      !!this.history().length &&
+      (!!this.todayResource.error() || !!this.playerDetail()?.refreshFailed),
+  );
+  /** When the stats shown instead were tracked */
+  readonly staleSince: Signal<Date | undefined> = computed(() => this.history()[0]?.date);
+
+  readonly trackingState: Signal<TrackingState> = computed(() => {
+    const player = this.playerDetail();
+    if (!player || !isTrackedFor(player, this.scrapingOffset())) return 'untracked';
+    return this.historyLoaded() && this.history().length <= 1 ? 'started' : 'tracked';
+  });
+
+  /** Each day's gains, newest first; the first is today's so far when the live hiscores are in */
+  readonly diffs: Signal<HiscoreEntry[]> = computed(() => {
+    let previous = this.today() ?? this.history()[0];
+    return this.history().map(hiscore => {
+      const diff = hiscoreDiff(previous, hiscore);
+      previous = hiscore;
+      return diff;
+    });
+  });
+  readonly chartState: Signal<'loading' | 'empty' | 'ready'> = computed(() => {
+    if (!this.historyLoaded()) return 'loading';
+    return this.history().length > 1 ? 'ready' : 'empty';
+  });
+
+  readonly emptyChartText: Signal<string> = computed(() => {
+    const name = CapitalizePipe.capitalise(this.username);
+    return this.trackingState() === 'untracked'
+      ? `${name} isn’t tracked at ${this.trackedAt()} yet. Once they’re looked up, this chart shows what they gain each day.`
+      : `${name}’s stats were saved. After the next check at ${this.trackedAt()}, this chart shows what they gain each day.`;
+  });
+
+  readonly logNotice: Signal<LogNotice | undefined> = computed(() => {
+    switch (this.trackingState()) {
+      case 'started':
+        return {
+          date: new Date(this.playerDetail()?.trackedSince ?? Date.now()),
+          label: 'Tracking started',
+          text: 'First entry saved. Each daily check adds a day here.',
+        };
+      case 'untracked':
+        return {
+          date: new Date(),
+          label: 'Not tracked yet',
+          text: `Each daily check at ${this.trackedAt()} adds a day here once they're looked up.`,
+        };
+      default:
+        return undefined;
+    }
+  });
+
+  readonly summary: Signal<PeriodSummary | undefined> = computed(() => {
+    const current = this.current();
+    return current && periodSummary(current, this.history(), SUMMARY_DAYS);
+  });
+
+  /** Each activity's gains over the loaded days */
+  readonly activityGains: Signal<ReadonlyMap<string, number>> = computed(() => {
+    const gains = new Map<string, number>();
+    this.diffs().forEach(diff =>
+      diff.activities.forEach(({ name, score }) => {
+        if (score > 0) gains.set(name, (gains.get(name) ?? 0) + score);
+      }),
+    );
+    return gains;
+  });
+  /** The picked minigame, or the first running total with gains */
+  readonly chartedMinigame: Signal<string | undefined> = computed(
+    () =>
+      this.playerView.minigame() ??
+      MINIGAME_ROWS.flat().find(name => !(name in UNCHARTED_MINIGAMES) && this.activityGains().has(name)),
+  );
+
+  readonly topTabs: SegmentedOption<TopTab>[] = [
+    { value: 'skills', label: 'Skills' },
+    { value: 'bosses', label: 'Bosses' },
+    { value: 'raids', label: 'Raids' },
+  ];
+  readonly bottomTabs: SegmentedOption<BottomTab>[] = [
+    { value: 'clues', label: 'Clues' },
+    { value: 'minigames', label: 'Minigames' },
+  ];
+
+  readonly bossLayout: (string | null)[] = fillRows(ACTIVITIES.filter(name => BOSSES.has(name)));
+  readonly raidLayout: (string | null)[] = RAID_LAYOUT;
+  readonly clueLayout: (string | null)[] = ACTIVITIES.filter(name => CLUES.has(name));
+  /** Only the minigames the player is ranked in, each row of three filled up on its own */
+  readonly minigameLayout: Signal<(string | null)[]> = computed(() => {
+    const ranked = (name: string): boolean =>
+      (this.current()?.activities.find(activity => activity.name === name)?.score ?? -1) > 0;
+    return MINIGAME_ROWS.flatMap(row => fillRows(row.filter(ranked)));
+  });
+  /** One row of loading cells */
+  readonly minigameSkeleton: (string | null)[] = MINIGAME_ROWS[0];
+  readonly clueTotal: Signal<number | undefined> = computed(
+    () => this.current()?.activities.find(activity => activity.name === ActivityEnum.ClueScrollsAll)?.score,
+  );
+
+  readonly overall: Signal<HiscoreSkill | undefined> = computed(() =>
+    this.current()?.skills.find(skill => skill.name === SkillEnum.Overall),
+  );
+  readonly statTiles: Signal<StatTile[] | undefined> = computed(() => {
+    const overall = this.overall();
+    if (!overall || !this.historyLoaded()) return undefined;
+
+    const totalLevel: StatTile = {
+      label: 'Total level',
+      value: overall.level.toLocaleString('en-US'),
+      sub: overall.rank > 0 ? `Rank ${overall.rank.toLocaleString('en-US')}` : 'Unranked',
+      tone: 'muted',
+    };
+    const summary = this.summary();
+    if (!summary) {
+      return [
+        totalLevel,
+        { label: 'XP last 7 days', value: '–', sub: 'From the next check', tone: 'muted' },
+        { label: 'Levels gained', value: '–', sub: '', tone: 'muted' },
+        { label: 'Boss kills', value: '–', sub: '', tone: 'muted' },
+      ];
+    }
+
+    const levelCount = summary.levels.reduce((total, { from, to }) => total + to - from, 0);
+    const levels = summary.levels.map(({ skill, from, to }) => `${skill} ${from} → ${to}`).join(', ');
+    return [
+      totalLevel,
+      {
+        label: 'XP last 7 days',
+        value: formatNumberLegible(summary.xp),
+        tip: `${summary.xp.toLocaleString('en-US')} XP`,
+        ...this.weekComparison(summary),
+      },
+      { label: 'Levels gained', value: String(levelCount), sub: levels, tip: levels, tone: 'muted' },
+      {
+        label: 'Boss kills',
+        value: summary.bossKills.toLocaleString('en-US'),
+        sub: summary.mostKilled ? `Most: ${summary.mostKilled.name} (${summary.mostKilled.kills})` : '',
+        tone: 'muted',
+      },
+    ];
+  });
+
+  constructor() {
+    // Only during SSR: the page is a 404 when there's no such player
+    effect(() => {
+      if (this.responseInit && !this.playerDetail()) this.responseInit.status = 404;
+    });
+  }
+
   ngOnInit(): void {
-    if (this.isBrowser) this.xpTrackerStore.pushRecentPlayer(this.player().username);
+    if (!this.player()) return;
+    if (this.isBrowser) this.xpTrackerStore.pushRecentPlayer(this.player()!.username);
     if (this.isHumanVisitor) this.trackPlayer();
+  }
+
+  retryHiscores(): void {
+    this.todayResource.reload();
+    if (this.firstHistoryPage.error()) this.firstHistoryPage.reload();
+  }
+
+  search(username: string): void {
+    void this.router.navigate(['/trackers/xp', username]);
   }
 
   /** Starts tracking the player (or refreshes them when stale) and shows the player it returns. */
   private trackPlayer(): void {
-    const offset = this.xpTrackerStore.scrapingOffset();
+    const offset = this.scrapingOffset();
 
     this.osrsTrackerRepo
-      .trackPlayer(this.player().username, offset)
+      .trackPlayer(this.username, offset)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
-        // like the GET, not found and the hiscores being down show the not-found or error page (the handler rethrows);
-        // after any other failure the page still shows the player it resolved
-        catchError((err: unknown) =>
-          err instanceof HttpErrorResponse && [400, 404, 503].includes(err.status)
-            ? this.#pageErrorHandler(err)
-            : EMPTY,
-        ),
+        catchError((err: unknown) => {
+          // like the GET: not found shows the not-found state, the hiscores being down the error page (the handler
+          // rethrows); after any other failure the page still shows the player it resolved
+          if (isNotFound(err)) this.playerDetail.set(null);
+          else if (err instanceof HttpErrorResponse && err.status === 503) return this.#pageErrorHandler(err);
+          return EMPTY;
+        }),
       )
       .subscribe({
         next: player => {
           if (!player) return; // the API took us for a bot and recorded nothing
-          const wasTracked = isTrackedFor(this.playerDetail(), offset);
+          const wasTracked = isTrackedFor(this.playerDetail()!, offset);
           this.playerDetail.set(player);
           // tracking an offset stores its first entry, so load it
           if (!wasTracked && isTrackedFor(player, offset)) this.firstHistoryPage.reload();
@@ -144,12 +353,7 @@ export default class PlayerDetailComponent implements OnInit {
     this.loadMoreFailed.set(false);
 
     this.osrsTrackerRepo
-      .getPlayerHiscores(
-        this.player().username,
-        this.xpTrackerStore.scrapingOffset(),
-        this.#MORE_SIZE,
-        this.history().length,
-      )
+      .getPlayerHiscores(this.username, this.scrapingOffset(), this.#MORE_SIZE, this.history().length)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.loadingMore.set(false)),
@@ -159,4 +363,22 @@ export default class PlayerDetailComponent implements OnInit {
         error: () => this.loadMoreFailed.set(true),
       });
   }
+
+  private weekComparison(summary: PeriodSummary): Pick<StatTile, 'sub' | 'tone'> {
+    const { xp, previousXp } = summary;
+    if (previousXp === undefined) return { sub: '', tone: 'muted' };
+    if (!previousXp) return { sub: xp ? 'None the week before' : 'None the week before either', tone: 'muted' };
+
+    const change = Math.round(((xp - previousXp) / previousXp) * 100);
+    if (!change) return { sub: 'Same as previous week', tone: 'muted' };
+    return {
+      sub: `${change > 0 ? '+' : '−'}${Math.abs(change)}% vs previous week`,
+      tone: change > 0 ? 'up' : 'down',
+    };
+  }
+}
+
+/** Empty cells (`null`) that complete the last row of three */
+function fillRows(names: string[]): (string | null)[] {
+  return [...names, ...Array<null>((3 - (names.length % 3)) % 3).fill(null)];
 }

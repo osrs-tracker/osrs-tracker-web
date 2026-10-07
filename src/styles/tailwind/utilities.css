@@ -42,3 +42,21 @@
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
+
+/*
+ * The player page: the hiscores column beside the chart and the log, 340px on tablets and 1 : 1.8 from 1024px. The
+ * column spans both rows and grows on its own; the log row takes what's left, so the log stays right under the chart.
+ */
+@utility grid-player-tablet {
+  grid-template-columns: 340px minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+}
+@utility grid-player {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.8fr);
+  grid-template-rows: auto 1fr;
+}
+
+/* The player's day log: as many 220px columns as fit */
+@utility grid-cols-log {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+}

@@ -1,5 +1,6 @@
 import { formatNumber } from '@angular/common';
-import { DOCUMENT, Component, computed, inject, linkedSignal, Signal, WritableSignal } from '@angular/core';
+import { DOCUMENT, Component, computed, inject, Signal } from '@angular/core';
+import { SkillEnum } from '@osrs-tracker/hiscores';
 import { HiscoreEntry } from '@osrs-tracker/models';
 import { Chart, ChartOptions, Point } from 'chart.js';
 import { merge } from 'chart.js/helpers';
@@ -11,6 +12,7 @@ import { ChartLegendComponent, LegendItem } from './chart-legend.component';
 import { logChartOptions, toggled } from './log-chart-options';
 import { ChartSeries, xpGainedSeries } from './log-chart-series';
 import { TooltipMarkers } from './tooltip-markers';
+import { PlayerView } from '../player-view';
 
 /** The skills with the largest gains are shown, the others start hidden in the legend. */
 const DEFAULT_VISIBLE = 6;
@@ -19,10 +21,10 @@ const DEFAULT_VISIBLE = 6;
 @Component({
   selector: 'xp-gained-chart',
   template: `
-    <div class="relative h-72">
+    <div class="relative h-55 lg:h-auto lg:grow lg:min-h-0">
       <canvas #chart></canvas>
       @if (!series().length) {
-        <p class="absolute inset-0 flex items-center justify-center text-base opacity-70">
+        <p class="absolute inset-0 flex items-center justify-center text-base text-muted">
           No XP gained in these days.
         </p>
       }
@@ -39,6 +41,7 @@ const DEFAULT_VISIBLE = 6;
       />
     }
   `,
+  host: { class: 'flex flex-col grow min-h-0' },
   imports: [ChartLegendComponent],
 })
 export class XpGainedChartComponent extends BaseChart<'line', HiscoreEntry[]> {
@@ -46,14 +49,21 @@ export class XpGainedChartComponent extends BaseChart<'line', HiscoreEntry[]> {
 
   readonly DEFAULT_VISIBLE = DEFAULT_VISIBLE;
 
+  private readonly playerView = inject(PlayerView);
+
   readonly #markers = new TooltipMarkers(inject(DOCUMENT), 'skill', inject(LOCAL_ICONS, { optional: true }));
 
   readonly series: Signal<ChartSeries<ChartSkill>[]> = computed(() => xpGainedSeries(this.data()));
-  /** Starts with the largest gains and only changes when toggled, so loading more days doesn't hide a shown skill */
-  readonly #visible: WritableSignal<ReadonlySet<string>> = linkedSignal({
-    source: this.series,
-    computation: (series, previous) =>
-      previous?.source.length ? previous.value : new Set(series.slice(0, DEFAULT_VISIBLE).map(({ name }) => name)),
+  /** The skills picked on the page; with Overall picked, the largest gains */
+  readonly #visible: Signal<ReadonlySet<string>> = computed(() => {
+    const skills = this.playerView.skills();
+    return skills.has(SkillEnum.Overall)
+      ? new Set(
+          this.series()
+            .slice(0, DEFAULT_VISIBLE)
+            .map(({ name }) => name),
+        )
+      : skills;
   });
   readonly legendItems: Signal<LegendItem[]> = computed(() =>
     this.series().map(series => ({
@@ -65,7 +75,7 @@ export class XpGainedChartComponent extends BaseChart<'line', HiscoreEntry[]> {
   );
 
   toggle(name: string): void {
-    this.#visible.update(visible => toggled(visible, name));
+    this.playerView.setSkills(toggled(this.#visible(), name));
   }
 
   private color(skill: ChartSkill): string {
