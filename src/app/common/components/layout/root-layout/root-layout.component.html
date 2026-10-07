@@ -13,7 +13,7 @@
         @for (route of routes; track route.path) {
           <li class="flex">
             <a
-              class="relative flex grow items-center justify-center max-sm:min-h-11 whitespace-nowrap max-xs:text-sm hover:text-accent-hover aria-[current=page]:text-accent max-sm:aria-[current=page]:after:absolute max-sm:aria-[current=page]:after:inset-x-0 max-sm:aria-[current=page]:after:-bottom-1.5 max-sm:aria-[current=page]:after:h-0.5 max-sm:aria-[current=page]:after:rounded-xs max-sm:aria-[current=page]:after:bg-accent"
+              class="relative flex grow items-center justify-center max-sm:min-h-11 whitespace-nowrap max-xs:text-sm hover:text-accent-hover current:text-accent max-sm:current:after:absolute max-sm:current:after:inset-x-0 max-sm:current:after:-bottom-1.5 max-sm:current:after:h-0.5 max-sm:current:after:rounded-xs max-sm:current:after:bg-accent"
               [routerLink]="route.path"
               routerLinkActive
               ariaCurrentWhenActive="page"
