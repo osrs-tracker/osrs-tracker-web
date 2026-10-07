@@ -3,6 +3,8 @@
 - The item search shows a message with a retry button when searching fails, instead of looking like nothing was found.
 - Every page loads a 23% smaller stylesheet: the changelog no longer uses a styling plugin for its text, which also
   fixes a security warning. The changelog's list bullets are easier to see in the light theme.
+- Updated the SOLIX font to version 2.22: minus signs and arrows now use the site font, so negative changes like "−0.6%"
+  are the same width and height as positive ones.
 - Behind the scenes: code changes are formatted automatically and checked for lint and formatting errors before they're
   pushed, and reviewed against the project's conventions before release. The automatic build and tests only run when the
   code or its dependencies change (or the previous run didn't pass), not for releases or documentation, and reuse the
