@@ -10,6 +10,8 @@
 - Behind the scenes: Claude Code gets Angular's documentation for the installed version, and notes on code navigation in
   the project's guide.
 - Behind the scenes: removed a deprecated Angular hydration setting that's now on by default.
+- Behind the scenes: Claude Code loads a short project summary with the commands and hard rules in every session; the
+  project's guide keeps the details without repeating them.
 
 ## 2026/10/05
 

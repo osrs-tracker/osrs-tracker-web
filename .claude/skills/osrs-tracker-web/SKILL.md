@@ -9,10 +9,10 @@ description:
 
 # osrs-tracker-web
 
-Angular 22 SSR app (zoneless, signals, standalone) on a custom Express server (`src/server/`), deployed to Kubernetes.
-Deliberate trade-offs (production-only config, per-replica pre-rendering, CSP nonce) are in `docs/decisions.md`; read it
-before "fixing" one. The `conventions-reviewer` agent reviews diffs against this file at runtime, so keep code rules
-here, not in the agent.
+Detailed guide; the always-on summary, commands and hard rules are in `CLAUDE.md` and aren't repeated here. Deliberate
+trade-offs in `docs/decisions.md` include production-only config, per-replica pre-rendering and the CSP nonce. The
+`conventions-reviewer` agent reviews diffs against this file and `CLAUDE.md` at runtime, so keep code rules here or
+there, not in the agent.
 
 ## Related repos
 
@@ -28,7 +28,6 @@ here, not in the agent.
 ## Angular conventions
 
 - **DI**: `inject()` only; root services use `@Service()`, not `@Injectable({ providedIn: 'root' })`.
-- **Placement**: single-feature code in `src/app/features/<feature>/`; `src/app/common/` only for shared code.
 - **State**: signals, with explicitly typed public fields (`readonly foo: Signal<Bar> = computed(...)`). localStorage
   goes through a per-feature `@ngrx/signals` store (`XpTrackerStore`, `PriceTrackerStore`), never from components.
 - **Async data**: prefer `httpResource` / `rxResource`; if you subscribe, reset loading state in `finalize`.
@@ -36,8 +35,8 @@ here, not in the agent.
   `hasValue()`) first and render `<load-error source="…" (retry)="resource.reload()" />`: `compact` when it replaces a
   single value in a row or widget, the default when it replaces a list or section, `panel` for a panel. Never
   `catchError(() => of(empty))` or an `error` callback that only empties the data.
-- **HTTP**: only via repositories in `common/repositories/`, using the `BASE_URL_PREFIX` / `LOADING_INDICATOR`
-  `HttpContext` tokens, not absolute URLs. `encodeURIComponent` path segments; query values go in `params`.
+- **HTTP**: repositories use the `BASE_URL_PREFIX` / `LOADING_INDICATOR` `HttpContext` tokens, not absolute URLs.
+  `encodeURIComponent` path segments; query values go in `params`.
 - **Routing**: lazy routes with default-exported components, `title: '<Page> - OSRS Tracker'`; resolvers end with
   `catchError(resolverErrorHandler(<original url>))`. `ParamAwareReuseStrategy` recreates components on param change.
   Adding or renaming a route means updating `src/server/utils/route-label.ts` (its spec fails CI otherwise).
@@ -56,8 +55,8 @@ the angular.dev docs for the installed major version.
 
 - **Browser-only APIs**: inject `WINDOW` (null on the server) or `StorageService`, check `isPlatformBrowser`, or use
   `@defer` with a `@placeholder`.
-- **CSP**: no `'unsafe-inline'` or inline event handlers. Any new path that sends page HTML must call `applyCspNonce`,
-  or every script is blocked.
+- **CSP**: no inline event handlers either. Any new path that sends page HTML must call `applyCspNonce`, or every script
+  is blocked.
 - **Response status**: `inject(RESPONSE_INIT, { optional: true })`, not an Express `RESPONSE` token.
 - **Transfer cache**: responses reach the browser only if `Cache-Control` has no `no-store`, `no-cache` or `private`;
   otherwise the browser refetches on hydration and resources flash to `defaultValue`. When a page refetches, check the
@@ -75,25 +74,17 @@ the angular.dev docs for the installed major version.
   keyed by path (query ignored, trailing slash misses), 2xx only, refreshed on an interval (`/` every 5 min). After an
   API change, wait or restart.
 
-## Verify
-
-```bash
-npx ng build --configuration production && npx ng lint && npm run prettier:ci && npx ng test --watch=false
-```
-
 ## Tests
 
 Only for complex or important logic, never for coverage. Break the protected code once to confirm the test fails.
 
-- Specs sit next to the code and import from `vitest`. One file: `npx ng test --watch=false --include <path>`.
+- Specs sit next to the code and import from `vitest`.
 - Server specs start with `// @vitest-environment node`; follow `src/server/app.spec.ts` and
   `src/server/testing/serve.ts`. `vi.mock` works for packages, not relative imports.
 - App specs: `TestBed` with `provideZonelessChangeDetection()` and `HttpTestingController`; clear `localStorage` in
   `afterEach`.
 
 ## Running locally
-
-Always port 4200 (the API's CORS allows only that).
 
 - `npm start` for browser-side work; it has no auto-generator or page cache.
 - Server code needs the production build: `HOST=localhost PORT=4200 node dist/osrs-tracker-web/server/server.mjs`. Smoke
@@ -112,7 +103,7 @@ server HTML). If it's unavailable, say so rather than falling back to curl silen
 
 ## Deploy
 
-1. Verify (in a release, passing CI counts).
+1. Run the verify command from `CLAUDE.md` (in a release, passing CI counts).
 2. `npm run docker:build && npm run docker:push`; commit the regenerated `src/sitemap*.xml`. If `docker` is missing or
    the engine is down, start Docker Desktop from Windows:
    `"/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" desktop start`
@@ -125,7 +116,7 @@ server HTML). If it's unavailable, say so rather than falling back to curl silen
    player page 200, changed pages in the browser, clean
    `kubectl -n osrs-tracker logs deploy/osrs-tracker-web --since=5m`.
 
-Rollback and failure modes: `docs/runbook.md`. The root filesystem is read-only; never write to disk at runtime.
+Rollback and failure modes: `docs/runbook.md`.
 
 ## Release ("release it", "ship it")
 
@@ -140,14 +131,14 @@ Run end to end without asking; stop only on failure. Verify locally once before 
 
 ## Commit and push
 
-- Conventional commits. Doc-only changes (skills, docs) go straight to `main`; otherwise, outside a release, **ask each
-  time**: `main` or a PR. Admin bypasses `main`'s PR rule; after a direct push, `gh run watch --exit-status`.
+- Conventional commits. Doc-only changes include skills, docs and `CLAUDE.md`. Admin bypasses `main`'s PR rule; after a
+  direct push, `gh run watch --exit-status`.
 - Commit and push in the same session as a deploy, so production never runs code that isn't on GitHub. A deploy from a
   PR branch runs unmerged code: tell the user, and don't deploy `main` until it's merged.
-- **Every change gets a `CHANGELOG.md` entry** (deps and tooling too, not Dependabot PRs) under `## YYYY/MM/DD`, newest
-  first. It's shown on `/about/changelog`, so write for users. Busy days get `###` subtitles (user-facing first, "Behind
-  the scenes" last). Extend existing entries over near-duplicates; don't repeat the subtitle in entries.
+- `CHANGELOG.md` entries cover deps and tooling too (not Dependabot PRs), newest date first. It's shown on
+  `/about/changelog`, so write for users. Busy days get `###` subtitles (user-facing first, "Behind the scenes" last).
+  Extend existing entries over near-duplicates; don't repeat the subtitle in entries.
 - GPG "Inappropriate ioctl for device": ask the user to run `echo test | gpg --clearsign > /dev/null`, then commit
-  within ~10 min. Never `--no-gpg-sign`.
+  within ~10 min.
 - If `gh pr edit` fails on a Projects (classic) error, use
   `gh api -X PATCH repos/osrs-tracker/osrs-tracker-web/pulls/<n> -F body=@<file>`.

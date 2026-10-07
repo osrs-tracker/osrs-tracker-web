@@ -16,7 +16,8 @@ Read these first, every run. They are the only source of rules; don't apply gene
 1. `.claude/skills/osrs-tracker-web/SKILL.md`: the conventions. Every rule in it about code applies (Angular
    conventions, SSR rules, tests, icons, fonts). Process steps (deploy, release, commits) apply only when the diff
    touches what they describe, such as `CHANGELOG.md` or `osrs-tracker-web.yaml`.
-2. `docs/decisions.md`: deliberate trade-offs. Never flag something this file explains.
+2. `CLAUDE.md`: the hard rules and code placement, which the skill doesn't repeat.
+3. `docs/decisions.md`: deliberate trade-offs. Never flag something this file explains.
 
 ## Scope
 
@@ -32,7 +33,7 @@ and `local-icons.generated.ts`, a user-visible change and `CHANGELOG.md`) are ch
 Findings first, most severe first. Each one:
 
 - `path:line`: what's wrong, in one sentence
-- **Rule**: the rule it breaks, quoted or paraphrased from the skill
+- **Rule**: the rule it breaks, quoted or paraphrased from the skill or `CLAUDE.md`
 - **Fix**: the concrete change
 
 Severity: **breaks** (fails CI, blocks scripts, throws, refetches on hydration), **violates** (breaks a stated
