@@ -66,7 +66,8 @@ const OVERALL_COLOR = 'var(--accent)';
               <skeleton class="mx-auto h-5 w-16" />
             }
           </span>
-          <span class="block h-0.75 bg-line">
+          <!-- A picked cell's outline is drawn below its content, so the bar moves inside it -->
+          <span class="block h-0.75 bg-line" [class]="cell.on ? 'mx-0.5 -translate-y-0.5' : ''">
             @if (cell.progress !== undefined) {
               <span class="block h-0.75 bg-accent-hover" [style.width.%]="cell.progress"></span>
             }

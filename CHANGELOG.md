@@ -7,7 +7,8 @@
   the total level, and items show their price beside the change. The tracking offset menu is smaller everywhere.
 - On a player's page, picked skills in the skill grid are tinted and outlined in their colour on the XP gained chart,
   like the boss, raid and clue cells, so the grid doubles as the chart's legend. The total level keeps the green. In all
-  these grids a picked cell's tint now matches its outline, like the chart's legend, instead of leaning violet.
+  these grids a picked cell's tint now matches its outline, like the chart's legend, instead of leaning violet. A picked
+  skill's progress bar moves inside its outline, so both stay in full view.
 - Bosses have new colours that fit them: Zamorak red for K'ril, Saradomin blue for Zilyana, venom green for the
   wilderness spiders, melee red, ranged green and magic blue for the Dagannoth Kings, and so on, instead of a third of
   them sharing the same red. When two bosses on the chart still look alike, the one with fewer kills takes another
