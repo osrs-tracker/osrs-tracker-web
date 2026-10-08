@@ -153,8 +153,8 @@ Merging to `main` is the deploy. Once CI passes on `main`, the `CD` workflow (`.
 titled like the CI run that started it) builds and pushes the image (tagged `latest` and the commit SHA), then commits
 its digest to `osrs-tracker-web.yaml` with the regenerated `src/sitemap*.xml` as
 `chore(deploy): deploy sha256:<first 8> and update sitemaps`, pushed with the `DEPLOY_KEY` deploy key. Flux in the
-cluster applies `main` within a minute and reports the commit status `Flux / deploy`; the workflow waits for it (up to
-10 minutes), then smoke tests the web app only, not the API: `/` (200 with `x-cache`), the `main-*.js` it loads (200),
+cluster applies `main` within a minute and reports the commit status `Flux / sync`; the workflow waits for it (up to 10
+minutes), then smoke tests the web app only, not the API: `/` (200 with `x-cache`), the `main-*.js` it loads (200),
 `/about/terms` (200, rendered without API data) and an unknown path (404).
 
 - **Skipped:** commits that change only files outside the image (`osrs-tracker-web.yaml`, sitemaps, `docs/`, `.claude/`,

@@ -3,7 +3,7 @@ name: CD
 run-name: ${{ github.event.workflow_run.display_title }}
 
 # Deploys main once CI passes on it: builds and pushes the image, then commits its digest to osrs-tracker-web.yaml on
-# main. Flux in the cluster applies that commit and reports it as the `Flux / deploy` commit status; nothing here has
+# main. Flux in the cluster applies that commit and reports it as the `Flux / sync` commit status; nothing here has
 # cluster access. The digest commit is pushed with the DEPLOY_KEY deploy key, the only bypass of main's PR rule.
 # Rolling back: "Roll back" in docs/runbook.md.
 on:
@@ -168,7 +168,7 @@ jobs:
         run: |
           flux_state() {
             gh api "repos/$REPO/commits/$1/status" \
-              --jq '[.statuses[] | select(.context == "Flux / deploy") | .state][0] // ""' 2>/dev/null || true
+              --jq '[.statuses[] | select(.context == "Flux / sync") | .state][0] // ""' 2>/dev/null || true
           }
           deadline=$((SECONDS + 600))
           while :; do
@@ -187,7 +187,7 @@ jobs:
               failure | error) echo "::error::Flux failed to deploy $SHA ($state). Check the Discord alerts."; exit 1 ;;
             esac
             if [ "$SECONDS" -ge "$deadline" ]; then
-              echo "::error::No 'Flux / deploy' status on $SHA after 10 minutes"
+              echo "::error::No 'Flux / sync' status on $SHA after 10 minutes"
               exit 1
             fi
             sleep 15

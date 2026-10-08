@@ -14,7 +14,7 @@ git revert <commit>                          # puts the previous digest (and sit
 git push                                     # admins bypass the PR rule; or open a PR
 ```
 
-Flux applies it within a minute and reports the `Flux / deploy` status on the revert commit
+Flux applies it within a minute and reports the `Flux / sync` status on the revert commit
 (`gh api repos/osrs-tracker/osrs-tracker-web/commits/<sha>/status`). The revert only changes the manifest and sitemaps,
 so neither CI nor the `CD` workflow runs for it and the bad code isn't rebuilt (`CD` would skip a deploy revert anyway).
 The bad code is still on `main`, though: the next change that touches the image deploys it again unless that change
