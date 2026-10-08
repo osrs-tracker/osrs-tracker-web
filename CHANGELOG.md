@@ -12,7 +12,8 @@
   fixes reach the site sooner. Each update is checked on the live site after it's deployed. Deploys no longer run the
   checks a second time for their own commit, and each one is named after the change it ships.
 - Behind the scenes: notes for working on the project in parallel copies of it, and the check before publishing changes
-  now looks at the copy being published instead of the main one. The README shows whether the latest deploy succeeded.
+  now looks at the copy being published instead of the main one, however the publish is written. The README shows
+  whether the latest deploy succeeded.
 - Behind the scenes: page requests that a visitor or crawler cancels before the page is ready are logged as warnings
   marked as aborted, with how long they waited, instead of as server errors.
 - Behind the scenes: requests for missing script, style, font and image files get a quick "not found" instead of being
