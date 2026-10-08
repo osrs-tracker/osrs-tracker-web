@@ -31,6 +31,7 @@
   look up a player or item named after the file.
 - Behind the scenes: pages rendered on the server get their data from the OSRS Tracker API directly inside the hosting
   cluster, instead of going out to the internet and back in, which saves a round trip on every page.
+- Behind the scenes: removed three old comparison icons that nothing on the site used anymore.
 
 ## 2026/10/07
 
