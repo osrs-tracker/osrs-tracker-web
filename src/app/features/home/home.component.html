@@ -14,6 +14,7 @@
         <player-search class="max-w-160">
           <segmented
             leading
+            class="max-sm:basis-full"
             variant="slate"
             label="Search for"
             [options]="SEARCH_MODES"
@@ -26,6 +27,7 @@
         <item-search class="max-w-160">
           <segmented
             leading
+            class="max-sm:basis-full"
             variant="slate"
             label="Search for"
             [options]="SEARCH_MODES"
@@ -65,7 +67,7 @@
     @if (osrsNewsItems.error()) {
       <load-error source="home-news" message="Couldn't load the latest news." (retry)="osrsNewsItems.reload()" />
     } @else {
-      <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-6">
         @for (newsItem of osrsNewsItems.value(); track newsItem.link) {
           <osrs-news-card [osrsNewsItem]="newsItem" />
         } @empty {

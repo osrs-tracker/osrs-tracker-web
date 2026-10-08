@@ -1,15 +1,21 @@
-<article class="flex flex-col h-full rounded-2xl bg-card overflow-hidden">
-  <skeleton class="w-full rounded-none" [style.aspect-ratio]="628 / 354" />
-  <div class="flex flex-col grow p-4">
-    <div class="flex justify-between gap-2 mb-2 py-0.5">
+<!-- Sized like `osrs-news-card`, including its compact row on phones -->
+<article class="flex flex-col max-sm:flex-row h-full rounded-2xl bg-card overflow-hidden">
+  <skeleton
+    class="w-full max-sm:w-28 max-sm:h-auto max-sm:self-stretch rounded-none"
+    [style.aspect-ratio]="628 / 354"
+  />
+  <div class="flex flex-col grow max-sm:min-w-0 p-4 max-sm:p-3">
+    <div
+      class="flex justify-between max-sm:justify-start max-sm:flex-wrap gap-2 max-sm:gap-y-1 mb-2 max-sm:mb-1.5 py-0.5"
+    >
       <skeleton class="h-4 w-28" />
       <skeleton class="h-4 w-20" />
     </div>
-    <div class="flex flex-col gap-2 mb-2 py-1">
+    <div class="flex flex-col gap-2 max-sm:gap-1.5 mb-2 max-sm:mb-0 py-1 max-sm:py-0.75">
       <skeleton class="h-4 w-full" />
       <skeleton class="h-4 w-36" />
     </div>
-    <div class="flex flex-col gap-2 py-1">
+    <div class="flex flex-col gap-2 py-1 max-sm:hidden">
       <skeleton class="h-4 w-full" />
       <skeleton class="h-4 w-44" />
     </div>

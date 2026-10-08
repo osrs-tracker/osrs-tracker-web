@@ -1,13 +1,23 @@
+<!-- On phones a compact row: a thumbnail beside the date, category and title, without the excerpt -->
 <article
-  class="group relative flex flex-col h-full rounded-2xl bg-card overflow-hidden hover:bg-row focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent"
+  class="group relative flex flex-col max-sm:flex-row h-full rounded-2xl bg-card overflow-hidden hover:bg-row focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent"
 >
-  <img class="w-full bg-row object-cover" [ngSrc]="imageSrc()" alt="" [width]="628" [height]="354" priority />
-  <div class="flex flex-col grow p-4">
-    <div class="flex justify-between gap-2 mb-2 text-sm/5 text-muted">
+  <img
+    class="w-full max-sm:w-28 max-sm:h-auto max-sm:min-h-0 max-sm:shrink-0 max-sm:self-stretch bg-row object-cover"
+    [ngSrc]="imageSrc()"
+    alt=""
+    [width]="628"
+    [height]="354"
+    priority
+  />
+  <div class="flex flex-col grow max-sm:min-w-0 p-4 max-sm:p-3">
+    <div
+      class="flex justify-between max-sm:justify-start max-sm:flex-wrap gap-2 max-sm:gap-y-0 mb-2 max-sm:mb-1.5 text-sm/5 text-muted"
+    >
       <span>{{ osrsNewsItem().pubDate | date: 'MMMM dd, yyyy' }}</span>
       <span>{{ osrsNewsItem().category }}</span>
     </div>
-    <h3 class="mb-2 text-lg/6 font-bold line-clamp-2">
+    <h3 class="mb-2 max-sm:mb-0 text-lg/6 max-sm:text-base/5.5 font-bold line-clamp-2">
       <a
         class="text-strong group-hover:text-accent after:absolute after:inset-0 focus-visible:outline-none"
         [href]="osrsNewsItem().link"
@@ -16,6 +26,6 @@
         [innerHTML]="osrsNewsItem().title"
       ></a>
     </h3>
-    <p class="line-clamp-2" [innerHTML]="osrsNewsItem().description"></p>
+    <p class="max-sm:hidden line-clamp-2" [innerHTML]="osrsNewsItem().description"></p>
   </div>
 </article>

@@ -21,7 +21,8 @@ export interface SegmentedOption<T> {
 
 /**
  * A segmented control: 32px pills on a 4px track, the selected one accent-filled. `variant="slate"` is Home's
- * Player/Item switch, which sits beside the accent Search button. `stretch` gives every option the same width.
+ * Player/Item switch, which sits beside the accent Search button; on phones its options share the width it's given.
+ * `stretch` gives every option the same width.
  */
 @Component({
   selector: 'segmented',
@@ -32,7 +33,7 @@ export interface SegmentedOption<T> {
         class="flex items-center justify-center gap-1.5 font-bold whitespace-nowrap disabled:opacity-40 disabled:cursor-default"
         [class]="
           variant() === 'slate'
-            ? 'h-10 px-3.5 rounded-xl text-base ' +
+            ? 'h-10 px-3.5 max-sm:flex-1 rounded-xl text-base ' +
               (option.value === value() ? 'bg-line text-strong' : 'text-muted hover:text-strong')
             : 'h-8 px-3 rounded-full text-sm ' + (option.value === value() ? 'bg-accent text-on-accent' : 'text-strong')
         "
