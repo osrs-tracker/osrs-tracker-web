@@ -37,6 +37,16 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
         run: |
+          # Deploy commits get no CI run (paths-ignore above), so they have no results to compare with. Step back past
+          # them to the last commit that went through CI, or the next push would rebuild even for docs.
+          if [ "$GITHUB_EVENT_NAME" = push ] && [ -n "$BEFORE" ]; then
+            for _ in 1 2 3 4 5; do
+              only=$(git diff --name-only "$BEFORE^" "$BEFORE" 2>/dev/null) || break
+              printf '%s\n' "$only" | grep -q -v -E '^(osrs-tracker-web\.yaml|src/sitemap[^/]*\.xml)$' && break
+              echo "$BEFORE only changes the manifest or sitemaps (no CI run), comparing with its parent."
+              BEFORE=$(git rev-parse "$BEFORE^")
+            done
+          fi
           if [ -z "$BEFORE" ] || [ "$BEFORE" = 0000000000000000000000000000000000000000 ] \
             || ! files=$(git diff --name-only "$BEFORE" "$AFTER" 2>/dev/null); then
             echo "No previous commit to compare with, running everything."
