@@ -1,3 +1,8 @@
+## 2026/10/08
+
+- Behind the scenes: updates go live automatically once they're merged, instead of being built and deployed by hand, so
+  fixes reach the site sooner. Each update is checked on the live site after it's deployed.
+
 ## 2026/10/07
 
 - First step of the new look: refreshed colours in both themes (a lighter page in the light theme), flat cards with

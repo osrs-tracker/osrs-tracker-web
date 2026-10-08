@@ -5,18 +5,24 @@ What to do when osrs-tracker.freekmencke.com misbehaves in production. Deploying
 
 ## Roll back
 
-Every deploy pins an image digest in `osrs-tracker-web.yaml`, and every deploy commit is named
-`chore(deploy): osrs-tracker-web@sha256:…`. To roll back, put the previous digest back and apply it:
+Flux runs whatever `osrs-tracker-web.yaml` on `main` says, and every deploy pins an image digest there in a commit named
+`chore(deploy): deploy sha256:… and update sitemaps`. To roll back, revert the bad deploy commit on `main`:
 
 ```bash
-git log --oneline -- osrs-tracker-web.yaml   # find the previous deploy commit
-git show <commit>:osrs-tracker-web.yaml | grep image:
-# put that digest in osrs-tracker-web.yaml, then:
-kubectl diff -f osrs-tracker-web.yaml
-kubectl apply -f osrs-tracker-web.yaml && kubectl -n osrs-tracker rollout status deploy/osrs-tracker-web --timeout=300s
+git log --oneline -- osrs-tracker-web.yaml   # find the bad deploy commit
+git revert <commit>                          # puts the previous digest (and sitemaps) back
+git push                                     # admins bypass the PR rule; or open a PR
 ```
 
-Commit the reverted digest afterwards, so `main` matches what's running.
+Flux applies it within a minute and reports the `Flux / deploy` status on the revert commit
+(`gh api repos/osrs-tracker/osrs-tracker-web/commits/<sha>/status`). The deploy workflow skips reverts of deploy
+commits, so it doesn't rebuild the bad code. The bad code is still on `main`, though: the next change that touches the
+image deploys it again unless that change fixes or reverts it. A `kubectl apply` or `kubectl set image` by hand is
+undone by Flux within 10 minutes.
+
+A deploy that fails Flux's 5-minute health check fails the `Deploy` workflow run and alerts the Discord alerts channel;
+Kubernetes keeps the old pods serving until new ones are ready. If it says "forbidden", the manifest uses a kind Flux
+isn't allowed to manage yet: that's fixed in FreekMencke/home-cluster's `cluster/osrs-tracker/flux.yaml`, not here.
 
 ## Look around
 
