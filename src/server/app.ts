@@ -5,6 +5,7 @@ import { angularCacheMiddleware } from './middleware/angular-cache';
 import { applyCspNonce, cspNonceMiddleware } from './middleware/csp-nonce';
 import { loggingMiddleware } from './middleware/logging';
 import { metricsMiddleware } from './middleware/metrics';
+import { missingAssetMiddleware } from './middleware/missing-asset';
 import { protocolRelativeMiddleware } from './middleware/protocol-relative';
 import { securityMiddleware } from './middleware/security';
 import { createHealthRouter } from './routers/health';
@@ -36,6 +37,8 @@ export function createApp() {
   );
 
   app.use(express.static(serverConfig.browserDistFolder, { maxAge: '30d' }));
+  // After the static files, so only missing assets get a 404 instead of being rendered as a page
+  app.use(missingAssetMiddleware());
 
   // Express 5 passes a rejected promise on to the error handler below
   app.use(async (req, res, next) => {
