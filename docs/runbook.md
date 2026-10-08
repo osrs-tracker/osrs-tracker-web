@@ -14,7 +14,7 @@ git revert <commit>                          # puts the previous digest (and sit
 git push                                     # admins bypass the PR rule; or open a PR
 ```
 
-Flux applies it within a minute and reports the `Flux / deploy` status on the revert commit
+Flux applies it within a minute and reports the `Flux / sync` status on the revert commit
 (`gh api repos/osrs-tracker/osrs-tracker-web/commits/<sha>/status`). The deploy workflow skips reverts of deploy
 commits, so it doesn't rebuild the bad code. The bad code is still on `main`, though: the next change that touches the
 image deploys it again unless that change fixes or reverts it. A `kubectl apply` or `kubectl set image` by hand is
