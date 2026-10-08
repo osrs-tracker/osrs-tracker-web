@@ -1,0 +1,206 @@
+name: Deploy
+
+# Deploys main once CI passes on it: builds and pushes the image, then commits its digest to osrs-tracker-web.yaml on
+# main. Flux in the cluster applies that commit and reports it as the `Flux / deploy` commit status; nothing here has
+# cluster access. The digest commit is pushed with the DEPLOY_KEY deploy key, the only bypass of main's PR rule.
+# Rolling back: "Roll back" in docs/runbook.md.
+on:
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+    branches: ['main']
+
+permissions: {}
+
+jobs:
+  deploy:
+    # Pushes to main only: a pull request from a fork's branch named main also matches `branches`
+    if: >-
+      github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # One deploy at a time, never cancelled halfway. A newer queued run replaces an older queued one, which is why a run
+    # deploys the newest commit on main that passed CI, not only its own.
+    concurrency:
+      group: deploy
+      cancel-in-progress: false
+    permissions:
+      actions: read
+      contents: read
+      statuses: read
+    env:
+      IMAGE: freekmencke/osrs-tracker-web
+      REPO: ${{ github.repository }}
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+
+      - id: plan
+        name: Pick the commit to deploy
+        env:
+          RUN_SHA: ${{ github.event.workflow_run.head_sha }}
+          CI_WORKFLOW_ID: ${{ github.event.workflow_run.workflow_id }}
+          # Files that don't end up in the image: a change to only these needs no new image. Flux applies
+          # osrs-tracker-web.yaml by itself.
+          NOT_IN_IMAGE: '^(osrs-tracker-web\.yaml|src/sitemap[^/]*\.xml|docs/.*|\.claude/.*|\.github/.*|CLAUDE\.md|README\.md|LICENSE)$'
+        run: |
+          target=$RUN_SHA
+          tip=$(git rev-parse HEAD)
+          # A later commit's own run may have been replaced in the queue by this one, so take main's tip if CI passed there
+          if [ "$tip" != "$RUN_SHA" ]; then
+            tip_ci=$(gh api "repos/$REPO/actions/workflows/$CI_WORKFLOW_ID/runs?head_sha=$tip&event=push" \
+              --jq '.workflow_runs[0].conclusion // ""' 2>/dev/null || true)
+            if [ "$tip_ci" = success ]; then
+              echo "CI passed on main's tip $tip, deploying that instead of $RUN_SHA."
+              target=$tip
+            fi
+          fi
+
+          # A reverted digest commit is a rollback: building it would deploy the code it rolls back
+          if git log -1 --format=%s "$target" | grep -q '^Revert "chore(deploy)'; then
+            echo "$target rolls back a deploy, skipping."
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Every deploy commit records the commit its image was built from
+          deployed=$(git log -1 --grep='^Deployed-from: ' --format='%(trailers:key=Deployed-from,valueonly)' HEAD \
+            | tr -d '[:space:]')
+          if [ -n "$deployed" ] && git merge-base --is-ancestor "$target" "$deployed" 2>/dev/null; then
+            echo "$target is already deployed (the live image was built from $deployed), skipping."
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ -n "$deployed" ] && files=$(git diff --name-only "$deployed" "$target" 2>/dev/null) \
+            && ! printf '%s\n' "$files" | grep -q -v -E "$NOT_IN_IMAGE"; then
+            printf 'Only files outside the image changed since %s, skipping:\n%s\n' "$deployed" "$files"
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "Deploying $target (last deployed: ${deployed:-unknown})."
+          git checkout --quiet --detach "$target"
+          echo "deploy=true" >> "$GITHUB_OUTPUT"
+          echo "sha=$target" >> "$GITHUB_OUTPUT"
+
+      - if: steps.plan.outputs.deploy == 'true'
+        uses: ./.github/actions/setup-deps
+
+      # What predocker:build runs, so the regenerated sitemaps can be committed with the digest
+      - if: steps.plan.outputs.deploy == 'true'
+        run: npm run sitemap && npm run icons
+
+      - if: steps.plan.outputs.deploy == 'true'
+        uses: docker/setup-buildx-action@v4
+
+      - if: steps.plan.outputs.deploy == 'true'
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - id: image
+        if: steps.plan.outputs.deploy == 'true'
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ steps.plan.outputs.sha }}
+
+      # Checked out only now, so the key isn't on disk while dependencies install and build
+      - if: steps.plan.outputs.deploy == 'true'
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          path: .deploy
+          ssh-key: ${{ secrets.DEPLOY_KEY }}
+
+      - id: commit
+        if: steps.plan.outputs.deploy == 'true'
+        name: Commit the digest and sitemaps to main
+        working-directory: .deploy
+        env:
+          DIGEST: ${{ steps.image.outputs.digest }}
+          SOURCE_SHA: ${{ steps.plan.outputs.sha }}
+        run: |
+          sed -i -E "s#^( *image: $IMAGE)@sha256:[0-9a-f]{64}\$#\1@$DIGEST#" osrs-tracker-web.yaml
+          if ! grep -q -E "^ *image: $IMAGE@$DIGEST\$" osrs-tracker-web.yaml; then
+            echo "::error::Couldn't find the image: line in osrs-tracker-web.yaml"
+            exit 1
+          fi
+          cp ../src/sitemap*.xml src/
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add osrs-tracker-web.yaml src/sitemap*.xml
+          # The Deployed-from trailer tells later runs what's live. Its CI run starts this workflow again, which skips
+          # it: only files outside the image changed.
+          git commit --quiet --allow-empty -m "chore(deploy): deploy ${DIGEST:0:15} and update sitemaps" \
+            -m "Deployed-from: $SOURCE_SHA"
+
+          # If main moved meanwhile, rebase and retry once. A conflict (someone changed the image line) fails the job.
+          if ! git push origin HEAD:main; then
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - if: steps.plan.outputs.deploy == 'true'
+        name: Wait for Flux to deploy it
+        env:
+          SHA: ${{ steps.commit.outputs.sha }}
+        run: |
+          flux_state() {
+            gh api "repos/$REPO/commits/$1/status" \
+              --jq '[.statuses[] | select(.context == "Flux / deploy") | .state][0] // ""' 2>/dev/null || true
+          }
+          deadline=$((SECONDS + 600))
+          while :; do
+            state=$(flux_state "$SHA")
+            # Flux applies main's tip, so a commit pushed right after this one may get the status instead
+            if [ -z "$state" ]; then
+              tip=$(gh api "repos/$REPO/commits/main" --jq .sha 2>/dev/null || true)
+              if [ -n "$tip" ] && [ "$tip" != "$SHA" ] \
+                && [ "$(gh api "repos/$REPO/compare/$SHA...$tip" --jq .status 2>/dev/null)" = ahead ]; then
+                state=$(flux_state "$tip")
+                [ -n "$state" ] && echo "main moved on to $tip, which Flux deployed instead."
+              fi
+            fi
+            case $state in
+              success) echo "Flux deployed $SHA."; exit 0 ;;
+              failure | error) echo "::error::Flux failed to deploy $SHA ($state). Check the Discord alerts."; exit 1 ;;
+            esac
+            if [ "$SECONDS" -ge "$deadline" ]; then
+              echo "::error::No 'Flux / deploy' status on $SHA after 10 minutes"
+              exit 1
+            fi
+            sleep 15
+          done
+
+      - if: steps.plan.outputs.deploy == 'true'
+        name: Smoke test the site
+        run: |
+          base=https://osrs-tracker.freekmencke.com
+          failed=0
+          expect() {
+            status=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$base$2" || true)
+            echo "$2: $status (expected $1)"
+            [ "$status" = "$1" ] || failed=1
+          }
+          expect 200 /
+          expect 404 /this-page-does-not-exist
+          expect 200 /trackers/price/4151
+          expect 200 /trackers/xp/the%20fraking
+          if ! curl -s -o /dev/null -D - --max-time 30 "$base/" | grep -q -i '^x-cache:'; then
+            echo "/: no x-cache header, so the page cache isn't serving"
+            failed=1
+          fi
+          exit "$failed"

@@ -68,8 +68,10 @@ npm run build
 HOST=localhost PORT=4200 node dist/osrs-tracker-web/server/server.mjs
 ```
 
-Conventions, the deploy and the release flow are in
-[.claude/skills/osrs-tracker-web/SKILL.md](.claude/skills/osrs-tracker-web/SKILL.md).
+Merging to `main` deploys: once CI passes, [the Deploy workflow](.github/workflows/deploy.yml) builds and pushes the
+image and commits its digest to `osrs-tracker-web.yaml`, which Flux applies to the cluster. Conventions, the deploy and
+the release flow are in [.claude/skills/osrs-tracker-web/SKILL.md](.claude/skills/osrs-tracker-web/SKILL.md), rollback
+in [docs/runbook.md](docs/runbook.md).
 
 ## Built with
 

@@ -1,8 +1,8 @@
 ---
 name: osrs-tracker-web
 description:
-  Angular 22 SSR conventions, the SSR transfer-cache and page-cache pitfalls, local runs, the Docker/Kubernetes deploy
-  and the commit rules for osrs-tracker-web. Use when writing or reviewing code in this repo, debugging data that
+  Angular 22 SSR conventions, the SSR transfer-cache and page-cache pitfalls, local runs, the GitHub Actions + Flux
+  deploy and the commit rules for osrs-tracker-web. Use when writing or reviewing code in this repo, debugging data that
   refetches or flashes after load, running it locally, or building, deploying, committing, pushing, releasing or
   shipping it.
 ---
@@ -149,20 +149,22 @@ server HTML). If it's unavailable, say so rather than falling back to curl silen
 
 ## Deploy
 
-1. Run the verify command from `CLAUDE.md` (in a release, passing CI counts).
-2. `npm run docker:build && npm run docker:push`; commit the regenerated `src/sitemap*.xml`. If `docker` is missing or
-   the engine is down, start Docker Desktop from Windows:
-   `"/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe" desktop start`
-3. Put the pushed digest in `osrs-tracker-web.yaml`'s `image:` line.
-4. Confirm the live image matches the yaml, so you don't roll back someone else's deploy:
-   `kubectl -n osrs-tracker get deploy osrs-tracker-web -o jsonpath='{.spec.template.spec.containers[0].image}'`
-5. `kubectl diff -f osrs-tracker-web.yaml`: only the digest (and `generation`) should change.
-6. `kubectl apply -f osrs-tracker-web.yaml && kubectl -n osrs-tracker rollout status deploy/osrs-tracker-web --timeout=300s`
-7. Smoke test `https://osrs-tracker.freekmencke.com`: `/` 200 with `x-cache: HIT`, unknown path 404, an item and a
-   player page 200, changed pages in the browser, clean
-   `kubectl -n osrs-tracker logs deploy/osrs-tracker-web --since=5m`.
+Merging to `main` is the deploy. Once CI passes on `main`, `.github/workflows/deploy.yml` builds and pushes the image
+(tagged `latest` and the commit SHA), then commits its digest to `osrs-tracker-web.yaml` with the regenerated
+`src/sitemap*.xml` as `chore(deploy): deploy sha256:<first 8> and update sitemaps`, pushed with the `DEPLOY_KEY` deploy
+key. Flux in the cluster applies `main` within a minute and reports the commit status `Flux / deploy`; the workflow
+waits for it (up to 10 minutes), then smoke tests `/` (200 with `x-cache`), an unknown path (404), an item and a player
+page (200).
 
-Rollback and failure modes: `docs/runbook.md`.
+- **Skipped:** commits that change only files outside the image (`osrs-tracker-web.yaml`, sitemaps, `docs/`, `.claude/`,
+  `.github/`, `CLAUDE.md`, `README.md`) since the commit the last deploy was built from (its `Deployed-from:` trailer),
+  and reverts of a deploy commit. Flux applies a manifest-only change by itself.
+- **Watch it:** `gh run list --workflow deploy.yml -L 3`, then `gh run watch <id> --exit-status`. Afterwards pull `main`
+  (it has the digest commit), check changed pages in the browser and read
+  `kubectl -n osrs-tracker logs deploy/osrs-tracker-web --since=5m`.
+- **Never `kubectl apply` the manifest** or push an image by hand: Flux reverts anything that isn't on `main` within 10
+  minutes. Manifest changes go through `main` like code. `npm run docker:build` is fine for checking the image locally.
+- A failed deploy fails the run and alerts Discord. Rollback and failure modes: `docs/runbook.md`.
 
 ## Release ("release it", "ship it")
 
@@ -170,17 +172,16 @@ Run end to end without asking; stop only on failure. Verify locally once before 
 
 1. Commit on `<type>/<short-name>`, push, `gh pr create --base main`.
 2. Review `gh pr diff` for bugs and leftovers while the `conventions-reviewer` agent checks the PR; fix both and push.
-3. In the background, run docker build + push alongside `gh pr checks <n> --watch`.
-4. Once CI passes, deploy (steps 3–7).
-5. Commit digest and sitemaps, push, and add the digest and smoke-test results to the PR description.
-6. When checks pass: `gh pr merge <n> --merge`, switch to `main`, pull, `git branch -d <branch>`, `git fetch --prune`.
+3. `gh pr checks <n> --watch`.
+4. When checks pass: `gh pr merge <n> --merge`, switch to `main`, pull, `git branch -d <branch>`, `git fetch --prune`.
+5. Watch the deploy run (see Deploy), pull `main` again, and add the deployed digest and smoke-test results to the PR as
+   a comment.
 
 ## Commit and push
 
 - Conventional commits. Doc-only changes include skills, docs and `CLAUDE.md`. Admin bypasses `main`'s PR rule; after a
-  direct push, `gh run watch --exit-status`.
-- Commit and push in the same session as a deploy, so production never runs code that isn't on GitHub. A deploy from a
-  PR branch runs unmerged code: tell the user, and don't deploy `main` until it's merged.
+  direct push, `gh run watch --exit-status`. A direct push that changes the image deploys too.
+- Deploys start from `main` only, so production never runs unmerged code.
 - `CHANGELOG.md` entries cover deps and tooling too (not Dependabot PRs), newest date first. It's shown on
   `/about/changelog`, so write for users. Busy days get `###` subtitles (user-facing first, "Behind the scenes" last).
   Extend existing entries over near-duplicates; don't repeat the subtitle in entries.
