@@ -40,6 +40,8 @@ export interface LogNotice {
 })
 export class PlayerLogsComponent {
   readonly SkillEnum: typeof SkillEnum = SkillEnum;
+  /** The loading card's date: today's gains are dated by the live hiscores, not by the last check like until then */
+  readonly now: Date = new Date();
 
   /** The daily diffs, newest first; empty while they load */
   readonly diffs: InputSignal<Gains[]> = input.required();
@@ -77,7 +79,8 @@ export class PlayerLogsComponent {
       } else {
         flushRun();
         const overall = diff.skills.find(skill => skill.name === SkillEnum.Overall);
-        const since = i === 0 && !this.todayLoading() ? this.todaySince() : undefined;
+        // not on gains across a gap, which reach back before today
+        const since = i === 0 && !to && !this.todayLoading() ? this.todaySince() : undefined;
         groups.push({ type: 'day', date: diff.date, to, since, overall, skills, activities });
       }
     });

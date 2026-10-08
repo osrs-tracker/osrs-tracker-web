@@ -137,7 +137,7 @@ export default class PlayerDetailComponent implements OnInit {
   readonly today: Signal<HiscoreEntry | undefined> = computed(() =>
     this.todayResource.hasValue() ? this.todayResource.value() : undefined,
   );
-  /** Also during SSR, which doesn't fetch them, so the page doesn't change on hydration */
+  /** The live hiscores aren't in yet; also during SSR, which doesn't fetch them, so hydration doesn't change the page */
   readonly todayLoading: Signal<boolean> = computed(
     () => !this.todayResource.hasValue() && !this.todayResource.error(),
   );

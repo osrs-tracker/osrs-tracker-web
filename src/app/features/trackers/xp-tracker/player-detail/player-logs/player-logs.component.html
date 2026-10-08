@@ -26,8 +26,8 @@
     <article class="rounded-2xl bg-card" aria-busy="true">
       <div class="flex items-center justify-between gap-3 min-h-14 px-5 py-1.5 border-b border-line">
         <div class="flex items-baseline gap-2">
-          <h3 class="text-xl font-bold text-strong">{{ today.date | shortDate }}</h3>
-          @if (todaySince(); as since) {
+          <h3 class="text-xl font-bold text-strong">{{ now | shortDate }}</h3>
+          @if (today.days === 1 && todaySince(); as since) {
             <!-- on phones it would push the totals onto a second line -->
             <span class="hidden sm:inline text-sm text-muted">since {{ since }}</span>
           }
