@@ -26,7 +26,6 @@ export class OsrsProxyRepo {
       )
       .pipe(
         map(({ skills, activities }) => ({
-          sourceString: 'LEGACY',
           date: new Date(),
           scrapingOffset,
           skills,
