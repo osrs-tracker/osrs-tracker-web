@@ -5,6 +5,8 @@ import { HiscoreEntry, HiscoreSkill } from '@osrs-tracker/models';
 import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
 import { TooltipComponent } from 'src/app/common/components/general/tooltip/tooltip.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
+import { ThemeService } from 'src/app/common/services/theme.service';
+import { ChartSkill, SKILL_COLORS } from '../../skill-colors';
 import { percentageToNextLevel } from '../../skill-progress';
 import { PlayerView } from '../player-view';
 
@@ -26,9 +28,17 @@ interface SkillCell {
   /** Below 99 only */
   progress?: number;
   on: boolean;
+  /** Its line colour in the XP gained chart */
+  color: string;
 }
 
-/** The skill levels with their progress to the next level; picking skills compares them on the chart. */
+// Overall's line is drawn in the accent colour
+const OVERALL_COLOR = 'var(--accent)';
+
+/**
+ * The skill levels with their progress to the next level; picking skills compares them on the chart. Picked skills are
+ * tinted and outlined in their chart colour, like the activity grid, so the grid reads as the chart's legend.
+ */
 @Component({
   selector: 'skill-grid',
   template: `
@@ -36,11 +46,10 @@ interface SkillCell {
       @for (cell of cells(); track cell.name; let i = $index) {
         <button
           type="button"
-          class="flex flex-col justify-between focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-strong"
-          [class]="
-            (cell.on ? 'bg-row inset-ring-2 inset-ring-accent ' : 'bg-inner ') +
-            (i === 0 ? 'rounded-tl-xl' : i === 2 ? 'rounded-tr-xl' : '')
-          "
+          class="flex flex-col justify-between bg-inner focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-strong"
+          [class]="i === 0 ? 'rounded-tl-xl' : i === 2 ? 'rounded-tr-xl' : ''"
+          [style.background]="cell.on ? tint(cell.color) : null"
+          [style.box-shadow]="cell.on ? ring(cell.color) : null"
           [attr.aria-pressed]="cell.on"
           [attr.aria-label]="label(cell)"
           [tooltip]="!!cell.skill"
@@ -90,8 +99,9 @@ interface SkillCell {
 
       <button
         type="button"
-        class="col-span-3 flex items-center justify-center gap-2 h-11 rounded-b-xl focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-strong"
-        [class]="overallOn() ? 'bg-row inset-ring-2 inset-ring-accent' : 'bg-inner'"
+        class="col-span-3 flex items-center justify-center gap-2 h-11 bg-inner rounded-b-xl focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-strong"
+        [style.background]="overallOn() ? tint(OVERALL_COLOR) : null"
+        [style.box-shadow]="overallOn() ? ring(OVERALL_COLOR) : null"
         [attr.aria-pressed]="overallOn()"
         (click)="playerView.toggleSkill(SkillEnum.Overall)"
       >
@@ -109,14 +119,17 @@ interface SkillCell {
 })
 export class SkillGridComponent {
   readonly playerView = inject(PlayerView);
+  private readonly darkMode = inject(ThemeService).darkMode;
 
   readonly SkillEnum: typeof SkillEnum = SkillEnum;
+  readonly OVERALL_COLOR: string = OVERALL_COLOR;
 
   /** Undefined while the hiscores load */
   readonly hiscore: InputSignal<HiscoreEntry | undefined> = input.required();
 
   readonly cells: Signal<SkillCell[]> = computed(() => {
     const selected = this.playerView.skills();
+    const theme = this.darkMode() ? 'dark' : 'light';
     return SKILL_LAYOUT.map(name => {
       const skill = this.hiscore()?.skills.find(s => s.name === name);
       return {
@@ -124,6 +137,7 @@ export class SkillGridComponent {
         skill,
         progress: skill && skill.level < 99 ? percentageToNextLevel(skill.xp, skill.level) : undefined,
         on: selected.has(name),
+        color: SKILL_COLORS[name as ChartSkill][theme],
       };
     });
   });
@@ -131,6 +145,16 @@ export class SkillGridComponent {
     this.hiscore()?.skills.find(s => s.name === SkillEnum.Overall),
   );
   readonly overallOn: Signal<boolean> = computed(() => this.playerView.skills().has(SkillEnum.Overall));
+
+  /** A picked cell's background, as in the activity grid */
+  tint(color: string): string {
+    return `color-mix(in oklch, ${color} 18%, var(--inner))`;
+  }
+
+  /** A picked cell's outline, as in the activity grid */
+  ring(color: string): string {
+    return `inset 0 0 0 2px ${color}`;
+  }
 
   xpForNextLevel(skill: HiscoreSkill): number {
     return calculateXPForSkillLevel(skill.level + 1);

@@ -1,5 +1,7 @@
 ## 2026/10/08
 
+- On a player's page, picked skills in the skill grid are tinted and outlined in their colour on the XP gained chart,
+  like the boss, raid and clue cells, so the grid doubles as the chart's legend. The total level keeps the green.
 - Behind the scenes: updates go live automatically once they're merged, instead of being built and deployed by hand, so
   fixes reach the site sooner. Each update is checked on the live site after it's deployed. Deploys no longer run the
   checks a second time for their own commit, and each one is named after the change it ships.
