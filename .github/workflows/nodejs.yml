@@ -3,6 +3,10 @@ name: CI
 on:
   push:
     branches: ['main']
+    # Deploy commits (and reverting them to roll back) only change these, which Flux applies by itself, so they need no
+    # CI run, and with no CI run there's no deploy run to skip. A push skips only when every file matches. Never on
+    # pull_request: the required checks would never report on a PR that only changes these.
+    paths-ignore: ['osrs-tracker-web.yaml', 'src/sitemap*.xml']
   pull_request:
     branches: ['main']
 

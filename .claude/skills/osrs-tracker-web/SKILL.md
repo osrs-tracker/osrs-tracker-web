@@ -149,16 +149,19 @@ server HTML). If it's unavailable, say so rather than falling back to curl silen
 
 ## Deploy
 
-Merging to `main` is the deploy. Once CI passes on `main`, `.github/workflows/deploy.yml` builds and pushes the image
-(tagged `latest` and the commit SHA), then commits its digest to `osrs-tracker-web.yaml` with the regenerated
-`src/sitemap*.xml` as `chore(deploy): deploy sha256:<first 8> and update sitemaps`, pushed with the `DEPLOY_KEY` deploy
-key. Flux in the cluster applies `main` within a minute and reports the commit status `Flux / deploy`; the workflow
-waits for it (up to 10 minutes), then smoke tests `/` (200 with `x-cache`), an unknown path (404), an item and a player
-page (200).
+Merging to `main` is the deploy. Once CI passes on `main`, the `CD` workflow (`.github/workflows/deploy.yml`, each run
+titled like the CI run that started it) builds and pushes the image (tagged `latest` and the commit SHA), then commits
+its digest to `osrs-tracker-web.yaml` with the regenerated `src/sitemap*.xml` as
+`chore(deploy): deploy sha256:<first 8> and update sitemaps`, pushed with the `DEPLOY_KEY` deploy key. Flux in the
+cluster applies `main` within a minute and reports the commit status `Flux / deploy`; the workflow waits for it (up to
+10 minutes), then smoke tests `/` (200 with `x-cache`), an unknown path (404) and an item page (200). The test player's
+page only warns, since the player can be renamed.
 
 - **Skipped:** commits that change only files outside the image (`osrs-tracker-web.yaml`, sitemaps, `docs/`, `.claude/`,
   `.github/`, `CLAUDE.md`, `README.md`) since the commit the last deploy was built from (its `Deployed-from:` trailer),
-  and reverts of a deploy commit. Flux applies a manifest-only change by itself.
+  and reverts of a deploy commit. Flux applies a manifest-only change by itself. A rebuilt image with the same digest
+  skips the commit and checks. CI itself ignores pushes to `main` that only change `osrs-tracker-web.yaml` and sitemaps
+  (deploy commits and their reverts), so they start no deploy run at all.
 - **Watch it:** `gh run list --workflow deploy.yml -L 3`, then `gh run watch <id> --exit-status`. Afterwards pull `main`
   (it has the digest commit), check changed pages in the browser and read
   `kubectl -n osrs-tracker logs deploy/osrs-tracker-web --since=5m`.

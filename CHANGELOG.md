@@ -1,7 +1,8 @@
 ## 2026/10/08
 
 - Behind the scenes: updates go live automatically once they're merged, instead of being built and deployed by hand, so
-  fixes reach the site sooner. Each update is checked on the live site after it's deployed.
+  fixes reach the site sooner. Each update is checked on the live site after it's deployed. Deploys no longer run the
+  checks a second time for their own commit, and each one is named after the change it ships.
 
 ## 2026/10/07
 
