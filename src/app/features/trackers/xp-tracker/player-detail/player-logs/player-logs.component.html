@@ -22,17 +22,42 @@
     </article>
   }
 } @else {
+  @if (todayLoading() && diffs()[0]; as today) {
+    <article class="rounded-2xl bg-card" aria-busy="true">
+      <div class="flex items-center justify-between gap-3 min-h-14 px-5 py-1.5 border-b border-line">
+        <div class="flex items-baseline gap-2">
+          <h3 class="text-xl font-bold text-strong">{{ today.date | shortDate }}</h3>
+          @if (todaySince(); as since) {
+            <!-- on phones it would push the totals onto a second line -->
+            <span class="hidden sm:inline text-sm text-muted">since {{ since }}</span>
+          }
+        </div>
+        <skeleton class="h-4 w-30" />
+      </div>
+      <div class="grid grid-cols-log gap-x-6 gap-y-2 px-5 py-4" aria-hidden="true">
+        @for (row of [0, 1, 2, 3]; track row) {
+          <skeleton class="h-6 w-full" />
+        }
+      </div>
+    </article>
+  }
   @for (group of groups(); track $index) {
     @if (group.type === 'day') {
       <article class="rounded-2xl bg-card">
         <div class="flex flex-wrap items-center justify-between gap-2 min-h-14 px-5 py-1.5 border-b border-line">
-          <h3 class="text-xl font-bold text-strong">
-            @if (group.to) {
-              {{ group.date | date: 'EEE d MMM' }} – {{ group.to | date: 'EEE d MMM' }}
-            } @else {
-              {{ group.date | shortDate }}
+          <div class="flex items-baseline gap-2">
+            <h3 class="text-xl font-bold text-strong">
+              @if (group.to) {
+                {{ group.date | date: 'EEE d MMM' }} – {{ group.to | date: 'EEE d MMM' }}
+              } @else {
+                {{ group.date | shortDate }}
+              }
+            </h3>
+            @if (group.since; as since) {
+              <!-- on phones it would push the totals onto a second line -->
+              <span class="hidden sm:inline text-sm text-muted">since {{ since }}</span>
             }
-          </h3>
+          </div>
           @if (group.overall; as overall) {
             <div class="flex items-center gap-3.5">
               @if (overall.level > 0) {

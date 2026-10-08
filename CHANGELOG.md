@@ -14,6 +14,11 @@
   wilderness spiders, melee red, ranged green and magic blue for the Dagannoth Kings, and so on, instead of a third of
   them sharing the same red. When two bosses on the chart still look alike, the one with fewer kills takes another
   colour, in the grid too.
+- When the live hiscores come in after the page loads, the chart only moves its newest day instead of redrawing every
+  line from the bottom. Switching to 30 or 60 days shows the chart and the stat tiles loading until those days are in,
+  instead of drawing the days already loaded and then drawing again. Today's day in the log shows it's loading until the
+  live hiscores are in, instead of "Nothing interesting happened". The header only says when the stats were last saved
+  when the hiscores aren't responding and those are the stats shown, and today's day says which hour it counts from.
 
 ### Phones
 

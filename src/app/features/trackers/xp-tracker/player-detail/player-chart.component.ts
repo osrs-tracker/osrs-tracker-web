@@ -77,7 +77,8 @@ interface ChartHeading {
       class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2.5 min-h-14 px-5 py-1.5 border-b border-line"
     >
       <h2 class="text-xl font-bold text-strong">{{ title() }}</h2>
-      @if (state() === 'ready') {
+      <!-- also while a longer period loads, so the header keeps its place -->
+      @if (state() !== 'empty') {
         <segmented
           label="Period"
           [options]="periods"

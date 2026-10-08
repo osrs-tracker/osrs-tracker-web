@@ -2,6 +2,17 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## Live hiscores load in the browser only (2026/10/08)
+
+- **Context:** the player page renders on the server with the stored history, then fetches the live hiscores (through
+  the `runescape-api` proxy) in the browser for today's gains, so the page changes a moment after it loads.
+- **Decision:** keep the live fetch out of SSR. The proxy is shared with the API and the daily scrape, so rendering it
+  on the server would call Jagex for every render, crawlers included, and make each render wait on Jagex (it was moved
+  to the browser on 2025/04/24 for that). Instead, nothing jumps when it arrives: today's day-log card is a skeleton
+  until then (also in the SSR HTML), the header only says "Last checked …" when the stored stats are what's shown, and
+  `BaseChart` keeps drawn datasets over the same dates so only the newest point moves.
+- **Revisit:** if the proxy gets its own rate limit headroom, or the API starts storing intraday stats.
+
 ## Phone layout for Home and the lists (2026/10/08)
 
 - **Context:** on phones, Home's four news cards stacked as full-width image cards (about 1,500px of scrolling before

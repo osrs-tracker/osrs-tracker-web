@@ -58,6 +58,7 @@
       [trackingState]="trackingState()"
       [trackedAt]="trackedAt()"
       [lastCheckedAt]="lastCheckedAt()"
+      [stale]="stale()"
     />
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
@@ -195,7 +196,13 @@
       />
 
       <section class="order-4 md:col-start-2 md:row-start-2 min-w-0 flex flex-col gap-6" aria-label="Day log">
-        <player-logs [diffs]="diffs()" [loading]="!historyLoaded()" [notice]="logNotice()" />
+        <player-logs
+          [diffs]="diffs()"
+          [loading]="!historyLoaded()"
+          [todayLoading]="todayLoading()"
+          [todaySince]="todayResource.error() ? undefined : trackedAt()"
+          [notice]="logNotice()"
+        />
 
         @if (hasMoreEntries()) {
           @if (loadMoreFailed()) {

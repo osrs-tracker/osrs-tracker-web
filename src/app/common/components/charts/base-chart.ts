@@ -156,9 +156,22 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
   }
 
   private updateChart(chart: Chart<TType, Point[]>, data: TData): void {
+    const drawn = new Map(chart.data.datasets.map(dataset => [dataset.label, dataset]));
     this.setData(chart, data);
+
+    // Chart.js recognises a drawn dataset by its object: a new one is drawn again from the axis. A dataset over the same
+    // dates (the live hiscores changing the newest day) is updated in place, so only the points that changed move; over
+    // other dates (another period) it's drawn again, as its points would otherwise slide across to other dates
+    chart.data.datasets = chart.data.datasets.map(dataset => {
+      const previous = drawn.get(dataset.label);
+      return previous && sameDates(previous.data, dataset.data) ? Object.assign(previous, dataset) : dataset;
+    });
 
     chart.update();
     chart.resetZoom();
   }
+}
+
+function sameDates(a: Point[], b: Point[]): boolean {
+  return a.length === b.length && a.every((point, i) => point.x === b[i].x);
 }
