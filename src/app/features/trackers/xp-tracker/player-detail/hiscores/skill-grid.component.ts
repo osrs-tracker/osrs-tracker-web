@@ -45,12 +45,12 @@ const OVERALL_COLOR = 'var(--accent)';
   template: `
     <div class="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-line bg-line">
       @for (cell of cells(); track cell.name; let i = $index) {
+        @let corner = i === 0 ? 'rounded-tl-xl' : i === 2 ? 'rounded-tr-xl' : '';
         <button
           type="button"
-          class="flex flex-col justify-between bg-inner focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-strong"
-          [class]="i === 0 ? 'rounded-tl-xl' : i === 2 ? 'rounded-tr-xl' : ''"
+          class="relative flex flex-col justify-between bg-inner focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-strong"
+          [class]="corner"
           [style.background]="cell.on ? tint(cell.color) : null"
-          [style.box-shadow]="cell.on ? ring(cell.color) : null"
           [attr.aria-pressed]="cell.on"
           [attr.aria-label]="label(cell)"
           [tooltip]="!!cell.skill"
@@ -71,6 +71,14 @@ const OVERALL_COLOR = 'var(--accent)';
               <span class="block h-0.75 bg-accent-hover" [style.width.%]="cell.progress"></span>
             }
           </span>
+          <!-- On top, as the progress bar covers a box-shadow on the button itself -->
+          @if (cell.on) {
+            <span
+              class="pointer-events-none absolute inset-0"
+              [class]="corner"
+              [style.box-shadow]="ring(cell.color)"
+            ></span>
+          }
         </button>
 
         <ng-template #tooltipTemplate>
