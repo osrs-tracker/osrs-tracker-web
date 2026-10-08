@@ -1,44 +1,55 @@
 ## 2026/10/08
 
-- On phones, the big search on Home, the XP Tracker and the Price Tracker fits narrow screens: the Search button is a
-  search icon, so the input has room for its hint, and on Home the Player / Item switch fills its own row above it. The
-  latest news on Home shows two by two, with the whole picture, the title first and a short date, so the tracker lists
-  are a shorter scroll away. Player and item lists take one line per row on phones: players show their XP gained without
-  the total level, and items show their price beside the change. The tracking offset menu is smaller everywhere.
-- On a player's page, picked skills in the skill grid are tinted and outlined in their colour on the XP gained chart,
-  like the boss, raid and clue cells, so the grid doubles as the chart's legend. The total level keeps the green. In all
-  these grids a picked cell's tint now matches its outline, like the chart's legend, instead of leaning violet. A picked
-  skill's progress bar moves inside its outline, so both stay in full view.
+### Player pages
+
+- In the skill grid, picked skills are tinted and outlined in their colour on the XP gained chart, like the boss, raid
+  and clue cells, so the grid doubles as the chart's legend. The total level keeps the green. A picked skill's progress
+  bar moves inside its outline, so both stay in full view. Only skills that gained XP in the chosen days can be picked,
+  like bosses and raids: they're outlined in their chart colour, and the tooltip says how much they gained. A shorter
+  period drops picked skills that gained nothing in it. The chart's legend no longer shows a "+0" chip when everything
+  past the first few chips is already on the chart.
+- In the skill, boss, raid and clue grids, a picked cell's tint now matches its outline, like the chart's legend,
+  instead of leaning violet.
 - Bosses have new colours that fit them: Zamorak red for K'ril, Saradomin blue for Zilyana, venom green for the
   wilderness spiders, melee red, ranged green and magic blue for the Dagannoth Kings, and so on, instead of a third of
   them sharing the same red. When two bosses on the chart still look alike, the one with fewer kills takes another
   colour, in the grid too.
-- In the skill grid, only skills that gained XP in the chosen days can be picked for the XP gained chart, like bosses
-  and raids: they're outlined in their chart colour, and the tooltip says how much they gained. A shorter period drops
-  picked skills that gained nothing in it. The chart's legend no longer shows a "+0" chip when everything past the first
-  few chips is already on the chart.
-- Behind the scenes: updates go live automatically once they're merged, instead of being built and deployed by hand, so
-  fixes reach the site sooner. Each update is checked on the live site after it's deployed. Deploys no longer run the
-  checks a second time for their own commit, and each one is named after the change it ships.
-- Behind the scenes: notes for working on the project in parallel copies of it, and the check before publishing changes
-  now looks at the copy being published instead of the main one, however the publish is written. The README shows
-  whether the latest deploy succeeded, and the project notes describe today's changes. Changelog-only updates no longer
-  rebuild and redeploy the site, since this page reads the changelog straight from GitHub.
-- Behind the scenes: page requests that a visitor or crawler cancels before the page is ready are logged as warnings
-  marked as aborted, with how long they waited, instead of as server errors.
-- Behind the scenes: requests for missing script, style, font and image files get a quick "not found" instead of being
-  rendered as a page. Some crawlers asked for the site's files under a player or item address, which made the server
-  look up a player or item named after the file.
-- Behind the scenes: pages rendered on the server get their data from the OSRS Tracker API directly inside the hosting
-  cluster, instead of going out to the internet and back in, which saves a round trip on every page.
-- Behind the scenes: removed three old comparison icons that nothing on the site used anymore.
+
+### Phones
+
+- The big search on Home, the XP Tracker and the Price Tracker fits narrow screens: the Search button is a search icon,
+  so the input has room for its hint, and on Home the Player / Item switch fills its own row above it. The latest news
+  on Home shows two by two, with the whole picture, the title first and a short date, so the tracker lists are a shorter
+  scroll away.
+- Player and item lists take one line per row: players show their XP gained without the total level, and items show
+  their price beside the change. The tracking offset menu is smaller, on every screen size.
+
+### Behind the scenes
+
+- Updates go live automatically once they're merged, instead of being built and deployed by hand, so fixes reach the
+  site sooner. Each update is checked on the live site after it's deployed, and the README shows whether the latest
+  deploy succeeded. Deploys no longer run the checks a second time for their own commit, each one is named after the
+  change it ships, and changelog-only updates no longer rebuild and redeploy the site, since this page reads the
+  changelog straight from GitHub.
+- Pages rendered on the server get their data from the OSRS Tracker API directly inside the hosting cluster, instead of
+  going out to the internet and back in, which saves a round trip on every page.
+- Requests for missing script, style, font and image files get a quick "not found" instead of being rendered as a page.
+  Some crawlers asked for the site's files under a player or item address, which made the server look up a player or
+  item named after the file.
+- Page requests that a visitor or crawler cancels before the page is ready are logged as warnings marked as aborted,
+  with how long they waited, instead of as server errors.
+- The project notes cover working on it in parallel copies and describe today's changes, and the check before publishing
+  changes looks at the copy being published instead of the main one, however the publish is written.
+- Removed three old comparison icons that nothing on the site used anymore.
 
 ## 2026/10/07
 
-- First step of the new look: refreshed colours in both themes (a lighter page in the light theme), flat cards with
-  rounded corners and bigger headings, pill-shaped switches for periods and views, and restyled buttons, inputs, info
-  tooltips and charts. Failed loads say what went wrong with a "Try again" button. Changes up are a brighter green, and
-  numbers in text are no longer spaced out like the values in tables.
+### The new look
+
+- Refreshed colours in both themes (a lighter page in the light theme), flat cards with rounded corners and bigger
+  headings, pill-shaped switches for periods and views, and restyled buttons, inputs, info tooltips and charts. Failed
+  loads say what went wrong with a "Try again" button. Changes up are a brighter green, and numbers in text are no
+  longer spaced out like the values in tables.
 - A new navigation bar and footer. On phones, Home, XP Tracker and Price Tracker sit side by side as tabs under the
   logo, with the current page underlined, instead of behind a menu button. The loading bar is a thin sweep that only
   shows when loading takes a moment, and stands still if you've asked your device to reduce motion. The GitHub link
@@ -51,7 +62,7 @@
   "2.54K").
 - New XP Tracker and Price Tracker pages: a header with a bigger search box, and your recent lookups and favourites as
   three equal lists below it. On the XP Tracker the tracking offset sits under the search and says which hour's hiscores
-  you're seeing. The item search shows each match's price, and says so when nothing matches.
+  you're seeing.
 - A new Home page: one big search for players or items, with the tracking offset under it for players and your first
   three favourite items for items, next to an example of a player's stats. The latest news cards are clickable as a
   whole, and the XP Tracker and Price Tracker cards list the five most recent lookups with a link to open each tracker.
@@ -80,45 +91,49 @@
   clues show each day's gains stacked per activity, with chips to hide or show them. Minigames chart one running total
   at a time.
 - The new look reaches the last pages. The changelog, privacy policy and terms are a narrower card that's easier to
-  read. The "not found" and error pages are a panel like the item and player ones, and the error page has a "Try again"
-  button that reloads what failed. The item search shows placeholder rows while searching instead of a spinner.
+  read, and the changelog's list bullets are easier to see in the light theme. The "not found" and error pages are a
+  panel like the item and player ones, and the error page has a "Try again" button that reloads what failed.
+- The item search shows each match's price, placeholder rows while searching instead of a spinner, and a message when
+  nothing matches. When searching fails, it says so with a retry button, instead of looking like nothing was found.
 - The dotted background behind the Home, XP Tracker and Price Tracker headers is easier to see in the light theme.
-- The item search shows a message with a retry button when searching fails, instead of looking like nothing was found.
-- Every page loads a 23% smaller stylesheet: the changelog no longer uses a styling plugin for its text, which also
-  fixes a security warning. The changelog's list bullets are easier to see in the light theme.
+
+### Improvements and fixes
+
+- Home and the Price Tracker load faster: their item lists fetch prices in your browser, so the page no longer carries
+  every item's price with it (about 730KB less). Every page loads a 23% smaller stylesheet: the changelog no longer uses
+  a styling plugin for its text, which also fixes a security warning.
+- The player page counts its 7, 30 and 60 days by date. When a player has days without stats (off the hiscores, or not
+  checked), the tiles and chart say where they actually start ("XP since 12 Sep") and only compare periods of the same
+  length, and the gains from those days show as one date range in the chart and the day log, instead of on the day
+  before the gap.
 - The XP gained in the recently looked up players lists is measured from your selected tracking offset. Players tracked
   at more than one offset could show the XP gained since another offset's last update.
 - The recently looked up items and players lists only show what people looked up, not what search engines and other bots
   visited, and bots no longer start tracking new players. Lookups are recorded by your browser once the page has loaded.
   A newly tracked player's first entry shows up on their page right away.
 - Updated the SOLIX font to version 2.22: minus signs and arrows now use the site font, so negative changes like "−0.6%"
-  are the same width and height as positive ones.
-- Home and the Price Tracker load faster: their item lists fetch prices in your browser, so the page no longer carries
-  every item's price with it (about 730KB less). The profit calculator writes a negative return on investment with a
+  are the same width and height as positive ones. The profit calculator writes a negative return on investment with a
   true minus, like the other numbers.
-- The player page counts its 7, 30 and 60 days by date. When a player has days without stats (off the hiscores, or not
-  checked), the tiles and chart say where they actually start ("XP since 12 Sep") and only compare periods of the same
-  length, and the gains from those days show as one date range in the chart and the day log, instead of on the day
-  before the gap.
-- Behind the scenes: the security policy no longer allows background workers, a leftover from the service worker that
-  was turned off in 2025.
-- Behind the scenes: updated the shared OSRS Tracker data models and hiscores packages, preparing for the player page's
-  "History since" date and a notice when the hiscores aren't responding, and correcting their description of when a
-  player was last looked up.
-- Behind the scenes: code changes are formatted automatically and checked for lint and formatting errors before they're
-  pushed, and reviewed against the project's conventions before release. The automatic build and tests only run when the
-  code or its dependencies change (or the previous run didn't pass), not for releases or documentation, and reuse the
-  installed dependencies until they change.
-- Behind the scenes: Claude Code gets Angular's documentation for the installed version, and notes on code navigation in
-  the project's guide. The guide also notes which data loads only in the browser: lookups and player tracking (for
-  people, not crawlers) and large price lists, and the project summary says where app-wide code lives.
-- Behind the scenes: a monthly check compares the Grand Exchange tax rules used for "Margin after tax" and the profit
-  calculator with the OSRS Wiki, so a change to the rate, cap or exempt items gets noticed.
-- Behind the scenes: removed a deprecated Angular hydration setting that's now on by default.
-- Behind the scenes: removed the old styles and colours the new look no longer uses, and documented the design system
-  and the reasons behind it for future changes.
-- Behind the scenes: Claude Code loads a short project summary with the commands and hard rules in every session; the
-  project's guide keeps the details without repeating them.
+
+### Behind the scenes
+
+- The security policy no longer allows background workers, a leftover from the service worker that was turned off
+  in 2025.
+- Updated the shared OSRS Tracker data models and hiscores packages, preparing for the player page's "History since"
+  date and a notice when the hiscores aren't responding, and correcting their description of when a player was last
+  looked up.
+- A monthly check compares the Grand Exchange tax rules used for "Margin after tax" and the profit calculator with the
+  OSRS Wiki, so a change to the rate, cap or exempt items gets noticed.
+- Removed the old styles and colours the new look no longer uses, and a deprecated Angular hydration setting that's now
+  on by default. Documented the design system and the reasons behind it for future changes.
+- Code changes are formatted automatically and checked for lint and formatting errors before they're pushed, and
+  reviewed against the project's conventions before release. The automatic build and tests only run when the code or its
+  dependencies change (or the previous run didn't pass), not for releases or documentation, and reuse the installed
+  dependencies until they change.
+- Claude Code loads a short project summary with the commands, the hard rules and where app-wide code lives in every
+  session; the project's guide keeps the details without repeating them. Claude Code also gets Angular's documentation
+  for the installed version, and the guide has notes on code navigation and on which data loads only in the browser:
+  lookups and player tracking (for people, not crawlers) and large price lists.
 
 ## 2026/10/05
 
