@@ -18,7 +18,6 @@
         "hooks": [
           {
             "type": "command",
-            "if": "Bash(git push*)",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-push-check.sh",
             "timeout": 300,
             "statusMessage": "Running lint and prettier check before push"
