@@ -137,6 +137,10 @@ export default class PlayerDetailComponent implements OnInit {
   readonly today: Signal<HiscoreEntry | undefined> = computed(() =>
     this.todayResource.hasValue() ? this.todayResource.value() : undefined,
   );
+  /** The live hiscores aren't in yet; also during SSR, which doesn't fetch them, so hydration doesn't change the page */
+  readonly todayLoading: Signal<boolean> = computed(
+    () => !this.todayResource.hasValue() && !this.todayResource.error(),
+  );
   readonly historyLoaded: Signal<boolean> = computed(() => this.firstHistoryPage.hasValue());
   readonly history: Signal<HiscoreEntry[]> = computed(() => [
     ...(this.firstHistoryPage.hasValue() ? (this.firstHistoryPage.value() ?? []) : []),
@@ -150,6 +154,15 @@ export default class PlayerDetailComponent implements OnInit {
 
   readonly loadingMore: WritableSignal<boolean> = signal(false);
   readonly loadMoreFailed: WritableSignal<boolean> = signal(false);
+
+  /** The entries the period needs: its days and the period before them, as far as the history goes */
+  readonly #periodSize: Signal<number> = computed(() => Math.min(this.playerView.period() * 2 + 1, this.#PERIOD_SIZE));
+  /** The period's history is in (or there's no more, or it failed), so the chart and tiles are drawn once, complete */
+  readonly periodLoaded: Signal<boolean> = computed(
+    () =>
+      this.historyLoaded() &&
+      (this.history().length >= this.#periodSize() || !this.hasMoreEntries() || this.loadMoreFailed()),
+  );
 
   /** The live hiscores; until they load (or when they fail) the newest tracked entry */
   readonly current: Signal<HiscoreEntry | undefined> = computed(() => this.today() ?? this.history()[0]);
@@ -181,7 +194,7 @@ export default class PlayerDetailComponent implements OnInit {
     return this.diffs().slice(0, periodStart(current, this.history(), this.playerView.period()).index + 1);
   });
   readonly chartState: Signal<'loading' | 'empty' | 'ready'> = computed(() => {
-    if (!this.historyLoaded()) return 'loading';
+    if (!this.periodLoaded()) return 'loading';
     return this.history().length > 1 ? 'ready' : 'empty';
   });
 
@@ -273,7 +286,7 @@ export default class PlayerDetailComponent implements OnInit {
   );
   readonly statTiles: Signal<StatTile[] | undefined> = computed(() => {
     const overall = this.overall();
-    if (!overall || !this.historyLoaded()) return undefined;
+    if (!overall || !this.periodLoaded()) return undefined;
 
     const totalLevel: StatTile = {
       label: 'Total level',
@@ -319,9 +332,9 @@ export default class PlayerDetailComponent implements OnInit {
       if (this.responseInit && !this.playerDetail()) this.responseInit.status = 404;
     });
 
-    // A longer period loads the history it needs: its days and the period before them, as far as the history goes
+    // A longer period loads the history it needs
     effect(() => {
-      const needed = Math.min(this.playerView.period() * 2 + 1, this.#PERIOD_SIZE);
+      const needed = this.#periodSize();
       if (!this.historyLoaded() || this.history().length >= needed || !this.hasMoreEntries()) return;
       untracked(() => {
         if (!this.loadingMore()) this.loadMore(needed - this.history().length);

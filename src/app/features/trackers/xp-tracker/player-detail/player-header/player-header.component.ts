@@ -102,7 +102,7 @@ const TYPE_LABELS: Record<PlayerType, string> = {
         @switch (trackingState()) {
           @case ('tracked') {
             History since {{ player.trackedSince | date: 'd MMM' }}
-            @if (lastCheckedAt(); as lastCheckedAt) {
+            @if (stale() && lastCheckedAt(); as lastCheckedAt) {
               · Last checked {{ lastCheckedAt | timeAgo }}
             }
           }
@@ -152,6 +152,8 @@ export class PlayerHeaderComponent {
   readonly trackedAt: InputSignal<string> = input.required();
   /** When the daily check last stored the player's stats; unknown while the history loads */
   readonly lastCheckedAt: InputSignal<Date | undefined> = input.required();
+  /** The stats shown are the last stored ones, as the hiscores didn't respond: then the header says how old they are */
+  readonly stale: InputSignal<boolean> = input(false);
 
   readonly isFavorite: Signal<boolean> = computed(() =>
     this.xpTrackerStore.isFavoritePlayer(this.playerDetail().username),

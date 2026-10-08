@@ -17,6 +17,8 @@ type LogGroup =
       type: 'day';
       date: Date;
       to?: Date;
+      /** Today's gains so far: the hour they count from */
+      since?: string;
       overall?: HiscoreSkill;
       skills: HiscoreSkill[];
       activities: HiscoreActivity[];
@@ -38,10 +40,16 @@ export interface LogNotice {
 })
 export class PlayerLogsComponent {
   readonly SkillEnum: typeof SkillEnum = SkillEnum;
+  /** The loading card's date: today's gains are dated by the live hiscores, not by the last check like until then */
+  readonly now: Date = new Date();
 
   /** The daily diffs, newest first; empty while they load */
   readonly diffs: InputSignal<Gains[]> = input.required();
   readonly loading: InputSignal<boolean> = input(false);
+  /** The live hiscores are loading: today's gains (the first diff) aren't known yet, so it's a skeleton until then */
+  readonly todayLoading: InputSignal<boolean> = input(false);
+  /** The hour today's gains count from (the first diff), unless the live hiscores failed and there are none */
+  readonly todaySince: InputSignal<string | undefined> = input();
   /** Shown instead of the days while there are none: tracking just started, or the player isn't tracked */
   readonly notice: InputSignal<LogNotice | undefined> = input();
 
@@ -55,7 +63,8 @@ export class PlayerLogsComponent {
       run = undefined;
     };
 
-    this.diffs().forEach(diff => {
+    const diffs = this.todayLoading() ? this.diffs().slice(1) : this.diffs();
+    diffs.forEach((diff, i) => {
       const skills = diff.skills.filter(skill => skill.xp > 0 && skill.name !== SkillEnum.Overall);
       // the total of all clue tiers would count them twice
       const activities = diff.activities.filter(
@@ -70,7 +79,9 @@ export class PlayerLogsComponent {
       } else {
         flushRun();
         const overall = diff.skills.find(skill => skill.name === SkillEnum.Overall);
-        groups.push({ type: 'day', date: diff.date, to, overall, skills, activities });
+        // not on gains across a gap, which reach back before today
+        const since = i === 0 && !to && !this.todayLoading() ? this.todaySince() : undefined;
+        groups.push({ type: 'day', date: diff.date, to, since, overall, skills, activities });
       }
     });
     flushRun();
