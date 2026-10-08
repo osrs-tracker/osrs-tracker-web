@@ -51,12 +51,12 @@ const MODE_LABELS: Record<PlayerType | PlayerStatus, string> = {
   template: `
     @if (playerDetails(); as playerDetails) {
       <span
-        class="relative flex items-center justify-center size-10 shrink-0 rounded-xl bg-deep border border-line"
+        class="relative flex items-center justify-center size-10 max-sm:size-8 shrink-0 rounded-xl bg-deep border border-line"
         [title]="modeTitle()"
       >
         @if (playerDetails.type === PlayerType.Normal) {
           <svg
-            class="size-5.5 stroke-text"
+            class="size-5.5 max-sm:size-4.5 stroke-text"
             viewBox="0 0 24 24"
             fill="none"
             stroke-width="2"
@@ -69,7 +69,7 @@ const MODE_LABELS: Record<PlayerType | PlayerStatus, string> = {
           </svg>
         } @else {
           <img
-            class="size-6"
+            class="size-6 max-sm:size-5"
             icon
             [name]="playerDetails.status === PlayerStatus.Default ? playerDetails.type : playerDetails.status"
           />
@@ -83,17 +83,20 @@ const MODE_LABELS: Record<PlayerType | PlayerStatus, string> = {
         }
       </span>
     } @else {
-      <skeleton class="size-10 rounded-xl" />
+      <skeleton class="size-10 max-sm:size-8 rounded-xl" />
     }
 
     <span class="flex flex-1 flex-col gap-1 min-w-0">
-      <span class="truncate text-lg/5 font-bold text-strong">{{ _username() | capitalizeWords }}</span>
+      <span class="truncate text-lg/5 max-sm:text-base/5 font-bold text-strong">{{
+        _username() | capitalizeWords
+      }}</span>
       @if (loading()) {
-        <skeleton class="h-3 w-24 my-0.5" />
+        <skeleton class="max-sm:hidden h-3 w-24 my-0.5" />
       } @else if (overallDiffResource.error()) {
-        <span class="truncate text-sm/4 text-muted">Couldn't load this player.</span>
+        <span class="max-sm:hidden truncate text-sm/4 text-muted">Couldn't load this player.</span>
       } @else if (totalLevel() !== null) {
-        <span class="truncate text-sm/4 text-muted">Total level {{ totalLevel() | number }}</span>
+        <!-- Phones leave out the total level, so a row is one line -->
+        <span class="max-sm:hidden truncate text-sm/4 text-muted">Total level {{ totalLevel() | number }}</span>
       }
     </span>
 
@@ -120,7 +123,7 @@ const MODE_LABELS: Record<PlayerType | PlayerStatus, string> = {
   `,
   host: {
     class:
-      'flex items-center gap-3.5 px-5 py-3 border-b border-row bg-card hover:bg-row focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent',
+      'flex items-center gap-3.5 max-sm:gap-3 px-5 max-sm:px-4 py-3 max-sm:py-2.5 border-b border-row bg-card hover:bg-row focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent',
   },
   imports: [CapitalizePipe, DecimalPipe, IconDirective, LoadErrorComponent, SkeletonComponent],
 })

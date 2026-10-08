@@ -35,7 +35,7 @@
             (valueChange)="setSearchMode($event)"
           />
         </item-search>
-        <div class="flex flex-wrap items-center gap-2 min-h-11 text-sm">
+        <div class="flex flex-wrap items-center gap-2 min-h-8 text-sm">
           <span class="max-sm:basis-full text-muted">Your favourites:</span>
           @for (item of favoriteItems(); track item.id) {
             <a
@@ -91,7 +91,11 @@
       errorText="Recent lookups didn't load."
       (retry)="recentPlayerLookups.reload()"
     >
-      <span icon class="flex items-center justify-center size-11 shrink-0 rounded-xl bg-ground" aria-hidden="true">
+      <span
+        icon
+        class="flex items-center justify-center size-11 max-sm:size-9 shrink-0 rounded-xl bg-ground"
+        aria-hidden="true"
+      >
         <img class="size-6 -mt-0.5" icon name="overall" [skill]="true" />
       </span>
       <a actions class="link flex items-center gap-1.5 min-h-11" routerLink="/trackers/xp">
@@ -123,7 +127,11 @@
       errorText="Recent lookups didn't load."
       (retry)="recentItemLookups.reload()"
     >
-      <span icon class="flex items-center justify-center size-11 shrink-0 rounded-xl bg-ground" aria-hidden="true">
+      <span
+        icon
+        class="flex items-center justify-center size-11 max-sm:size-9 shrink-0 rounded-xl bg-ground"
+        aria-hidden="true"
+      >
         <img icon name="coin stack" [scale]="2" />
       </span>
       <a actions class="link flex items-center gap-1.5 min-h-11" routerLink="/trackers/price">

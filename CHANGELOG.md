@@ -3,7 +3,8 @@
 - On phones, the big search on Home, the XP Tracker and the Price Tracker fits narrow screens: the Search button is a
   search icon, so the input has room for its hint, and on Home the Player / Item switch fills its own row above it. The
   latest news on Home shows two by two, with the whole picture, the title first and a short date, so the tracker lists
-  are a shorter scroll away.
+  are a shorter scroll away. Player and item lists take one line per row on phones: players show their XP gained without
+  the total level, and items show their price beside the change. The tracking offset menu is smaller everywhere.
 - On a player's page, picked skills in the skill grid are tinted and outlined in their colour on the XP gained chart,
   like the boss, raid and clue cells, so the grid doubles as the chart's legend. The total level keeps the green. In all
   these grids a picked cell's tint now matches its outline, like the chart's legend, instead of leaning violet.
