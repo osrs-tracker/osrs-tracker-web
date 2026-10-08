@@ -38,8 +38,9 @@
   item named after the file.
 - Page requests that a visitor or crawler cancels before the page is ready are logged as warnings marked as aborted,
   with how long they waited, instead of as server errors.
-- The project notes cover working on it in parallel copies and describe today's changes, and the check before publishing
-  changes looks at the copy being published instead of the main one, however the publish is written.
+- The project notes cover working on it in parallel copies, describe today's changes and say to reread the whole day
+  when adding to this changelog, and the check before publishing changes looks at the copy being published instead of
+  the main one, however the publish is written.
 - Removed three old comparison icons that nothing on the site used anymore.
 
 ## 2026/10/07

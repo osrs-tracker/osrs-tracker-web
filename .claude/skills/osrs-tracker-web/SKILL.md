@@ -222,7 +222,8 @@ When merging several, wait for one's digest commit before rebasing the next.
 - Deploys start from `main` only, so production never runs unmerged code.
 - `CHANGELOG.md` entries cover deps and tooling too (not Dependabot PRs), newest date first. It's shown on
   `/about/changelog`, so write for users. Busy days get `###` subtitles (user-facing first, "Behind the scenes" last).
-  Extend existing entries over near-duplicates; don't repeat the subtitle in entries.
+  Extend existing entries over near-duplicates; don't repeat the subtitle in entries. When adding an entry, reread the
+  whole day: add subtitles once it's busy, and merge entries about the same feature.
 - GPG "Inappropriate ioctl for device": ask the user to run `echo test | gpg --clearsign > /dev/null`, then commit
   within ~10 min.
 - If `gh pr edit` fails on a Projects (classic) error, use
