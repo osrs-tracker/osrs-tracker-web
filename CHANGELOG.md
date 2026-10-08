@@ -10,6 +10,8 @@
 - Behind the scenes: requests for missing script, style, font and image files get a quick "not found" instead of being
   rendered as a page. Some crawlers asked for the site's files under a player or item address, which made the server
   look up a player or item named after the file.
+- Behind the scenes: pages rendered on the server get their data from the OSRS Tracker API directly inside the hosting
+  cluster, instead of going out to the internet and back in, which saves a round trip on every page.
 
 ## 2026/10/07
 
