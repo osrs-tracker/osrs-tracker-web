@@ -152,9 +152,9 @@ server HTML). If it's unavailable, say so rather than falling back to curl silen
 Merging to `main` is the deploy. Once CI passes on `main`, `.github/workflows/deploy.yml` builds and pushes the image
 (tagged `latest` and the commit SHA), then commits its digest to `osrs-tracker-web.yaml` with the regenerated
 `src/sitemap*.xml` as `chore(deploy): deploy sha256:<first 8> and update sitemaps`, pushed with the `DEPLOY_KEY` deploy
-key. Flux in the cluster applies `main` within a minute and reports the commit status `Flux / sync`; the workflow
-waits for it (up to 10 minutes), then smoke tests `/` (200 with `x-cache`), an unknown path (404), an item and a player
-page (200).
+key. Flux in the cluster applies `main` within a minute and reports the commit status `Flux / sync`; the workflow waits
+for it (up to 10 minutes), then smoke tests `/` (200 with `x-cache`), an unknown path (404), an item and a player page
+(200).
 
 - **Skipped:** commits that change only files outside the image (`osrs-tracker-web.yaml`, sitemaps, `docs/`, `.claude/`,
   `.github/`, `CLAUDE.md`, `README.md`) since the commit the last deploy was built from (its `Deployed-from:` trailer),
