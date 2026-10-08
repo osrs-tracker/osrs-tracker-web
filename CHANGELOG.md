@@ -13,6 +13,10 @@
   wilderness spiders, melee red, ranged green and magic blue for the Dagannoth Kings, and so on, instead of a third of
   them sharing the same red. When two bosses on the chart still look alike, the one with fewer kills takes another
   colour, in the grid too.
+- In the skill grid, only skills that gained XP in the chosen days can be picked for the XP gained chart, like bosses
+  and raids: they're outlined in their chart colour, and the tooltip says how much they gained. A shorter period drops
+  picked skills that gained nothing in it. The chart's legend no longer shows a "+0" chip when everything past the first
+  few chips is already on the chart.
 - Behind the scenes: updates go live automatically once they're merged, instead of being built and deployed by hand, so
   fixes reach the site sooner. Each update is checked on the live site after it's deployed. Deploys no longer run the
   checks a second time for their own commit, and each one is named after the change it ships.

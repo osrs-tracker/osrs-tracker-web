@@ -100,7 +100,7 @@
           } @else {
             @switch (playerView.top()) {
               @case ('skills') {
-                <skill-grid [hiscore]="current()" />
+                <skill-grid [hiscore]="current()" [gains]="skillGains()" />
               }
               @case ('bosses') {
                 <activity-grid
