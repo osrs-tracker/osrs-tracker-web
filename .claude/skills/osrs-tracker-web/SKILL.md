@@ -154,8 +154,8 @@ titled like the CI run that started it) builds and pushes the image (tagged `lat
 its digest to `osrs-tracker-web.yaml` with the regenerated `src/sitemap*.xml` as
 `chore(deploy): deploy sha256:<first 8> and update sitemaps`, pushed with the `DEPLOY_KEY` deploy key. Flux in the
 cluster applies `main` within a minute and reports the commit status `Flux / deploy`; the workflow waits for it (up to
-10 minutes), then smoke tests `/` (200 with `x-cache`), an unknown path (404) and an item page (200). The test player's
-page only warns, since the player can be renamed.
+10 minutes), then smoke tests the web app only, not the API: `/` (200 with `x-cache`), the `main-*.js` it loads (200),
+`/about/terms` (200, rendered without API data) and an unknown path (404).
 
 - **Skipped:** commits that change only files outside the image (`osrs-tracker-web.yaml`, sitemaps, `docs/`, `.claude/`,
   `.github/`, `CLAUDE.md`, `README.md`) since the commit the last deploy was built from (its `Deployed-from:` trailer),
