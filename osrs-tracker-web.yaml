@@ -35,6 +35,9 @@ spec:
             # Traefik sets these and overwrites any sent by clients.
             - name: TRUST_PROXY_HEADERS
               value: x-forwarded-for,x-forwarded-host,x-forwarded-port,x-forwarded-proto,x-forwarded-server
+            # Server-side rendering calls the API in-cluster, not through the router and Traefik.
+            - name: API_INTERNAL_URL
+              value: http://osrs-tracker-api-service.osrs-tracker:3000
           ports:
             - containerPort: 8080
             - containerPort: 9090

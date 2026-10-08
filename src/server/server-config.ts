@@ -10,6 +10,8 @@ export const serverConfig = {
   METRICS_PORT: Number(process.env['METRICS_PORT'] || 9090),
   HOST: process.env['HOST'] || 'localhost',
   TRUST_PROXY_HEADERS: process.env['TRUST_PROXY_HEADERS']?.split(',') || [],
+  // The API's in-cluster origin for server-side rendering. Unset, the server calls the public URL like the browser.
+  API_INTERNAL_URL: process.env['API_INTERNAL_URL'] ? new URL(process.env['API_INTERNAL_URL']).origin : undefined,
 
   // Paths
   serverDistFolder: serverDistFolder,

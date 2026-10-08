@@ -1,9 +1,14 @@
 import { ApplicationConfig, mergeApplicationConfig } from '@angular/core';
 import { provideServerRendering, RenderMode, withRoutes } from '@angular/ssr';
+import { serverConfig } from 'src/server/server-config';
 import { appConfig } from './app.config';
+import { provideInternalApiBaseUrl } from './core/interceptors/base-url.interceptors';
 
-const serverConfig: ApplicationConfig = {
-  providers: [provideServerRendering(withRoutes([{ path: '**', renderMode: RenderMode.Server }]))],
+const serverAppConfig: ApplicationConfig = {
+  providers: [
+    provideServerRendering(withRoutes([{ path: '**', renderMode: RenderMode.Server }])),
+    serverConfig.API_INTERNAL_URL ? provideInternalApiBaseUrl(serverConfig.API_INTERNAL_URL) : [],
+  ],
 };
 
-export const config = mergeApplicationConfig(appConfig, serverConfig);
+export const config = mergeApplicationConfig(appConfig, serverAppConfig);
