@@ -7,7 +7,8 @@ import { TooltipComponent } from 'src/app/common/components/general/tooltip/tool
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { ThemeService } from 'src/app/common/services/theme.service';
 import { UNCHARTED_MINIGAMES } from '../../activity-categories';
-import { ACTIVITY_COLORS, ChartActivity } from '../../activity-colors';
+import { CHART_CATEGORIES } from '../player-logs/chart-categories';
+import { chartColors } from '../../chart-colors';
 import { ActivityView, PlayerView } from '../player-view';
 import { pickedCellBackground, pickedCellRing } from './picked-cell';
 
@@ -135,6 +136,13 @@ export class ActivityGridComponent {
   /** A full-width row follows (the clue total), so the last row keeps square corners */
   readonly hasFooter: InputSignal<boolean> = input(false);
 
+  /** The colours the chart gives the category's activities with gains */
+  readonly #colors: Signal<Map<string, string>> = computed(() => {
+    const category = CHART_CATEGORIES[this.view()];
+    const series = [...this.gains()].filter(([name]) => category.has(name)).map(([name, total]) => ({ name, total }));
+    return chartColors(series, this.darkMode());
+  });
+
   readonly cells: Signal<ActivityCell[]> = computed(() => {
     const view = this.view();
     const charting = this.playerView.chart() === view;
@@ -155,7 +163,7 @@ export class ActivityGridComponent {
         gain,
         charted,
         on: charted && charting && (view === 'minigames' ? this.minigame() === name : !hidden.has(name)),
-        color: ACTIVITY_COLORS[name as ChartActivity][this.darkMode() ? 'dark' : 'light'],
+        color: this.#colors().get(name) ?? '',
         why: why ?? (view === 'minigames' && !charted ? 'No gains in these days' : undefined),
         icon: this.icon(name),
         badge: legacy ? 'L' : undefined,

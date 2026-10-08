@@ -8,6 +8,10 @@
 - On a player's page, picked skills in the skill grid are tinted and outlined in their colour on the XP gained chart,
   like the boss, raid and clue cells, so the grid doubles as the chart's legend. The total level keeps the green. In all
   these grids a picked cell's tint now matches its outline, like the chart's legend, instead of leaning violet.
+- Bosses have new colours that fit them: Zamorak red for K'ril, Saradomin blue for Zilyana, venom green for the
+  wilderness spiders, melee red, ranged green and magic blue for the Dagannoth Kings, and so on, instead of a third of
+  them sharing the same red. When two bosses on the chart still look alike, the one with fewer kills takes another
+  colour, in the grid too.
 - Behind the scenes: updates go live automatically once they're merged, instead of being built and deployed by hand, so
   fixes reach the site sooner. Each update is checked on the live site after it's deployed. Deploys no longer run the
   checks a second time for their own commit, and each one is named after the change it ships.

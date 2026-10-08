@@ -4,7 +4,7 @@ import { Chart, ChartOptions, Point } from 'chart.js';
 import { merge } from 'chart.js/helpers';
 import { BaseChart } from 'src/app/common/components/charts/base-chart';
 import { LOCAL_ICONS } from 'src/app/common/directives/icon/local-icons.token';
-import { ACTIVITY_COLORS, ChartActivity } from '../../activity-colors';
+import { chartColors } from '../../chart-colors';
 import { Gains } from '../player-summary';
 import { ActivityView, PlayerView } from '../player-view';
 import { CHART_CATEGORIES } from './chart-categories';
@@ -64,6 +64,8 @@ export class ActivityChartComponent extends BaseChart<'bar', Gains[]> {
   readonly #allSeries: Signal<ChartSeries[]> = computed(() =>
     activitySeries(this.data(), CHART_CATEGORIES[this.category()]),
   );
+  /** Every activity's colour, kept apart from the others with gains */
+  readonly #colors: Signal<Map<string, string>> = computed(() => chartColors(this.#allSeries(), this.darkMode()));
   /** The ones shown */
   readonly series: Signal<ChartSeries[]> = computed(() => this.#allSeries().filter(({ name }) => !this.hidden(name)));
   readonly legendItems: Signal<LegendItem[]> = computed(() =>
@@ -85,7 +87,7 @@ export class ActivityChartComponent extends BaseChart<'bar', Gains[]> {
   }
 
   private color(name: string): string {
-    return ACTIVITY_COLORS[name as ChartActivity][this.darkMode() ? 'dark' : 'light'];
+    return this.#colors().get(name)!;
   }
 
   protected chartOptions(): ChartOptions<'bar'> {
