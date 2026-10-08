@@ -4,7 +4,7 @@
   fixes reach the site sooner. Each update is checked on the live site after it's deployed. Deploys no longer run the
   checks a second time for their own commit, and each one is named after the change it ships.
 - Behind the scenes: notes for working on the project in parallel copies of it, and the check before publishing changes
-  now looks at the copy being published instead of the main one.
+  now looks at the copy being published instead of the main one. The README shows whether the latest deploy succeeded.
 
 ## 2026/10/07
 

@@ -1,8 +1,7 @@
 # osrs-tracker-web
 
 Angular 22 SSR app (zoneless, signals, standalone) on a custom Express server (`src/server/`), deployed to Kubernetes at
-https://osrs-tracker.freekmencke.com by Flux: merging to `main` deploys (the `CD` workflow). Sibling repos:
-`../osrs-tracker-api`, `../osrs-tracker-aws`.
+https://osrs-tracker.freekmencke.com. Sibling repos: `../osrs-tracker-api`, `../osrs-tracker-aws`.
 
 **Load the `osrs-tracker-web` skill before writing, reviewing, running, deploying or committing anything here.** It
 holds the Angular conventions, SSR rules, deploy and release steps. Keep detail there, not in this file.
@@ -21,6 +20,7 @@ holds the Angular conventions, SSR rules, deploy and release steps. Keep detail 
 - Every change gets a user-facing `CHANGELOG.md` entry under today's `## YYYY/MM/DD`. Parallel PRs all add that heading:
   when merging one after another, rebase and fold the entries under one heading.
 - Doc-only changes go straight to `main`; for anything else, ask: `main` or a PR (unless releasing).
+- Deploying is merging to `main` (GitHub Actions `CD` → Flux). Never build, push or `kubectl apply` by hand.
 - Never `--no-gpg-sign`, never `'unsafe-inline'` in the CSP, never write to disk at runtime (read-only root filesystem).
 - Read `docs/decisions.md` before "fixing" something that looks odd; many trade-offs are deliberate.
 
