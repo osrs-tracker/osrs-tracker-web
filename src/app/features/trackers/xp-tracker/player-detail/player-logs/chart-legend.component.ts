@@ -22,7 +22,7 @@ export interface LegendItem {
 
 /**
  * The chart's chips: the skill or activity icon and name in its series colour; picking one toggles its series. Past
- * `collapseAfter` items, the rest wait behind a "+N" chip, so the plot keeps its room.
+ * `collapseAfter` items, the rest that are off wait behind a "+N" chip, so the plot keeps its room.
  */
 @Component({
   selector: 'chart-legend',
@@ -55,7 +55,7 @@ export interface LegendItem {
           </button>
         </li>
       }
-      @if (items().length > collapseAfter()) {
+      @if (hidden() > 0) {
         <li>
           <button
             type="button"
@@ -63,7 +63,7 @@ export interface LegendItem {
             [attr.aria-expanded]="expanded()"
             (click)="expanded.set(!expanded())"
           >
-            {{ expanded() ? 'Fewer' : '+' + (items().length - shown().length) }}
+            {{ expanded() ? 'Fewer' : '+' + hidden() }}
           </button>
         </li>
       }
@@ -83,5 +83,9 @@ export class ChartLegendComponent {
   /** Collapsed: the first items, and any that are on */
   readonly shown: Signal<LegendItem[]> = computed(() =>
     this.expanded() ? this.items() : this.items().filter((item, i) => i < this.collapseAfter() || item.on),
+  );
+  /** How many items collapsing hides; with none, there is nothing to expand or collapse */
+  readonly hidden: Signal<number> = computed(
+    () => this.items().filter((item, i) => i >= this.collapseAfter() && !item.on).length,
   );
 }

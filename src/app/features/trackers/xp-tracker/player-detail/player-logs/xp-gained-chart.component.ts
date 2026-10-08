@@ -58,15 +58,10 @@ export class XpGainedChartComponent extends BaseChart<'line', Gains[]> {
 
   /** The picked skills that gained XP */
   readonly series: Signal<ChartSeries[]> = computed(() => xpGainedSeries(this.data(), [...this.playerView.skills()]));
-  /** Overall, then the skills that gained XP, largest first, and any picked skill that didn't */
+  /** Overall, then the skills that gained XP, largest first; only those can be picked */
   readonly chips: Signal<LegendItem[]> = computed(() => {
     const picked = this.playerView.skills();
-    const gained = xpGainedSeries(this.data()).map(({ name }) => name);
-    const names = [
-      SkillEnum.Overall,
-      ...gained,
-      ...[...picked].filter(name => name !== SkillEnum.Overall && !gained.includes(name)),
-    ];
+    const names = [SkillEnum.Overall, ...xpGainedSeries(this.data()).map(({ name }) => name)];
     return names.map(name => ({ name, color: this.cssColor(name), on: picked.has(name) }));
   });
   readonly label: Signal<string> = computed(

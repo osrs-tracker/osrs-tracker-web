@@ -28,6 +28,10 @@ interface SkillCell {
   skill?: HiscoreSkill;
   /** Below 99 only */
   progress?: number;
+  /** XP gained in the charted days */
+  gain: number;
+  /** Gained XP, so it can be picked to chart */
+  charted: boolean;
   on: boolean;
   /** Its line colour in the XP gained chart */
   color: string;
@@ -37,8 +41,9 @@ interface SkillCell {
 const OVERALL_COLOR = 'var(--accent)';
 
 /**
- * The skill levels with their progress to the next level; picking skills compares them on the chart. Picked skills are
- * tinted and outlined in their chart colour, like the activity grid, so the grid reads as the chart's legend.
+ * The skill levels with their progress to the next level; picking skills that gained XP compares them on the chart. As in
+ * the activity grid, those are outlined in their chart colour and tinted when picked, so the grid reads as the chart's
+ * legend.
  */
 @Component({
   selector: 'skill-grid',
@@ -47,16 +52,23 @@ const OVERALL_COLOR = 'var(--accent)';
       @for (cell of cells(); track cell.name; let i = $index) {
         <button
           type="button"
-          class="flex flex-col justify-between bg-inner focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-strong"
+          class="flex flex-col justify-between bg-inner aria-disabled:cursor-default focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-strong"
           [class]="i === 0 ? 'rounded-tl-xl' : i === 2 ? 'rounded-tr-xl' : ''"
           [style.background]="cell.on ? tint(cell.color) : null"
-          [style.box-shadow]="cell.on ? ring(cell.color) : null"
-          [attr.aria-pressed]="cell.on"
+          [style.box-shadow]="
+            cell.charted
+              ? cell.on
+                ? ring(cell.color)
+                : 'inset 0 0 0 1px color-mix(in oklch, ' + cell.color + ' 45%, transparent)'
+              : null
+          "
+          [attr.aria-disabled]="!cell.charted"
+          [attr.aria-pressed]="cell.charted ? cell.on : null"
           [attr.aria-label]="label(cell)"
           [tooltip]="!!cell.skill"
           [tooltipTemplate]="tooltipTemplate"
           [tooltipUnderline]="false"
-          (click)="playerView.toggleSkill(cell.name)"
+          (click)="cell.charted && playerView.toggleSkill(cell.name)"
         >
           <span class="flex items-center justify-between h-9.25 pt-1.75 pb-1.5 px-3">
             @if (cell.skill; as skill) {
@@ -96,6 +108,9 @@ const OVERALL_COLOR = 'var(--accent)';
               {{ cell.progress | number: '1.0-0' }}% to level {{ cell.skill!.level + 1 }}
             </div>
           }
+          <div class="pt-1 text-muted">
+            {{ cell.charted ? '+' + (cell.gain | number) + ' XP in these days' : 'No XP gained in these days' }}
+          </div>
         </ng-template>
       }
 
@@ -128,16 +143,21 @@ export class SkillGridComponent {
 
   /** Undefined while the hiscores load */
   readonly hiscore: InputSignal<HiscoreEntry | undefined> = input.required();
+  /** Each skill's XP gained over the charted days */
+  readonly gains: InputSignal<ReadonlyMap<string, number>> = input.required();
 
   readonly cells: Signal<SkillCell[]> = computed(() => {
     const selected = this.playerView.skills();
     const theme = this.darkMode() ? 'dark' : 'light';
     return SKILL_LAYOUT.map(name => {
       const skill = this.hiscore()?.skills.find(s => s.name === name);
+      const gain = this.gains().get(name) ?? 0;
       return {
         name,
         skill,
         progress: skill && skill.level < 99 ? percentageToNextLevel(skill.xp, skill.level) : undefined,
+        gain,
+        charted: !!skill && gain > 0,
         on: selected.has(name),
         color: SKILL_COLORS[name as ChartSkill][theme],
       };

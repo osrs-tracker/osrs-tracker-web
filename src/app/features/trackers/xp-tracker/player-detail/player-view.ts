@@ -50,6 +50,12 @@ export class PlayerView {
     this.chart.set('skills');
   }
 
+  /** Drops the picked skills without gains; Overall stays */
+  keepSkills(gains: ReadonlyMap<string, number>): void {
+    const kept = [...this.skills()].filter(name => name === SkillEnum.Overall || gains.has(name));
+    if (kept.length < this.skills().size) this.skills.set(new Set(kept.length ? kept : [SkillEnum.Overall]));
+  }
+
   /** An activity with gains: toggles its series when its category is charted, or charts its category */
   pickActivity(view: ActivityView, activity: string): void {
     if (view === 'minigames') {

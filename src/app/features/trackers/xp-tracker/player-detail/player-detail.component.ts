@@ -216,6 +216,16 @@ export default class PlayerDetailComponent implements OnInit {
     return current && periodSummary(current, this.history(), this.playerView.period());
   });
 
+  /** Each skill's XP gained over the period, for the skills that gained any */
+  readonly skillGains: Signal<ReadonlyMap<string, number>> = computed(() => {
+    const gains = new Map<string, number>();
+    this.periodDiffs().forEach(diff =>
+      diff.skills.forEach(({ name, xp }) => {
+        if (xp > 0) gains.set(name, (gains.get(name) ?? 0) + xp);
+      }),
+    );
+    return gains;
+  });
   /** Each activity's gains over the period */
   readonly activityGains: Signal<ReadonlyMap<string, number>> = computed(() => {
     const gains = new Map<string, number>();
@@ -316,6 +326,12 @@ export default class PlayerDetailComponent implements OnInit {
       untracked(() => {
         if (!this.loadingMore()) this.loadMore(needed - this.history().length);
       });
+    });
+
+    // Only skills with gains can be picked, so a shorter period drops the picks that gained nothing in it
+    effect(() => {
+      const gains = this.skillGains();
+      untracked(() => this.playerView.keepSkills(gains));
     });
   }
 
