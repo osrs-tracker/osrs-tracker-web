@@ -28,7 +28,9 @@ isn't allowed to manage yet: that's fixed in FreekMencke/home-cluster's `cluster
 
 - Pods and events: `kubectl -n osrs-tracker get pods` and `kubectl -n osrs-tracker describe deploy osrs-tracker-web`.
 - Logs: `kubectl -n osrs-tracker logs deploy/osrs-tracker-web --since=15m`, or Loki in Grafana (grafana.freekmencke.com)
-  for older logs. Requests are logged as JSON with `status`, `route` and `cache`.
+  for older logs. Requests are logged as JSON with `status`, `route` and `cache`; a client that gave up before the
+  response is a `warn` with `aborted: true` and no `status`
+  (`{namespace="osrs-tracker", app="osrs-tracker-web"} |= "\"aborted\":true"`).
 - Metrics: the Express dashboard in Grafana (request rate, status codes and latency per route label).
 - Resources: `kubectl -n osrs-tracker top pods`. The pods request 50m CPU and 128Mi memory, with a 512Mi memory limit
   (no CPU limit). A pod that hits the limit is `OOMKilled` (see `describe pod`).
@@ -77,3 +79,7 @@ opening a player or item page shows an error page (503).
 
 The API and the hiscores proxy are maintained in osrs-tracker-api and osrs-tracker-aws. Check them there before changing
 anything here.
+
+Server-side rendering reaches the API inside the cluster (`API_INTERNAL_URL` in `osrs-tracker-web.yaml`, the API's
+Service on port 3000), not through its public URL. If pages fail to render while the public API answers, check that
+Service and the variable: `kubectl -n osrs-tracker get svc osrs-tracker-api-service`.

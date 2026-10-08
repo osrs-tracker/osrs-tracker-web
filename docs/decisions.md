@@ -2,6 +2,51 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## Phone layout for Home and the lists (2026/10/08)
+
+- **Context:** on phones, Home's four news cards stacked as full-width image cards (about 1,500px of scrolling before
+  the tracker lists), and list rows were sized for desktop.
+- **Decision:** below `sm`, the news is a 2×2 grid of the same picture-on-top cards, the picture uncropped, the title
+  first and a one-line "7 Oct · Category". Tried in the design canvas and rejected: cropped thumbnails, a small
+  thumbnail beside the text (a wrapping title leaves it floating), a lead story with rows, and a sideways swipe row (it
+  broke the page margins). List rows drop to one line: no total level, the item price beside the change.
+- **Revisit:** if the news gets more than four items, or the lists need the total level back on phones.
+
+## Missing asset paths get a plain 404 (2026/10/08)
+
+- **Context:** some crawlers (OAI-SearchBot) ignore `<base href="/">` and request `/trackers/price/chunk-*.js`. Those
+  paths matched the item and player routes, so each one cost a full render and an API call with the filename as id.
+- **Decision:** `middleware/missing-asset.ts` answers paths ending in a build asset extension with a 404 after
+  `express.static`. No redirect to the root path (with the 30-day cache a stale bundle name would get the wrong file),
+  no absolute asset URLs (`deployUrl` is deprecated), no blocking the crawler (it indexes real pages fine).
+- **Revisit:** if a route ever needs to end in one of those extensions.
+
+## Server-side rendering calls the API inside the cluster (2026/10/08)
+
+- **Context:** SSR called the API through its public URL, so every call left the cluster and came back in through the
+  router, Traefik's rate limit and the CrowdSec bouncer.
+- **Decision:** with `API_INTERNAL_URL` set, the server uses the API's Service address; the browser keeps the public
+  URL. The transfer cache maps the internal origin back to the public one, so cached responses still reach the browser.
+  The API then sees the web pod as the client (no forwarded visitor IP).
+- **Revisit:** if the API moves out of the cluster or behind a different Service.
+
+## Deploys go through GitHub Actions and Flux (2026/10/08)
+
+- **Context:** deploying needed Docker Desktop, a manual digest edit and `kubectl apply` from a laptop.
+- **Decision:** merging to `main` deploys. The `CD` workflow builds the image and commits its digest with a deploy key
+  (the only bypass of `main`'s PR rule); Flux in the cluster applies it, so GitHub has no cluster access. Commits that
+  don't change the image skip the build, digest commits don't run CI, and the smoke test checks the web app only, not
+  the API, so an API outage can't fail a good web deploy.
+- **Revisit:** if deploys need an approval step, or a second environment appears.
+
+## Aborted requests are warnings (2026/10/08)
+
+- **Context:** a client that disconnects before the response has no status, and the logger counted it as a 500. Crawler
+  aborts dominated the error count and would hide a real 500.
+- **Decision:** log them as `warn` with `aborted: true` and the time until the disconnect, the same shape as the API.
+  Not `info` and not dropped: they're the only sign that slow SSR pages make visitors give up.
+- **Revisit:** if aborts stay high on one route; then that page's render time needs work.
+
 ## Semantic colour tokens instead of `dark:` pairs (2026/10/07)
 
 - **Context:** the redesign ([#78](https://github.com/osrs-tracker/osrs-tracker-web/issues/78)) has 18 colours per

@@ -21,6 +21,13 @@ there, not in the agent.
 - `src/config/config.ts` (production only): `apiBaseUrl` is the API, called during SSR, so its `Cache-Control` matters.
   `awsBaseUrl` is the API Gateway hiscores proxy, browser only; the API and a Lambda share it, so check changes in all
   three repos.
+- In the cluster, SSR calls the API at `API_INTERNAL_URL` (the API Service, set in `osrs-tracker-web.yaml`), not the
+  public URL: `provideInternalApiBaseUrl` in `core/interceptors/base-url.interceptors.ts` swaps the base URL on the
+  server and maps that origin back to `apiBaseUrl` for the transfer cache (`HTTP_TRANSFER_CACHE_ORIGIN_MAP`), so the
+  browser still finds the responses. Unset locally. URLs that end up in the HTML (the news `<img>`) use
+  `config.apiBaseUrl` directly and stay public.
+- Request logs match the API's shape: 5xx `error`, 4xx `warn`, else `info`; a client that disconnects before the
+  response is `warn` with `aborted: true` and no `status` (`src/server/middleware/logging.ts`).
 - `@osrs-tracker/hiscores` peer-depends on `@osrs-tracker/models`: bump both together, with `--prefer-online` right
   after a publish.
 - Production test players: **the fraking** (active) for visual checks, **ToxSick** (inactive) for anything that writes.
@@ -46,14 +53,21 @@ there, not in the agent.
 ## Design system
 
 Built from the [OSRS Tracker Design canvas](https://claude.ai/artifact/SptGtqgrh6RE8cVzLJJhom) (read it with the
-Artifact tool); why it looks like this is in `docs/decisions.md`. Tailwind classes only, no arbitrary `[...]` values: a
-value the scale lacks becomes a token in `src/styles/tailwind/theme.css`.
+Artifact tool); why it looks like this is in `docs/decisions.md`. Try layout ideas there first and let the user look.
+Neither the Artifact tool nor Playwright (sign-in) can render it, so ask the user for a screenshot. Its phone artboards
+import the desktop ones at 390px; component artboards are 640px wide with a Layout tweak (auto, desktop, phone); states
+such as hiscores down are tweaks, not extra artboards. A component's `<helmet>` styles apply on every artboard that
+imports it. Tailwind classes only, no arbitrary `[...]` values: a value the scale lacks becomes a token in
+`src/styles/tailwind/theme.css`.
 
 - **Colours:** semantic tokens that swap under `.dark` (`base.css`), never `dark:` pairs: `ground` page, `card`, `line`
   dividers, `row` row lines and hover, `inner` inner tiles, `deep` hero band and icon tiles, `border` controls,
   `muted`/`text`/`strong` text, `accent` (+ `accent-hover`, `on-accent`) links and primary actions, `up`/`down` changes
   (a true green in the dark theme, apart from the emerald accent), `amber`/`orange` warnings. Charts read them through
   `token()` in `chart-setup.ts`, which lists the ones they use.
+- **Tints:** a colour see-through (`color-mix(in oklch, <colour> N%, transparent)`), layered over the surface when one
+  is needed (`hiscores/picked-cell.ts`, the chart legend). Never mix a colour with a slate token: the blend takes the
+  slate's blue hue and a red turns violet.
 - **Surfaces:** cards are flat; only floating layers (dropdowns, tooltips, Home's preview card) get `shadow-float`.
   Hover changes the background, never adds a shadow.
 - **Radii:** `rounded-3xl` hero surfaces (search box, preview card), `rounded-2xl` cards, stat tiles and buttons in the
@@ -64,6 +78,9 @@ value the scale lacks becomes a token in `src/styles/tailwind/theme.css`.
 - **Spacing:** steps of 4, 8, 12, 16, 24, 32, 48, 72px; card padding 20px (`px-5`). 24px between cards and sections,
   16px between stat tiles; pages `max-w-page mx-auto px-4 sm:px-6`, 48px from the nav (`pt-12`) and 72px above the
   footer (`pb-18`); reading pages narrow to `max-w-3xl`.
+- **Phones** (below `sm`): keep pages symmetric inside the 16px margins and check balance against the cards around a
+  change. Pictures are never cropped (Home's news is a 2×2 grid of picture-on-top cards). List rows are one line: no
+  second line, 32px tiles, 16px names, the item price beside the change pill.
 - **Classes** (`components.css`): `.button--primary` (accent) and `.button--default` (outlined), `.button--rounded` for
   standalone ones; `.link` for accent links; `.search-box`/`.search-box-input` for the big search; `.markdown` for
   reading text (changelog, privacy, terms).
@@ -76,6 +93,7 @@ Which component to use (`common/components/general/` unless noted):
 | A list of players or items                           | `section[list-card]` with its loading, empty and error states; `list-row-skeleton` rows |
 | One headline number                                  | `stat-tile` (`compact` for six in a row, `loading`, `tone` for a change)                |
 | A choice of views or periods                         | `segmented` (32px pills; `variant="slate"` beside an accent button)                     |
+| The tracking offset                                  | `tracking-offset` (`features/trackers/xp-tracker/`; a 32px select, stored per device)   |
 | A whole page's state (not found, unavailable, error) | `status-panel`, with a back button or other actions as content                          |
 | Something failed to load                             | `load-error` (default, `panel` or `compact`; see Failures above)                        |
 | Something is loading                                 | `skeleton` blocks sized like the content, never a spinner                               |
@@ -116,6 +134,9 @@ the angular.dev docs for the installed major version.
 - **Font**: SOLIX comes from the private [FreekMencke/solix](https://github.com/FreekMencke/solix) releases
   (`gh release download -R FreekMencke/solix`); copy `variable/SOLIX-Variable.woff2` to `src/assets/fonts` and bump
   `?v=` in `base.css` and `index.html`.
+- **Missing assets**: `middleware/missing-asset.ts` answers paths ending in a build asset extension (`.js`, `.css`,
+  `.woff2`…) with a 404 after `express.static`, before Angular, as some crawlers resolve the asset links against the
+  page path. No route may end in one of those extensions.
 - **Page cache**: `angular-cache` serves pages pre-rendered by `AutoGenerator` (`serverConfig.autoGeneratedPages`),
   keyed by path (query ignored, trailing slash misses), 2xx only, refreshed on an interval (`/` every 5 min). After an
   API change, wait or restart.
@@ -145,6 +166,8 @@ server HTML). If it's unavailable, say so rather than falling back to curl silen
 - Dark mode first (the MCP default and most visitors); light mode too for theme changes.
 - Send a screenshot (`SendUserFile`) and report request count, failed requests and console errors. For caching, load
   twice and compare.
+- Click controls picked from a snapshot (`browser_snapshot` refs), not buttons found by guessing: a stray click toggles
+  favourites or the theme in the test browser.
 - Close the browser and delete `.playwright-mcp/` when done.
 
 ## Deploy
@@ -186,6 +209,10 @@ Run end to end without asking; stop only on failure. Verify locally once before 
    the command and wait, don't retry or work around it), switch to `main`, pull, `git branch -d <branch>`,
    `git fetch --prune`.
 5. Done: the deploy runs on its own (see Deploy). Pull `main` again later for the digest commit.
+
+Each merge adds a digest commit to `main` a few minutes later, and `main` requires branches to be up to date, so other
+open PRs turn `BEHIND`: rebase them (`git rebase origin/main`), push with `--force-with-lease` and wait for CI again.
+When merging several, wait for one's digest commit before rebasing the next.
 
 ## Commit and push
 

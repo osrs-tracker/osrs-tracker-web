@@ -13,7 +13,8 @@ holds the Angular conventions, SSR rules, deploy and release steps. Keep detail 
 - Dev server: `npm start`, always on port 4200 (the API's CORS allows only that).
 - Worktrees in `.claude/worktrees/` use the main checkout's `node_modules` (found in a parent folder); run `npm ci` in
   one only when its `package.json` changes. Other sessions share port 4200: check `ss -ltn | grep :4200` before
-  `npm start`, and stop it when done.
+  `npm start`, and stop it when done. A session edits only its own worktree; Claude Code blocks writes into another one.
+- Pushes run `.claude/hooks/pre-push-check.sh` first (lint and Prettier on the checkout being pushed).
 
 ## Hard rules
 
@@ -28,7 +29,9 @@ holds the Angular conventions, SSR rules, deploy and release steps. Keep detail 
 
 - `src/app/features/<feature>/` single-feature code; `src/app/common/` shared code, HTTP only via
   `common/repositories/`.
-- `src/app/core/` app-wide plumbing: interceptors, routing (reuse strategy, resolver errors), platform (`WINDOW`,
-  `isHumanVisitor`).
+- `src/app/core/` app-wide plumbing: interceptors (API base URL), routing (reuse strategy, resolver errors), platform
+  (`WINDOW`, `isHumanVisitor`).
+- `src/server/` the Express server: middleware (CSP nonce, request logging, missing assets, page cache), the
+  auto-generator that pre-renders pages, `server-config.ts` (env vars).
 - `docs/decisions.md` trade-offs, `docs/runbook.md` rollback and failure modes.
 - `.claude/agents/conventions-reviewer.md` reviews diffs against the skill and this file.
