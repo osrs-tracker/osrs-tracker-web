@@ -5,6 +5,8 @@
   checks a second time for their own commit, and each one is named after the change it ships.
 - Behind the scenes: notes for working on the project in parallel copies of it, and the check before publishing changes
   now looks at the copy being published instead of the main one. The README shows whether the latest deploy succeeded.
+- Behind the scenes: page requests that a visitor or crawler cancels before the page is ready are logged as warnings
+  marked as aborted, with how long they waited, instead of as server errors.
 
 ## 2026/10/07
 
