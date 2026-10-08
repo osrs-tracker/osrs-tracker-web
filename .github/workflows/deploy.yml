@@ -1,4 +1,6 @@
-name: Deploy
+name: CD
+# Titled like the CI run that started it, instead of every run being called "CD"
+run-name: ${{ github.event.workflow_run.display_title }}
 
 # Deploys main once CI passes on it: builds and pushes the image, then commits its digest to osrs-tracker-web.yaml on
 # main. Flux in the cluster applies that commit and reports it as the `Flux / sync` commit status; nothing here has
@@ -138,12 +140,18 @@ jobs:
           fi
           cp ../src/sitemap*.xml src/
 
+          # Docker builds the same image when nothing in it changed: then there's nothing to deploy or check
+          if git diff --quiet -- osrs-tracker-web.yaml; then
+            echo "The image is unchanged ($DIGEST), skipping the deploy commit."
+            exit 0
+          fi
+
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add osrs-tracker-web.yaml src/sitemap*.xml
-          # The Deployed-from trailer tells later runs what's live. Its CI run starts this workflow again, which skips
-          # it: only files outside the image changed.
-          git commit --quiet --allow-empty -m "chore(deploy): deploy ${DIGEST:0:15} and update sitemaps" \
+          # The Deployed-from trailer tells later runs what's live. CI ignores pushes that only change the manifest and
+          # sitemaps, so this commit starts no second deploy; if it did, the plan step would skip it.
+          git commit --quiet -m "chore(deploy): deploy ${DIGEST:0:15} and update sitemaps" \
             -m "Deployed-from: $SOURCE_SHA"
 
           # If main moved meanwhile, rebase and retry once. A conflict (someone changed the image line) fails the job.
@@ -153,7 +161,7 @@ jobs:
           fi
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
-      - if: steps.plan.outputs.deploy == 'true'
+      - if: steps.commit.outputs.sha
         name: Wait for Flux to deploy it
         env:
           SHA: ${{ steps.commit.outputs.sha }}
@@ -185,8 +193,9 @@ jobs:
             sleep 15
           done
 
-      - if: steps.plan.outputs.deploy == 'true'
+      - if: steps.commit.outputs.sha
         name: Smoke test the site
+        # Checks the web app itself, not the API: pages with API data would fail on an API outage after a good deploy
         run: |
           base=https://osrs-tracker.freekmencke.com
           failed=0
@@ -195,12 +204,14 @@ jobs:
             echo "$2: $status (expected $1)"
             [ "$status" = "$1" ] || failed=1
           }
-          expect 200 /
+          # Pre-rendered by the page cache
+          home=$(curl -s -D - --max-time 30 "$base/" || true)
+          echo "/: $(printf '%s\n' "$home" | head -1 | cut -d' ' -f2) (expected 200)"
+          printf '%s\n' "$home" | head -1 | grep -q ' 200' || failed=1
+          printf '%s\n' "$home" | grep -q -i '^x-cache:' || { echo "/: no x-cache header, so the page cache isn't serving"; failed=1; }
+          # The bundle the page loads, from the static file server
+          main=$(printf '%s\n' "$home" | grep -o -E '<script src="main-[^"]+\.js"' | head -1 | cut -d'"' -f2)
+          if [ -n "$main" ]; then expect 200 "/$main"; else echo "/: no main-*.js script tag"; failed=1; fi
+          expect 200 /about/terms # Rendered on request, without API data
           expect 404 /this-page-does-not-exist
-          expect 200 /trackers/price/4151
-          expect 200 /trackers/xp/the%20fraking
-          if ! curl -s -o /dev/null -D - --max-time 30 "$base/" | grep -q -i '^x-cache:'; then
-            echo "/: no x-cache header, so the page cache isn't serving"
-            failed=1
-          fi
           exit "$failed"
