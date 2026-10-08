@@ -181,10 +181,10 @@ minutes), then smoke tests the web app only, not the API: `/` (200 with `x-cache
 `/about/terms` (200, rendered without API data) and an unknown path (404).
 
 - **Skipped:** commits that change only files outside the image (`osrs-tracker-web.yaml`, sitemaps, `docs/`, `.claude/`,
-  `.github/`, `CLAUDE.md`, `README.md`) since the commit the last deploy was built from (its `Deployed-from:` trailer),
-  and reverts of a deploy commit. Flux applies a manifest-only change by itself. A rebuilt image with the same digest
-  skips the commit and checks. CI itself ignores pushes to `main` that only change `osrs-tracker-web.yaml` and sitemaps
-  (deploy commits and their reverts), so they start no deploy run at all.
+  `.github/`, `CLAUDE.md`, `README.md`, `CHANGELOG.md`, `.gitignore`) since the commit the last deploy was built from
+  (its `Deployed-from:` trailer), and reverts of a deploy commit. Flux applies a manifest-only change by itself. A
+  rebuilt image with the same digest skips the commit and checks. CI itself ignores pushes to `main` that only change
+  `osrs-tracker-web.yaml` and sitemaps (deploy commits and their reverts), so they start no deploy run at all.
 - **Merging is the end of the job: don't wait for or watch the `CD` run.** It smoke tests on its own, and a failure
   shows as a failed `CD` run (titled after the change it deploys) and a failed `Flux / sync` status, and reaches
   Discord. Only when the user asks, follow it with `gh run list --workflow deploy.yml -L 3` and

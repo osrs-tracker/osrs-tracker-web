@@ -50,7 +50,9 @@ jobs:
           CI_WORKFLOW_ID: ${{ github.event.workflow_run.workflow_id }}
           # Files that don't end up in the image: a change to only these needs no new image. Flux applies
           # osrs-tracker-web.yaml by itself.
-          NOT_IN_IMAGE: '^(osrs-tracker-web\.yaml|src/sitemap[^/]*\.xml|docs/.*|\.claude/.*|\.github/.*|CLAUDE\.md|README\.md|LICENSE)$'
+          # CHANGELOG.md too: /about/changelog fetches it from GitHub's main branch at runtime, so a changelog-only
+          # commit is live without a deploy
+          NOT_IN_IMAGE: '^(osrs-tracker-web\.yaml|src/sitemap[^/]*\.xml|docs/.*|\.claude/.*|\.github/.*|CLAUDE\.md|README\.md|CHANGELOG\.md|LICENSE|\.gitignore)$'
         run: |
           target=$RUN_SHA
           tip=$(git rev-parse HEAD)
