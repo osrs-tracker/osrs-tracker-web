@@ -9,6 +9,7 @@ import { ThemeService } from 'src/app/common/services/theme.service';
 import { UNCHARTED_MINIGAMES } from '../../activity-categories';
 import { ACTIVITY_COLORS, ChartActivity } from '../../activity-colors';
 import { ActivityView, PlayerView } from '../player-view';
+import { pickedCellBackground, pickedCellRing } from './picked-cell';
 
 interface ActivityCell {
   name: string;
@@ -44,11 +45,11 @@ interface ActivityCell {
             type="button"
             class="flex items-center justify-center h-11 bg-inner aria-disabled:cursor-default focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-strong"
             [class]="(view() === 'minigames' ? 'px-2 ' : 'px-3 ') + corner(i)"
-            [style.background]="cell.on ? 'color-mix(in oklch, ' + cell.color + ' 18%, var(--inner))' : null"
+            [style.background]="cell.on ? tint(cell.color) : null"
             [style.box-shadow]="
               cell.charted
                 ? cell.on
-                  ? 'inset 0 0 0 2px ' + cell.color
+                  ? ring(cell.color)
                   : 'inset 0 0 0 1px color-mix(in oklch, ' + cell.color + ' 45%, transparent)'
                 : null
             "
@@ -162,6 +163,16 @@ export class ActivityGridComponent {
       };
     });
   });
+
+  /** A picked cell's background, as in the skill grid */
+  tint(color: string): string {
+    return pickedCellBackground(color);
+  }
+
+  /** A picked cell's outline, as in the skill grid */
+  ring(color: string): string {
+    return pickedCellRing(color);
+  }
 
   /** Corner cells follow the grid's rounded corners, so their selection ring isn't clipped */
   corner(index: number): string {

@@ -9,6 +9,7 @@ import { ThemeService } from 'src/app/common/services/theme.service';
 import { ChartSkill, SKILL_COLORS } from '../../skill-colors';
 import { percentageToNextLevel } from '../../skill-progress';
 import { PlayerView } from '../player-view';
+import { pickedCellBackground, pickedCellRing } from './picked-cell';
 
 // The in-game skill grid, read row by row; the total level follows across the full width
 const SKILL_LAYOUT: SkillEnum[] = [
@@ -148,12 +149,12 @@ export class SkillGridComponent {
 
   /** A picked cell's background, as in the activity grid */
   tint(color: string): string {
-    return `color-mix(in oklch, ${color} 18%, var(--inner))`;
+    return pickedCellBackground(color);
   }
 
   /** A picked cell's outline, as in the activity grid */
   ring(color: string): string {
-    return `inset 0 0 0 2px ${color}`;
+    return pickedCellRing(color);
   }
 
   xpForNextLevel(skill: HiscoreSkill): number {
