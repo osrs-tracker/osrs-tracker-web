@@ -7,6 +7,9 @@
   now looks at the copy being published instead of the main one. The README shows whether the latest deploy succeeded.
 - Behind the scenes: page requests that a visitor or crawler cancels before the page is ready are logged as warnings
   marked as aborted, with how long they waited, instead of as server errors.
+- Behind the scenes: requests for missing script, style, font and image files get a quick "not found" instead of being
+  rendered as a page. Some crawlers asked for the site's files under a player or item address, which made the server
+  look up a player or item named after the file.
 
 ## 2026/10/07
 

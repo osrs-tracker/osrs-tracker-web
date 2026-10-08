@@ -1,6 +1,10 @@
 // @vitest-environment node
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from './app';
+import { serverConfig } from './server-config';
 import { serve } from './testing/serve';
 import { pageCache } from './utils/page-cache';
 
@@ -18,6 +22,11 @@ vi.mock('@angular/ssr/node', () => ({
 }));
 
 describe('createApp', () => {
+  // A browser build with one chunk, so the static middleware has a real asset to serve
+  serverConfig.browserDistFolder = mkdtempSync(join(tmpdir(), 'osrs-tracker-browser-'));
+  writeFileSync(join(serverConfig.browserDistFolder, 'chunk-real.js'), 'export {};');
+  afterAll(() => rmSync(serverConfig.browserDistFolder, { recursive: true }));
+
   const { app, metricsApp } = createApp();
   const get = serve(app);
   const getMetrics = serve(metricsApp);
@@ -89,6 +98,24 @@ describe('createApp', () => {
 
     expect(res.status).toBe(404);
     expect(res.headers.get('location')).toBeNull();
+    expect(handle).not.toHaveBeenCalled();
+  });
+
+  it('answers missing assets under a page path with a 404 without rendering them', async () => {
+    for (const path of ['/trackers/price/chunk-x.js', '/trackers/xp/styles-X.css', '/chunk-gone.js']) {
+      const res = await get(path);
+
+      expect(res.status).toBe(404);
+      expect(await res.text()).toBe('Not Found');
+    }
+    expect(handle).not.toHaveBeenCalled();
+  });
+
+  it('still serves existing assets', async () => {
+    const res = await get('/chunk-real.js');
+
+    expect(res.status).toBe(200);
+    expect(await res.text()).toBe('export {};');
     expect(handle).not.toHaveBeenCalled();
   });
 
