@@ -20,7 +20,7 @@ import { XpTrackerStore } from './xp-tracker.store';
     </label>
     <select
       id="tracking-offset"
-      class="h-11 pl-3 pr-9 rounded-xl border-line bg-card font-bold text-strong tabular-nums cursor-pointer focus:border-accent focus:ring-accent"
+      class="h-8 pl-2 pr-8 py-0 rounded-xl border-line bg-card font-bold text-strong tabular-nums cursor-pointer focus:border-accent focus:ring-accent"
       name="scrapingOffset"
       [ngModel]="scrapingOffset()"
       (ngModelChange)="xpTrackerStore.setScrapingOffset($event)"
@@ -31,7 +31,7 @@ import { XpTrackerStore } from './xp-tracker.store';
     </select>
     <span>Showing hiscores tracked at {{ trackedAt() }}</span>
   `,
-  host: { class: 'flex flex-wrap items-center gap-x-3 gap-y-2 min-h-11 text-sm text-muted' },
+  host: { class: 'flex flex-wrap items-center gap-x-3 gap-y-2 min-h-8 text-sm text-muted' },
   imports: [FormsModule, InfoTooltipComponent],
 })
 export class TrackingOffsetComponent {

@@ -43,7 +43,7 @@ import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
         autocomplete="hidden"
       />
 
-      <button type="submit" class="button--primary" (click)="searchItems()">
+      <button type="submit" class="button--primary search-box-button" (click)="searchItems()">
         <svg
           class="size-4.5"
           viewBox="0 0 24 24"
@@ -56,7 +56,7 @@ import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
           <circle cx="11" cy="11" r="7" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
-        Search
+        <span class="max-sm:sr-only">Search</span>
       </button>
     </form>
 

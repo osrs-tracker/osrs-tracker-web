@@ -7,6 +7,9 @@
   /* The page width: nav, footer and page content (24px gutters, 16px on phones) */
   --container-page: 75rem;
 
+  /* The big search box on phones, a step tighter than its 24px (rounded-3xl) */
+  --radius-search-phone: 1.25rem;
+
   /* Badges on icons only (Legacy Bounty Hunter's "L"); text starts at text-xs */
   --text-2xs: 0.625rem;
 

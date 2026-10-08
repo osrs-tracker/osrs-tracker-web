@@ -21,7 +21,7 @@ import { RouterLink } from '@angular/router';
       />
       <button
         type="submit"
-        class="button--primary"
+        class="button--primary search-box-button"
         [routerLink]="usernameQuery() ? ['/trackers/xp', usernameQuery()] : '.'"
       >
         <svg
@@ -36,7 +36,7 @@ import { RouterLink } from '@angular/router';
           <circle cx="11" cy="11" r="7" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
-        Search
+        <span class="max-sm:sr-only">Search</span>
       </button>
     </form>
   `,

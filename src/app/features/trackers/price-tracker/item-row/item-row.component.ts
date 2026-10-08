@@ -27,32 +27,43 @@ interface ItemRowPrice {
   selector: 'a[item-row]',
   template: `
     <span
-      class="flex items-center justify-center size-10 shrink-0 rounded-xl bg-deep border border-line"
+      class="flex items-center justify-center size-10 max-sm:size-8 shrink-0 rounded-xl bg-deep border border-line"
       aria-hidden="true"
     >
-      <img class="max-w-7.5 max-h-7.5" icon [name]="item().icon" [wiki]="true" />
+      <img class="max-w-7.5 max-h-7.5 max-sm:max-w-6 max-sm:max-h-6" icon [name]="item().icon" [wiki]="true" />
     </span>
 
+    <!-- On phones the price sits beside the change instead, so a row is one line -->
     <span class="flex flex-1 flex-col gap-1 min-w-0">
-      <span class="truncate text-lg/5 font-bold text-strong">{{ item().name }}</span>
+      <span class="truncate text-lg/5 max-sm:text-base/5 font-bold text-strong">{{ item().name }}</span>
       @if (loading()) {
-        <skeleton class="h-3 w-16 my-0.5" />
+        <skeleton class="max-sm:hidden h-3 w-16 my-0.5" />
       } @else if (priceResource.error()) {
-        <span class="truncate text-sm/4 text-muted">Couldn't load the price.</span>
+        <span class="max-sm:hidden truncate text-sm/4 text-muted">Couldn't load the price.</span>
       } @else if (price() === null) {
-        <span class="truncate text-sm/4 text-muted">No recent trades</span>
+        <span class="max-sm:hidden truncate text-sm/4 text-muted">No recent trades</span>
       } @else {
-        <span class="text-sm/4 text-muted tabular-nums" [title]="(price() | number) + ' gp'"
+        <span class="max-sm:hidden text-sm/4 text-muted tabular-nums" [title]="(price() | number) + ' gp'"
           >{{ shortPrice() }} gp</span
         >
       }
     </span>
 
     @if (loading()) {
+      <skeleton class="sm:hidden h-3 w-12" />
       <skeleton class="h-6 w-18 rounded-full" />
     } @else if (priceResource.error()) {
       <load-error compact source="item-row" message="Couldn't load the price." (retry)="priceResource.reload()" />
-    } @else if (changePercent() !== null) {
+    } @else {
+      @if (price() === null) {
+        <span class="sm:hidden shrink-0 text-sm text-muted">No recent trades</span>
+      } @else {
+        <span class="sm:hidden shrink-0 text-sm text-muted tabular-nums" [title]="(price() | number) + ' gp'"
+          >{{ shortPrice() }} gp</span
+        >
+      }
+    }
+    @if (!loading() && !priceResource.error() && changePercent() !== null) {
       <span
         class="shrink-0 min-w-18 px-2.5 py-1 rounded-full text-center text-sm/4 font-bold whitespace-nowrap tabular-nums"
         [class]="up() ? 'text-up bg-up/16' : 'text-down bg-down/16'"
@@ -64,7 +75,7 @@ interface ItemRowPrice {
   `,
   host: {
     class:
-      'flex items-center gap-3.5 px-5 py-3 border-b border-row bg-card hover:bg-row focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent',
+      'flex items-center gap-3.5 max-sm:gap-3 px-5 max-sm:px-4 py-3 max-sm:py-2.5 border-b border-row bg-card hover:bg-row focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent',
   },
   imports: [DecimalPipe, IconDirective, LoadErrorComponent, SkeletonComponent],
 })

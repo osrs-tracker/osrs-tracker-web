@@ -18,12 +18,18 @@
     @apply font-bold text-accent hover:text-accent-hover;
   }
 
-  /* The big search: a borderless input and a `.button--primary` in one rounded box */
+  /*
+   * The big search: a borderless input and a `.button--primary.search-box-button` in one rounded box. On phones the
+   * input takes the rest of the row and the button is a 48px icon (its label `max-sm:sr-only`).
+   */
   .search-box {
-    @apply flex flex-wrap items-center gap-1.5 p-1.5 rounded-3xl bg-card border border-border focus-within:border-accent;
+    @apply flex flex-wrap items-center gap-1.5 p-1.5 rounded-3xl max-sm:rounded-search-phone bg-card border border-border focus-within:border-accent;
   }
   .search-box-input {
-    @apply grow basis-50 min-w-0 h-12 px-3.5 border-0 bg-transparent text-lg text-strong placeholder:text-muted focus:ring-0 focus:outline-none;
+    @apply grow basis-50 max-sm:basis-0 min-w-0 h-12 px-3.5 max-sm:pl-3 max-sm:pr-2 border-0 bg-transparent text-lg max-sm:text-base text-strong max-sm:text-ellipsis placeholder:text-muted focus:ring-0 focus:outline-none;
+  }
+  .search-box-button {
+    @apply max-sm:w-12 max-sm:shrink-0 max-sm:px-0;
   }
 
   /* The `<skeleton>` block; a component class, so utilities on the element (e.g. its radius) override it */
