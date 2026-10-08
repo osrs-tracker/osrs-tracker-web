@@ -162,12 +162,18 @@ minutes), then smoke tests the web app only, not the API: `/` (200 with `x-cache
   and reverts of a deploy commit. Flux applies a manifest-only change by itself. A rebuilt image with the same digest
   skips the commit and checks. CI itself ignores pushes to `main` that only change `osrs-tracker-web.yaml` and sitemaps
   (deploy commits and their reverts), so they start no deploy run at all.
-- **Watch it:** `gh run list --workflow deploy.yml -L 3`, then `gh run watch <id> --exit-status`. Afterwards pull `main`
-  (it has the digest commit), check changed pages in the browser and read
-  `kubectl -n osrs-tracker logs deploy/osrs-tracker-web --since=5m`.
+- **Merging is the end of the job: don't wait for or watch the `CD` run.** It smoke tests on its own, and a failure
+  shows as a failed `CD` run (titled after the change it deploys) and a failed `Flux / sync` status, and reaches
+  Discord. Only when the user asks, follow it with `gh run list --workflow deploy.yml -L 3` and
+  `gh run watch <id> --exit-status`, then check changed pages in the browser and read
+  `kubectl -n osrs-tracker logs deploy/osrs-tracker-web --since=5m` (reading the cluster is fine).
+- **Retry** a failed deploy (Docker Hub or Flux hiccup) by re-running the failed `CD` run; a later docs-only push won't
+  redeploy.
 - **Never `kubectl apply` the manifest** or push an image by hand: Flux reverts anything that isn't on `main` within 10
   minutes. Manifest changes go through `main` like code. `npm run docker:build` is fine for checking the image locally.
 - A failed deploy fails the run and alerts Discord. Rollback and failure modes: `docs/runbook.md`.
+- Testing workflow shell snippets locally: Claude Code's `grep` is a shell function wrapping ugrep, which differs from
+  CI's GNU grep (e.g. `grep -q -v` on mixed input). Use `command grep` there.
 
 ## Release ("release it", "ship it")
 
@@ -176,14 +182,16 @@ Run end to end without asking; stop only on failure. Verify locally once before 
 1. Commit on `<type>/<short-name>`, push, `gh pr create --base main`.
 2. Review `gh pr diff` for bugs and leftovers while the `conventions-reviewer` agent checks the PR; fix both and push.
 3. `gh pr checks <n> --watch`.
-4. When checks pass: `gh pr merge <n> --merge`, switch to `main`, pull, `git branch -d <branch>`, `git fetch --prune`.
-5. Watch the deploy run (see Deploy), pull `main` again, and add the deployed digest and smoke-test results to the PR as
-   a comment.
+4. When checks pass: `gh pr merge <n> --merge` (it deploys; if Claude Code's permission check blocks it, give the user
+   the command and wait, don't retry or work around it), switch to `main`, pull, `git branch -d <branch>`,
+   `git fetch --prune`.
+5. Done: the deploy runs on its own (see Deploy). Pull `main` again later for the digest commit.
 
 ## Commit and push
 
 - Conventional commits. Doc-only changes include skills, docs and `CLAUDE.md`. Admin bypasses `main`'s PR rule; after a
-  direct push, `gh run watch --exit-status`. A direct push that changes the image deploys too.
+  direct push, watch its CI run (`gh run watch --exit-status`). A direct push that changes the image deploys too.
+- `chore(deploy)` is reserved for the `CD` workflow's digest commits.
 - Deploys start from `main` only, so production never runs unmerged code.
 - `CHANGELOG.md` entries cover deps and tooling too (not Dependabot PRs), newest date first. It's shown on
   `/about/changelog`, so write for users. Busy days get `###` subtitles (user-facing first, "Behind the scenes" last).

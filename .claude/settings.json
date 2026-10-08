@@ -19,7 +19,7 @@
           {
             "type": "command",
             "if": "Bash(git push*)",
-            "command": "cd \"$CLAUDE_PROJECT_DIR\" && out=$({ npm run -s lint && npm run -s prettier:ci; } 2>&1) || { printf 'Push blocked: lint or prettier check failed.\\n%s\\n' \"$(printf '%s' \"$out\" | tail -40)\" >&2; exit 2; }",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-push-check.sh",
             "timeout": 300,
             "statusMessage": "Running lint and prettier check before push"
           }
