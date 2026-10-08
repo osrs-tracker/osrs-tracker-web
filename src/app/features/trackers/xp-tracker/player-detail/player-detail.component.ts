@@ -19,10 +19,10 @@ import {
 } from '@angular/core';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ActivityEnum, SkillEnum, parseHiscores } from '@osrs-tracker/hiscores';
+import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
 import { HiscoreEntry, HiscoreSkill, Player } from '@osrs-tracker/models';
 import { format } from 'date-fns';
-import { EMPTY, catchError, finalize, map } from 'rxjs';
+import { EMPTY, catchError, finalize } from 'rxjs';
 import { LoadErrorComponent } from 'src/app/common/components/general/load-error.component';
 import { SegmentedComponent, SegmentedOption } from 'src/app/common/components/general/segmented.component';
 import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
@@ -122,15 +122,12 @@ export default class PlayerDetailComponent implements OnInit {
     // the resolved player, not playerDetail: trackPlayer replacing it mustn't restart the request
     params: () =>
       this.isBrowser && this.player() ? { username: this.username, offset: this.scrapingOffset() } : undefined,
-    stream: ({ params: { username, offset } }) =>
-      this.osrsProxyRepo.getPlayerHiscore(username, offset).pipe(map(hiscore => parseHiscores([hiscore])[0])),
+    stream: ({ params: { username, offset } }) => this.osrsProxyRepo.getPlayerHiscore(username, offset),
   });
   readonly firstHistoryPage: ResourceRef<HiscoreEntry[] | undefined> = rxResource({
     params: () => (this.player() ? { username: this.username, offset: this.scrapingOffset() } : undefined),
     stream: ({ params: { username, offset } }) =>
-      this.osrsTrackerRepo
-        .getPlayerHiscores(username, offset, this.#DEFAULT_SIZE, 0)
-        .pipe(map(scrapedHiscores => parseHiscores(scrapedHiscores))),
+      this.osrsTrackerRepo.getPlayerHiscores(username, offset, this.#DEFAULT_SIZE, 0),
   });
 
   // value() throws while a resource is in its error state, so read it through hasValue()
@@ -403,8 +400,7 @@ export default class PlayerDetailComponent implements OnInit {
         finalize(() => this.loadingMore.set(false)),
       )
       .subscribe({
-        next: scrapedHiscores =>
-          this.#morePages.update(pages => [...pages, { entries: parseHiscores(scrapedHiscores), size }]),
+        next: scrapedHiscores => this.#morePages.update(pages => [...pages, { entries: scrapedHiscores, size }]),
         error: () => this.loadMoreFailed.set(true),
       });
   }
