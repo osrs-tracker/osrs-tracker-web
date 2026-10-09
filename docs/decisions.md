@@ -6,11 +6,13 @@ Choices that look like accidents without their context: what was decided, why, a
 
 - **Context:** the `compression` middleware compressed every response in the pod (brotli quality 4), using the CPU SSR
   renders need. Every static file got a 30-day cache, unhashed icons and sitemaps included.
-- **Decision:** the `osrs-tracker-web-compress` Middleware in `osrs-tracker-web.yaml` compresses text types (gzip, br or
-  zstd), last in the Ingress's chain, like the API's. Images and the font are left alone. Locally nothing is compressed.
-  `middleware/static-files.ts` caches hashed bundles (`.js`/`.css` at the root) for a year (`immutable`), revalidates
-  `noCacheStaticFiles` (manifest, robots, sitemaps) on every use, and caches the rest for a day. Not compressed at build
-  time: a better ratio, but more build and server code than the traffic is worth.
+- **Decision:** the `osrs-tracker-web-compress` Middleware in `osrs-tracker-web.yaml` compresses text types, last in the
+  Ingress's chain, like the API's. Brotli is preferred (`encodings: [br, gzip]`): browsers don't weight their encodings,
+  and Traefik's default order gave them all gzip; its zstd came out larger than both. Images and the font are left
+  alone. Locally nothing is compressed. `middleware/static-files.ts` caches hashed bundles (`.js`/`.css` at the root)
+  for a year (`immutable`), revalidates `noCacheStaticFiles` (manifest, robots, sitemaps) on every use, and caches the
+  rest for a day. Not compressed at build time: a better ratio, but more build and server code than the traffic is
+  worth.
 - **Revisit:** if Traefik's CPU use matters, or for pre-compressed static files at higher traffic.
 
 ## The server's connections outlive Traefik's (2026/10/09)

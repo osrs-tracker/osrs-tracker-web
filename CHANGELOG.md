@@ -33,10 +33,10 @@
 - The server's monitoring now uses the same shared package as the API instead of an unmaintained one, and also reports
   the server's memory use and responsiveness.
 - Compressing pages and scripts moved from the site's server to the router in front of it, like the API's responses,
-  leaving the server more time to build pages, and browsers that support the zstd format can now get it. Changed icons
-  now show up within a day instead of a month, while the site's scripts and styles stay cached for a year, as their
-  names change with every update. Right after an update, the first visitors get ready-made pages instead of waiting for
-  them to be built, and a rare cause of failed page loads is fixed.
+  leaving the server more time to build pages. Browsers get the smaller brotli format, as before. Changed icons now show
+  up within a day instead of a month, while the site's scripts and styles stay cached for a year, as their names change
+  with every update. Right after an update, the first visitors get ready-made pages instead of waiting for them to be
+  built, and a rare cause of failed page loads is fixed.
 
 ## 2026/10/08
 
