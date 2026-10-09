@@ -19,7 +19,7 @@ export function configureGracefulShutdown(server: Server, metricsServer: Server,
           lifecycleLog.info('Executing cleanup callback');
           cleanupCallback();
         } catch (err) {
-          lifecycleLog.error(err, 'Error during cleanup');
+          lifecycleLog.error({ error: err }, 'Error during cleanup');
         }
       }
 

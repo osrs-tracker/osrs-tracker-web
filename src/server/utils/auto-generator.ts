@@ -82,7 +82,7 @@ export class AutoGenerator {
 
       pageCache.set(pageConfig.path, await response.text());
     } catch (err) {
-      this.log.error(err, `Auto page generation for ${pageConfig.path} failed`);
+      this.log.error({ error: err }, `Auto page generation for ${pageConfig.path} failed`);
     }
   }
 }

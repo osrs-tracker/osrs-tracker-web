@@ -71,7 +71,7 @@ export function createApp({
   // Log errors and respond with a generic 500, Express' default handler leaks the stack trace unless NODE_ENV=production
   const uncaughtLog = logger.child({ type: 'uncaught' satisfies WebLogType });
   app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
-    uncaughtLog.error(err, `${req.method} ${req.originalUrl} failed`);
+    uncaughtLog.error({ error: err }, `${req.method} ${req.originalUrl} failed`);
     if (res.headersSent) return next(err);
     res.status(500).send('Internal Server Error');
   });

@@ -2,6 +2,7 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { logOutgoingRequests } from '@osrs-tracker/logger';
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from './app';
 import { serverConfig } from './server-config';
@@ -41,10 +42,7 @@ describe('createApp', () => {
     handle.mockReset().mockImplementation(async () => new Response('<html>rendered</html>'));
     logs.lines.splice(0);
   });
-  afterEach(() => {
-    pageCache.clear();
-    vi.restoreAllMocks();
-  });
+  afterEach(() => pageCache.clear());
 
   it('serves pre-rendered pages from the page cache, ignoring the query string', async () => {
     pageCache.set('/', '<html>cached</html>');
@@ -157,6 +155,36 @@ describe('createApp', () => {
         error: expect.stringContaining('Error: secret stack trace\n    at '),
       }),
     );
+  });
+
+  it('logs the cache field of a request, but not for one the client aborted before the headers were sent', async () => {
+    pageCache.set('/', '<html>cached</html>');
+    await (await get('/')).text();
+    let received!: () => void;
+    const handled = new Promise<void>(resolve => (received = resolve));
+    handle.mockImplementation(() => (received(), new Promise(() => undefined))); // A render the client gives up on
+    const controller = new AbortController();
+    const request = get('/trackers/price/4151', { signal: controller.signal }).catch(() => undefined);
+    await handled;
+    controller.abort();
+    await request;
+
+    await vi.waitFor(() => expect(logs.lines).toHaveLength(2));
+    expect(logs.lines[0]).toMatchObject({ type: 'incoming', url: '/', cache: 'HIT' });
+    expect(logs.lines[1]).toMatchObject({ type: 'incoming', url: '/trackers/price/4151', aborted: true });
+    expect(logs.lines[1]).not.toHaveProperty('cache');
+  });
+
+  it('logs the requests a render makes with the page it was rendering', async () => {
+    const stop = logOutgoingRequests({ logger: logs.logger }); // Also logs the test's own requests, without a page
+    handle.mockImplementation(async () => (await get('/healthy'), new Response('<html>rendered</html>')));
+
+    await (await get('/trackers/price/4151')).text();
+    stop();
+
+    const renderRequest = () => logs.lines.find(line => line['type'] === 'outgoing' && line['page']);
+    await vi.waitFor(() => expect(renderRequest()).toBeDefined());
+    expect(renderRequest()).toMatchObject({ url: expect.stringMatching(/\/healthy$/), page: '/trackers/price/4151' });
   });
 
   it('labels the request metrics by route, not by URL', async () => {

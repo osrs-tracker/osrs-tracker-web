@@ -64,7 +64,9 @@ The `kubectl` commands use the `kubernetes-admin@kubernetes` context. Claude Cod
   handler, stack in `error`); Angular's own output is plain text. Pick one with `| json | type="…"`, e.g.
   `{namespace="osrs-tracker", app="osrs-tracker-web"} | json | type="uncaught"`.
 - Requests: `incoming` lines have `status`, `route` and `cache`; a client that gave up before the response is a `warn`
-  with `aborted: true` and no `status` (`… | json | type="incoming" | aborted="true"`).
+  with `aborted: true` and no `status` (`… | json | type="incoming" | aborted="true"`). Since 2026/10/09
+  (`@osrs-tracker/logger`), `responseTime` runs until the response finished, not until the headers were sent, and
+  `contentLength` is always a string.
 - Slow pages: `outgoing` lines have the `url`, `responseTime` and the `page` the render was for; a call cut short
   because the client closed the connection is `aborted: true`
   (`… | json | type="outgoing" |~ "\"responseTime\":\"[0-9]{4,}"` for calls of a second or more).

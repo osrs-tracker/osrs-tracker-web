@@ -26,7 +26,6 @@ describe('AutoGenerator', () => {
     generator.shutdown();
     pageCache.clear();
     handle.mockReset();
-    vi.restoreAllMocks();
     vi.useRealTimers();
   });
 
