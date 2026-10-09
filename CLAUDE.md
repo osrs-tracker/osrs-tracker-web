@@ -23,9 +23,9 @@ holds the Angular conventions, SSR rules, deploy and release steps. Keep detail 
 ## Hard rules
 
 - Every change to the app, its dependencies or tooling gets a user-facing `CHANGELOG.md` entry under today's
-  `## YYYY/MM/DD`; doc-only changes don't. Parallel PRs all add that heading: when merging one after another, rebase and
-  fold the entries under one heading. `/about/changelog` fetches the file from GitHub's `main` at runtime, so an entry
-  is public the moment it reaches `main`: never push one ahead of its code.
+  `## YYYY/MM/DD` (Europe/Amsterdam date); doc-only changes don't. Parallel PRs all add that heading: when merging one
+  after another, rebase and fold the entries under one heading. `/about/changelog` fetches the file from GitHub's `main`
+  at runtime, so an entry is public the moment it reaches `main`: never push one ahead of its code.
 - Doc-only changes (`docs/`, `.claude/`, `CLAUDE.md`, `README.md`) go straight to `main`: commit in the worktree,
   `git fetch origin && git rebase origin/main`, then `git push origin HEAD:main`. For anything else, ask: `main` or a PR
   (unless releasing).

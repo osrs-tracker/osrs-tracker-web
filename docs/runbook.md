@@ -47,6 +47,9 @@ FreekMencke/home-cluster's `cluster/osrs-tracker/flux.yaml`, not here.
 - **429 Too Many Requests:** Traefik's per-client limits in `osrs-tracker-web.yaml` (50 requests/s average, burst 250,
   200 in flight). Expected for an aggressive crawler; if real visitors hit it, raise them there and merge to `main`.
 - **Player or item pages 503 while the pods are healthy:** an upstream is down, see "Known upstream failures" below.
+- **A page shows stale data after an API change:** pre-rendered pages are served from the page cache until their next
+  refresh (`/` every 5 min, the changelog hourly, privacy and terms daily). Wait, or have the user run
+  `kubectl -n osrs-tracker rollout restart deploy/osrs-tracker-web`; see "Page cache" in the project skill.
 - **Certificate errors:** cert-manager renews `osrs-tracker-web-tls`
   (`kubectl -n osrs-tracker describe certificate osrs-tracker-web-tls`); issuer problems are fixed in
   FreekMencke/home-cluster.
@@ -64,9 +67,8 @@ The `kubectl` commands use the `kubernetes-admin@kubernetes` context. Claude Cod
   handler, stack in `error`); Angular's own output is plain text. Pick one with `| json | type="…"`, e.g.
   `{namespace="osrs-tracker", app="osrs-tracker-web"} | json | type="uncaught"`.
 - Requests: `incoming` lines have `status`, `route` and `cache`; a client that gave up before the response is a `warn`
-  with `aborted: true` and no `status` (`… | json | type="incoming" | aborted="true"`). Since 2026/10/09
-  (`@osrs-tracker/logger`), `responseTime` runs until the response finished, not until the headers were sent, and
-  `contentLength` is always a string.
+  with `aborted: true` and no `status` (`… | json | type="incoming" | aborted="true"`). `responseTime` runs until the
+  response finished, not until the headers were sent, and `contentLength` is always a string.
 - Slow pages: `outgoing` lines have the `url`, `responseTime` and the `page` the render was for; a call cut short
   because the client closed the connection is `aborted: true`
   (`… | json | type="outgoing" |~ "\"responseTime\":\"[0-9]{4,}"` for calls of a second or more).

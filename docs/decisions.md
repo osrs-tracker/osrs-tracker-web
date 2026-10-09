@@ -125,8 +125,9 @@ Choices that look like accidents without their context: what was decided, why, a
 - **Context:** some crawlers (OAI-SearchBot) ignore `<base href="/">` and request `/trackers/price/chunk-*.js`. Those
   paths matched the item and player routes, so each one cost a full render and an API call with the filename as id.
 - **Decision:** `middleware/missing-asset.ts` answers paths ending in a build asset extension with a 404 after
-  `express.static`. No redirect to the root path (with the 30-day cache a stale bundle name would get the wrong file),
-  no absolute asset URLs (`deployUrl` is deprecated), no blocking the crawler (it indexes real pages fine).
+  `express.static`. No redirect to the root path (browsers cache the redirect, so a stale bundle name could keep
+  pointing at the wrong file), no absolute asset URLs (`deployUrl` is deprecated), no blocking the crawler (it indexes
+  real pages fine).
 - **Revisit:** if a route ever needs to end in one of those extensions.
 
 ## Server-side rendering calls the API inside the cluster (2026/10/08)

@@ -44,7 +44,7 @@ Live hiscores come from the official Old School RuneScape hiscores, and prices c
 
 ## Running it locally
 
-You need Node 24.
+You need Node 24 or later.
 
 ```bash
 npm ci
@@ -55,16 +55,18 @@ The site runs at [localhost:4200](http://localhost:4200) and uses the live API. 
 only accepts requests from that address when running locally. If something else is using the port, `ng serve` offers
 another one: decline and stop the other process instead.
 
-## Contributing
-
 Local runs use the production API, so player lookups show up in the live "Global recent lookups".
 
-Before pushing, run what CI runs:
+## Contributing
+
+Before pushing, run the same checks as CI:
 
 ```bash
 npx ng build --configuration production && npx ng lint && npm run prettier:ci && npx ng test --watch=false
 ```
 
+CI builds with `npm run build` instead, which also regenerates the sitemaps and icons and optimises chunks, so a build
+that only breaks with chunk optimisation shows up in CI first (`npm run build` reproduces it; see below).
 `npm run prettier` fixes formatting, and `npm test` runs the tests in watch mode. Pushes made by Claude Code are linted
 first by `.claude/hooks/pre-push-check.sh`; your own `git push` isn't, so CI catches it.
 

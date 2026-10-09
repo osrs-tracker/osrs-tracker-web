@@ -27,12 +27,6 @@ a worktree).
   server and maps that origin back to `apiBaseUrl` for the transfer cache (`HTTP_TRANSFER_CACHE_ORIGIN_MAP`), so the
   browser still finds the responses. Unset locally. URLs that end up in the HTML (the news `<img>`) use
   `config.apiBaseUrl` directly and stay public.
-- Request logs match the API's shape: 5xx `error`, 4xx `warn`, else `info`; a client that disconnects before the
-  response is `warn` with `aborted: true` and no `status`. Both come from `@osrs-tracker/logger` (in `osrs-tracker-aws`;
-  change the shape there, for both apps). Every server log line is JSON with a `type`: write new ones through a child of
-  `logger` from `src/server/utils/log.ts` (`logger.child({ type: 'lifecycle' satisfies WebLogType })`), not `console`,
-  and add a type to `WebLogType` when none fits. Specs pass their own logger (`testing/log-lines.ts`): pino doesn't
-  write through `process.stdout.write`, so spying on it sees nothing.
 - `@osrs-tracker/hiscores` peer-depends on `@osrs-tracker/models`: bump both together, with `--prefer-online` right
   after a publish.
 - Production test players: **the fraking** (active) for visual checks, **ToxSick** (inactive) for anything that writes.
@@ -62,11 +56,11 @@ a worktree).
 
 Built from the [OSRS Tracker Design canvas](https://claude.ai/artifact/SptGtqgrh6RE8cVzLJJhom) (read it with the
 Artifact tool); why it looks like this is in `docs/decisions.md`. Try layout ideas there first and let the user look.
-Neither the Artifact tool nor Playwright (sign-in) can render it, so ask the user for a screenshot. Its phone artboards
-import the desktop ones at 390px; component artboards are 640px wide with a Layout tweak (auto, desktop, phone); states
-such as hiscores down are tweaks, not extra artboards. A component's `<helmet>` styles apply on every artboard that
-imports it. Tailwind classes only, no arbitrary `[...]` values: a value the scale lacks becomes a token in
-`src/styles/tailwind/theme.css`.
+The Artifact tool reads its source but can't render it, nor can Playwright (sign-in), so ask the user for a screenshot.
+Its phone artboards import the desktop ones at 390px; component artboards are 640px wide with a Layout tweak (auto,
+desktop, phone); states such as hiscores down are tweaks, not extra artboards. A component's `<helmet>` styles apply on
+every artboard that imports it. Tailwind classes only, no arbitrary `[...]` values: a value the scale lacks becomes a
+token in `src/styles/tailwind/theme.css`.
 
 - **Colours:** semantic tokens that swap under `.dark` (`base.css`), never `dark:` pairs: `ground` page, `card`, `line`
   dividers, `row` row lines and hover, `inner` inner tiles, `deep` hero band and icon tiles, `border` controls,
@@ -136,6 +130,13 @@ the angular.dev docs for the installed major version.
   small, and render a failed one as loading on the server (`latestLoading` in `item-detail.component.ts`), as the
   browser fetches it again after hydration. `logOutgoingRequests` logs every request a render makes, with its duration
   and the page `renderingPage()` (`server/utils/log.ts`) set (undici's `diagnostics_channel`, so it sees every `fetch`).
+- **Server logs**: request logs match the API's shape: 5xx `error`, 4xx `warn`, else `info`; a client that disconnects
+  before the response is `warn` with `aborted: true` and no `status`. Both come from `@osrs-tracker/logger` (in
+  `osrs-tracker-aws`; change the shape there, for both apps). Every server log line is JSON with a `type`: write new
+  ones through a child of `logger` from `src/server/utils/log.ts`
+  (`logger.child({ type: 'lifecycle' satisfies WebLogType })`), not `console`, and add a type to `WebLogType` when none
+  fits. Specs pass their own logger (`testing/log-lines.ts`): pino doesn't write through `process.stdout.write`, so
+  spying on it sees nothing.
 - **Writes**: requests that record something (lookups, starting to track a player) run only when `isHumanVisitor()`
   (`core/platform/human-visitor.ts`): never during SSR or for crawlers, which would fill the recent lookups.
 - **Chart.js**: shared registrations and the date adapter in `common/components/charts/chart-setup.ts`; load
