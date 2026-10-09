@@ -2,6 +2,25 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## Keyboard patterns come from `@angular/aria` (2026/10/09)
+
+- **Context:** `segmented` was a row of toggle buttons, one Tab stop each. Radio groups, comboboxes and grids need
+  roving focus and arrow keys, which are easy to get subtly wrong by hand.
+- **Decision:** use `@angular/aria` (headless directives, no styles) for keyboard patterns, starting with `segmented` on
+  its toolbar (`Toolbar` and `ToolbarWidgetGroup` as host directives, `role="radiogroup"` on the host overriding the
+  toolbar's role). Arrow keys only move focus; Enter or Space chooses, so arrowing through periods doesn't fetch each
+  one. The package pins `@angular/cdk` to its exact version, so `ng update @angular/cdk` updates both, and all
+  `@angular/*` packages stay on the same patch. It adds about 4.5 KB gzipped of JavaScript, in a chunk shared by the
+  pages that use it.
+- **Initial Tab stop:** the toolbar makes its first option the Tab stop and has no public API to change it, so
+  `segmented` sets the toolbar's active item to the checked option through its `_pattern` while focus is outside (and to
+  the focused one on `focusin`). It runs as an `effect`, so it also runs during SSR and the server HTML has the Tab stop
+  before hydration. Recheck it on every `@angular/aria` update.
+- **Disabled options** stay soft-disabled (the toolbar's default, `aria-disabled` instead of `disabled`): the arrow keys
+  reach them, so keyboard and screen reader users find them and their reason, and the click handler ignores them.
+- **Revisit:** when `@angular/aria` gets a radio group or an API for the initial active item; drop the `_pattern` use
+  then.
+
 ## Sitemap dates come from git (2026/10/09)
 
 - **Context:** `<lastmod>` came from file timestamps, which a fresh checkout (the `CD` workflow) sets to the checkout

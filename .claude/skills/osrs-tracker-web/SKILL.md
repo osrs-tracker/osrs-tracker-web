@@ -44,6 +44,9 @@ there, not in the agent.
   `hasValue()`) first and render `<load-error source="…" (retry)="resource.reload()" />`: `compact` when it replaces a
   single value in a row or widget, the default when it replaces a list or section, `panel` for a panel. Never
   `catchError(() => of(empty))` or an `error` callback that only empties the data.
+- **Keyboard patterns**: use `@angular/aria` (headless) for toolbars, listboxes, comboboxes and grids instead of
+  hand-written arrow-key handling; style its state with `aria-*:` variants (`aria-disabled:`, `aria-checked:`).
+  `segmented` shows the pattern and its SSR caveat (`docs/decisions.md`).
 - **HTTP**: repositories use the `BASE_URL_PREFIX` / `LOADING_INDICATOR` `HttpContext` tokens, not absolute URLs.
   `encodeURIComponent` path segments; query values go in `params`.
 - **Routing**: lazy routes with default-exported components, `title: '<Page> - OSRS Tracker'`; resolvers end with
@@ -92,7 +95,7 @@ Which component to use (`common/components/general/` unless noted):
 | A titled section                                     | `article[card]`: 56px header, `[title]` and `[actions]` slots, `subtitle` for two lines |
 | A list of players or items                           | `section[list-card]` with its loading, empty and error states; `list-row-skeleton` rows |
 | One headline number                                  | `stat-tile` (`compact` for six in a row, `loading`, `tone` for a change)                |
-| A choice of views or periods                         | `segmented` (32px pills; `variant="slate"` beside an accent button)                     |
+| A choice of views or periods                         | `segmented` (32px pills, a radio group; `variant="slate"` beside an accent button)      |
 | The tracking offset                                  | `tracking-offset` (`features/trackers/xp-tracker/`; a 32px select, stored per device)   |
 | A whole page's state (not found, unavailable, error) | `status-panel`, with a back button or other actions as content                          |
 | Something failed to load                             | `load-error` (default, `panel` or `compact`; see Failures above)                        |
