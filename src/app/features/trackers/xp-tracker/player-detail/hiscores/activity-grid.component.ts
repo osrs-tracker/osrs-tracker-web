@@ -5,6 +5,7 @@ import { HiscoreActivity, HiscoreEntry } from '@osrs-tracker/models';
 import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
 import { TooltipComponent } from 'src/app/common/components/general/tooltip/tooltip.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
+import { formatNumberShort } from 'src/app/common/helpers/number.helper';
 import { ThemeService } from 'src/app/common/services/theme.service';
 import { UNCHARTED_MINIGAMES } from '../../activity-categories';
 import { CHART_CATEGORIES } from '../player-logs/chart-categories';
@@ -202,8 +203,7 @@ export class ActivityGridComponent {
   shortScore(score: number): string {
     if (score <= 0) return '–';
     if (score < 10_000) return score.toLocaleString('en-US');
-    if (score < 1_000_000) return `${parseFloat((score / 1000).toFixed(1))}K`;
-    return `${parseFloat((score / 1_000_000).toFixed(1))}M`;
+    return formatNumberShort(score);
   }
 
   /** Legacy Bounty Hunter reuses the current icons; Deadman has no hiscores icon, so the skull stands in */
