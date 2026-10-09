@@ -22,7 +22,8 @@ Read these first, every run. They are the only source of rules; don't apply gene
 ## Scope
 
 Review what the caller names (a PR number, a branch or a path). Otherwise review the current branch against `main`:
-`git diff main...HEAD` plus uncommitted changes (`git diff HEAD`). For a PR, `gh pr diff <n>`.
+`git fetch origin`, then `git diff origin/main...HEAD` plus uncommitted changes (`git diff HEAD`). Not the local `main`:
+in a worktree it's often behind, and the diff would include other sessions' merged commits. For a PR, `gh pr diff <n>`.
 
 Judge the changed lines, but read the surrounding code to confirm a finding: a missing check may live in a caller, a
 base class or a shared helper. Rules that span files (a new route and `src/server/utils/route-label.ts`, changed icons

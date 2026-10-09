@@ -50,19 +50,25 @@ npm start
 ```
 
 The site runs at [localhost:4200](http://localhost:4200) and uses the live API. Run it on port 4200, because the API
-only accepts requests from that address when running locally.
+only accepts requests from that address when running locally. If something else is using the port, `ng serve` offers
+another one: decline and stop the other process instead.
 
 ## Contributing
 
 Local runs use the production API, so player lookups show up in the live "Global recent lookups".
 
+Before pushing, run what CI runs:
+
 ```bash
-npm run lint
-npm run prettier
-npm test
+npx ng build --configuration production && npx ng lint && npm run prettier:ci && npx ng test --watch=false
 ```
 
-`npm start` doesn't run the server code (page cache, pre-rendering). To test that, build and run the production server:
+`npm run prettier` fixes formatting, and `npm test` runs the tests in watch mode. Pushes made by Claude Code are linted
+first by `.claude/hooks/pre-push-check.sh`; your own `git push` isn't, so CI catches it.
+
+`npm start` doesn't run the server code (page cache, pre-rendering). To test that, build and run the production server.
+`npm run build` also regenerates the sitemaps (fetching the Wiki's item list) and the icons, so run
+`git restore src/sitemap*.xml` afterwards:
 
 ```bash
 npm run build

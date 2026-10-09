@@ -9,10 +9,15 @@ Flux runs whatever `osrs-tracker-web.yaml` on `main` says, and every deploy pins
 `chore(deploy): deploy sha256:… and update sitemaps`. To roll back, revert the bad deploy commit on `main`:
 
 ```bash
+git fetch origin
+git switch --detach origin/main              # in a worktree, `main` is checked out elsewhere
 git log --oneline -- osrs-tracker-web.yaml   # find the bad deploy commit
-git revert <commit>                          # puts the previous digest (and sitemaps) back
-git push                                     # admins bypass the PR rule; or open a PR
+git revert <commit>                          # signed, like every commit; puts the previous digest (and sitemaps) back
+git push origin HEAD:main                    # admins bypass the PR rule; or push a branch and open a PR
 ```
+
+A plain `git push` from a worktree pushes its own branch and rolls nothing back. If the push is rejected because `main`
+moved, `git pull --rebase origin main` and push again.
 
 Flux applies it within a minute and reports the `Flux / sync` status on the revert commit
 (`gh api repos/osrs-tracker/osrs-tracker-web/commits/<sha>/status`). The revert only changes the manifest and sitemaps,
@@ -20,18 +25,44 @@ so neither CI nor the `CD` workflow runs for it and the bad code isn't rebuilt (
 The bad code is still on `main`, though: the next change that touches the image deploys it again unless that change
 fixes or reverts it. A `kubectl apply` or `kubectl set image` by hand is undone by Flux within 10 minutes.
 
-A deploy that fails Flux's 5-minute health check fails the `CD` workflow run and alerts the Discord alerts channel;
-Kubernetes keeps the old pods serving until new ones are ready. If it says "forbidden", the manifest uses a kind Flux
-isn't allowed to manage yet: that's fixed in FreekMencke/home-cluster's `cluster/osrs-tracker/flux.yaml`, not here.
+## A `CD` run failed
+
+A failed run alerts the Discord alerts channel. Find the failed step (`gh run view <id> --log-failed`), then:
+
+| Failed step                           | What it means                                                                                                     | Do                                                                                                                                                           |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Docker login, build or push           | Docker Hub or a build hiccup; nothing reached `main` or the cluster.                                              | Re-run the failed run. CI built the same code, so suspect Docker Hub or the network before the code.                                                         |
+| Commit the digest and sitemaps        | Someone changed the `image:` line on `main` meanwhile, so the rebase conflicted. Nothing was deployed.            | Find what changed the manifest, fix it on `main`, then re-run.                                                                                               |
+| Wait for Flux: `failure` or `error`   | Flux applied the commit, but the new pods weren't healthy within its 5-minute timeout. The old pods keep serving. | Read the Discord alert and `kubectl -n osrs-tracker describe deploy osrs-tracker-web`. Roll back (above) unless the fix is quick.                            |
+| Wait for Flux: no status after 10 min | Flux didn't sync (it polls `main` every minute): the GitRepository can't fetch, or Flux isn't running.            | Check the `osrs-tracker-web` GitRepository and Kustomization with the flux MCP. Once it reports success the site is fine; re-run only to get the smoke test. |
+| Smoke test the site                   | The new pods serve, but `/`, its `main-*.js`, `/about/terms` or the 404 page answered wrong.                      | Roll back first, then look: no `x-cache` means the auto-generator couldn't render `/`; a 404 on the bundle means the image's assets don't match.             |
+
+If Flux says "forbidden", the manifest uses a kind Flux isn't allowed to manage yet: that's fixed in
+FreekMencke/home-cluster's `cluster/osrs-tracker/flux.yaml`, not here.
+
+## Site down or erroring
+
+- **Every page 5xx, pods restarting:** `kubectl -n osrs-tracker get pods`; `describe pod` shows `OOMKilled` (the 512Mi
+  limit) or a failing probe, and the logs show crashes. If it started with a deploy, roll back.
+- **429 Too Many Requests:** Traefik's per-client limits in `osrs-tracker-web.yaml` (50 requests/s average, burst 250,
+  200 in flight). Expected for an aggressive crawler; if real visitors hit it, raise them there and merge to `main`.
+- **Player or item pages 503 while the pods are healthy:** an upstream is down, see "Known upstream failures" below.
+- **Certificate errors:** cert-manager renews `osrs-tracker-web-tls`
+  (`kubectl -n osrs-tracker describe certificate osrs-tracker-web-tls`); issuer problems are fixed in
+  FreekMencke/home-cluster.
 
 ## Look around
+
+The `kubectl` commands use the `kubernetes-admin@kubernetes` context. Claude Code sessions read through the read-only
+`kubernetes` and `flux` MCP servers instead; writes such as a rollout restart are for the user to run.
 
 - Pods and events: `kubectl -n osrs-tracker get pods` and `kubectl -n osrs-tracker describe deploy osrs-tracker-web`.
 - Logs: `kubectl -n osrs-tracker logs deploy/osrs-tracker-web --since=15m`, or Loki in Grafana (grafana.freekmencke.com)
   for older logs. Requests are logged as JSON with `status`, `route` and `cache`; a client that gave up before the
   response is a `warn` with `aborted: true` and no `status`
   (`{namespace="osrs-tracker", app="osrs-tracker-web"} |= "\"aborted\":true"`).
-- Metrics: the Express dashboard in Grafana (request rate, status codes and latency per route label).
+- Metrics: "Express Dashboard" in Grafana (request rate, status codes and latency per route label), defined in
+  FreekMencke/home-cluster's `cluster/monitoring/grafana/dashboards/express-dashboard.json`.
 - Resources: `kubectl -n osrs-tracker top pods`. The pods request 50m CPU and 128Mi memory, with a 512Mi memory limit
   (no CPU limit). A pod that hits the limit is `OOMKilled` (see `describe pod`).
 
