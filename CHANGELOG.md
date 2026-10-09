@@ -15,6 +15,11 @@
 - In the item search on Home and the Price Tracker, the arrow keys move through the results, which highlight like on
   hover, and Enter opens the highlighted one. Escape or clicking outside closes the list. Screen readers announce the
   results as a list tied to the search box. Results are still links, so middle-click and "Open in new tab" keep working.
+- On player pages, the skill, boss, raid, clue and minigame grids and the chart's legend each take one Tab stop instead
+  of one per cell, so getting past the grids takes a few Tab presses instead of more than fifty. Inside, the arrow keys
+  move between cells (row by row, the total level last) and Enter or Space picks one. A cell's tooltip, with its XP or
+  rank, now also opens when it gets keyboard focus, including cells that can't be picked, as does the account type
+  tooltip in the player header; Escape closes them. Screen readers announce the grids as grids with rows and columns.
 
 ### Behind the scenes
 

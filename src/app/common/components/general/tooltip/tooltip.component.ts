@@ -130,6 +130,19 @@ export class TooltipComponent implements OnChanges, AfterViewInit, OnDestroy {
     this.mousePresent$.next(false);
   }
 
+  /** Keyboard focus opens it too (the hiscores grids, arrowed through); a click's focus doesn't, hover handles that */
+  @HostListener('focusin') onFocusIn() {
+    if (this.elementRef.nativeElement.matches(':focus-visible')) this.mousePresent$.next(true);
+  }
+
+  @HostListener('focusout') onFocusOut() {
+    this.mousePresent$.next(false);
+  }
+
+  @HostListener('keydown.escape') onEscape() {
+    this.mousePresent$.next(false);
+  }
+
   private onDocumentTouchend(target: HTMLElement) {
     const found = [
       this.elementRef.nativeElement,
