@@ -1,5 +1,6 @@
-# Security updates only: open-pull-requests-limit 0 disables version updates, while Dependabot security updates
-# (enabled in the repository settings) still use this configuration. Other updates are done by hand.
+# Security updates only for npm and GitHub Actions: open-pull-requests-limit 0 disables version updates, while
+# Dependabot security updates (enabled in the repository settings) still use this configuration. Other updates are done
+# by hand, except the Docker base image below.
 version: 2
 
 updates:
@@ -23,3 +24,16 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 0
+
+  # The base image is pinned by digest, so this opens a PR when node:24-alpine is rebuilt (Node patches, Alpine fixes)
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: chore
+      include: scope
+    ignore:
+      # Node majors also need CI's setup-node and engines bumped: do them by hand
+      - dependency-name: node
+        update-types: [version-update:semver-major]

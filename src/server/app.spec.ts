@@ -1,11 +1,12 @@
 // @vitest-environment node
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from './app';
 import { serverConfig } from './server-config';
 import { serve } from './testing/serve';
+import { autoGenerateService } from './utils/auto-generator';
 import { pageCache } from './utils/page-cache';
 
 // The real engine needs a server build, these tests are about the Express app around it
@@ -22,9 +23,12 @@ vi.mock('@angular/ssr/node', () => ({
 }));
 
 describe('createApp', () => {
-  // A browser build with one chunk, so the static middleware has a real asset to serve
+  // A browser build with a chunk, an icon and a sitemap, so the static middleware has real files to serve
   serverConfig.browserDistFolder = mkdtempSync(join(tmpdir(), 'osrs-tracker-browser-'));
   writeFileSync(join(serverConfig.browserDistFolder, 'chunk-real.js'), 'export {};');
+  writeFileSync(join(serverConfig.browserDistFolder, 'sitemap-items.xml'), '<urlset/>');
+  mkdirSync(join(serverConfig.browserDistFolder, 'assets/icons'), { recursive: true });
+  writeFileSync(join(serverConfig.browserDistFolder, 'assets/icons/coins.png'), 'png');
   afterAll(() => rmSync(serverConfig.browserDistFolder, { recursive: true }));
 
   const { app, metricsApp } = createApp();
@@ -117,6 +121,22 @@ describe('createApp', () => {
     expect(res.status).toBe(200);
     expect(await res.text()).toBe('export {};');
     expect(handle).not.toHaveBeenCalled();
+  });
+
+  it('caches hashed bundles for a year, other files for a day and revalidates the sitemaps every time', async () => {
+    const cacheControl = async (path: string) => (await get(path)).headers.get('cache-control');
+
+    expect(await cacheControl('/chunk-real.js')).toBe('public, max-age=31536000, immutable');
+    expect(await cacheControl('/assets/icons/coins.png')).toBe('public, max-age=86400');
+    expect(await cacheControl('/sitemap-items.xml')).toBe('no-cache');
+  });
+
+  it('is only ready once the pages are pre-rendered', async () => {
+    autoGenerateService.ready = false;
+    expect((await get('/healthy')).status).toBe(503);
+
+    autoGenerateService.ready = true;
+    expect((await get('/healthy')).status).toBe(200);
   });
 
   it('answers rendering errors with a generic 500 that does not leak the error', async () => {

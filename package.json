@@ -30,6 +30,7 @@
   "scripts": {
     "prebuild": "npm run sitemap && npm run icons",
     "build": "NG_BUILD_OPTIMIZE_CHUNKS=1 ng build --configuration production",
+    "postbuild": "rm -f dist/osrs-tracker-web/browser/index.csr.html",
     "predocker:build": "npm run sitemap && npm run icons",
     "docker:build": "docker build -t freekmencke/osrs-tracker-web:latest .",
     "check:ge-tax": "node scripts/ge-tax/check-ge-tax.mjs",
@@ -65,7 +66,6 @@
     "chartjs-adapter-date-fns": "^3.0.0",
     "chartjs-plugin-annotation": "^3.1.0",
     "chartjs-plugin-zoom": "^2.2.0",
-    "compression": "^1.8.1",
     "date-fns": "^4.1.0",
     "express": "^5.2.1",
     "helmet": "^8.1.0",
@@ -82,7 +82,6 @@
     "@eslint/js": "^10.0.1",
     "@tailwindcss/forms": "^0.5.11",
     "@tailwindcss/postcss": "^4.2.1",
-    "@types/compression": "^1.8.1",
     "@types/express": "^5.0.6",
     "@types/gtag.js": "^0.0.20",
     "@types/morgan": "^1.9.10",

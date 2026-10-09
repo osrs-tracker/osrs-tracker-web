@@ -1,5 +1,4 @@
 import { AngularNodeAppEngine, createNodeRequestHandler, writeResponseToNodeResponse } from '@angular/ssr/node';
-import compression from 'compression';
 import express, { NextFunction, Request, Response, Router } from 'express';
 import { angularCacheMiddleware } from './middleware/angular-cache';
 import { applyCspNonce, cspNonceMiddleware } from './middleware/csp-nonce';
@@ -8,22 +7,29 @@ import { metricsMiddleware } from './middleware/metrics';
 import { missingAssetMiddleware } from './middleware/missing-asset';
 import { protocolRelativeMiddleware } from './middleware/protocol-relative';
 import { securityMiddleware } from './middleware/security';
+import { staticFilesMiddleware } from './middleware/static-files';
 import { createHealthRouter } from './routers/health';
-import { createNoCacheHeadersRouter } from './routers/no-cache-files';
 import { serverConfig } from './server-config';
+import { autoGenerateService } from './utils/auto-generator';
 
 export function createApp() {
   const app = express();
   // Traefik is the only hop in front of the app and overwrites any client-sent X-Forwarded-For, so req.ip is the client
   app.set('trust proxy', 1);
+  // Pages are `no-store` and their nonce changes every response, so an ETag is never used. Static files keep theirs.
+  app.set('etag', false);
   const metricsApp = express();
   const angularApp = new AngularNodeAppEngine({
     allowedHosts: [serverConfig.HOST],
     trustProxyHeaders: serverConfig.TRUST_PROXY_HEADERS,
   });
 
-  // Readiness probe on the main port, before logging and metrics so probes don't show up in either
-  app.use('/healthy', createHealthRouter());
+  // Readiness probe on the main port, before logging and metrics so probes don't show up in either. Not ready until the
+  // pages are pre-rendered, so the first visitors after a deploy get them from the page cache.
+  app.use(
+    '/healthy',
+    createHealthRouter(() => autoGenerateService.ready),
+  );
 
   app.use(
     metricsMiddleware(metricsApp), // Set up Monitoring
@@ -31,12 +37,10 @@ export function createApp() {
     cspNonceMiddleware(), // Generate a CSP nonce for this response
     securityMiddleware(), // Add security headers
     protocolRelativeMiddleware(), // 404 for `//host` paths, which Angular SSR rejects with an error
-    compression(), // Add compression for better performance
-    createNoCacheHeadersRouter(), // No-cache headers for critical static files
     angularCacheMiddleware(), // Cache rendered pages in memory for faster subsequent responses
   );
 
-  app.use(express.static(serverConfig.browserDistFolder, { maxAge: '30d' }));
+  app.use(staticFilesMiddleware());
   // After the static files, so only missing assets get a 404 instead of being rendered as a page
   app.use(missingAssetMiddleware());
 

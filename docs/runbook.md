@@ -71,10 +71,13 @@ The `kubectl` commands use the `kubernetes-admin@kubernetes` context. Claude Cod
 
 ## Health checks
 
-- Readiness and startup: `GET /healthy` on the app port (8080). A pod failing it is taken out of the service.
+- Readiness and startup: `GET /healthy` on the app port (8080). A pod failing it is taken out of the service. It answers
+  503 until the auto-generated pages are pre-rendered (at most 20 s, `readyTimeout`), so a new pod serves them from the
+  page cache from its first request.
 - Liveness: `GET /healthy` on the metrics port (9090). Failing it restarts the pod.
 - On shutdown, a 5 s `preStop` delay keeps the pod serving until Traefik has dropped it, then the server closes its
-  connections (forced after 10 s). A PodDisruptionBudget keeps at least one of the two pods up during node maintenance.
+  connections (forced after 10 s) and the metrics server closes last. A PodDisruptionBudget keeps at least one of the
+  two pods up during node maintenance.
 
 ## Recheck the GE tax rules
 

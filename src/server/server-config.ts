@@ -13,6 +13,13 @@ export const serverConfig = {
   // The API's in-cluster origin for server-side rendering. Unset, the server calls the public URL like the browser.
   API_INTERNAL_URL: process.env['API_INTERNAL_URL'] ? new URL(process.env['API_INTERNAL_URL']).origin : undefined,
 
+  // Connections and probes
+  // Above Traefik's 90 s idle timeout for backend connections, so Traefik is the one that closes an idle connection.
+  // With Node's 5 s default, Node can close one just as Traefik sends a request on it, which Traefik answers with a 502.
+  keepAliveTimeout: 95000,
+  // How long the readiness probe waits for the first pre-render of the auto-generated pages
+  readyTimeout: 20000,
+
   // Paths
   serverDistFolder: serverDistFolder,
   browserDistFolder: resolve(serverDistFolder, '../browser'),
@@ -43,6 +50,12 @@ export const serverConfig = {
     },
   ],
 
-  // These files are served by the static middleware and should not be cached
-  noCacheStaticFiles: ['/manifest.webmanifest', '/sitemap.xml', '/robots.txt'],
+  // Static files without a hash in their name that change with every deploy: revalidated on every use
+  noCacheStaticFiles: [
+    '/manifest.webmanifest',
+    '/robots.txt',
+    '/sitemap.xml',
+    '/sitemap-items.xml',
+    '/sitemap-site.xml',
+  ],
 };

@@ -25,6 +25,7 @@ describe('AutoGenerator', () => {
   });
   afterEach(() => {
     generator.shutdown();
+    generator.ready = false;
     pageCache.clear();
     handle.mockReset();
     vi.restoreAllMocks();
@@ -59,6 +60,31 @@ describe('AutoGenerator', () => {
     handle.mockRejectedValue(new Error('API down'));
     await vi.advanceTimersByTimeAsync(home.interval);
     expect(pageCache.get('/')).toBe('rendered /');
+  });
+
+  it('is ready once the first render of every page has finished', async () => {
+    const renders: (() => void)[] = [];
+    handle.mockImplementation(() => new Promise(resolve => renders.push(() => resolve(new Response('rendered')))));
+    await initialize();
+
+    renders.slice(1).forEach(render => render());
+    await vi.advanceTimersByTimeAsync(0);
+    expect(generator.ready).toBe(false);
+
+    renders[0]();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(generator.ready).toBe(true);
+  });
+
+  it('is ready after the timeout when a render hangs', async () => {
+    handle.mockImplementation(() => new Promise(() => undefined));
+    await initialize();
+
+    await vi.advanceTimersByTimeAsync(serverConfig.readyTimeout - 1);
+    expect(generator.ready).toBe(false);
+
+    await vi.advanceTimersByTimeAsync(1);
+    expect(generator.ready).toBe(true);
   });
 
   it('stops rendering after shutdown', async () => {

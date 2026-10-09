@@ -2,6 +2,26 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## Traefik compresses responses, the server sets cache lifetimes (2026/10/09)
+
+- **Context:** the `compression` middleware compressed every response in the pod (brotli quality 4), using the CPU SSR
+  renders need. Every static file got a 30-day cache, unhashed icons and sitemaps included.
+- **Decision:** the `osrs-tracker-web-compress` Middleware in `osrs-tracker-web.yaml` compresses text types (gzip, br or
+  zstd), last in the Ingress's chain, like the API's. Images and the font are left alone. Locally nothing is compressed.
+  `middleware/static-files.ts` caches hashed bundles (`.js`/`.css` at the root) for a year (`immutable`), revalidates
+  `noCacheStaticFiles` (manifest, robots, sitemaps) on every use, and caches the rest for a day. Not compressed at build
+  time: a better ratio, but more build and server code than the traffic is worth.
+- **Revisit:** if Traefik's CPU use matters, or for pre-compressed static files at higher traffic.
+
+## The server's connections outlive Traefik's (2026/10/09)
+
+- **Context:** Traefik keeps idle connections to the pods for 90 s, Node closes them after 5 s, so Node can close one
+  just as Traefik sends a request on it (a 502).
+- **Decision:** `keepAliveTimeout` is 95 s (`server-config.ts`). On shutdown, `utils/shutdown.ts` closes connections as
+  they become idle, otherwise a connection still sending a response would keep the server open until the forced exit.
+  The metrics server closes only after the main one, so liveness keeps answering while it drains.
+- **Revisit:** if Traefik's `serversTransport` idle timeout changes.
+
 ## Keyboard patterns come from `@angular/aria` (2026/10/09)
 
 - **Context:** `segmented` was a row of toggle buttons, one Tab stop each. Radio groups, comboboxes and grids need
