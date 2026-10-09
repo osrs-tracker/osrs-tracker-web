@@ -18,6 +18,13 @@ Choices that look like accidents without their context: what was decided, why, a
   before hydration. Recheck it on every `@angular/aria` update.
 - **Disabled options** stay soft-disabled (the toolbar's default, `aria-disabled` instead of `disabled`): the arrow keys
   reach them, so keyboard and screen reader users find them and their reason, and the click handler ignores them.
+- **Item search** is a combobox (`ngCombobox` on the input, a `ngListbox` popup with `activedescendant` focus). Its
+  options are the result `<a routerLink>` elements themselves (`ngOption` gives them `role="option"`), not links inside
+  options: mouse users keep middle-click, Ctrl-click and "Open in new tab", and a plain Enter opens the active option
+  through the router. Enter searches instead when the input changed since the results and the arrow keys haven't moved
+  since, so typing a new name and pressing Enter still searches. The popup cancels `mousedown`, so focus stays in the
+  input and its `focusout` doesn't close the list before a click lands (on Retry, or on text in the list); a
+  `pointerdown` outside closes it, also when focus was never in the input (the Search button, `?q=`).
 - **Revisit:** when `@angular/aria` gets a radio group or an API for the initial active item; drop the `_pattern` use
   then.
 

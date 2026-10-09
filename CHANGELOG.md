@@ -12,6 +12,9 @@
   the periods doesn't load each one. Screen readers announce them as radio buttons with their position ("2 of 3"). An
   option that can't be picked, like High alch for an item that can't be alched, can still be reached with the arrow keys
   to read why.
+- In the item search on Home and the Price Tracker, the arrow keys move through the results, which highlight like on
+  hover, and Enter opens the highlighted one. Escape or clicking outside closes the list. Screen readers announce the
+  results as a list tied to the search box. Results are still links, so middle-click and "Open in new tab" keep working.
 
 ### Behind the scenes
 
