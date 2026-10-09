@@ -1,3 +1,9 @@
+## 2026/10/09
+
+### Behind the scenes
+
+- The price pages work out the start of a UTC day in one place instead of three.
+
 ## 2026/10/08
 
 ### Player pages
