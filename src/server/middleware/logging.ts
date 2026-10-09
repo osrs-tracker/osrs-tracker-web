@@ -1,6 +1,7 @@
 import { Request, RequestHandler, Response } from 'express';
 import morgan from 'morgan';
 import { IncomingMessage } from 'node:http';
+import { logLine, requestLogLevel } from '../utils/log';
 import { routeLabel } from '../utils/route-label';
 
 export function loggingMiddleware(): RequestHandler {
@@ -12,9 +13,7 @@ export function loggingMiddleware(): RequestHandler {
     const aborted = !res.headersSent;
     const status = res.statusCode;
 
-    return JSON.stringify({
-      level: aborted ? 'warn' : status >= 500 ? 'error' : status >= 400 ? 'warn' : 'info',
-      time: tokens['date'](req, res, 'iso'),
+    return logLine(requestLogLevel(status, aborted), 'incoming', {
       status: tokens['status'](req, res),
       aborted: aborted || undefined,
       method: tokens['method'](req, res),

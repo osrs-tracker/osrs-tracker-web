@@ -1,5 +1,5 @@
-/* eslint-disable no-console */
 import { Server } from 'http';
+import { writeLog } from './log';
 
 /**
  * Shut down gracefully on SIGINT/SIGTERM: run the cleanup callback, stop accepting connections on the main server, and
@@ -9,26 +9,26 @@ import { Server } from 'http';
 export function configureGracefulShutdown(server: Server, metricsServer: Server, cleanupCallback?: () => void): void {
   ['SIGINT', 'SIGTERM'].forEach(signal => {
     process.once(signal, () => {
-      console.log(`Received ${signal}, shutting down gracefully`);
+      writeLog('info', 'lifecycle', `Received ${signal}, shutting down gracefully`);
 
       // Execute cleanup callback if provided
       if (cleanupCallback) {
         try {
-          console.log('Executing cleanup callback');
+          writeLog('info', 'lifecycle', 'Executing cleanup callback');
           cleanupCallback();
         } catch (err) {
-          console.error('Error during cleanup:', err);
+          writeLog('error', 'lifecycle', 'Error during cleanup', err);
         }
       }
 
       closeServers(server, metricsServer).then(() => {
-        console.log('Servers closed');
+        writeLog('info', 'lifecycle', 'Servers closed');
         process.exit(0);
       });
 
       // Force close after 10s
       setTimeout(() => {
-        console.error('Could not close connections in time, forcefully shutting down');
+        writeLog('error', 'lifecycle', 'Could not close connections in time, forcefully shutting down');
         process.exit(1);
       }, 10000);
     });

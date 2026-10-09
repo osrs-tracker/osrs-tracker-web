@@ -1,5 +1,10 @@
 ## 2026/10/09
 
+### Price pages
+
+- Item pages open faster, most of all when the OSRS Wiki's price service is slow: the page no longer waits for the price
+  history, which loads in your browser behind placeholders like the chart already did.
+
 ### Player pages
 
 - Boss, raid and clue counts just under a million show as "1M" instead of "1000K". Short numbers on player and price
@@ -26,6 +31,8 @@
 
 ### Behind the scenes
 
+- The server logs how long each request it makes while building a page takes, to find what slows pages down. All its log
+  lines are now structured and say what they're about, so they're easier to search.
 - The price pages work out the start of a UTC day in one place instead of three.
 - The sitemap dates of the changelog, privacy and terms pages now say when those pages last changed, instead of moving
   to the time of every deploy, so search engines can trust them.

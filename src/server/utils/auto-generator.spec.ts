@@ -19,8 +19,7 @@ describe('AutoGenerator', () => {
 
   beforeEach(() => {
     vi.useFakeTimers();
-    vi.spyOn(console, 'log').mockImplementation(() => undefined);
-    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    vi.spyOn(process.stdout, 'write').mockReturnValue(true); // Keeps the logs out of the test output
     handle.mockImplementation(async req => new Response(`rendered ${new URL(req.url).pathname}`));
   });
   afterEach(() => {
