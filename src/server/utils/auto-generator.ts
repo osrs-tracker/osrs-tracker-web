@@ -1,7 +1,7 @@
 import { AngularNodeAppEngine } from '@angular/ssr/node';
+import { type Logger } from '@osrs-tracker/logger';
 import { serverConfig } from '../server-config';
-import { writeLog } from './log';
-import { renderingPage } from './outgoing-requests';
+import { logger, renderingPage, type WebLogType } from './log';
 import { pageCache } from './page-cache';
 
 /**
@@ -12,6 +12,12 @@ export class AutoGenerator {
   private readyTimeout?: NodeJS.Timeout;
   private initialized = false;
   private warm = false;
+  private readonly log: Logger;
+
+  /** @param baseLogger Where the `prerender` lines go, stdout unless a spec passes its own */
+  constructor(baseLogger: Logger = logger) {
+    this.log = baseLogger.child({ type: 'prerender' satisfies WebLogType });
+  }
 
   /**
    * Whether the first render of every page has finished (or failed), or `readyTimeout` passed first, so a slow API
@@ -27,7 +33,7 @@ export class AutoGenerator {
    * @param bootstrap Function to bootstrap the Angular application
    */
   initialize(angularApp: AngularNodeAppEngine): void {
-    writeLog('info', 'prerender', 'Initializing auto page generation service');
+    this.log.info('Initializing auto page generation service');
 
     this.initialized = true;
     this.warm = false;
@@ -44,7 +50,7 @@ export class AutoGenerator {
 
   /** Stop all auto-generation intervals */
   shutdown(): void {
-    writeLog('info', 'prerender', 'Shutting down auto page generation');
+    this.log.info('Shutting down auto page generation');
     this.intervals.forEach(interval => clearInterval(interval));
     this.intervals = [];
     clearTimeout(this.readyTimeout);
@@ -70,17 +76,13 @@ export class AutoGenerator {
 
       // Only cache successful renders, keep serving the previous version otherwise
       if (!response?.ok) {
-        writeLog(
-          'error',
-          'prerender',
-          `Auto page generation for ${pageConfig.path} failed with status ${response?.status}`,
-        );
+        this.log.error(`Auto page generation for ${pageConfig.path} failed with status ${response?.status}`);
         return;
       }
 
       pageCache.set(pageConfig.path, await response.text());
     } catch (err) {
-      writeLog('error', 'prerender', `Auto page generation for ${pageConfig.path} failed`, err);
+      this.log.error({ error: err }, `Auto page generation for ${pageConfig.path} failed`);
     }
   }
 }

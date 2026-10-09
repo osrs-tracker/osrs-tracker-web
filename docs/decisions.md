@@ -7,12 +7,12 @@ Choices that look like accidents without their context: what was decided, why, a
 - **Context:** the request log was JSON, everything else plain text, and errors spread their stack over many lines,
   which Loki stores as separate entries. Logging the requests renders make, in the request log's shape, made the two
   hard to tell apart.
-- **Decision:** every line the server writes is one JSON object with `level`, `time` and a `type` from a fixed list in
-  `server/utils/log.ts` (`incoming`, `outgoing`, `lifecycle`, `prerender`, `uncaught`), errors with their stack in
-  `error`. Morgan keeps writing the request log, through the same `logLine`. Angular's own console output, and the app's
+- **Decision:** every line the server writes is one JSON object with `level`, `time` and a `type` (`incoming`,
+  `outgoing`, `lifecycle`, `uncaught`, plus `prerender` from `server/utils/log.ts`), errors with their stack in `error`.
+  The lines, the request log and the `outgoing` log come from `@osrs-tracker/logger` (pino, in `osrs-tracker-aws`),
+  shared with the API so both write the same shape; morgan is gone. Angular's own console output, and the app's
   `console.error`s (which also run in the browser), stay plain text.
-- **Revisit:** if the API's logs should be queried together with these: it logs requests in the same shape, without
-  `type`.
+- **Revisit:** if the API's logs should be queried together with these: they're the same shape and both have `type`.
 
 ## Item pages load the price history in the browser (2026/10/09)
 
@@ -23,7 +23,7 @@ Choices that look like accidents without their context: what was decided, why, a
   volume and yesterday's change. The small `latest` calls stay in SSR, so crawlers still see prices, without a timeout
   for now (a timeout just for the Wiki was too specific for what the logs may show); a failed price load renders as
   loading on the server, as the browser fetches it again after hydration. The server logs every request a render makes
-  with its duration and page (`type: "outgoing"`, `server/utils/outgoing-requests.ts`): from undici's
+  with its duration and page (`type: "outgoing"`, `logOutgoingRequests` from `@osrs-tracker/logger`): from undici's
   `diagnostics_channel` rather than an Angular interceptor, so it sees every `fetch` and lives with the rest of the
   server's logging.
 - **Revisit:** if the `outgoing` logs show the `latest` calls still often take seconds, load those in the browser as

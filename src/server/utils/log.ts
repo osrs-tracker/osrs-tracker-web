@@ -1,30 +1,23 @@
+import { createLogger, type CreateLoggerOptions, type Logger, type LogType } from '@osrs-tracker/logger';
+import { AsyncLocalStorage } from 'node:async_hooks';
+
 /**
- * What a server log line is about, so Loki queries can pick one kind (`| json | type="outgoing"`):
- * - `incoming`: a request the server answered (`middleware/logging.ts`)
- * - `outgoing`: a request a page render made (`utils/outgoing-requests.ts`)
- * - `lifecycle`: startup and shutdown
- * - `prerender`: auto page generation (`utils/auto-generator.ts`)
- * - `uncaught`: an error that reached Express' error handler
+ * What a server log line is about (`| json | type="outgoing"` in Loki): the package's `incoming`, `outgoing`,
+ * `lifecycle` and `uncaught`, plus `prerender` for auto page generation (`utils/auto-generator.ts`).
  */
-export type LogType = 'incoming' | 'outgoing' | 'lifecycle' | 'prerender' | 'uncaught';
-export type LogLevel = 'info' | 'warn' | 'error';
+export type WebLogType = LogType<'prerender'>;
 
-/** 5xx is `error`; 4xx and aborted requests (no response) are `warn`; else `info`. For both request logs. */
-export function requestLogLevel(status: number, aborted: boolean): LogLevel {
-  return aborted ? 'warn' : status >= 500 ? 'error' : status >= 400 ? 'warn' : 'info';
+/** The path of the page being rendered, so the requests its render makes can be traced back to it */
+const renderedPage = new AsyncLocalStorage<string>();
+
+/** Runs `render` for the page at `path`: the requests it makes are logged with that `page`. */
+export function renderingPage<T>(path: string, render: () => T): T {
+  return renderedPage.run(path, render);
 }
 
-/** One JSON log line: `level`, `time` and `type` first, then `fields` (`undefined` ones are left out). */
-export function logLine(level: LogLevel, type: LogType, fields: Record<string, unknown>): string {
-  return JSON.stringify({ level, time: new Date().toISOString(), type, ...fields });
+/** The server's logger, writing to stdout unless specs pass a `destination`. Lines made during a render get its `page`. */
+export function createServerLogger(destination?: CreateLoggerOptions['destination']): Logger {
+  return createLogger({ context: () => ({ page: renderedPage.getStore() }), destination });
 }
 
-/** Writes a log line to stdout, as morgan does. An `error` is logged with its stack, on the same line. */
-export function writeLog(level: LogLevel, type: LogType, message: string, error?: unknown): void {
-  process.stdout.write(logLine(level, type, { message, error: errorText(error) }) + '\n');
-}
-
-function errorText(error: unknown): string | undefined {
-  if (error === undefined) return undefined;
-  return error instanceof Error ? (error.stack ?? error.message) : String(error);
-}
+export const logger = createServerLogger();
