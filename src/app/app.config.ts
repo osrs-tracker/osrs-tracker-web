@@ -15,6 +15,7 @@ import { CustomErrorHandler } from './core/error-handling/error-handler';
 import { baseUrlInterceptor } from './core/interceptors/base-url.interceptors';
 import { loadingIndicatorInterceptor } from './core/interceptors/loading-indicator.interceptor';
 import { shareRequestInterceptor } from './core/interceptors/share-request.interceptors';
+import { ssrTimeoutInterceptor } from './core/interceptors/ssr-timeout.interceptor';
 import { ssrUserAgentInterceptor } from './core/interceptors/ssr-user-agent.interceptor';
 import { ParamAwareReuseStrategy } from './core/routing/param-aware-reuse-strategy';
 
@@ -26,6 +27,7 @@ export const appConfig: ApplicationConfig = {
         loadingIndicatorInterceptor,
         shareRequestInterceptor,
         ssrUserAgentInterceptor,
+        ssrTimeoutInterceptor,
       ]),
     ),
     provideRouter(

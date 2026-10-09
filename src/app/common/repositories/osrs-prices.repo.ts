@@ -4,6 +4,7 @@ import { fromUnixTime, getUnixTime } from 'date-fns';
 import { map, Observable, shareReplay } from 'rxjs';
 import { BASE_URL_PREFIX } from 'src/app/core/interceptors/base-url.interceptors';
 import { LOADING_INDICATOR } from 'src/app/core/interceptors/loading-indicator.interceptor';
+import { SSR_TIMEOUT } from 'src/app/core/interceptors/ssr-timeout.interceptor';
 import { config } from 'src/config/config';
 
 export enum TimeSpan {
@@ -52,7 +53,10 @@ export class OsrsPricesRepo {
     return this.httpClient
       .get<{ data: Record<string, Record<string, number>> }>(`${config.pricesBaseUrl}/api/v1/osrs/latest`, {
         ...(options?.fetchSingle && { params: { id } }),
-        context: new HttpContext().set(BASE_URL_PREFIX, false).set(LOADING_INDICATOR, options?.loadingIndicator),
+        context: new HttpContext()
+          .set(BASE_URL_PREFIX, false)
+          .set(SSR_TIMEOUT, true)
+          .set(LOADING_INDICATOR, options?.loadingIndicator),
       })
       .pipe(
         map(response => response.data[id]),
@@ -73,7 +77,10 @@ export class OsrsPricesRepo {
     return this.httpClient
       .get<{ data: AveragePricesAtTime[]; itemId: string }>(`${config.pricesBaseUrl}/api/v1/osrs/timeseries`, {
         params: { id, timestep: timeSpan },
-        context: new HttpContext().set(BASE_URL_PREFIX, false).set(LOADING_INDICATOR, options?.loadingIndicator),
+        context: new HttpContext()
+          .set(BASE_URL_PREFIX, false)
+          .set(SSR_TIMEOUT, true)
+          .set(LOADING_INDICATOR, options?.loadingIndicator),
       })
       .pipe(map(response => response.data));
   }
@@ -113,7 +120,7 @@ export class OsrsPricesRepo {
       `${config.pricesBaseUrl}/api/v1/osrs/${timeSpan}`,
       {
         ...(timestamp && { params: { timestamp: getUnixTime(timestamp) } }), // Only add the timestamp param if it's defined
-        context: new HttpContext().set(BASE_URL_PREFIX, false),
+        context: new HttpContext().set(BASE_URL_PREFIX, false).set(SSR_TIMEOUT, true),
       },
     );
   }

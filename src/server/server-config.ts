@@ -19,6 +19,9 @@ export const serverConfig = {
   keepAliveTimeout: 95000,
   // How long the readiness probe waits for the first pre-render of the auto-generated pages
   readyTimeout: 20000,
+  // How long an OSRS Wiki call (`SSR_TIMEOUT`) may take during a render before it fails and the browser loads it after
+  // hydration. Item pages waited up to 15 s for one; crawlers give up after about 10 s.
+  ssrRequestTimeout: 3000,
 
   // Paths
   serverDistFolder: serverDistFolder,

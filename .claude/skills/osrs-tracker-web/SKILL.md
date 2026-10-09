@@ -46,8 +46,9 @@ a worktree).
 - **Keyboard patterns**: use `@angular/aria` (headless) for toolbars, listboxes, comboboxes and grids instead of
   hand-written arrow-key handling; style its state with `aria-*:` variants (`aria-disabled:`, `aria-checked:`).
   `segmented` shows the pattern and its SSR caveat (`docs/decisions.md`).
-- **HTTP**: repositories use the `BASE_URL_PREFIX` / `LOADING_INDICATOR` `HttpContext` tokens, not absolute URLs.
-  `encodeURIComponent` path segments; query values go in `params`.
+- **HTTP**: repositories use the `BASE_URL_PREFIX` / `LOADING_INDICATOR` `HttpContext` tokens, not absolute URLs, and
+  `SSR_TIMEOUT` on third-party calls (see Third-party calls in SSR). `encodeURIComponent` path segments; query values go
+  in `params`.
 - **Routing**: lazy routes with default-exported components, `title: '<Page> - OSRS Tracker'`; resolvers end with
   `catchError(resolverErrorHandler(<original url>))`. `ParamAwareReuseStrategy` recreates components on param change.
   Adding or renaming a route means updating `src/server/utils/route-label.ts` (its spec fails CI otherwise).
@@ -128,8 +129,10 @@ the angular.dev docs for the installed major version.
   item and player rows.
 - **Third-party calls in SSR**: a render waits for every request it makes, so keep third-party calls (the OSRS Wiki)
   small, and render a failed one as loading on the server (`latestLoading` in `item-detail.component.ts`), as the
-  browser fetches it again after hydration. `logOutgoingRequests` logs every request a render makes, with its duration
-  and the page `renderingPage()` (`server/utils/log.ts`) set (undici's `diagnostics_channel`, so it sees every `fetch`).
+  browser fetches it again after hydration. Set the `SSR_TIMEOUT` context token on such calls
+  (`core/interceptors/ssr-timeout.interceptor.ts`): during SSR they fail after `ssrRequestTimeout` (3 s).
+  `logOutgoingRequests` logs every request a render makes, with its duration and the page `renderingPage()`
+  (`server/utils/log.ts`) set (undici's `diagnostics_channel`, so it sees every `fetch`).
 - **Server logs**: request logs match the API's shape: 5xx `error`, 4xx `warn`, else `info`; a client that disconnects
   before the response is `warn` with `aborted: true` and no `status`. Both come from `@osrs-tracker/logger` (in
   `osrs-tracker-aws`; change the shape there, for both apps). Every server log line is JSON with a `type`: write new

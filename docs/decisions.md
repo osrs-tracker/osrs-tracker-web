@@ -26,8 +26,15 @@ Choices that look like accidents without their context: what was decided, why, a
   with its duration and page (`type: "outgoing"`, `logOutgoingRequests` from `@osrs-tracker/logger`): from undici's
   `diagnostics_channel` rather than an Angular interceptor, so it sees every `fetch` and lives with the rest of the
   server's logging.
-- **Revisit:** if the `outgoing` logs show the `latest` calls still often take seconds, load those in the browser as
-  well, or give SSR requests a general timeout.
+- **Update (2026/10/09):** in the first 45 minutes after the deploy, 3 of 20 item page renders still waited 3.4 s, 7.4 s
+  and 14.8 s for a `latest` call. OSRS Wiki requests now carry the `SSR_TIMEOUT` context token, and during SSR
+  `ssrTimeoutInterceptor` gives those Angular's own request `timeout` of `ssrRequestTimeout` (3 s, `server-config.ts`),
+  which aborts the `fetch` (an `aborted` `outgoing` line, `responseTime` about 3 s) and fails the request. An item page
+  then shows the prices as loading and the browser loads them. Opt-in, not for every request: a general timeout also
+  turned a slow API or GitHub call into the error page (resolvers), a load-error box (player history, Home's news,
+  cached for 5 minutes) or a bare 404 (the changelog's resolver has no error handler), while only the Wiki was ever
+  slow. Crawlers that hit a timeout see no prices in that page's HTML.
+- **Revisit:** if timeouts (`aborted` `outgoing` lines) are frequent, load the `latest` calls in the browser too.
 
 ## Traefik compresses responses, the server sets cache lifetimes (2026/10/09)
 
