@@ -151,6 +151,8 @@ export default class PlayerDetailComponent implements OnInit {
 
   readonly loadingMore: WritableSignal<boolean> = signal(false);
   readonly loadMoreFailed: WritableSignal<boolean> = signal(false);
+  /** The size the failed load asked for, so a retry loads as much (a longer period asks for more than a week) */
+  #failedMoreSize = this.#MORE_SIZE;
 
   /** The entries the period needs: its days and the period before them, as far as the history goes */
   readonly #periodSize: Signal<number> = computed(() => Math.min(this.playerView.period() * 2 + 1, this.#PERIOD_SIZE));
@@ -401,8 +403,15 @@ export default class PlayerDetailComponent implements OnInit {
       )
       .subscribe({
         next: scrapedHiscores => this.#morePages.update(pages => [...pages, { entries: scrapedHiscores, size }]),
-        error: () => this.loadMoreFailed.set(true),
+        error: () => {
+          this.#failedMoreSize = size;
+          this.loadMoreFailed.set(true);
+        },
       });
+  }
+
+  retryLoadMore(): void {
+    this.loadMore(this.#failedMoreSize);
   }
 
   /** Compared with the period before it, e.g. "+24% vs previous week"; 60 days back is as far as the history goes */
