@@ -206,7 +206,7 @@
 
         @if (hasMoreEntries()) {
           @if (loadMoreFailed()) {
-            <load-error source="player-history-more" message="Couldn't load more days." (retry)="loadMore()" />
+            <load-error source="player-history-more" message="Couldn't load more days." (retry)="retryLoadMore()" />
           } @else {
             <button
               type="button"

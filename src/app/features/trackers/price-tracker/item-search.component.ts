@@ -2,6 +2,7 @@ import { Combobox, ComboboxPopup, ComboboxWidget } from '@angular/aria/combobox'
 import { Listbox, Option } from '@angular/aria/listbox';
 import {
   Component,
+  DestroyRef,
   ElementRef,
   InputSignal,
   ResourceRef,
@@ -17,7 +18,7 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
 import { Subscription, finalize, forkJoin, map, of } from 'rxjs';
@@ -164,6 +165,7 @@ export class ItemSearchComponent {
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
   private readonly router = inject(Router);
   private readonly elementRef: ElementRef<HTMLElement> = inject(ElementRef);
+  private readonly destroyRef = inject(DestroyRef);
 
   /** E.g. the name searched for on an item page that wasn't found */
   readonly initialQuery: InputSignal<string> = input('');
@@ -286,7 +288,10 @@ export class ItemSearchComponent {
     const query = this.query();
     this.searchSubscription = this.osrsTrackerRepo
       .searchItems(query)
-      .pipe(finalize(() => this.loading.set(false)))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.loading.set(false)),
+      )
       .subscribe({
         next: items => {
           this.results.set(items ?? []);
