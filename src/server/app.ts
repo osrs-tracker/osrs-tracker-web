@@ -10,6 +10,8 @@ import { securityMiddleware } from './middleware/security';
 import { staticFilesMiddleware } from './middleware/static-files';
 import { createHealthRouter } from './routers/health';
 import { serverConfig } from './server-config';
+import { writeLog } from './utils/log';
+import { renderingPage } from './utils/outgoing-requests';
 
 /** @param isReady Whether the readiness probe (`/healthy` on the main port) answers 200 yet */
 export function createApp({ isReady = () => true }: { isReady?: () => boolean } = {}) {
@@ -42,7 +44,7 @@ export function createApp({ isReady = () => true }: { isReady?: () => boolean } 
 
   // Express 5 passes a rejected promise on to the error handler below
   app.use(async (req, res, next) => {
-    const response = await angularApp.handle(req);
+    const response = await renderingPage(req.path, () => angularApp.handle(req));
     if (!response) return next();
     if (!response.headers.get('content-type')?.startsWith('text/html'))
       return writeResponseToNodeResponse(response, res);
@@ -56,8 +58,7 @@ export function createApp({ isReady = () => true }: { isReady?: () => boolean } 
 
   // Log errors and respond with a generic 500, Express' default handler leaks the stack trace unless NODE_ENV=production
   app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
-    // eslint-disable-next-line no-console
-    console.error(err);
+    writeLog('error', 'uncaught', `${req.method} ${req.originalUrl} failed`, err);
     if (res.headersSent) return next(err);
     res.status(500).send('Internal Server Error');
   });

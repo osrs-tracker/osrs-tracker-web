@@ -1,6 +1,7 @@
-/* eslint-disable no-console */
 import { AngularNodeAppEngine } from '@angular/ssr/node';
 import { serverConfig } from '../server-config';
+import { writeLog } from './log';
+import { renderingPage } from './outgoing-requests';
 import { pageCache } from './page-cache';
 
 /**
@@ -26,7 +27,7 @@ export class AutoGenerator {
    * @param bootstrap Function to bootstrap the Angular application
    */
   initialize(angularApp: AngularNodeAppEngine): void {
-    console.log('Initializing auto page generation service');
+    writeLog('info', 'prerender', 'Initializing auto page generation service');
 
     this.initialized = true;
     this.warm = false;
@@ -43,7 +44,7 @@ export class AutoGenerator {
 
   /** Stop all auto-generation intervals */
   shutdown(): void {
-    console.log('Shutting down auto page generation');
+    writeLog('info', 'prerender', 'Shutting down auto page generation');
     this.intervals.forEach(interval => clearInterval(interval));
     this.intervals = [];
     clearTimeout(this.readyTimeout);
@@ -63,17 +64,23 @@ export class AutoGenerator {
   ): Promise<void> {
     try {
       // Pre-render the page, the host must match one of the allowed hosts of the Angular app engine
-      const response = await angularApp.handle(new Request(`https://${serverConfig.HOST}${pageConfig.path}`));
+      const response = await renderingPage(pageConfig.path, () =>
+        angularApp.handle(new Request(`https://${serverConfig.HOST}${pageConfig.path}`)),
+      );
 
       // Only cache successful renders, keep serving the previous version otherwise
       if (!response?.ok) {
-        console.error(`Auto page generation for ${pageConfig.path} failed with status ${response?.status}`);
+        writeLog(
+          'error',
+          'prerender',
+          `Auto page generation for ${pageConfig.path} failed with status ${response?.status}`,
+        );
         return;
       }
 
       pageCache.set(pageConfig.path, await response.text());
     } catch (err) {
-      console.error(`Auto page generation for ${pageConfig.path} failed:`, err);
+      writeLog('error', 'prerender', `Auto page generation for ${pageConfig.path} failed`, err);
     }
   }
 }

@@ -1,7 +1,9 @@
+import { isPlatformBrowser } from '@angular/common';
 import {
   Component,
   InputSignal,
   OnInit,
+  PLATFORM_ID,
   RESPONSE_INIT,
   ResourceRef,
   Signal,
@@ -84,6 +86,7 @@ export default class ItemDetailComponent implements OnInit {
   // Only available during SSR, `null` in the browser
   private readonly responseInit = inject(RESPONSE_INIT, { optional: true });
   private readonly isHumanVisitor = isHumanVisitor();
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly timeAgo = new TimeAgoPipe();
 
   /** `null` when there's no such item */
@@ -101,11 +104,23 @@ export default class ItemDetailComponent implements OnInit {
     stream: ({ params: id }) => this.osrsPricesRepo.getLatestPrices(id, { fetchSingle: true }),
   });
 
-  /** Shared per item, so switching back and forth between ranges doesn't refetch. */
+  /**
+   * During SSR a failed price load renders as loading, as the browser fetches it again after hydration (failed
+   * responses aren't in the transfer cache).
+   */
+  readonly latestLoading: Signal<boolean> = computed(
+    () => this.latest.isLoading() || (!this.isBrowser && !!this.latest.error()),
+  );
+  readonly latestFailed: Signal<boolean> = computed(() => this.isBrowser && !!this.latest.error());
+
+  /**
+   * Shared per item, so switching back and forth between ranges doesn't refetch. Browser only: the hourly series is
+   * about 40KB that SSR would wait for and embed in the page, and the chart it feeds isn't rendered on the server.
+   */
   private readonly timeSeries: Signal<Record<PriceRange, Observable<AveragePricesAtTime[]>> | undefined> = computed(
     () => {
       const id = this.item()?.id;
-      if (id === undefined) return undefined;
+      if (id === undefined || !this.isBrowser) return undefined;
 
       const fetch = (timeSpan: TimeSpan) => this.osrsPricesRepo.getPriceTimeSeries(id, timeSpan).pipe(shareReplay(1));
       return {
@@ -123,6 +138,8 @@ export default class ItemDetailComponent implements OnInit {
     stream: ({ params: hourly$ }) => hourly$,
     defaultValue: [],
   });
+  /** Never loaded on the server, so it renders as loading there */
+  readonly hourlyLoading: Signal<boolean> = computed(() => !this.isBrowser || this.hourly.isLoading());
 
   // A resource cancels the previous request when the range changes, so a slow response can't overwrite a newer one
   readonly priceSeries: ResourceRef<AveragePricesAtTime[]> = rxResource({
@@ -155,8 +172,8 @@ export default class ItemDetailComponent implements OnInit {
   readonly stats: Signal<ItemStat[]> = computed(() => {
     const item = this.item()!;
     const latest = this.latestPrices();
-    const latestLoading = this.latest.isLoading();
-    const latestFailed = !!this.latest.error();
+    const latestLoading = this.latestLoading();
+    const latestFailed = this.latestFailed();
     const exempt = isGeTaxExempt(item.id);
 
     const price = (label: string, info: string, value?: number, time?: Date): ItemStat => {
@@ -192,7 +209,7 @@ export default class ItemDetailComponent implements OnInit {
         info: 'The number of times the item has been traded within the last 24 hours.',
         value: this.hourly.error() ? '–' : formatWhole(last24HourVolume(this.hourlySeries(), new Date())),
         sub: this.hourly.error() ? "Couldn't load the volume" : 'Last 24 hours',
-        loading: this.hourly.isLoading(),
+        loading: this.hourlyLoading(),
       },
       {
         label: 'Buy limit',

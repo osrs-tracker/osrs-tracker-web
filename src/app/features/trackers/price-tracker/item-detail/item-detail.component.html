@@ -23,8 +23,9 @@
     [item]="item"
     [price]="sellPrice()"
     [average]="yesterdayAverage()"
-    [loading]="latest.isLoading() || hourly.isLoading()"
-    [error]="!!latest.error()"
+    [loading]="latestLoading()"
+    [averageLoading]="hourlyLoading()"
+    [error]="latestFailed()"
     [averageError]="!!hourly.error()"
     (retry)="latest.reload()"
     (retryAverage)="hourly.reload()"
@@ -78,7 +79,7 @@
       <article
         item-volume
         [volumes]="volumes()"
-        [loading]="hourly.isLoading()"
+        [loading]="hourlyLoading()"
         [error]="!!hourly.error()"
         (retry)="hourly.reload()"
       ></article>
@@ -87,8 +88,8 @@
         profit-calculator
         [item]="item"
         [latestPrices]="latest.hasValue() ? latest.value() : undefined"
-        [loading]="latest.isLoading()"
-        [error]="!!latest.error()"
+        [loading]="latestLoading()"
+        [error]="latestFailed()"
       ></article>
     </div>
   </main>

@@ -2,6 +2,33 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## Server logs are JSON with a type (2026/10/09)
+
+- **Context:** the request log was JSON, everything else plain text, and errors spread their stack over many lines,
+  which Loki stores as separate entries. Logging the requests renders make, in the request log's shape, made the two
+  hard to tell apart.
+- **Decision:** every line the server writes is one JSON object with `level`, `time` and a `type` from a fixed list in
+  `server/utils/log.ts` (`incoming`, `outgoing`, `lifecycle`, `prerender`, `uncaught`), errors with their stack in
+  `error`. Morgan keeps writing the request log, through the same `logLine`. Angular's own console output, and the app's
+  `console.error`s (which also run in the browser), stay plain text.
+- **Revisit:** if the API's logs should be queried together with these: it logs requests in the same shape, without
+  `type`.
+
+## Item pages load the price history in the browser (2026/10/09)
+
+- **Context:** item pages took 1 s at the median and 10 s at the 90th percentile (crawlers give up at 10 s) while the
+  API answered in under 100 ms: SSR waited for three OSRS Wiki calls without a timeout, one of them the 1h time series
+  (about 40 KB, embedded in every page). The slowness came and went by time of day, independent of our traffic.
+- **Decision:** the time series loads in the browser only (the chart already did), with skeletons on the server for the
+  volume and yesterday's change. The small `latest` calls stay in SSR, so crawlers still see prices, without a timeout
+  for now (a timeout just for the Wiki was too specific for what the logs may show); a failed price load renders as
+  loading on the server, as the browser fetches it again after hydration. The server logs every request a render makes
+  with its duration and page (`type: "outgoing"`, `server/utils/outgoing-requests.ts`): from undici's
+  `diagnostics_channel` rather than an Angular interceptor, so it sees every `fetch` and lives with the rest of the
+  server's logging.
+- **Revisit:** if the `outgoing` logs show the `latest` calls still often take seconds, load those in the browser as
+  well, or give SSR requests a general timeout.
+
 ## Traefik compresses responses, the server sets cache lifetimes (2026/10/09)
 
 - **Context:** the `compression` middleware compressed every response in the pod (brotli quality 4), using the CPU SSR

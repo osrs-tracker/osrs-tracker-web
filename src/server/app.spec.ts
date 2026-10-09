@@ -140,13 +140,22 @@ describe('createApp', () => {
   });
 
   it('answers rendering errors with a generic 500 that does not leak the error', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => undefined);
     handle.mockRejectedValue(new Error('secret stack trace'));
 
     const res = await get('/trackers/price/4151');
 
     expect(res.status).toBe(500);
     expect(await res.text()).toBe('Internal Server Error');
+    // Logged as one JSON line, stack included, so Loki keeps it together
+    const logs = vi.mocked(process.stdout.write).mock.calls.map(([line]) => JSON.parse(String(line)));
+    expect(logs).toContainEqual(
+      expect.objectContaining({
+        level: 'error',
+        type: 'uncaught',
+        message: 'GET /trackers/price/4151 failed',
+        error: expect.stringContaining('Error: secret stack trace\n    at '),
+      }),
+    );
   });
 
   it('labels the request metrics by route, not by URL', async () => {

@@ -58,9 +58,15 @@ The `kubectl` commands use the `kubernetes-admin@kubernetes` context. Claude Cod
 
 - Pods and events: `kubectl -n osrs-tracker get pods` and `kubectl -n osrs-tracker describe deploy osrs-tracker-web`.
 - Logs: `kubectl -n osrs-tracker logs deploy/osrs-tracker-web --since=15m`, or Loki in Grafana (grafana.freekmencke.com)
-  for older logs. Requests are logged as JSON with `status`, `route` and `cache`; a client that gave up before the
-  response is a `warn` with `aborted: true` and no `status`
-  (`{namespace="osrs-tracker", app="osrs-tracker-web"} |= "\"aborted\":true"`).
+  for older logs. The server's own lines are JSON with a `type` (`src/server/utils/log.ts`): `incoming` (requests it
+  answered), `outgoing` (requests a render made), `lifecycle` (startup, shutdown), `prerender` (auto page generation)
+  and `uncaught` (errors that reached Express' error handler, stack in `error`); Angular's own output is plain text.
+  Pick one with `| json | type="…"`, e.g. `{namespace="osrs-tracker", app="osrs-tracker-web"} | json | type="uncaught"`.
+- Requests: `incoming` lines have `status`, `route` and `cache`; a client that gave up before the response is a `warn`
+  with `aborted: true` and no `status` (`… | json | type="incoming" | aborted="true"`).
+- Slow pages: `outgoing` lines have the `url`, `responseTime` and the `page` the render was for; a call cut short
+  because the client closed the connection is `aborted: true`
+  (`… | json | type="outgoing" |~ "\"responseTime\":\"[0-9]{4,}"` for calls of a second or more).
 - Metrics: "Express Dashboard" in Grafana (request rate, status codes and latency per route label), defined in
   FreekMencke/home-cluster's `cluster/monitoring/grafana/dashboards/express-dashboard.json`. The series come from
   `@osrs-tracker/express-metrics` (osrs-tracker-aws, shared with the API) on the metrics port (9090, `/metrics`):

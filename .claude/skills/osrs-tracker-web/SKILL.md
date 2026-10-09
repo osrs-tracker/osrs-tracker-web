@@ -28,7 +28,9 @@ a worktree).
   browser still finds the responses. Unset locally. URLs that end up in the HTML (the news `<img>`) use
   `config.apiBaseUrl` directly and stay public.
 - Request logs match the API's shape: 5xx `error`, 4xx `warn`, else `info`; a client that disconnects before the
-  response is `warn` with `aborted: true` and no `status` (`src/server/middleware/logging.ts`).
+  response is `warn` with `aborted: true` and no `status` (`src/server/middleware/logging.ts`). Every server log line is
+  JSON with a `type` (`src/server/utils/log.ts` lists them: `incoming`, `outgoing`, `lifecycle`, `prerender`,
+  `uncaught`): write new ones with `writeLog`, not `console`, and add a type there when none fits.
 - `@osrs-tracker/hiscores` peer-depends on `@osrs-tracker/models`: bump both together, with `--prefer-online` right
   after a publish.
 - Production test players: **the fraking** (active) for visual checks, **ToxSick** (inactive) for anything that writes.
@@ -128,6 +130,10 @@ the angular.dev docs for the installed major version.
 - **Transfer state size**: every SSR response is embedded in the page. Load large payloads the first paint doesn't need
   (the Wiki's `/latest` and `/24h`, every item's prices) in the browser only and render skeletons on the server, like
   item and player rows.
+- **Third-party calls in SSR**: a render waits for every request it makes, so keep third-party calls (the OSRS Wiki)
+  small, and render a failed one as loading on the server (`latestLoading` in `item-detail.component.ts`), as the
+  browser fetches it again after hydration. `server/utils/outgoing-requests.ts` logs every request a render makes, with
+  its duration and page (undici's `diagnostics_channel`, so it sees every `fetch`).
 - **Writes**: requests that record something (lookups, starting to track a player) run only when `isHumanVisitor()`
   (`core/platform/human-visitor.ts`): never during SSR or for crawlers, which would fill the recent lookups.
 - **Chart.js**: shared registrations and the date adapter in `common/components/charts/chart-setup.ts`; load

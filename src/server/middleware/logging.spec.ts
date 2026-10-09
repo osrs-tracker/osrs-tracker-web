@@ -30,7 +30,13 @@ describe('loggingMiddleware', () => {
     await (await get(path)).text();
 
     await vi.waitFor(() => expect(logs()).toHaveLength(1));
-    expect(logs()[0]).toMatchObject({ level, status, url: path, responseTime: expect.stringMatching(/^[\d.]+ms$/) });
+    expect(logs()[0]).toMatchObject({
+      level,
+      status,
+      type: 'incoming',
+      url: path,
+      responseTime: expect.stringMatching(/^[\d.]+ms$/),
+    });
     expect(logs()[0]).not.toHaveProperty('aborted');
   });
 

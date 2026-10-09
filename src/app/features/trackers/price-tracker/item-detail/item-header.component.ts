@@ -68,7 +68,9 @@ import { formatWhole } from './item-prices';
         <span class="text-muted">No recent trades</span>
       } @else {
         <span class="text-3xl/none sm:text-4xl/none font-bold text-strong tabular-nums">{{ priceText() }}</span>
-        @if (averageError()) {
+        @if (averageLoading()) {
+          <skeleton class="h-4 w-30 my-0.5" tone="ground" />
+        } @else if (averageError()) {
           <span class="flex items-center gap-1 text-sm text-muted">
             Couldn't load yesterday's average.
             <load-error
@@ -126,7 +128,10 @@ export class ItemHeaderComponent {
   readonly price: InputSignal<number | null> = input<number | null>(null);
   /** Yesterday's (UTC) 24-hour average instant sell price, `null` without trades */
   readonly average: InputSignal<number | null> = input<number | null>(null);
+  /** The price is loading */
   readonly loading: InputSignal<boolean> = input(false);
+  /** Yesterday's average is loading, so the change isn't known yet */
+  readonly averageLoading: InputSignal<boolean> = input(false);
   readonly error: InputSignal<boolean> = input(false);
   /** Yesterday's average failed to load, so the change can't be shown */
   readonly averageError: InputSignal<boolean> = input(false);
