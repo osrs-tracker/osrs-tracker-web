@@ -119,8 +119,9 @@ metadata:
   namespace: osrs-tracker
   annotations:
     cert-manager.io/cluster-issuer: 'letsencrypt-prod'
-    # Per-client-IP rate limits and Forwarded header stripping: the Middlewares below.
-    traefik.ingress.kubernetes.io/router.middlewares: osrs-tracker-osrs-tracker-web-ratelimit@kubernetescrd,osrs-tracker-osrs-tracker-web-inflight@kubernetescrd,osrs-tracker-osrs-tracker-web-strip-forwarded@kubernetescrd
+    # The Middlewares below: per-client-IP rate limits, Forwarded header stripping, then compression (last, so rejected
+    # requests cost none).
+    traefik.ingress.kubernetes.io/router.middlewares: osrs-tracker-osrs-tracker-web-ratelimit@kubernetescrd,osrs-tracker-osrs-tracker-web-inflight@kubernetescrd,osrs-tracker-osrs-tracker-web-strip-forwarded@kubernetescrd,osrs-tracker-osrs-tracker-web-compress@kubernetescrd
 spec:
   ingressClassName: traefik
   tls:
@@ -169,3 +170,20 @@ spec:
   headers:
     customRequestHeaders:
       Forwarded: ''
+---
+# Compresses text for browsers (gzip, br or zstd per Accept-Encoding, bodies of 1024 bytes and up): pages, bundles,
+# sitemaps. Not the PNG/GIF icons or the WOFF2 font, which are compressed already.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: osrs-tracker-web-compress
+  namespace: osrs-tracker
+spec:
+  compress:
+    includedContentTypes:
+      - text/html
+      - text/css
+      - text/javascript
+      - text/plain
+      - application/xml
+      - application/manifest+json

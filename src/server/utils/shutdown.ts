@@ -2,10 +2,11 @@
 import { Server } from 'http';
 
 /**
- * Shut down gracefully on SIGINT/SIGTERM: run the cleanup callback, stop accepting connections on all servers, and exit
- * once every server has closed (or after 10 seconds).
+ * Shut down gracefully on SIGINT/SIGTERM: run the cleanup callback, stop accepting connections on the main server, and
+ * once it has closed, close the metrics server and exit (or exit after 10 seconds). The metrics server closes last, so
+ * the liveness probe keeps answering while the main server drains.
  */
-export function configureGracefulShutdown(servers: Server[], cleanupCallback?: () => void): void {
+export function configureGracefulShutdown(server: Server, metricsServer: Server, cleanupCallback?: () => void): void {
   ['SIGINT', 'SIGTERM'].forEach(signal => {
     process.once(signal, () => {
       console.log(`Received ${signal}, shutting down gracefully`);
@@ -20,7 +21,7 @@ export function configureGracefulShutdown(servers: Server[], cleanupCallback?: (
         }
       }
 
-      Promise.all(servers.map(server => new Promise(resolve => server.close(resolve)))).then(() => {
+      closeServers(server, metricsServer).then(() => {
         console.log('Servers closed');
         process.exit(0);
       });
@@ -32,4 +33,14 @@ export function configureGracefulShutdown(servers: Server[], cleanupCallback?: (
       }, 10000);
     });
   });
+}
+
+/** Closes the main server, then the metrics server, resolving once both have closed */
+export async function closeServers(server: Server, metricsServer: Server): Promise<void> {
+  // `close` only closes the connections that are idle right now. With the long keep-alive timeout, a connection whose
+  // response is still being sent would then stay open, so close connections as they become idle.
+  const closeIdle = setInterval(() => server.closeIdleConnections(), 100);
+  await new Promise(resolve => server.close(resolve));
+  clearInterval(closeIdle);
+  await new Promise(resolve => metricsServer.close(resolve));
 }

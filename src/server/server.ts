@@ -5,7 +5,8 @@ import { serverConfig } from './server-config';
 import { autoGenerateService } from './utils/auto-generator';
 import { configureGracefulShutdown } from './utils/shutdown';
 
-const { app, metricsApp, angularApp, reqHandler } = createApp();
+// Not ready until the pages are pre-rendered, so the first visitors after a deploy get them from the page cache
+const { app, metricsApp, angularApp, reqHandler } = createApp({ isReady: () => autoGenerateService.ready });
 
 /**
  * Start the server if this module is the main entry point.
@@ -16,12 +17,13 @@ if (isMainModule(import.meta.url)) {
     console.log(`Node Express server listening on http://localhost:${serverConfig.PORT}`);
     autoGenerateService.initialize(angularApp); // Initialize auto-generation of pages
   });
+  server.keepAliveTimeout = serverConfig.keepAliveTimeout;
 
   const metricsServer = metricsApp.listen(serverConfig.METRICS_PORT, () => {
     console.log(`Metrics server listening on http://localhost:${serverConfig.METRICS_PORT}`);
   });
 
-  configureGracefulShutdown([server, metricsServer], () => autoGenerateService.shutdown());
+  configureGracefulShutdown(server, metricsServer, () => autoGenerateService.shutdown());
 }
 
 export { angularApp, app, metricsApp, reqHandler };

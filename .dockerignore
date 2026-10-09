@@ -1,6 +1,10 @@
 # Node modules
 node_modules
 
+# Claude Code settings, skills and worktrees
+.claude
+.playwright-mcp
+
 # Git files
 .git
 .gitignore

@@ -1,5 +1,6 @@
 # Stage 1: Build the application
-FROM node:24-alpine AS build
+# Both stages pin the same digest; Dependabot bumps them together when the image is rebuilt (.github/dependabot.yml)
+FROM node:24-alpine@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1 AS build
 
 WORKDIR /app
 
@@ -16,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Setup production environment
-FROM node:24-alpine AS production
+FROM node:24-alpine@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1 AS production
 
 WORKDIR /app
 
@@ -24,6 +25,7 @@ WORKDIR /app
 COPY --from=build /app/dist ./dist
 
 # Set environment variables
+ENV NODE_ENV=production
 ENV PORT=8080
 ENV METRICS_PORT=9090
 
