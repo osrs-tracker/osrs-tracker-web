@@ -95,4 +95,4 @@ reliability.
 ## License
 
 [Elastic License 2.0](LICENSE): you're welcome to read the code, learn from it, change it and run it yourself, but not
-to offer it to others as a hosted service, paid or free. Versions up to 9 October 2026 were released under Apache 2.0.
+to offer it to others as a hosted service, paid or free.
