@@ -153,7 +153,7 @@ describe('createApp', () => {
         type: 'uncaught',
         message: 'GET /trackers/price/4151 failed',
         error: expect.stringMatching(
-          /^Error: secret stack trace\n {4}at [\s\S]*\nCaused by: Error: connect ECONNREFUSED\n/,
+          /^Error: secret stack trace\n {4}at [\s\S]*\[cause\]: Error: connect ECONNREFUSED\n/,
         ),
       }),
     );
