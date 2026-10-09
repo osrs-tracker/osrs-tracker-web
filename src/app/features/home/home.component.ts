@@ -95,7 +95,7 @@ export default class HomeComponent {
     this.searchMode.set(mode);
 
     if (hadFocus) {
-      afterNextRender(() => this.elementRef.nativeElement.querySelector('segmented [aria-pressed="true"]')?.focus(), {
+      afterNextRender(() => this.elementRef.nativeElement.querySelector('segmented [aria-checked="true"]')?.focus(), {
         injector: this.injector,
       });
     }

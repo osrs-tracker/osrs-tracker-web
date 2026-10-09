@@ -5,6 +5,14 @@
 - Boss, raid and clue counts just under a million show as "1M" instead of "1000K". Short numbers on player and price
   pages (XP, prices, chart axes) round exact halves up, so 1,005 now shows as "1.01K".
 
+### Keyboard
+
+- Choices like the period and range switches, Home's Player / Item switch and the profit calculator's mode take one Tab
+  stop, on the chosen option: the arrow keys move between the options and Enter or Space picks one, so moving through
+  the periods doesn't load each one. Screen readers announce them as radio buttons with their position ("2 of 3"). An
+  option that can't be picked, like High alch for an item that can't be alched, can still be reached with the arrow keys
+  to read why.
+
 ### Behind the scenes
 
 - The price pages work out the start of a UTC day in one place instead of three.
