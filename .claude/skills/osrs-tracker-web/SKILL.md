@@ -82,8 +82,8 @@ imports it. Tailwind classes only, no arbitrary `[...]` values: a value the scal
   change. Pictures are never cropped (Home's news is a 2×2 grid of picture-on-top cards). List rows are one line: no
   second line, 32px tiles, 16px names, the item price beside the change pill.
 - **Classes** (`components.css`): `.button--primary` (accent) and `.button--default` (outlined), `.button--rounded` for
-  standalone ones; `.link` for accent links; `.search-box`/`.search-box-input` for the big search; `.markdown` for
-  reading text (changelog, privacy, terms).
+  standalone ones; `.link` for accent links; `.search-box`/`.search-box-input`/`.search-box-button` for the big search;
+  `.markdown` for reading text (changelog, privacy, terms).
 
 Which component to use (`common/components/general/` unless noted):
 
@@ -147,8 +147,8 @@ the angular.dev docs for the installed major version.
 Only for complex or important logic, never for coverage. Break the protected code once to confirm the test fails.
 
 - Specs sit next to the code and import from `vitest`.
-- Server specs start with `// @vitest-environment node`; follow `src/server/app.spec.ts` and
-  `src/server/testing/serve.ts`. `vi.mock` works for packages, not relative imports.
+- Server specs start with `// @vitest-environment node` (not `route-label.spec.ts`, which loads the app's routes);
+  follow `src/server/app.spec.ts` and `src/server/testing/serve.ts`. `vi.mock` works for packages, not relative imports.
 - App specs: `TestBed` with `provideZonelessChangeDetection()` and `HttpTestingController`; clear `localStorage` in
   `afterEach`.
 
@@ -182,10 +182,10 @@ minutes), then smoke tests the web app only, not the API: `/` (200 with `x-cache
 `/about/terms` (200, rendered without API data) and an unknown path (404).
 
 - **Skipped:** commits that change only files outside the image (`osrs-tracker-web.yaml`, sitemaps, `docs/`, `.claude/`,
-  `.github/`, `CLAUDE.md`, `README.md`, `CHANGELOG.md`, `.gitignore`) since the commit the last deploy was built from
-  (its `Deployed-from:` trailer), and reverts of a deploy commit. Flux applies a manifest-only change by itself. A
-  rebuilt image with the same digest skips the commit and checks. CI itself ignores pushes to `main` that only change
-  `osrs-tracker-web.yaml` and sitemaps (deploy commits and their reverts), so they start no deploy run at all.
+  `.github/`, `CLAUDE.md`, `README.md`, `CHANGELOG.md`, `LICENSE`, `.gitignore`) since the commit the last deploy was
+  built from (its `Deployed-from:` trailer), and reverts of a deploy commit. Flux applies a manifest-only change by
+  itself. A rebuilt image with the same digest skips the commit and checks. CI itself ignores pushes to `main` that only
+  change `osrs-tracker-web.yaml` and sitemaps (deploy commits and their reverts), so they start no deploy run at all.
 - **Merging is the end of the job: don't wait for or watch the `CD` run.** It smoke tests on its own, and a failure
   shows as a failed `CD` run (titled after the change it deploys) and a failed `Flux / sync` status, and reaches
   Discord. Only when the user asks, follow it with `gh run list --workflow deploy.yml -L 3` and
