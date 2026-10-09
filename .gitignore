@@ -44,3 +44,6 @@ Thumbs.db
 
 # Claude Code session worktrees
 .claude/worktrees/
+
+# Playwright MCP snapshots and screenshots
+.playwright-mcp/
