@@ -30,6 +30,8 @@
 - The sitemap dates of the changelog, privacy and terms pages now say when those pages last changed, instead of moving
   to the time of every deploy, so search engines can trust them.
 - Removed the old script for publishing the site's image by hand, left over from before updates went live automatically.
+- The server's monitoring now uses the same shared package as the API instead of an unmaintained one, and also reports
+  the server's memory use and responsiveness.
 
 ## 2026/10/08
 
