@@ -3,7 +3,8 @@
 ### Price pages
 
 - Item pages open faster, most of all when the OSRS Wiki's price service is slow: the page no longer waits for the price
-  history, which loads in your browser behind placeholders like the chart already did.
+  history, which loads in your browser behind placeholders like the chart already did, and waits at most a few seconds
+  for the latest prices before showing placeholders that your browser fills in.
 
 ### Player pages
 

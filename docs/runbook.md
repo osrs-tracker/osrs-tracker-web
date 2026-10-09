@@ -70,7 +70,7 @@ The `kubectl` commands use the `kubernetes-admin@kubernetes` context. Claude Cod
   with `aborted: true` and no `status` (`… | json | type="incoming" | aborted="true"`). `responseTime` runs until the
   response finished, not until the headers were sent, and `contentLength` is always a string.
 - Slow pages: `outgoing` lines have the `url`, `responseTime` and the `page` the render was for; a call cut short
-  because the client closed the connection is `aborted: true`
+  because the client closed the connection or an OSRS Wiki call cut off by `ssrRequestTimeout` (3 s) is `aborted: true`
   (`… | json | type="outgoing" |~ "\"responseTime\":\"[0-9]{4,}"` for calls of a second or more).
 - Metrics: "Express Dashboard" in Grafana (request rate, status codes and latency per route label), defined in
   FreekMencke/home-cluster's `cluster/monitoring/grafana/dashboards/express-dashboard.json`. The series come from
