@@ -35,7 +35,7 @@ const CHIPS_SHOWN = 8;
     </div>
     @if (legendItems().length) {
       <chart-legend
-        class="block mt-4"
+        class="mt-4"
         kind="activity"
         prefix="+"
         [items]="legendItems()"

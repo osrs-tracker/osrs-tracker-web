@@ -37,7 +37,7 @@ const CHIPS_SHOWN = 7;
       }
     </div>
     <chart-legend
-      class="block mt-4"
+      class="mt-4"
       kind="skill"
       [items]="chips()"
       [collapseAfter]="CHIPS_SHOWN"

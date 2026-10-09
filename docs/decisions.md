@@ -25,8 +25,17 @@ Choices that look like accidents without their context: what was decided, why, a
   since, so typing a new name and pressing Enter still searches. The popup cancels `mousedown`, so focus stays in the
   input and its `focusout` doesn't close the list before a click lands (on Retry, or on text in the list); a
   `pointerdown` outside closes it, also when focus was never in the input (the Search button, `?q=`).
-- **Revisit:** when `@angular/aria` gets a radio group or an API for the initial active item; drop the `_pattern` use
-  then.
+- **Hiscores grids and chart legend:** the grids use aria's grid (`ngGrid` rows of three, each cell a `ngGridCellWidget`
+  button that keeps `aria-pressed`, so aria's own selection isn't used), the legend its toolbar. The total level is the
+  skill grid's last row, one cell spanning it, as it's charted like the skills; the clue total is outside the grid, as
+  it isn't a cell to pick. Aria sets the grid's and toolbar's first Tab stop in an `afterRenderEffect` (never on the
+  server), so from an `effect` the grids call the grid's `_pattern.setDefaultStateEffect()`
+  (`hiscores/grid-tab-stop.ts`, a no-op once the grid has been used), and the legend the toolbar's
+  `_pattern.setDefaultState()` whenever its Tab stop is missing, as the toolbar also keeps a removed chip as its Tab
+  stop, leaving none. `hiscores-grids.spec.ts` guards both. Every `[tooltip]` opens on keyboard focus (`:focus-visible`
+  only, so a click doesn't) and closes on Escape, as arrowing through the grid is how keyboard users read XP and ranks.
+- **Revisit:** when `@angular/aria` gets a radio group or an API for the initial active item; drop the `_pattern` use in
+  `segmented`, the grids and the legend then.
 
 ## Sitemap dates come from git (2026/10/09)
 
