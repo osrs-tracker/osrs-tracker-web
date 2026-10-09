@@ -162,6 +162,9 @@ Only for complex or important logic, never for coverage. Break the protected cod
 - Specs sit next to the code and import from `vitest`.
 - Server specs start with `// @vitest-environment node` (not `route-label.spec.ts`, which loads the app's routes);
   follow `src/server/app.spec.ts` and `src/server/testing/serve.ts`. `vi.mock` works for packages, not relative imports.
+  Run them as a quoted folder glob (`--include 'src/server/**/*.spec.ts'`), not one by one: `tsconfig.spec.json` leaves
+  out Node's types, which only come in through imports like `express` or `@angular/ssr/node`, so a spec without one
+  (`shutdown.spec.ts`) fails alone with "Cannot find name 'process'". An unquoted glob is expanded by the shell.
 - App specs: `TestBed` with `provideZonelessChangeDetection()` and `HttpTestingController`; clear `localStorage` in
   `afterEach`.
 
