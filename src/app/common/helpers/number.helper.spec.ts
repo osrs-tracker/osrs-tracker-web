@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatNumberLegible } from './number.helper';
+import { formatNumberLegible, formatNumberShort } from './number.helper';
 
 describe('formatNumberLegible', () => {
   it('shortens with an upper case unit and up to two decimals', () => {
@@ -17,5 +17,16 @@ describe('formatNumberLegible', () => {
   it('moves up a unit when rounding reaches 1,000', () => {
     expect(formatNumberLegible(999_999)).toBe('1M');
     expect(formatNumberLegible(999_999_999)).toBe('1B');
+  });
+});
+
+describe('formatNumberShort', () => {
+  it('shortens with up to one decimal', () => {
+    expect(formatNumberShort(18_249)).toBe('18.2K');
+    expect(formatNumberShort(1_398_000)).toBe('1.4M');
+  });
+
+  it('moves up a unit when rounding reaches 1,000', () => {
+    expect(formatNumberShort(999_950)).toBe('1M');
   });
 });

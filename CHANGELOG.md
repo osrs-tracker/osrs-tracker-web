@@ -1,5 +1,10 @@
 ## 2026/10/09
 
+### Player pages
+
+- Boss, raid and clue counts just under a million show as "1M" instead of "1000K". Short numbers on player and price
+  pages (XP, prices, chart axes) round exact halves up, so 1,005 now shows as "1.01K".
+
 ### Behind the scenes
 
 - The price pages work out the start of a UTC day in one place instead of three.
