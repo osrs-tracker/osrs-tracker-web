@@ -1,8 +1,9 @@
 <p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Elastic--2.0-blue.svg" /></a>
+  <a href="https://github.com/osrs-tracker/osrs-tracker-web/issues"><img src="https://img.shields.io/github/issues/osrs-tracker/osrs-tracker-web.svg" /></a>
+  &middot;
   <a href="https://github.com/osrs-tracker/osrs-tracker-web/actions/workflows/nodejs.yml"><img src="https://github.com/osrs-tracker/osrs-tracker-web/actions/workflows/nodejs.yml/badge.svg" /></a>
   <a href="https://github.com/osrs-tracker/osrs-tracker-web/actions/workflows/deploy.yml"><img src="https://github.com/osrs-tracker/osrs-tracker-web/actions/workflows/deploy.yml/badge.svg" /></a>
-  <a href="https://github.com/osrs-tracker/osrs-tracker-web/issues"><img src="https://img.shields.io/github/issues/osrs-tracker/osrs-tracker-web.svg" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Elastic--2.0-blue.svg" /></a>
 </p>
 
 <div align="center">
