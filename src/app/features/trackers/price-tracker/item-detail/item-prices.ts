@@ -1,3 +1,4 @@
+import { utcDayStart } from 'src/app/common/helpers/date.helper';
 import { AveragePricesAtTime } from 'src/app/common/repositories/osrs-prices.repo';
 
 const DAY = 86400;
@@ -9,12 +10,6 @@ export interface DailyVolume {
   bought: number;
   /** Items sold at the instant sell price */
   sold: number;
-}
-
-/** The start of the UTC day `now` falls in, in seconds */
-export function utcDayStart(now: Date): number {
-  const seconds = Math.floor(now.getTime() / 1000);
-  return seconds - (seconds % DAY);
 }
 
 /**
@@ -30,7 +25,7 @@ export function dailyVolumes(hourly: AveragePricesAtTime[], now: Date, days: num
   }));
 
   for (const hour of hourly) {
-    const index = days - 1 - (today - (hour.timestamp - (hour.timestamp % DAY))) / DAY;
+    const index = days - 1 - (today - utcDayStart(hour.timestamp)) / DAY;
     if (index < 0 || index >= days) continue;
     result[index].bought += hour.highPriceVolume ?? 0;
     result[index].sold += hour.lowPriceVolume ?? 0;

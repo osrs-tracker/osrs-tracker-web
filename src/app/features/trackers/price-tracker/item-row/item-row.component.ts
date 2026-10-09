@@ -1,12 +1,12 @@
 import { DecimalPipe, isPlatformBrowser } from '@angular/common';
 import { Component, InputSignal, PLATFORM_ID, ResourceRef, Signal, computed, inject, input } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { subDays } from 'date-fns';
+import { fromUnixTime, subDays } from 'date-fns';
 import { forkJoin, map } from 'rxjs';
 import { LoadErrorComponent } from 'src/app/common/components/general/load-error.component';
 import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
-import { utcStartOfDay } from 'src/app/common/helpers/date.helper';
+import { utcDayStart } from 'src/app/common/helpers/date.helper';
 import { formatNumberLegible } from 'src/app/common/helpers/number.helper';
 import { OsrsPricesRepo, TimeSpan } from 'src/app/common/repositories/osrs-prices.repo';
 import { RecentItem } from '../price-tracker.store';
@@ -94,7 +94,7 @@ export class ItemRowComponent {
     stream: ({ params: { id } }) =>
       forkJoin([
         this.osrsPricesRepo.getLatestPrices(id),
-        this.osrsPricesRepo.getCachedPriceAverage(id, TimeSpan.DAY, utcStartOfDay(subDays(new Date(), 1))),
+        this.osrsPricesRepo.getCachedPriceAverage(id, TimeSpan.DAY, fromUnixTime(utcDayStart(subDays(new Date(), 1)))),
       ]).pipe(
         map(([latest, recent]) => {
           const price = latest.low ?? null;
