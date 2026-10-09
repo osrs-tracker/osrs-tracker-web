@@ -140,19 +140,21 @@ describe('createApp', () => {
   });
 
   it('answers rendering errors with a generic 500 that does not leak the error', async () => {
-    handle.mockRejectedValue(new Error('secret stack trace'));
+    handle.mockRejectedValue(new Error('secret stack trace', { cause: new Error('connect ECONNREFUSED') }));
 
     const res = await get('/trackers/price/4151');
 
     expect(res.status).toBe(500);
     expect(await res.text()).toBe('Internal Server Error');
-    // Logged as one JSON line, stack included, so Loki keeps it together
+    // Logged as one JSON line, stack and cause included, so Loki keeps it together
     expect(logs.lines).toContainEqual(
       expect.objectContaining({
         level: 'error',
         type: 'uncaught',
         message: 'GET /trackers/price/4151 failed',
-        error: expect.stringContaining('Error: secret stack trace\n    at '),
+        error: expect.stringMatching(
+          /^Error: secret stack trace\n {4}at [\s\S]*\nCaused by: Error: connect ECONNREFUSED\n/,
+        ),
       }),
     );
   });
