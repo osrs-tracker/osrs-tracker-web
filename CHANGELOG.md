@@ -3,6 +3,8 @@
 ### Behind the scenes
 
 - The price pages work out the start of a UTC day in one place instead of three.
+- The sitemap dates of the changelog, privacy and terms pages now say when those pages last changed, instead of moving
+  to the time of every deploy, so search engines can trust them.
 
 ## 2026/10/08
 
