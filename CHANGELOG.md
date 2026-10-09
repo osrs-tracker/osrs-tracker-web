@@ -37,7 +37,8 @@
 ### Behind the scenes
 
 - The server logs how long each request it makes while building a page takes, to find what slows pages down. All its log
-  lines are now structured and say what they're about, so they're easier to search.
+  lines are now structured and say what they're about, so they're easier to search. They're written by the same shared
+  package as the API's, in the same shape.
 - The price pages work out the start of a UTC day in one place instead of three.
 - The sitemap dates of the changelog, privacy and terms pages now say when those pages last changed, instead of moving
   to the time of every deploy, so search engines can trust them.

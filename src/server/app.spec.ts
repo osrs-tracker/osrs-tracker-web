@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from './app';
 import { serverConfig } from './server-config';
+import { collectLogs } from './testing/log-lines';
 import { serve } from './testing/serve';
 import { pageCache } from './utils/page-cache';
 
@@ -31,13 +32,14 @@ describe('createApp', () => {
   afterAll(() => rmSync(serverConfig.browserDistFolder, { recursive: true }));
 
   let ready = true;
-  const { app, metricsApp } = createApp({ isReady: () => ready });
+  const logs = collectLogs(); // Also keeps the request logs out of the test output
+  const { app, metricsApp } = createApp({ isReady: () => ready, logger: logs.logger });
   const get = serve(app);
   const getMetrics = serve(metricsApp);
 
   beforeEach(() => {
     handle.mockReset().mockImplementation(async () => new Response('<html>rendered</html>'));
-    vi.spyOn(process.stdout, 'write').mockReturnValue(true); // Keeps the request logs out of the test output
+    logs.lines.splice(0);
   });
   afterEach(() => {
     pageCache.clear();
@@ -147,8 +149,7 @@ describe('createApp', () => {
     expect(res.status).toBe(500);
     expect(await res.text()).toBe('Internal Server Error');
     // Logged as one JSON line, stack included, so Loki keeps it together
-    const logs = vi.mocked(process.stdout.write).mock.calls.map(([line]) => JSON.parse(String(line)));
-    expect(logs).toContainEqual(
+    expect(logs.lines).toContainEqual(
       expect.objectContaining({
         level: 'error',
         type: 'uncaught',

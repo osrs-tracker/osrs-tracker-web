@@ -28,9 +28,11 @@ a worktree).
   browser still finds the responses. Unset locally. URLs that end up in the HTML (the news `<img>`) use
   `config.apiBaseUrl` directly and stay public.
 - Request logs match the API's shape: 5xx `error`, 4xx `warn`, else `info`; a client that disconnects before the
-  response is `warn` with `aborted: true` and no `status` (`src/server/middleware/logging.ts`). Every server log line is
-  JSON with a `type` (`src/server/utils/log.ts` lists them: `incoming`, `outgoing`, `lifecycle`, `prerender`,
-  `uncaught`): write new ones with `writeLog`, not `console`, and add a type there when none fits.
+  response is `warn` with `aborted: true` and no `status`. Both come from `@osrs-tracker/logger` (in `osrs-tracker-aws`;
+  change the shape there, for both apps). Every server log line is JSON with a `type`: write new ones through a child of
+  `logger` from `src/server/utils/log.ts` (`logger.child({ type: 'lifecycle' satisfies WebLogType })`), not `console`,
+  and add a type to `WebLogType` when none fits. Specs pass their own logger (`testing/log-lines.ts`): pino doesn't
+  write through `process.stdout.write`, so spying on it sees nothing.
 - `@osrs-tracker/hiscores` peer-depends on `@osrs-tracker/models`: bump both together, with `--prefer-online` right
   after a publish.
 - Production test players: **the fraking** (active) for visual checks, **ToxSick** (inactive) for anything that writes.
@@ -132,8 +134,8 @@ the angular.dev docs for the installed major version.
   item and player rows.
 - **Third-party calls in SSR**: a render waits for every request it makes, so keep third-party calls (the OSRS Wiki)
   small, and render a failed one as loading on the server (`latestLoading` in `item-detail.component.ts`), as the
-  browser fetches it again after hydration. `server/utils/outgoing-requests.ts` logs every request a render makes, with
-  its duration and page (undici's `diagnostics_channel`, so it sees every `fetch`).
+  browser fetches it again after hydration. `logOutgoingRequests` logs every request a render makes, with its duration
+  and the page `renderingPage()` (`server/utils/log.ts`) set (undici's `diagnostics_channel`, so it sees every `fetch`).
 - **Writes**: requests that record something (lookups, starting to track a player) run only when `isHumanVisitor()`
   (`core/platform/human-visitor.ts`): never during SSR or for crawlers, which would fill the recent lookups.
 - **Chart.js**: shared registrations and the date adapter in `common/components/charts/chart-setup.ts`; load

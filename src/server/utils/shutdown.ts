@@ -1,5 +1,7 @@
 import { Server } from 'http';
-import { writeLog } from './log';
+import { logger, type WebLogType } from './log';
+
+const lifecycleLog = logger.child({ type: 'lifecycle' satisfies WebLogType });
 
 /**
  * Shut down gracefully on SIGINT/SIGTERM: run the cleanup callback, stop accepting connections on the main server, and
@@ -9,26 +11,26 @@ import { writeLog } from './log';
 export function configureGracefulShutdown(server: Server, metricsServer: Server, cleanupCallback?: () => void): void {
   ['SIGINT', 'SIGTERM'].forEach(signal => {
     process.once(signal, () => {
-      writeLog('info', 'lifecycle', `Received ${signal}, shutting down gracefully`);
+      lifecycleLog.info(`Received ${signal}, shutting down gracefully`);
 
       // Execute cleanup callback if provided
       if (cleanupCallback) {
         try {
-          writeLog('info', 'lifecycle', 'Executing cleanup callback');
+          lifecycleLog.info('Executing cleanup callback');
           cleanupCallback();
         } catch (err) {
-          writeLog('error', 'lifecycle', 'Error during cleanup', err);
+          lifecycleLog.error(err, 'Error during cleanup');
         }
       }
 
       closeServers(server, metricsServer).then(() => {
-        writeLog('info', 'lifecycle', 'Servers closed');
+        lifecycleLog.info('Servers closed');
         process.exit(0);
       });
 
       // Force close after 10s
       setTimeout(() => {
-        writeLog('error', 'lifecycle', 'Could not close connections in time, forcefully shutting down');
+        lifecycleLog.error('Could not close connections in time, forcefully shutting down');
         process.exit(1);
       }, 10000);
     });

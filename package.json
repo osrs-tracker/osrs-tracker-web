@@ -61,6 +61,7 @@
     "@ngrx/signals": "^22.0.1",
     "@osrs-tracker/express-metrics": "^0.1.0",
     "@osrs-tracker/hiscores": "^3.1.0",
+    "@osrs-tracker/logger": "^0.1.0",
     "@osrs-tracker/models": "^0.10.0",
     "chart.js": "^4.5.1",
     "chartjs-adapter-date-fns": "^3.0.0",
@@ -71,7 +72,6 @@
     "helmet": "^8.1.0",
     "isbot": "^5.2.2",
     "marked": "^18.0.14",
-    "morgan": "^1.11.0",
     "rxjs": "~7.8.2",
     "tslib": "^2.3.0"
   },
@@ -84,7 +84,6 @@
     "@tailwindcss/postcss": "^4.2.1",
     "@types/express": "^5.0.6",
     "@types/gtag.js": "^0.0.20",
-    "@types/morgan": "^1.9.10",
     "@types/node": "^24.19.1",
     "angular-eslint": "^22.5.0",
     "eslint": "^10.12.0",
