@@ -25,7 +25,6 @@ describe('AutoGenerator', () => {
   });
   afterEach(() => {
     generator.shutdown();
-    generator.ready = false;
     pageCache.clear();
     handle.mockReset();
     vi.restoreAllMocks();

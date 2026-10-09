@@ -6,7 +6,6 @@ import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vites
 import { createApp } from './app';
 import { serverConfig } from './server-config';
 import { serve } from './testing/serve';
-import { autoGenerateService } from './utils/auto-generator';
 import { pageCache } from './utils/page-cache';
 
 // The real engine needs a server build, these tests are about the Express app around it
@@ -31,7 +30,8 @@ describe('createApp', () => {
   writeFileSync(join(serverConfig.browserDistFolder, 'assets/icons/coins.png'), 'png');
   afterAll(() => rmSync(serverConfig.browserDistFolder, { recursive: true }));
 
-  const { app, metricsApp } = createApp();
+  let ready = true;
+  const { app, metricsApp } = createApp({ isReady: () => ready });
   const get = serve(app);
   const getMetrics = serve(metricsApp);
 
@@ -131,11 +131,11 @@ describe('createApp', () => {
     expect(await cacheControl('/sitemap-items.xml')).toBe('no-cache');
   });
 
-  it('is only ready once the pages are pre-rendered', async () => {
-    autoGenerateService.ready = false;
+  it('answers the readiness probe with 503 until it is ready', async () => {
+    ready = false;
     expect((await get('/healthy')).status).toBe(503);
 
-    autoGenerateService.ready = true;
+    ready = true;
     expect((await get('/healthy')).status).toBe(200);
   });
 

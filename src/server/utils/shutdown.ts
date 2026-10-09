@@ -21,18 +21,10 @@ export function configureGracefulShutdown(server: Server, metricsServer: Server,
         }
       }
 
-      // `close` only closes the connections that are idle right now. With the long keep-alive timeout, a connection
-      // whose response is still being sent would then stay open, so close connections as they become idle.
-      const closeIdle = setInterval(() => server.closeIdleConnections(), 100);
-      new Promise(resolve => server.close(resolve))
-        .then(() => {
-          clearInterval(closeIdle);
-          return new Promise(resolve => metricsServer.close(resolve));
-        })
-        .then(() => {
-          console.log('Servers closed');
-          process.exit(0);
-        });
+      closeServers(server, metricsServer).then(() => {
+        console.log('Servers closed');
+        process.exit(0);
+      });
 
       // Force close after 10s
       setTimeout(() => {
@@ -41,4 +33,14 @@ export function configureGracefulShutdown(server: Server, metricsServer: Server,
       }, 10000);
     });
   });
+}
+
+/** Closes the main server, then the metrics server, resolving once both have closed */
+export async function closeServers(server: Server, metricsServer: Server): Promise<void> {
+  // `close` only closes the connections that are idle right now. With the long keep-alive timeout, a connection whose
+  // response is still being sent would then stay open, so close connections as they become idle.
+  const closeIdle = setInterval(() => server.closeIdleConnections(), 100);
+  await new Promise(resolve => server.close(resolve));
+  clearInterval(closeIdle);
+  await new Promise(resolve => metricsServer.close(resolve));
 }

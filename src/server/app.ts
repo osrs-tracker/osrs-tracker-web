@@ -10,9 +10,9 @@ import { securityMiddleware } from './middleware/security';
 import { staticFilesMiddleware } from './middleware/static-files';
 import { createHealthRouter } from './routers/health';
 import { serverConfig } from './server-config';
-import { autoGenerateService } from './utils/auto-generator';
 
-export function createApp() {
+/** @param isReady Whether the readiness probe (`/healthy` on the main port) answers 200 yet */
+export function createApp({ isReady = () => true }: { isReady?: () => boolean } = {}) {
   const app = express();
   // Traefik is the only hop in front of the app and overwrites any client-sent X-Forwarded-For, so req.ip is the client
   app.set('trust proxy', 1);
@@ -24,12 +24,8 @@ export function createApp() {
     trustProxyHeaders: serverConfig.TRUST_PROXY_HEADERS,
   });
 
-  // Readiness probe on the main port, before logging and metrics so probes don't show up in either. Not ready until the
-  // pages are pre-rendered, so the first visitors after a deploy get them from the page cache.
-  app.use(
-    '/healthy',
-    createHealthRouter(() => autoGenerateService.ready),
-  );
+  // Readiness probe on the main port, before logging and metrics so probes don't show up in either
+  app.use('/healthy', createHealthRouter(isReady));
 
   app.use(
     metricsMiddleware(metricsApp), // Set up Monitoring
