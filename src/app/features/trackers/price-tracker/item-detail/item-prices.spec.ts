@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
+import { DAY } from 'src/app/common/helpers/date.helper';
 import { AveragePricesAtTime } from 'src/app/common/repositories/osrs-prices.repo';
 import { dailyVolumes, yesterdayAverageSellPrice } from './item-prices';
 
-const DAY = 86400;
 const TODAY = 1_791_331_200; // 2026-10-07 00:00 UTC
 const NOW = new Date((TODAY + 17 * 3600 + 300) * 1000);
 

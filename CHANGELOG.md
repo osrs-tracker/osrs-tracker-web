@@ -3,7 +3,7 @@
 ### Player pages
 
 - Boss, raid and clue counts just under a million show as "1M" instead of "1000K". Short numbers on player and price
-  pages (XP, prices, chart axes) round exact halves up, so 1,005 now shows as "1.01K".
+  pages (XP, prices, chart axes) round exact halves up, so 1,005 now shows as "1.01K", and zero never shows as "-0".
 
 ### Keyboard
 
@@ -19,7 +19,10 @@
   of one per cell, so getting past the grids takes a few Tab presses instead of more than fifty. Inside, the arrow keys
   move between cells (row by row, the total level last) and Enter or Space picks one. A cell's tooltip, with its XP or
   rank, now also opens when it gets keyboard focus, including cells that can't be picked, as does the account type
-  tooltip in the player header; Escape closes them. Screen readers announce the grids as grids with rows and columns.
+  tooltip in the player header; Escape closes them. A tooltip stays open while the pointer is on it or it has keyboard
+  focus, so moving the mouse away doesn't close the one you arrowed to. When the focused legend chip goes behind "+N",
+  focus moves to the legend's first chip instead of back to the top of the page. Screen readers announce the grids as
+  grids with rows and columns.
 
 ### Behind the scenes
 

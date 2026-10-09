@@ -15,7 +15,8 @@ Choices that look like accidents without their context: what was decided, why, a
 - **Initial Tab stop:** the toolbar makes its first option the Tab stop and has no public API to change it, so
   `segmented` sets the toolbar's active item to the checked option through its `_pattern` while focus is outside (and to
   the focused one on `focusin`). It runs as an `effect`, so it also runs during SSR and the server HTML has the Tab stop
-  before hydration. Recheck it on every `@angular/aria` update.
+  before hydration. Every `_pattern` use lives in `common/helpers/aria-tab-stop.ts`: recheck that file on every
+  `@angular/aria` update.
 - **Disabled options** stay soft-disabled (the toolbar's default, `aria-disabled` instead of `disabled`): the arrow keys
   reach them, so keyboard and screen reader users find them and their reason, and the click handler ignores them.
 - **Item search** is a combobox (`ngCombobox` on the input, a `ngListbox` popup with `activedescendant` focus). Its
@@ -29,13 +30,15 @@ Choices that look like accidents without their context: what was decided, why, a
   button that keeps `aria-pressed`, so aria's own selection isn't used), the legend its toolbar. The total level is the
   skill grid's last row, one cell spanning it, as it's charted like the skills; the clue total is outside the grid, as
   it isn't a cell to pick. Aria sets the grid's and toolbar's first Tab stop in an `afterRenderEffect` (never on the
-  server), so from an `effect` the grids call the grid's `_pattern.setDefaultStateEffect()`
-  (`hiscores/grid-tab-stop.ts`, a no-op once the grid has been used), and the legend the toolbar's
-  `_pattern.setDefaultState()` whenever its Tab stop is missing, as the toolbar also keeps a removed chip as its Tab
-  stop, leaving none. `hiscores-grids.spec.ts` guards both. Every `[tooltip]` opens on keyboard focus (`:focus-visible`
-  only, so a click doesn't) and closes on Escape, as arrowing through the grid is how keyboard users read XP and ranks.
-- **Revisit:** when `@angular/aria` gets a radio group or an API for the initial active item; drop the `_pattern` use in
-  `segmented`, the grids and the legend then.
+  server), so from an `effect` the grids call the grid's `_pattern.setDefaultStateEffect()` (a no-op once the grid has
+  been used), and the legend the toolbar's `_pattern.setDefaultState()` whenever its Tab stop is missing, as the toolbar
+  also keeps a removed chip as its Tab stop, leaving none. When the focused chip is the one removed, the legend moves
+  focus to its new Tab stop, rather than letting it fall back to the page. `hiscores-grids.spec.ts` guards both. Every
+  `[tooltip]` opens on keyboard focus (`:focus-visible` only, so a click doesn't) and closes on Escape, as arrowing
+  through the grid is how keyboard users read XP and ranks; hover and focus each keep it open, so leaving one doesn't
+  close it while the other remains.
+- **Revisit:** when `@angular/aria` gets a radio group or an API for the initial active item; drop `aria-tab-stop.ts`
+  then.
 
 ## Sitemap dates come from git (2026/10/09)
 
