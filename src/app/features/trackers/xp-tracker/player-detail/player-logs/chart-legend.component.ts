@@ -1,9 +1,12 @@
 import { Toolbar, ToolbarWidget } from '@angular/aria/toolbar';
 import { DecimalPipe } from '@angular/common';
 import {
+  afterRenderEffect,
   Component,
   computed,
+  DOCUMENT,
   effect,
+  ElementRef,
   inject,
   input,
   InputSignal,
@@ -14,6 +17,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
+import { ensureToolbarTabStop, toolbarTabStop } from 'src/app/common/helpers/aria-tab-stop';
 
 export interface LegendItem {
   name: string;
@@ -72,7 +76,12 @@ export interface LegendItem {
     }
   `,
   hostDirectives: [Toolbar],
-  host: { 'class': 'flex flex-wrap gap-2 text-sm', 'aria-label': 'Chart series' },
+  host: {
+    'class': 'flex flex-wrap gap-2 text-sm',
+    'aria-label': 'Chart series',
+    '(focusin)': 'onFocusIn($event)',
+    '(focusout)': 'onFocusOut($event)',
+  },
   imports: [DecimalPipe, IconDirective, ToolbarWidget],
 })
 export class ChartLegendComponent {
@@ -93,16 +102,37 @@ export class ChartLegendComponent {
     () => this.items().filter((item, i) => i >= this.collapseAfter() && !item.on).length,
   );
 
+  private readonly document = inject(DOCUMENT);
+  private readonly elementRef: ElementRef<HTMLElement> = inject(ElementRef);
   private readonly toolbar: Toolbar = inject(Toolbar);
+  /** The chip that last had focus, while focus is in the legend */
+  private focusedChip?: HTMLElement;
 
   constructor() {
     // The toolbar makes its first chip the Tab stop in an afterRenderEffect, which never runs on the server, and keeps a
     // chip that's gone (toggled off behind "+N", or a period without it) as the Tab stop, leaving none. As an effect,
-    // this also runs during SSR. Uses the toolbar's pattern: aria has no public API for it yet (see docs/decisions.md).
-    effect(() => {
-      const pattern = this.toolbar._pattern;
-      const active = pattern.activeItem();
-      if (!active || !pattern.inputs.items().includes(active)) pattern.setDefaultState();
+    // this also runs during SSR.
+    effect(() => ensureToolbarTabStop(this.toolbar));
+
+    // When the focused chip is gone (toggled off behind "+N", or collapsed by "Fewer"), focus would fall back to the
+    // page: it moves to the legend's new Tab stop instead
+    afterRenderEffect(() => {
+      this.shown();
+      const tabStop = toolbarTabStop(this.toolbar);
+      if (!this.focusedChip || this.focusedChip.isConnected || this.document.activeElement !== this.document.body)
+        return;
+      this.focusedChip = tabStop;
+      tabStop?.focus();
     });
+  }
+
+  protected onFocusIn(event: FocusEvent): void {
+    this.focusedChip = event.target as HTMLElement;
+  }
+
+  /** Focus leaving for somewhere else; a removed chip's focusout has no `relatedTarget`, so it doesn't count */
+  protected onFocusOut(event: FocusEvent): void {
+    const to = event.relatedTarget as Node | null;
+    if (to && !this.elementRef.nativeElement.contains(to)) this.focusedChip = undefined;
   }
 }

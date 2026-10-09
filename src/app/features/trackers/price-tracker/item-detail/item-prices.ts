@@ -1,7 +1,6 @@
-import { utcDayStart } from 'src/app/common/helpers/date.helper';
+import { getUnixTime } from 'date-fns';
+import { DAY, utcDayStart } from 'src/app/common/helpers/date.helper';
 import { AveragePricesAtTime } from 'src/app/common/repositories/osrs-prices.repo';
-
-const DAY = 86400;
 
 export interface DailyVolume {
   /** The UTC day's start, in seconds */
@@ -17,7 +16,7 @@ export interface DailyVolume {
  * Days without trades count as zero.
  */
 export function dailyVolumes(hourly: AveragePricesAtTime[], now: Date, days: number): DailyVolume[] {
-  const today = utcDayStart(now);
+  const today = utcDayStart(getUnixTime(now));
   const result: DailyVolume[] = Array.from({ length: days }, (_, i) => ({
     day: today - (days - 1 - i) * DAY,
     bought: 0,
@@ -36,7 +35,7 @@ export function dailyVolumes(hourly: AveragePricesAtTime[], now: Date, days: num
 
 /** Items traded (bought and sold) in the last 24 hours, from the hourly time series */
 export function last24HourVolume(hourly: AveragePricesAtTime[], now: Date): number {
-  const since = Math.floor(now.getTime() / 1000) - DAY;
+  const since = getUnixTime(now) - DAY;
   return hourly
     .filter(hour => hour.timestamp >= since)
     .reduce((sum, hour) => sum + (hour.highPriceVolume ?? 0) + (hour.lowPriceVolume ?? 0), 0);
@@ -47,7 +46,7 @@ export function last24HourVolume(hourly: AveragePricesAtTime[], now: Date): numb
  * the Wiki's 24-hour average for that day, which the item lists compare with, without loading every item's average.
  */
 export function yesterdayAverageSellPrice(hourly: AveragePricesAtTime[], now: Date): number | null {
-  const yesterday = utcDayStart(now) - DAY;
+  const yesterday = utcDayStart(getUnixTime(now)) - DAY;
   let total = 0;
   let volume = 0;
 

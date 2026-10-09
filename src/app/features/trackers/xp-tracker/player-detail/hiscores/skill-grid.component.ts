@@ -6,11 +6,11 @@ import { HiscoreEntry, HiscoreSkill } from '@osrs-tracker/models';
 import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
 import { TooltipComponent } from 'src/app/common/components/general/tooltip/tooltip.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
+import { setGridTabStop } from 'src/app/common/helpers/aria-tab-stop';
 import { ThemeService } from 'src/app/common/services/theme.service';
 import { ChartSkill, SKILL_COLORS } from '../../skill-colors';
 import { percentageToNextLevel } from '../../skill-progress';
 import { PlayerView } from '../player-view';
-import { setGridTabStop } from './grid-tab-stop';
 import { pickedCellBackground, pickedCellRing } from './picked-cell';
 
 // The in-game skill grid, read row by row; the total level follows across the full width
@@ -190,7 +190,7 @@ export class SkillGridComponent {
   /** The cells in rows of three, as the grid reads them */
   readonly rows: Signal<SkillCell[][]> = computed(() => {
     const cells = this.cells();
-    return Array.from({ length: cells.length / 3 }, (_, i) => cells.slice(i * 3, i * 3 + 3));
+    return Array.from({ length: Math.ceil(cells.length / 3) }, (_, i) => cells.slice(i * 3, i * 3 + 3));
   });
   readonly overall: Signal<HiscoreSkill | undefined> = computed(() =>
     this.hiscore()?.skills.find(s => s.name === SkillEnum.Overall),

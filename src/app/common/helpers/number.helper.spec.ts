@@ -14,6 +14,11 @@ describe('formatNumberLegible', () => {
     expect(formatNumberLegible(0)).toBe('0');
   });
 
+  it('never shows a minus sign on zero (chart ticks can be -0 or round to it)', () => {
+    expect(formatNumberLegible(-0)).toBe('0');
+    expect(formatNumberLegible(-0.004)).toBe('0');
+  });
+
   it('moves up a unit when rounding reaches 1,000', () => {
     expect(formatNumberLegible(999_999)).toBe('1M');
     expect(formatNumberLegible(999_999_999)).toBe('1B');

@@ -16,6 +16,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
+import { setToolbarTabStop } from 'src/app/common/helpers/aria-tab-stop';
 
 export interface SegmentedOption<T> {
   value: T;
@@ -93,19 +94,19 @@ export class SegmentedComponent<T> {
   constructor() {
     // The toolbar makes its first option the Tab stop; a radio group's is the checked one. Set it while focus is
     // outside, so arrowing away and tabbing out comes back to the checked option. As an effect, it also runs during
-    // SSR, so the server HTML has the Tab stop too. Uses the toolbar's pattern: aria has no public API for this yet.
+    // SSR, so the server HTML has the Tab stop too.
     effect(() => {
-      const checked = this.widgets()[this.options().findIndex(option => option.value === this.value())]?._pattern;
-      const activeItem = this.toolbar._pattern.inputs.activeItem;
-      if (checked && !checked.disabled() && !this.focusWithin() && activeItem() !== checked) activeItem.set(checked);
+      const index = this.options().findIndex(option => option.value === this.value());
+      const checked = this.widgets()[index];
+      if (checked && !this.options()[index].disabled && !this.focusWithin()) setToolbarTabStop(this.toolbar, checked);
     });
   }
 
   /** Focus can also arrive by code (Home's switch): the focused option becomes the one the arrow keys start from. */
   protected onFocusIn(event: FocusEvent): void {
     this.focusWithin.set(true);
-    const focused = this.widgets().find(widget => widget.element === event.target)?._pattern;
-    if (focused) this.toolbar._pattern.inputs.activeItem.set(focused);
+    const focused = this.widgets().find(widget => widget.element === event.target);
+    if (focused) setToolbarTabStop(this.toolbar, focused);
   }
 
   protected onFocusOut(event: FocusEvent): void {

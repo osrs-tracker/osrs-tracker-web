@@ -122,3 +122,35 @@ describe('SkillGridComponent keyboard', () => {
     expect(buttons[0].getAttribute('aria-pressed')).toBe('true');
   });
 });
+
+describe('ChartLegendComponent focus', () => {
+  it('moves focus to its new Tab stop when the focused chip goes behind "+N"', async () => {
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection(), { provide: GTAG_TOKEN, useValue: null }],
+    });
+    const fixture = TestBed.createComponent(ChartLegendComponent);
+    fixture.componentRef.setInput('kind', 'skill');
+    fixture.componentRef.setInput('collapseAfter', 1);
+    fixture.componentRef.setInput('items', [
+      { name: 'Attack', color: 'red', on: true },
+      { name: 'Strength', color: 'green', on: true },
+    ]);
+    document.body.appendChild(fixture.nativeElement);
+    await fixture.whenStable();
+
+    const [attack, strength]: HTMLButtonElement[] = fixture.nativeElement.querySelectorAll('button');
+    attack.focus();
+    attack.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    await fixture.whenStable();
+    expect(document.activeElement).toBe(strength);
+    // Toggled off: past collapseAfter, it goes behind "+1" and its chip is removed
+    fixture.componentRef.setInput('items', [
+      { name: 'Attack', color: 'red', on: true },
+      { name: 'Strength', color: 'green', on: false },
+    ]);
+    await fixture.whenStable();
+
+    expect(strength.isConnected).toBe(false);
+    expect(document.activeElement).toBe(fixture.nativeElement.querySelector('button'));
+  });
+});

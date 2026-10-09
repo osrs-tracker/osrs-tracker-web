@@ -6,13 +6,13 @@ import { HiscoreActivity, HiscoreEntry } from '@osrs-tracker/models';
 import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
 import { TooltipComponent } from 'src/app/common/components/general/tooltip/tooltip.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
+import { setGridTabStop } from 'src/app/common/helpers/aria-tab-stop';
 import { formatNumberShort } from 'src/app/common/helpers/number.helper';
 import { ThemeService } from 'src/app/common/services/theme.service';
 import { UNCHARTED_MINIGAMES } from '../../activity-categories';
 import { CHART_CATEGORIES } from '../player-logs/chart-categories';
 import { chartColors } from '../../chart-colors';
 import { ActivityView, PlayerView } from '../player-view';
-import { setGridTabStop } from './grid-tab-stop';
 import { pickedCellBackground, pickedCellRing } from './picked-cell';
 
 const GRID_LABELS: Record<ActivityView, string> = {

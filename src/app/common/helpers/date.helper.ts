@@ -1,9 +1,7 @@
-import { getUnixTime } from 'date-fns';
+/** Seconds in a day */
+export const DAY = 86400;
 
-const DAY = 86400;
-
-/** The start of the UTC day `time` (a `Date` or Unix seconds) falls in, in Unix seconds, as the OSRS Wiki API uses */
-export function utcDayStart(time: Date | number): number {
-  const seconds = typeof time === 'number' ? time : getUnixTime(time);
+/** The start of the UTC day a Unix time in seconds falls in, in seconds, as the OSRS Wiki API uses */
+export function utcDayStart(seconds: number): number {
   return seconds - (seconds % DAY);
 }

@@ -58,6 +58,9 @@ export class TooltipComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   mousePresent$ = new Subject<boolean>();
 
+  private hovered = false;
+  private focused = false;
+
   isOpen = false;
 
   arrowOverlayRef?: OverlayRef;
@@ -123,24 +126,34 @@ export class TooltipComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   @HostListener('mouseenter') onMouseEnter() {
-    this.mousePresent$.next(true);
+    this.hovered = true;
+    this.update();
   }
 
   @HostListener('mouseleave') onMouseLeave() {
-    this.mousePresent$.next(false);
+    this.hovered = false;
+    this.update();
   }
 
   /** Keyboard focus opens it too (the hiscores grids, arrowed through); a click's focus doesn't, hover handles that */
   @HostListener('focusin') onFocusIn() {
-    if (this.elementRef.nativeElement.matches(':focus-visible')) this.mousePresent$.next(true);
+    this.focused = this.elementRef.nativeElement.matches(':focus-visible');
+    this.update();
   }
 
   @HostListener('focusout') onFocusOut() {
-    this.mousePresent$.next(false);
+    this.focused = false;
+    this.update();
   }
 
   @HostListener('keydown.escape') onEscape() {
-    this.mousePresent$.next(false);
+    this.hovered = this.focused = false;
+    this.update();
+  }
+
+  /** Hover and keyboard focus each keep it open, so leaving one doesn't close it while the other remains */
+  private update() {
+    this.mousePresent$.next(this.hovered || this.focused);
   }
 
   private onDocumentTouchend(target: HTMLElement) {
@@ -150,7 +163,7 @@ export class TooltipComponent implements OnChanges, AfterViewInit, OnDestroy {
       this.arrowOverlayRef?.hostElement,
     ].some(el => el?.contains(target));
 
-    if (!found) this.mousePresent$.next(false);
+    if (!found) this.onMouseLeave();
   }
 
   private ensureOverlayRefs() {
