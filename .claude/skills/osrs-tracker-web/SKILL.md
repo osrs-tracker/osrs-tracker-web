@@ -206,8 +206,7 @@ minutes), then smoke tests the web app only, not the API: `/` (200 with `x-cache
 - **Retry** a failed deploy (Docker Hub or Flux hiccup) by re-running the failed `CD` run; a later docs-only push won't
   redeploy.
 - **Never `kubectl apply` the manifest** or push an image by hand: Flux reverts anything that isn't on `main` within 10
-  minutes. Manifest changes go through `main` like code. `npm run docker:build` is fine for checking the image locally;
-  `npm run docker:push` is left over from manual deploys, never run it.
+  minutes. Manifest changes go through `main` like code. `npm run docker:build` is fine for checking the image locally.
 - A failed deploy fails the run and alerts Discord. Rollback and failure modes: `docs/runbook.md`.
 - Testing workflow shell snippets locally: Claude Code's `grep` is a shell function wrapping ugrep, which differs from
   CI's GNU grep (e.g. `grep -q -v` on mixed input). Use `command grep` there.
