@@ -29,6 +29,11 @@
   focus moves to the legend's first chip instead of back to the top of the page. Screen readers announce the grids as
   grids with rows and columns.
 
+### Source code
+
+- The site's source code is now under the Elastic License 2.0 instead of Apache 2.0. You can still read it, learn from
+  it and run it yourself, but not offer it to others as a hosted service, paid or free.
+
 ### Behind the scenes
 
 - The server logs how long each request it makes while building a page takes, to find what slows pages down. All its log
