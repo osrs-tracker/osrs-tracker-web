@@ -31,6 +31,11 @@
   focus moves to the legend's first chip instead of back to the top of the page. Screen readers announce the grids as
   grids with rows and columns.
 
+### About pages
+
+- When this changelog can't be loaded from GitHub, the page shows the site's usual error page with a "Try again" button,
+  instead of a bare "Cannot GET" message.
+
 ### Source code
 
 - The site's source code is now under the Elastic License 2.0 instead of Apache 2.0. You can still read it, learn from
