@@ -62,7 +62,10 @@ The `kubectl` commands use the `kubernetes-admin@kubernetes` context. Claude Cod
   response is a `warn` with `aborted: true` and no `status`
   (`{namespace="osrs-tracker", app="osrs-tracker-web"} |= "\"aborted\":true"`).
 - Metrics: "Express Dashboard" in Grafana (request rate, status codes and latency per route label), defined in
-  FreekMencke/home-cluster's `cluster/monitoring/grafana/dashboards/express-dashboard.json`.
+  FreekMencke/home-cluster's `cluster/monitoring/grafana/dashboards/express-dashboard.json`. The series come from
+  `@osrs-tracker/express-metrics` (osrs-tracker-aws, shared with the API) on the metrics port (9090, `/metrics`):
+  `http_request_duration_seconds` and `up`, plus Node's `nodejs_*` and `process_*` (heap, event-loop lag, resident
+  memory) for Prometheus queries; the dashboard doesn't chart those.
 - Resources: `kubectl -n osrs-tracker top pods`. The pods request 50m CPU and 128Mi memory, with a 512Mi memory limit
   (no CPU limit). A pod that hits the limit is `OOMKilled` (see `describe pod`).
 
