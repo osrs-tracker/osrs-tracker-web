@@ -1,5 +1,10 @@
 ## 2026/10/10
 
+### Player pages
+
+- A skill or activity Jagex adds before the site has its icon shows a grey question mark instead of a broken image,
+  wherever icons appear (the hiscores, the charts and their tooltips).
+
 ### Behind the scenes
 
 - Player pages read the API's new, more compact hiscore history (`@osrs-tracker/models` 2.2.0 and

@@ -7,6 +7,15 @@ import { LOCAL_ICONS } from './local-icons.token';
 /** Factor the pixel art is upscaled to before the browser smoothly scales it down to `scale`. */
 const SHARP_FACTOR = 4;
 
+/**
+ * A grey question mark in the icons' 16px pixel-art style, shown for a skill or activity the site has no icon for yet
+ * (Jagex added it) and for any icon that fails to load. Inline, so it never fails itself.
+ */
+export const PLACEHOLDER_ICON = `data:image/svg+xml,${encodeURIComponent(
+  "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'>" +
+    "<path fill='#94a3b8' d='M6 3h4v1H6zM5 4h2v1H5zM9 4h2v2H9zM8 6h2v1H8zM7 7h2v2H7zM7 10h2v2H7z'/></svg>",
+)}`;
+
 /** Upscaled versions (blob URLs) per source URL, shared by all icons for the lifetime of the app. */
 const sharpUrls = new Map<string, Promise<string | null>>();
 /** The same, once resolved, so later icons can show the upscaled version straight away. */
@@ -46,6 +55,7 @@ export class IconDirective implements OnInit {
   ngOnInit() {
     this.element.loading = 'lazy';
     this.element.classList.add('object-contain');
+    this.element.addEventListener('error', () => this.showPlaceholder());
 
     const scale = this.scale();
     if (this.window && scale && !Number.isInteger(scale)) {
@@ -56,7 +66,7 @@ export class IconDirective implements OnInit {
   private async sharpen(scale: number): Promise<void> {
     const img = this.element;
     const source = img.src;
-    if (source.startsWith('blob:') || !img.naturalWidth) return;
+    if (source.startsWith('blob:') || source === PLACEHOLDER_ICON || !img.naturalWidth) return;
 
     if (!sharpUrls.has(source)) sharpUrls.set(source, this.upscale(img));
     const sharpUrl = await sharpUrls.get(source);
@@ -95,6 +105,12 @@ export class IconDirective implements OnInit {
     this.element.style.imageRendering = 'auto';
   }
 
+  /** Once per failed image: the placeholder is inline, so it can't fail in turn */
+  private showPlaceholder(): void {
+    if (this.element.src === PLACEHOLDER_ICON) return;
+    this.element.src = PLACEHOLDER_ICON;
+  }
+
   private updateUrl() {
     const url = this.iconUrl();
     const scale = this.scale();
@@ -117,6 +133,9 @@ export class IconDirective implements OnInit {
       : this.activity()
         ? iconPath(this.name(), 'activity')
         : iconMap[this.name()];
+
+    // A page that bundles the skill and activity icons has them all, so a missing one is a name Jagex added: no request.
+    if (this.localIcons && (this.skill() || this.activity()) && !(path in this.localIcons)) return PLACEHOLDER_ICON;
 
     // The server keeps the file URL, so the rendered HTML (which isn't cached) doesn't carry the data URIs.
     return (this.window && this.localIcons?.[path]) || '/assets/icons' + path;

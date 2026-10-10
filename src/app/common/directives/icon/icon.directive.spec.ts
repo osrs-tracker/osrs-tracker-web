@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser';
 import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
 import { PlayerType } from '@osrs-tracker/models';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { IconDirective } from './icon.directive';
+import { IconDirective, PLACEHOLDER_ICON } from './icon.directive';
 import { LOCAL_ICONS } from './local-icons.token';
 
 @Component({
@@ -133,6 +133,21 @@ describe('IconDirective', () => {
     expect(img.alt).toBe(`${ActivityEnum.TheGauntlet} icon`);
   });
 
+  it('should show the placeholder once when an icon fails to load, keeping its name', async () => {
+    fixture.componentRef.setInput('name', 'Shipwrecking');
+    fixture.componentRef.setInput('skill', true);
+    await fixture.whenStable();
+    expect(img.src).toContain('/skills/skill_icon_shipwrecking1.gif');
+
+    img.dispatchEvent(new Event('error'));
+    expect(img.src).toBe(PLACEHOLDER_ICON);
+    expect(img.alt).toBe('Shipwrecking icon');
+
+    // the placeholder can't fail, but if it did it mustn't loop
+    img.dispatchEvent(new Event('error'));
+    expect(img.src).toBe(PLACEHOLDER_ICON);
+  });
+
   it('should map Wiki item names to wiki image url', async () => {
     fixture.componentRef.setInput('name', 'Abyssal whip.png');
     fixture.componentRef.setInput('wiki', true);
@@ -170,10 +185,11 @@ describe('IconDirective with LOCAL_ICONS', () => {
     expect(img.src).toBe(firemakingDataUri);
   });
 
-  it('should fall back to the file for an icon that is not local', async () => {
-    fixture.componentRef.setInput('name', SkillEnum.Attack);
+  it('should show the placeholder without a request for a skill the local icons lack', async () => {
+    fixture.componentRef.setInput('name', 'Shipwrecking');
     await fixture.whenStable();
 
-    expect(img.src).toContain('/assets/icons/skills/skill_icon_attack1.gif');
+    expect(img.src).toBe(PLACEHOLDER_ICON);
+    expect(img.alt).toBe('Shipwrecking icon');
   });
 });
