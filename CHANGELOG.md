@@ -2,8 +2,8 @@
 
 ### Price pages
 
-- The price chart no longer zooms with the mouse wheel or a pinch, or pans when dragged: the period switch sets its
-  range, as on the other charts. Item pages load a little less code.
+- The price chart no longer zooms with the mouse wheel or a pinch, or pans when dragged: the period switch (1D to 1Y)
+  sets its range. Item pages load a little less code.
 
 ### Player pages
 
