@@ -23,7 +23,7 @@ export const DEFAULT_DESCRIPTION =
   'Track everything that matters in Old School RuneScape with OSRS Tracker. Track the latest news, item prices, hiscores, and XP gains all in one place.';
 
 export const DEFAULT_IMAGE: PageImage = {
-  url: '/assets/og/osrs-tracker.png?v=1',
+  url: '/assets/og/osrs-tracker.png?v=2',
   width: 1200,
   height: 630,
   alt: 'OSRS Tracker: XP tracker and Grand Exchange prices for Old School RuneScape',
