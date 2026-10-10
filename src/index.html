@@ -60,7 +60,9 @@
     <!-- The URL must match the @font-face one in styles/tailwind/base.css -->
     <link rel="preload" href="/assets/fonts/SOLIX-Variable.woff2?v=2.22" as="font" type="font/woff2" crossorigin />
 
-    <link rel="preconnect" href="https://cdn.runescape.com" />
+    <!-- crossorigin for the HttpClient (CORS) requests right after hydration; none for the Wiki's <img> icons -->
+    <link rel="preconnect" href="https://prices.runescape.wiki" crossorigin />
+    <link rel="preconnect" href="https://runescape-api.freekmencke.com" crossorigin />
     <link rel="preconnect" href="https://oldschool.runescape.wiki" />
   </head>
   <body class="antialiased text-text bg-ground">
