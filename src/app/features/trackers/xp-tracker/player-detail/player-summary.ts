@@ -1,12 +1,12 @@
 import { hiscoreDiff, SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreEntry } from '@osrs-tracker/models';
+import { HiscoreDiff, HiscoreEntry } from '@osrs-tracker/models';
 import { BOSSES } from '../activity-categories';
 import { named, skillOf } from '../hiscore-values';
 
 const DAY = 24 * 60 * 60 * 1000;
 
 /** The gains between two checks (or the newest check and the live hiscores), dated by the older one */
-export interface Gains extends HiscoreEntry {
+export interface Gains extends HiscoreDiff {
   /** The days they cover: 1, or more across a gap in the history (the player was off the hiscores or not checked) */
   days: number;
 }
