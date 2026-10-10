@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import { LogPoint } from './log-chart-series';
 import { MARKER_HEIGHT, MARKER_WIDTH, TooltipMarkers } from './tooltip-markers';
 
-/** Options shared by the log charts: a day axis, tooltips with the icon markers and no zoom. */
+/** Options shared by the log charts: a day axis, and tooltips with the icon markers. */
 export function logChartOptions<TType extends 'line' | 'bar'>(markers: TooltipMarkers): ChartOptions<TType> {
   // typed as a bar chart's: the options used here have the same shape for line charts
   const options: ChartOptions<'bar'> = {
@@ -35,7 +35,6 @@ export function logChartOptions<TType extends 'line' | 'bar'>(markers: TooltipMa
           }),
         },
       },
-      zoom: { pan: { enabled: false }, zoom: { wheel: { enabled: false }, pinch: { enabled: false } } },
     },
   };
   return options as unknown as ChartOptions<TType>;

@@ -37,11 +37,6 @@ export class VolumeChartComponent extends BaseChart<'bar', DailyVolume[]> {
               ` ${context.dataset.label}: ${formatNumber(Math.abs(context.parsed.y!), 'en-US', '1.0-0')}`,
           },
         },
-        // Fourteen bars need no zooming, and panning would get in the way of scrolling on phones
-        zoom: {
-          pan: { enabled: false },
-          zoom: { wheel: { enabled: false }, pinch: { enabled: false } },
-        },
       },
     };
   }

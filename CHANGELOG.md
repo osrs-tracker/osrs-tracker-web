@@ -1,5 +1,10 @@
 ## 2026/10/10
 
+### Price pages
+
+- The price chart no longer zooms with the mouse wheel or a pinch, or pans when dragged: the period switch sets its
+  range, as on the other charts. Item pages load a little less code.
+
 ### Player pages
 
 - A skill or activity Jagex adds before the site has its icon shows a grey question mark instead of a broken image,
@@ -12,6 +17,7 @@
   a skill or activity Jagex adds later counts in the XP and activity totals before the site knows its name (boss kill
   counts include only the bosses the site lists).
 - The build tools' install steps run again: their approvals were pinned to versions an earlier update had replaced.
+- Unused build settings are gone, and the sitemap and icon scripts use the same module format as the rest of the code.
 
 ## 2026/10/09
 

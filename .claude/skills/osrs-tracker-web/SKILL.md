@@ -142,10 +142,10 @@ the angular.dev docs for the installed major version.
   spying on it sees nothing.
 - **Writes**: requests that record something (lookups, starting to track a player) run only when `isHumanVisitor()`
   (`core/platform/human-visitor.ts`): never during SSR or for crawlers, which would fill the recent lookups.
-- **Chart.js**: shared registrations and the date adapter in `common/components/charts/chart-setup.ts`; load
-  browser-only plugins (zoom) lazily per chart; never `Chart.unregister`. Time series charts extend
-  `common/components/charts/base-chart.ts`; their `setData` may build new datasets, as `BaseChart` keeps a drawn one in
-  place when its label and dates match, so only changed points animate (Chart.js redraws a new object from the axis).
+- **Chart.js**: shared registrations and the date adapter in `common/components/charts/chart-setup.ts`; never
+  `Chart.unregister`. Time series charts extend `common/components/charts/base-chart.ts`; their `setData` may build new
+  datasets, as `BaseChart` keeps a drawn one in place when its label and dates match, so only changed points animate
+  (Chart.js redraws a new object from the axis).
 - **Icons**: after changing `src/assets/icons/{skills,activities}`, run `npm run icons` and commit
   `local-icons.generated.ts`.
 - **Font**: SOLIX comes from the private [FreekMencke/solix](https://github.com/FreekMencke/solix) releases

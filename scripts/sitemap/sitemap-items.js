@@ -1,5 +1,5 @@
-const xmlFormatter = require('xml-formatter');
-const { writeFile, readFile } = require('fs').promises;
+import xmlFormatter from 'xml-formatter';
+import { writeFile, readFile } from 'node:fs/promises';
 
 const wrapXml = content => {
   return [
