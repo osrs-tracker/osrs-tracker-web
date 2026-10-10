@@ -2,14 +2,13 @@ import { Grid, GridCell, GridCellWidget, GridRow } from '@angular/aria/grid';
 import { DecimalPipe } from '@angular/common';
 import { Component, computed, effect, inject, input, InputSignal, Signal, viewChild } from '@angular/core';
 import { calculateXPForSkillLevel, SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreEntry, HiscoreSkill, overallOf, skillLevel } from '@osrs-tracker/models';
+import { HiscoreEntry, HiscoreSkill, overallOf, skillProgress } from '@osrs-tracker/models';
 import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
 import { TooltipComponent } from 'src/app/common/components/general/tooltip/tooltip.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { setGridTabStop } from 'src/app/common/helpers/aria-tab-stop';
 import { ThemeService } from 'src/app/common/services/theme.service';
 import { ChartSkill, SKILL_COLORS } from '../../skill-colors';
-import { percentageToNextLevel } from '../../skill-progress';
 import { PlayerView } from '../player-view';
 import { pickedCellBackground, pickedCellRing } from './picked-cell';
 
@@ -179,16 +178,14 @@ export class SkillGridComponent {
       const hiscore = this.hiscore();
       const loaded = !!hiscore;
       // an untrained skill (`null`) shows level 1 with no XP
-      const skill = hiscore?.skills[name];
-      const level = skillLevel(skill);
-      const xp = skill?.xp ?? 0;
+      const { level, xp, percentToNextLevel } = skillProgress(hiscore?.skills[name]);
       const gain = this.gains().get(name) ?? 0;
       return {
         name,
         loaded,
         level,
         xp,
-        progress: loaded && level < 99 ? percentageToNextLevel(xp, level) : undefined,
+        progress: loaded ? (percentToNextLevel ?? undefined) : undefined,
         gain,
         charted: loaded && gain > 0,
         on: selected.has(name),

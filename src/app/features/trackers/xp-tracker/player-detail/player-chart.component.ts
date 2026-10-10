@@ -1,12 +1,11 @@
 import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core';
 import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreEntry, skillLevel } from '@osrs-tracker/models';
+import { HiscoreEntry, skillProgress } from '@osrs-tracker/models';
 import { format } from 'date-fns';
 import { SegmentedComponent, SegmentedOption } from 'src/app/common/components/general/segmented.component';
 import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { formatNumberLegible } from 'src/app/common/helpers/number.helper';
-import { percentageToNextLevel } from '../skill-progress';
 import { ActivityChartComponent } from './player-logs/activity-chart.component';
 import { CHART_CATEGORIES } from './player-logs/chart-categories';
 import { activitySeries, xpGainedSeries } from './player-logs/log-chart-series';
@@ -212,15 +211,17 @@ export class PlayerChartComponent {
       return { icon: { name, skill: true }, title: 'Total XP gained', sub: `All skills, ${period}`, total };
     }
 
+    const icon = { name, skill: true };
+    const title = `${name} XP gained`;
     const current = this.current();
-    const skillLevelNow = current && skillLevel(current.skills[name]);
-    const level =
-      skillLevelNow === undefined
-        ? ''
-        : skillLevelNow < 99
-          ? `Level ${skillLevelNow} · ${Math.floor(percentageToNextLevel(current?.skills[name]?.xp ?? 0, skillLevelNow))}% to ${skillLevelNow + 1} · `
-          : 'Level 99 · ';
-    return { icon: { name, skill: true }, title: `${name} XP gained`, sub: level + period, total };
+    if (!current) return { icon, title, sub: period, total };
+
+    const { level, percentToNextLevel } = skillProgress(current.skills[name]);
+    const progress =
+      percentToNextLevel === null
+        ? 'Level 99 · '
+        : `Level ${level} · ${Math.floor(percentToNextLevel)}% to ${level + 1} · `;
+    return { icon, title, sub: progress + period, total };
   }
 
   private activityHeading(view: ActivityView, period: string): ChartHeading {
