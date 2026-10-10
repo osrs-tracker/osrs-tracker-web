@@ -36,14 +36,16 @@ a worktree).
 ## Angular conventions
 
 - **Names** (the 2025 style guide, the CLI's default): a file is named after its main identifier. Components and
-  directives have no suffix (`home.ts` with `class Home`, its template `home.html`); other classes keep theirs and the
+  directives have no suffix (`home.ts` with `class Home`, its template `home.html`). Other classes keep theirs and the
   file joins it with a hyphen (`ThemeService` in `theme-service.ts`, `TimeAgoPipe` in `time-ago-pipe.ts`, also `-repo`,
-  `-store`, `-resolver`, `-interceptor`). `*.routes.ts` and `app.config*.ts` stay as the CLI makes them. Generate those
-  with the suffix in the name (`ng g s common/services/theme-service`).
-- **Imports**: `@app/…`, `@config/…` and `@server/…` across folders, relative within one. Lint enforces the layers
-  (`import-x/no-restricted-paths` in `eslint.config.js`): `common/` and `core/` never import a feature, features don't
-  import each other (Home may import the trackers), only `app.config.server.ts` imports `src/server`, and `HttpClient`
-  only in `common/repositories/`.
+  `-store`, `-resolver`, `-interceptor`); generate a service with the suffix in its name
+  (`ng g s common/services/theme-service`). Only the CLI's own names keep a dot: `main.server.ts`, `app.config*.ts`,
+  `*.routes.ts`.
+- **Imports**: relative within a feature or a folder of `common/` or `core/` (and from the root `app.*` files into their
+  subfolders); `@app/…`, `@config/…` or `@server/…` otherwise. Lint enforces the layers (`import-x/no-restricted-paths`
+  in `eslint.config.js`): `common/` and `core/` never import a feature, features don't import each other (Home may
+  import the trackers), none of them imports `src/server` (only the root `app.config.server.ts` does), and `HttpClient`
+  is only used in `common/repositories/` (and specs).
 - **DI**: `inject()` only; root services use `@Service()`, not `@Injectable({ providedIn: 'root' })`.
 - **State**: signals, with explicitly typed public fields (`readonly foo: Signal<Bar> = computed(...)`). localStorage
   goes through a per-feature `@ngrx/signals` store (`XpTrackerStore`, `PriceTrackerStore`), never from components.

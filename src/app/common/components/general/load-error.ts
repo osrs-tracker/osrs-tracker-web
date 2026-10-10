@@ -8,7 +8,7 @@ import {
   InputSignalWithTransform,
   output,
 } from '@angular/core';
-import { AnalyticsService } from '../../services/analytics/analytics-service';
+import { AnalyticsService } from '@app/common/services/analytics/analytics-service';
 
 /**
  * Shown in place of data that failed to load, with a retry button. Reports itself to analytics once it's visible in the
