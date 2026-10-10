@@ -2,7 +2,8 @@
 
 ### Look and feel
 
-- The navigation bar shows the OSRS Tracker wordmark ("OSRS" over a green "TRACKER"), as on the browser tab icon.
+- The navigation bar shows the OSRS Tracker wordmark, a large "OSRS" over a small green "TRACKER", as on the browser tab
+  icon.
 
 ### Search and sharing
 
