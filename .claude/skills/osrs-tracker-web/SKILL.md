@@ -146,10 +146,10 @@ the angular.dev docs for the installed major version.
   `Chart.unregister`. Time series charts extend `common/components/charts/base-chart.ts`; their `setData` may build new
   datasets, as `BaseChart` keeps a drawn one in place when its label and dates match, so only changed points animate
   (Chart.js redraws a new object from the axis).
-- **Icons**: after changing `src/assets/icons/{skills,activities}`, run `npm run icons` and commit
+- **Icons**: after changing `public/assets/icons/{skills,activities}`, run `npm run icons` and commit
   `local-icons.generated.ts`.
 - **Font**: SOLIX comes from the private [FreekMencke/solix](https://github.com/FreekMencke/solix) releases
-  (`gh release download -R FreekMencke/solix`); copy `variable/SOLIX-Variable.woff2` to `src/assets/fonts` and bump
+  (`gh release download -R FreekMencke/solix`); copy `variable/SOLIX-Variable.woff2` to `public/assets/fonts` and bump
   `?v=` in `base.css` and `index.html`.
 - **Missing assets**: `middleware/missing-asset.ts` answers paths ending in a build asset extension (`.js`, `.css`,
   `.woff2`…) with a 404 after `express.static`, before Angular, as some crawlers resolve the asset links against the
@@ -184,8 +184,8 @@ Only for complex or important logic, never for coverage. Break the protected cod
 
 - `npm start` (`ng serve --open`) for browser-side work; it has no auto-generator or page cache. If port 4200 is taken
   it offers another port: decline and stop the other process, as the API's CORS rejects any other port.
-- Server code needs the production build. `npm run build` first regenerates `src/sitemap*.xml` (fetching the Wiki's item
-  list) and the icons, which dirties tracked files: `git restore src/sitemap*.xml` afterwards, or build with
+- Server code needs the production build. `npm run build` first regenerates `public/sitemap*.xml` (fetching the Wiki's
+  item list) and the icons, which dirties tracked files: `git restore public/sitemap*.xml` afterwards, or build with
   `npx ng build --configuration production`. Then
   `HOST=localhost PORT=4200 node dist/osrs-tracker-web/server/server.mjs`. Smoke test with
   `curl -s -D - http://localhost:4200/<path>` (unknown routes 404, generated pages `x-cache: HIT`). Stop with
@@ -207,7 +207,7 @@ server HTML). If it's unavailable, say so rather than falling back to curl silen
 
 Merging to `main` is the deploy. Once CI passes on `main`, the `CD` workflow (`.github/workflows/deploy.yml`, each run
 titled like the CI run that started it) builds and pushes the image (tagged `latest` and the commit SHA), then commits
-its digest to `osrs-tracker-web.yaml` with the regenerated `src/sitemap*.xml` as
+its digest to `osrs-tracker-web.yaml` with the regenerated `public/sitemap*.xml` as
 `chore(deploy): deploy sha256:<first 8> and update sitemaps`, pushed with the `DEPLOY_KEY` deploy key. Flux in the
 cluster applies `main` within a minute and reports the commit status `Flux / sync`; the workflow waits for it (up to 10
 minutes), then smoke tests the web app only, not the API: `/` (200 with `x-cache`), the `main-*.js` it loads (200),

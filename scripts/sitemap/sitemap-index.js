@@ -21,5 +21,5 @@ import { writeFile } from 'node:fs/promises';
     lineSeparator: '\n',
   });
 
-  await writeFile('src/sitemap.xml', xml, 'utf8');
+  await writeFile('public/sitemap.xml', xml, 'utf8');
 })();

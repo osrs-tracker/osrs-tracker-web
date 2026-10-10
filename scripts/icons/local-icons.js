@@ -2,7 +2,7 @@ import { readdir, readFile, writeFile } from 'node:fs/promises';
 
 // The skill and activity icons are all shown on every player page, so they're bundled into its chunk as data URIs (see
 // LOCAL_ICONS) instead of being fetched one by one.
-const ICONS_DIR = 'src/assets/icons';
+const ICONS_DIR = 'public/assets/icons';
 const FOLDERS = ['skills', 'activities'];
 const MIME_TYPES = { '.gif': 'image/gif', '.png': 'image/png' };
 const OUTPUT = 'src/app/common/directives/icon/local-icons.generated.ts';
