@@ -11,8 +11,9 @@
   sites, now show a preview with a picture and a short description of the page, instead of only its title.
 - Those pages also have clearer titles and descriptions in search results, and tell search engines their one true
   address, so variants such as a search in the address bar don't count as separate pages.
-- Item pages get the same: a title that leads with the item's price ("Abyssal whip price - OSRS Grand Exchange"), a
-  description of their own in search results (members or free to play, buy limit, high alch value) and a link preview.
+- Item pages get the same: a title with the item and its price ("Abyssal whip - OSRS Grand Exchange price"), a
+  description of their own in search results (members or free to play, buy limit, high alch value) and a compact link
+  preview with the OSRS Tracker icon.
 - On an item page, the link to the OSRS Wiki is the icon beside the item's name instead of the name itself.
 
 ### Price pages
