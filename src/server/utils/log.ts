@@ -3,9 +3,10 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 
 /**
  * What a server log line is about (`| json | type="outgoing"` in Loki): the package's `incoming`, `outgoing`,
- * `lifecycle` and `uncaught`, plus `prerender` for auto page generation (`utils/auto-generator.ts`).
+ * `lifecycle` and `uncaught`, plus `prerender` for auto page generation (`utils/auto-generator.ts`) and `sitemap` for
+ * the item and player sitemaps (`routers/sitemaps.ts`).
  */
-export type WebLogType = LogType<'prerender'>;
+export type WebLogType = LogType<'prerender' | 'sitemap'>;
 
 /** The path of the page being rendered, so the requests its render makes can be traced back to it */
 const renderedPage = new AsyncLocalStorage<string>();
