@@ -75,4 +75,26 @@ describe('playerHistory', () => {
     expect(history.hasMore()).toBe(false);
     httpTesting.verify();
   });
+
+  // Checking the offset value isn't enough: back at the first offset, its history has started over too
+  it('ignores a page loading from before it went to another offset and back', async () => {
+    page(0, 0).flush(entries(15, 0));
+    await settle();
+    history.loadMore();
+    const stillLoading = page(0, 15);
+
+    offset.set(2);
+    await settle();
+    page(2, 0).flush(entries(3, 2));
+    offset.set(0);
+    await settle();
+    page(0, 0).flush(entries(15, 0));
+    stillLoading.flush(entries(7, 0));
+    await settle();
+
+    expect(history.entries()).toHaveLength(15);
+    expect(history.loadingMore()).toBe(false);
+    expect(history.hasMore()).toBe(true);
+    httpTesting.verify();
+  });
 });

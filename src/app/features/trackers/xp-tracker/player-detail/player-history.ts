@@ -27,6 +27,17 @@ interface Page {
   size: number;
 }
 
+/** The pages loaded after the first, for one offset's history */
+interface Paging {
+  /** New when the history starts over, so a response for an earlier one can tell it doesn't belong */
+  run: object;
+  /** With the size each asked for: a shorter page is the end of the history */
+  pages: Page[];
+  loading: boolean;
+  /** The size the failed load asked for, so a retry loads as much (a longer period asks for more than a week) */
+  failedSize?: number;
+}
+
 /** The history as the page reads it; the resources stay inside, as their `value()` throws in the error state */
 export interface PlayerHistory {
   /** The live hiscores, only fetched in the browser */
@@ -78,14 +89,14 @@ export function playerHistory(params: {
   const osrsTrackerRepo = inject(OsrsTrackerRepo);
   const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  /**
-   * Pages loaded after the first, with the size each asked for: a shorter page is the end of the history. Like the first
-   * page, they belong to one offset, so another offset starts over.
-   */
-  const morePages: WritableSignal<Page[]> = linkedSignal({ source: offset, computation: (): Page[] => [] });
-  const loadingMore: WritableSignal<boolean> = linkedSignal({ source: offset, computation: () => false });
-  const loadMoreFailed: WritableSignal<boolean> = linkedSignal({ source: offset, computation: () => false });
-  let failedMoreSize = MORE_SIZE;
+  // Like the first page, the pages after it belong to one offset, so another offset starts over
+  const paging: WritableSignal<Paging> = linkedSignal({
+    source: offset,
+    computation: (): Paging => ({ run: {}, pages: [], loading: false }),
+  });
+  const morePages = computed(() => paging().pages);
+  const loadingMore = computed(() => paging().loading);
+  const loadMoreFailed = computed(() => paging().failedSize !== undefined);
 
   const todayResource = rxResource({
     params: () => (isBrowser && enabled() ? { username, offset: offset() } : undefined),
@@ -112,28 +123,23 @@ export function playerHistory(params: {
   const periodSize = computed(() => Math.min(period() * 2 + 1, PERIOD_SIZE));
 
   function loadMore(size: number = MORE_SIZE): void {
-    const requested = offset();
-    loadingMore.set(true);
-    loadMoreFailed.set(false);
+    const { run } = paging();
+    // a response for a history that has since started over (another offset) doesn't belong to this one
+    const update = (change: Partial<Paging> | ((paging: Paging) => Partial<Paging>)): void => {
+      if (paging().run !== run) return;
+      paging.update(current => ({ ...current, ...(typeof change === 'function' ? change(current) : change) }));
+    };
+    update({ loading: true, failedSize: undefined });
 
     osrsTrackerRepo
-      .getPlayerHiscores(username, requested, size, entries().length)
+      .getPlayerHiscores(username, offset(), size, entries().length)
       .pipe(
         takeUntilDestroyed(destroyRef),
-        finalize(() => {
-          if (offset() === requested) loadingMore.set(false);
-        }),
+        finalize(() => update({ loading: false })),
       )
       .subscribe({
-        // a page for an offset the visitor has since left doesn't belong to this history
-        next: page => {
-          if (offset() === requested) morePages.update(pages => [...pages, { entries: page, size }]);
-        },
-        error: () => {
-          if (offset() !== requested) return;
-          failedMoreSize = size;
-          loadMoreFailed.set(true);
-        },
+        next: page => update(current => ({ pages: [...current.pages, { entries: page, size }] })),
+        error: () => update({ failedSize: size }),
       });
   }
 
@@ -157,10 +163,10 @@ export function playerHistory(params: {
     periodLoaded: computed(() => loaded() && (entries().length >= periodSize() || !hasMore() || loadMoreFailed())),
     current: computed(() => today() ?? entries()[0]),
     lastCheckedAt: computed(() => entries()[0]?.date),
-    loadingMore: loadingMore.asReadonly(),
-    loadMoreFailed: loadMoreFailed.asReadonly(),
+    loadingMore,
+    loadMoreFailed,
     loadMore,
-    retryLoadMore: () => loadMore(failedMoreSize),
+    retryLoadMore: () => loadMore(paging().failedSize),
     reloadToday: () => todayResource.reload(),
     reloadFirstPage: () => firstPage.reload(),
     retry: () => {
