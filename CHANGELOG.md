@@ -1,5 +1,9 @@
 ## 2026/10/10
 
+### Look and feel
+
+- The navigation bar shows the OSRS Tracker wordmark ("OSRS" over a green "TRACKER"), as on the browser tab icon.
+
 ### Price pages
 
 - The price chart no longer zooms with the mouse wheel or a pinch, or pans when dragged: the period switch (1D to 1Y)
