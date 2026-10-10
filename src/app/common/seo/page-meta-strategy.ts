@@ -29,6 +29,17 @@ export const DEFAULT_IMAGE: PageImage = {
   alt: 'OSRS Tracker: XP tracker and Grand Exchange prices for Old School RuneScape',
 };
 
+/**
+ * The app icon, square, for `summary` cards on item and player pages: a thumbnail stays readable, where the wide default
+ * image shrinks to a sliver.
+ */
+export const ICON_IMAGE: PageImage = {
+  url: '/assets/pwa/icon-512x512.png',
+  width: 512,
+  height: 512,
+  alt: 'OSRS Tracker',
+};
+
 const SITE_NAME = 'OSRS Tracker';
 
 /** Every tag this strategy sets apart from the description, so a page without meta can remove them all. */

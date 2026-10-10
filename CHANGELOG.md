@@ -15,6 +15,10 @@
   description of their own in search results (members or free to play, buy limit, high alch value) and a compact link
   preview with the OSRS Tracker icon.
 - On an item page, the link to the OSRS Wiki is the icon beside the item's name instead of the name itself.
+- Player pages too: the title and description come from the player ("The Fraking - OSRS XP Tracker", their account type,
+  combat level and how long they've been tracked), and every spelling of a name (`the_fraking`, `THE-FRAKING`) points
+  search engines to the same page. Shared, they get the same compact preview as item pages. A name that isn't on the
+  hiscores is titled "Player not found".
 
 ### Price pages
 

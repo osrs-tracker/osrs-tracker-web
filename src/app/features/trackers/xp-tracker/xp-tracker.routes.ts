@@ -1,7 +1,7 @@
 import { Route } from '@angular/router';
 import { PageMeta } from '@app/common/seo/page-meta-strategy';
 import { playerDetailResolver } from './player-detail/player-detail-resolver';
-import { playerDetailTitleResolver } from './player-detail/player-detail-title-resolver';
+import { playerDetailMetaResolver, playerDetailTitleResolver } from './player-detail/player-detail-meta';
 
 export default [
   {
@@ -21,6 +21,6 @@ export default [
     title: playerDetailTitleResolver,
     path: ':username',
     loadComponent: () => import('./player-detail/player-detail'),
-    resolve: { player: playerDetailResolver },
+    resolve: { player: playerDetailResolver, meta: playerDetailMetaResolver },
   },
 ] as Route[];

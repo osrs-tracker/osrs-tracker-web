@@ -4,18 +4,10 @@ import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
 import { catchError, map, of } from 'rxjs';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
-import { PageImage, PageMeta } from '@app/common/seo/page-meta-strategy';
+import { ICON_IMAGE, PageMeta } from '@app/common/seo/page-meta-strategy';
 import { formatWhole } from './item-prices';
 
 const MAX_DESCRIPTION_LENGTH = 160;
-
-/** Square, so a `summary` card's thumbnail stays readable (the default image is 1200x630 and shrinks to a sliver) */
-const ITEM_IMAGE: PageImage = {
-  url: '/assets/pwa/icon-512x512.png',
-  width: 512,
-  height: 512,
-  alt: 'OSRS Tracker',
-};
 
 // Both resolvers ask for the item like `itemDetailResolver`; the shared-request interceptor makes it one request.
 // They fall back instead of using `resolverErrorHandler`: `itemDetailResolver` already shows the error page.
@@ -55,7 +47,7 @@ export function itemPageMeta(item: Item): PageMeta {
   return {
     description: itemDescription(item),
     canonicalPath: `/trackers/price/${item.id}`,
-    image: ITEM_IMAGE,
+    image: ICON_IMAGE,
     card: 'summary',
   };
 }
