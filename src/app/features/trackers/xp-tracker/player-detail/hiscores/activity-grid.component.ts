@@ -12,7 +12,6 @@ import { ThemeService } from 'src/app/common/services/theme.service';
 import { UNCHARTED_MINIGAMES } from '../../activity-categories';
 import { CHART_CATEGORIES } from '../player-logs/chart-categories';
 import { chartColors } from '../../chart-colors';
-import { activityOf } from '../../hiscore-values';
 import { ActivityView, PlayerView } from '../player-view';
 import { pickedCellBackground, pickedCellRing } from './picked-cell';
 
@@ -180,7 +179,7 @@ export class ActivityGridComponent {
       if (!name) return { filler: true } as ActivityCell;
 
       const hiscore = this.hiscore();
-      const activity = hiscore && activityOf(hiscore, name);
+      const activity = hiscore && (hiscore.activities[name] ?? null);
       const gain = this.gains().get(name) ?? 0;
       const why = view === 'minigames' ? UNCHARTED_MINIGAMES[name as ActivityEnum] : undefined;
       const charted = !!activity && gain > 0 && !why;
