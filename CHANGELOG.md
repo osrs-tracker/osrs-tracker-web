@@ -11,6 +11,7 @@
   `@osrs-tracker/hiscores` 4.1.0). Nothing looks different: the same levels, XP, kill counts and "Unranked" labels, and
   a skill or activity Jagex adds later counts in the XP and activity totals before the site knows its name (boss kill
   counts include only the bosses the site lists).
+- The build tools' install steps run again: their approvals were pinned to versions an earlier update had replaced.
 
 ## 2026/10/09
 
