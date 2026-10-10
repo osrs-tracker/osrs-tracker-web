@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: osrs-tracker-web
-          image: freekmencke/osrs-tracker-web@sha256:72125da21423b108a6e6028e8c9bb1a9f039b21476a80e6eaf04d2bbcf97a5c6
+          image: freekmencke/osrs-tracker-web@sha256:03ffb5538983d7b06d3cbf0d7110d23e6020052edcb57a3bb69f5a73e75ea57d
           imagePullPolicy: IfNotPresent
           env:
             - name: HOST
