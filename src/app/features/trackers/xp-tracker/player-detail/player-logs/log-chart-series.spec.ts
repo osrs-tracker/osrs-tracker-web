@@ -3,13 +3,18 @@ import { describe, expect, it } from 'vitest';
 import { Gains } from '../player-summary';
 import { activitySeries, xpGainedSeries } from './log-chart-series';
 
-const diff = (day: number, skills: Record<string, number>, activities: Record<string, number> = {}, days = 1): Gains =>
-  ({
-    date: new Date(2026, 9, day),
-    days,
-    skills: Object.entries(skills).map(([name, xp]) => ({ name, xp, level: 0, rank: 0 })),
-    activities: Object.entries(activities).map(([name, score]) => ({ name, score, rank: 0 })),
-  }) as Gains;
+const diff = (
+  day: number,
+  skills: Record<string, number>,
+  activities: Record<string, number> = {},
+  days = 1,
+): Gains => ({
+  date: new Date(2026, 9, day),
+  scrapingOffset: 0,
+  days,
+  skills: Object.fromEntries(Object.entries(skills).map(([name, xp]) => [name, { xp, level: 0, rank: 0 }])),
+  activities: Object.fromEntries(Object.entries(activities).map(([name, score]) => [name, { score, rank: 0 }])),
+});
 
 describe('xpGainedSeries', () => {
   it('adds up the daily gains oldest first, without Overall or skills that gained nothing', () => {
@@ -23,6 +28,19 @@ describe('xpGainedSeries', () => {
     expect(xpGainedSeries(diffs).map(({ name, total, points }) => [name, total, points.map(p => p.y)])).toEqual([
       [SkillEnum.Magic, 200, [0, 0, 200]],
       [SkillEnum.Attack, 150, [50, 50, 150]],
+    ]);
+  });
+
+  it('lists the skills of every diff by default, counting a skill missing from a diff as no gain', () => {
+    // Sailing is only in the newest diff, as if Jagex added it that day
+    const diffs = [
+      diff(2, { [SkillEnum.Overall]: 30, [SkillEnum.Attack]: 10, [SkillEnum.Sailing]: 20 }),
+      diff(1, { [SkillEnum.Overall]: 5, [SkillEnum.Attack]: 5 }),
+    ];
+
+    expect(xpGainedSeries(diffs).map(({ name, points }) => [name, points.map(p => p.y)])).toEqual([
+      [SkillEnum.Sailing, [0, 20]],
+      [SkillEnum.Attack, [5, 15]],
     ]);
   });
 

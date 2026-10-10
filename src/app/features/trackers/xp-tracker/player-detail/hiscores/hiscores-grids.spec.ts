@@ -1,8 +1,10 @@
 import { Component, provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { fromJagex } from '@osrs-tracker/hiscores';
 import { HiscoreEntry } from '@osrs-tracker/models';
 import { GTAG_TOKEN } from 'src/app/common/services/analytics/analytics.token';
 import { describe, expect, it } from 'vitest';
+import { TOXSICK } from '../../testing/jagex-hiscores';
 import { ChartLegendComponent, LegendItem } from '../player-logs/chart-legend.component';
 import { PlayerView } from '../player-view';
 import { ActivityGridComponent } from './activity-grid.component';
@@ -63,8 +65,8 @@ describe('SkillGridComponent keyboard', () => {
     const hiscore: HiscoreEntry = {
       date: new Date(),
       scrapingOffset: 0,
-      skills: SKILLS.map((name, id) => ({ id, name, rank: 1, level: 50, xp: 101_333 })),
-      activities: [],
+      skills: Object.fromEntries(SKILLS.map(name => [name, { rank: 1, level: 50, xp: 101_333 }])),
+      activities: {},
     };
     fixture.componentRef.setInput('hiscore', hiscore);
     // Attack gained XP, Hitpoints didn't
@@ -120,6 +122,51 @@ describe('SkillGridComponent keyboard', () => {
     await ready();
     expect([...playerView.skills()]).toEqual(['Attack']);
     expect(buttons[0].getAttribute('aria-pressed')).toBe('true');
+  });
+});
+
+describe('grids with a real response (ToxSick: Sailing at 0 XP, unranked boss kills)', () => {
+  const hiscore: HiscoreEntry = { date: new Date(), scrapingOffset: 0, ...fromJagex(TOXSICK) };
+
+  function render<T>(type: new () => T, inputs: Record<string, unknown>): HTMLElement {
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection(), PlayerView, { provide: GTAG_TOKEN, useValue: null }],
+    });
+    const fixture = TestBed.createComponent(type);
+    for (const [name, value] of Object.entries(inputs)) fixture.componentRef.setInput(name, value);
+    fixture.componentRef.changeDetectorRef.detectChanges();
+    return fixture.nativeElement;
+  }
+
+  it('shows an untrained skill as level 1, not a skeleton', () => {
+    const el = render(SkillGridComponent, { hiscore, gains: new Map() });
+    const sailing = el.querySelector('button[aria-label^="Sailing"]')!;
+    expect(sailing.getAttribute('aria-label')).toBe('Sailing level 1, 0% to 2');
+    expect(sailing.querySelector('skeleton')).toBeNull();
+    expect(el.querySelectorAll('skeleton')).toHaveLength(0);
+  });
+
+  it('shows an unranked boss with its score', () => {
+    const el = render(ActivityGridComponent, {
+      view: 'raids',
+      layout: ['Chambers of Xeric'],
+      hiscore,
+      gains: new Map(),
+    });
+    const cell = el.querySelector('button')!;
+    expect(cell.getAttribute('aria-label')).toBe('Chambers of Xeric, score 2');
+    expect(cell.textContent).toContain('2');
+    expect(cell.querySelector('skeleton')).toBeNull();
+  });
+
+  it('shows a skeleton only while loading', () => {
+    const el = render(ActivityGridComponent, {
+      view: 'raids',
+      layout: ['Chambers of Xeric'],
+      hiscore: undefined,
+      gains: new Map(),
+    });
+    expect(el.querySelector('button skeleton')).not.toBeNull();
   });
 });
 

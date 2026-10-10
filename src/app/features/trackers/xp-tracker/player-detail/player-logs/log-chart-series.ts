@@ -1,5 +1,6 @@
 import { SkillEnum } from '@osrs-tracker/hiscores';
 import { addDays } from 'date-fns';
+import { activityOf, skillOf } from '../../hiscore-values';
 import { Gains } from '../player-summary';
 
 /** A day's point; gains across a gap in the history go on its last day, with `from` its first */
@@ -16,21 +17,17 @@ export interface ChartSeries<TName extends string = string> {
   points: LogPoint[];
 }
 
-const SKILLS: string[] = Object.values(SkillEnum).filter(skill => skill !== SkillEnum.Overall);
-
 /**
- * Per skill that gained XP, the XP gained so far on each day, largest total first. Takes the newest diff first; all
- * skills but Overall by default.
+ * Per skill that gained XP, the XP gained so far on each day, largest total first. Takes the newest diff first; by
+ * default every skill in the diffs but Overall.
  */
-export function xpGainedSeries(diffs: Gains[], skills: readonly string[] = SKILLS): ChartSeries[] {
+export function xpGainedSeries(diffs: Gains[], skills: readonly string[] = skillsIn(diffs)): ChartSeries[] {
   const days = [...diffs].reverse();
 
   return skills
     .map(name => {
       let total = 0;
-      const points = days.map(diff =>
-        pointOf(diff, (total += Math.max(0, diff.skills.find(skill => skill.name === name)?.xp ?? 0))),
-      );
+      const points = days.map(diff => pointOf(diff, (total += Math.max(0, skillOf(diff, name).xp))));
       return { name, total, points };
     })
     .filter(series => series.total > 0)
@@ -43,13 +40,18 @@ export function activitySeries(diffs: Gains[], category: ReadonlySet<string>): C
 
   return [...category]
     .map(name => {
-      const points = days.map(diff =>
-        pointOf(diff, Math.max(0, diff.activities.find(activity => activity.name === name)?.score ?? 0)),
-      );
+      const points = days.map(diff => pointOf(diff, Math.max(0, activityOf(diff, name)?.score ?? 0)));
       return { name, total: points.reduce((total, point) => total + point.y, 0), points };
     })
     .filter(series => series.total > 0)
     .sort((a, b) => b.total - a.total);
+}
+
+/** The skills in any of the diffs but Overall, in the order they first appear */
+function skillsIn(diffs: Gains[]): string[] {
+  const names = new Set(diffs.flatMap(diff => Object.keys(diff.skills)));
+  names.delete(SkillEnum.Overall);
+  return [...names];
 }
 
 function pointOf(diff: Gains, y: number): LogPoint {

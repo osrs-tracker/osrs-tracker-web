@@ -12,6 +12,7 @@ import { ThemeService } from 'src/app/common/services/theme.service';
 import { UNCHARTED_MINIGAMES } from '../../activity-categories';
 import { CHART_CATEGORIES } from '../player-logs/chart-categories';
 import { chartColors } from '../../chart-colors';
+import { activityOf } from '../../hiscore-values';
 import { ActivityView, PlayerView } from '../player-view';
 import { pickedCellBackground, pickedCellRing } from './picked-cell';
 
@@ -24,7 +25,8 @@ const GRID_LABELS: Record<ActivityView, string> = {
 
 interface ActivityCell {
   name: string;
-  activity?: HiscoreActivity;
+  /** `null` without a score; the cell is a skeleton only while the hiscores load */
+  activity?: HiscoreActivity | null;
   /** Gained in the charted days */
   gain: number;
   /** Has gains to chart, so picking it changes the chart */
@@ -76,12 +78,12 @@ interface ActivityCell {
                     [attr.aria-disabled]="!cell.charted"
                     [attr.aria-pressed]="cell.charted ? cell.on : null"
                     [attr.aria-label]="cellLabel(cell)"
-                    [tooltip]="!!cell.activity"
+                    [tooltip]="cell.activity !== undefined"
                     [tooltipTemplate]="tooltipTemplate"
                     [tooltipUnderline]="false"
                     (click)="cell.charted && playerView.pickActivity(view(), cell.name)"
                   >
-                    @if (cell.activity; as activity) {
+                    @if (cell.activity !== undefined) {
                       <span
                         class="flex items-center w-full"
                         [class]="view() === 'minigames' ? 'gap-1.5' : 'max-w-21 gap-2'"
@@ -104,7 +106,7 @@ interface ActivityCell {
                           </span>
                         }
                         <span class="ml-auto text-base font-bold text-strong tabular-nums">{{
-                          shortScore(activity.score)
+                          shortScore(cell.activity?.score)
                         }}</span>
                       </span>
                     } @else {
@@ -123,9 +125,9 @@ interface ActivityCell {
                       }
                     </div>
                     <div class="text-right tabular-nums">
-                      <div>{{ (cell.activity?.score ?? -1) > 0 ? (cell.activity?.score | number) : '–' }}</div>
+                      <div>{{ cell.activity ? (cell.activity.score | number) : '–' }}</div>
                       @if (view() !== 'minigames') {
-                        <div>{{ (cell.activity?.rank ?? -1) > 0 ? (cell.activity?.rank | number) : 'Unranked' }}</div>
+                        <div>{{ cell.activity?.rank != null ? (cell.activity?.rank | number) : 'Unranked' }}</div>
                       }
                     </div>
                   </div>
@@ -177,7 +179,8 @@ export class ActivityGridComponent {
     return this.layout().map(name => {
       if (!name) return { filler: true } as ActivityCell;
 
-      const activity = this.hiscore()?.activities.find(a => a.name === name);
+      const hiscore = this.hiscore();
+      const activity = hiscore && activityOf(hiscore, name);
       const gain = this.gains().get(name) ?? 0;
       const why = view === 'minigames' ? UNCHARTED_MINIGAMES[name as ActivityEnum] : undefined;
       const charted = !!activity && gain > 0 && !why;
@@ -236,13 +239,13 @@ export class ActivityGridComponent {
   }
 
   cellLabel(cell: ActivityCell): string {
-    const score = (cell.activity?.score ?? -1) > 0 ? cell.activity!.score.toLocaleString('en-US') : 'none';
+    const score = cell.activity ? cell.activity.score.toLocaleString('en-US') : 'none';
     return `${cell.name}, ${this.scoreLabel().toLowerCase()} ${score}`;
   }
 
   /** Four digits fit a cell; from 10,000 up the score is shortened (18.2K), the tooltip has the exact one */
-  shortScore(score: number): string {
-    if (score <= 0) return '–';
+  shortScore(score: number | undefined): string {
+    if (score === undefined) return '–';
     if (score < 10_000) return score.toLocaleString('en-US');
     return formatNumberShort(score);
   }

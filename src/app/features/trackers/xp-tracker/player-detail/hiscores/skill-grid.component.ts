@@ -10,6 +10,7 @@ import { setGridTabStop } from 'src/app/common/helpers/aria-tab-stop';
 import { ThemeService } from 'src/app/common/services/theme.service';
 import { ChartSkill, SKILL_COLORS } from '../../skill-colors';
 import { percentageToNextLevel } from '../../skill-progress';
+import { skillOf } from '../../hiscore-values';
 import { PlayerView } from '../player-view';
 import { pickedCellBackground, pickedCellRing } from './picked-cell';
 
@@ -174,7 +175,8 @@ export class SkillGridComponent {
     const selected = this.playerView.skills();
     const theme = this.darkMode() ? 'dark' : 'light';
     return SKILL_LAYOUT.map(name => {
-      const skill = this.hiscore()?.skills.find(s => s.name === name);
+      const hiscore = this.hiscore();
+      const skill = hiscore && skillOf(hiscore, name);
       const gain = this.gains().get(name) ?? 0;
       return {
         name,
@@ -192,9 +194,10 @@ export class SkillGridComponent {
     const cells = this.cells();
     return Array.from({ length: Math.ceil(cells.length / 3) }, (_, i) => cells.slice(i * 3, i * 3 + 3));
   });
-  readonly overall: Signal<HiscoreSkill | undefined> = computed(() =>
-    this.hiscore()?.skills.find(s => s.name === SkillEnum.Overall),
-  );
+  readonly overall: Signal<HiscoreSkill | undefined> = computed(() => {
+    const hiscore = this.hiscore();
+    return hiscore && skillOf(hiscore, SkillEnum.Overall);
+  });
   readonly overallOn: Signal<boolean> = computed(() => this.playerView.skills().has(SkillEnum.Overall));
 
   private readonly grid: Signal<Grid | undefined> = viewChild(Grid);
