@@ -141,7 +141,7 @@ describe('grids with a real response (ToxSick: Sailing at 0 XP, unranked boss ki
   it('shows an untrained skill as level 1, not a skeleton', () => {
     const el = render(SkillGridComponent, { hiscore, gains: new Map() });
     const sailing = el.querySelector('button[aria-label^="Sailing"]')!;
-    expect(sailing.getAttribute('aria-label')).toBe('Sailing level 1');
+    expect(sailing.getAttribute('aria-label')).toBe('Sailing level 1, 0% to 2');
     expect(sailing.querySelector('skeleton')).toBeNull();
     expect(el.querySelectorAll('skeleton')).toHaveLength(0);
   });

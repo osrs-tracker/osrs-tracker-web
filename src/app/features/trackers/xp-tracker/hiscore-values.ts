@@ -13,7 +13,10 @@ export function activityOf(entry: HiscoreEntry, name: string): HiscoreActivity |
   return entry.activities[name] ?? null;
 }
 
+/** A skill or activity value with its name, for lists */
+export type Named<T> = T & { name: string };
+
 /** The values that are there, with their names, in the entry's order; leaves out `null` ones */
-export function named<T extends object>(values: Partial<Record<string, T | null>>): (T & { name: string })[] {
+export function named<T extends object>(values: Partial<Record<string, T | null>>): Named<T>[] {
   return Object.entries(values).flatMap(([name, value]) => (value ? [{ name, ...value }] : []));
 }

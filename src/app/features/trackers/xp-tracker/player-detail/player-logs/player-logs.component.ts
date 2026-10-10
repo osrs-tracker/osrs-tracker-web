@@ -6,7 +6,7 @@ import { addDays } from 'date-fns';
 import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { ShortDatePipe } from 'src/app/common/pipes/date-fns.pipe';
-import { named, skillOf } from '../../hiscore-values';
+import { Named, named, skillOf } from '../../hiscore-values';
 import { Gains } from '../player-summary';
 
 /**
@@ -21,8 +21,8 @@ type LogGroup =
       /** Today's gains so far: the hour they count from */
       since?: string;
       overall?: HiscoreSkill;
-      skills: HiscoreSkill[];
-      activities: HiscoreActivity[];
+      skills: Named<HiscoreSkill>[];
+      activities: Named<HiscoreActivity>[];
     }
   | { type: 'empty'; from: Date; to: Date; days: number };
 
