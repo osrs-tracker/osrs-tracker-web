@@ -23,29 +23,28 @@ import { ActivityEnum } from '@osrs-tracker/hiscores';
 import { HiscoreEntry, HiscoreSkill, overallOf, Player } from '@osrs-tracker/models';
 import { format } from 'date-fns';
 import { EMPTY, catchError, finalize } from 'rxjs';
-import { LoadError } from '@app/common/components/general/load-error';
-import { Segmented, SegmentedOption } from '@app/common/components/general/segmented';
-import { Skeleton } from '@app/common/components/general/skeleton';
-import { StatTile } from '@app/common/components/general/stat-tile';
-import { StatusPanel } from '@app/common/components/general/status-panel';
-import { localIcons } from '@app/common/directives/icon/local-icons.generated';
-import { LOCAL_ICONS } from '@app/common/directives/icon/local-icons-token';
-import { formatNumberLegible } from '@app/common/helpers/number-format';
-import { CapitalizePipe } from '@app/common/pipes/capitalize-pipe';
-import { TimeAgoPipe } from '@app/common/pipes/time-ago-pipe';
-import { OsrsProxyRepo } from '@app/common/repositories/osrs-proxy-repo';
-import { OsrsTrackerRepo } from '@app/common/repositories/osrs-tracker-repo';
+import { LoadError } from '@app/common/ui/loading/load-error';
+import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
+import { Skeleton } from '@app/common/ui/loading/skeleton';
+import { StatTile } from '@app/common/ui/cards/stat-tile';
+import { StatusPanel } from '@app/common/ui/page/status-panel';
+import { localIcons } from '@app/common/icon/local-icons.generated';
+import { LOCAL_ICONS } from '@app/common/icon/local-icons-token';
+import { formatNumberLegible } from '@app/common/format/number-format';
+import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
+import { TimeAgoPipe } from '@app/common/format/time-ago-pipe';
+import { OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
+import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { isHumanVisitor } from '@app/core/platform/human-visitor';
 import { resolverErrorHandler } from '@app/core/routing/resolver-error';
 import { BOSSES, CLUES, MINIGAME_ROWS, RAID_LAYOUT, UNCHARTED_MINIGAMES } from './activity-categories';
-import { isTrackedFor } from './player-tracking';
 import { XpTrackerStore } from '../xp-tracker-store';
 import { ActivityGrid } from './hiscores/activity-grid';
 import { SkillGrid } from './hiscores/skill-grid';
-import { PlayerChart } from './player-chart';
+import { PlayerChart } from './charts/player-chart';
 import { isNotFound } from './player-detail-resolver';
-import { PlayerHeader, TrackingState } from './player-header/player-header';
-import { LogNotice, PlayerLogs } from './player-logs/player-logs';
+import { PlayerHeader, TrackingState } from './player-header';
+import { LogNotice, PlayerLogs } from './player-logs';
 import { Gains, PeriodSummary, dailyGains, periodStart, periodSummary } from './player-summary';
 import { BottomTab, PlayerView, TopTab } from './player-view';
 
@@ -436,4 +435,12 @@ export default class PlayerDetail implements OnInit {
 /** Empty cells (`null`) that complete the last row of three */
 function fillRows(names: string[]): (string | null)[] {
   return [...names, ...Array<null>((3 - (names.length % 3)) % 3).fill(null)];
+}
+
+/**
+ * Whether the player has a history for `scrapingOffset`: tracked there, or paused (still has the history). An untracked
+ * player, such as a preview of one that isn't stored, has neither.
+ */
+function isTrackedFor(player: Player, scrapingOffset: number): boolean {
+  return !!(player.scrapingOffsets?.includes(scrapingOffset) || player.pausedScrapingOffsets?.includes(scrapingOffset));
 }

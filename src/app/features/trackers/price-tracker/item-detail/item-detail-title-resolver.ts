@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
 import { catchError, map, of } from 'rxjs';
-import { OsrsTrackerRepo } from '@app/common/repositories/osrs-tracker-repo';
+import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 
 export const itemDetailTitleResolver: ResolveFn<string> = (route: ActivatedRouteSnapshot) =>
   inject(OsrsTrackerRepo)

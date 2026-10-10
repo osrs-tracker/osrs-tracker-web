@@ -2,12 +2,12 @@ import { Component, ResourceRef, Signal, computed, inject } from '@angular/core'
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { Player } from '@osrs-tracker/models';
-import { ListCard, ListCardState, listCardState } from '@app/common/components/general/list-card';
-import { Icon } from '@app/common/directives/icon/icon';
-import { OsrsTrackerRepo } from '@app/common/repositories/osrs-tracker-repo';
+import { ListCard, ListCardState, listCardState } from '@app/common/ui/cards/list-card';
+import { Icon } from '@app/common/icon/icon';
+import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { TrackerHero } from '../tracker-hero';
 import { PlayerSearch } from './player-search';
-import { PlayerRow } from './player-row/player-row';
+import { PlayerRow } from './player-row';
 import { TrackingOffset } from './tracking-offset';
 import { XpTrackerStore } from './xp-tracker-store';
 

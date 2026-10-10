@@ -1,7 +1,7 @@
 import { Component, InputSignal, OutputEmitterRef, Signal, computed, input, output } from '@angular/core';
-import { LoadError } from '@app/common/components/general/load-error';
-import { Skeleton } from '@app/common/components/general/skeleton';
-import { InfoTooltip } from '@app/common/components/general/tooltip/info-tooltip';
+import { LoadError } from '@app/common/ui/loading/load-error';
+import { Skeleton } from '@app/common/ui/loading/skeleton';
+import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
 import { VolumeChart } from './charts/volume-chart';
 import { DailyVolume, formatUtcDay, formatWhole } from './item-prices';
 

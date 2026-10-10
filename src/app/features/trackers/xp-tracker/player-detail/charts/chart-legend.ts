@@ -16,8 +16,8 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { Icon } from '@app/common/directives/icon/icon';
-import { ensureToolbarTabStop, toolbarTabStop } from '@app/common/helpers/aria-tab-stop';
+import { Icon } from '@app/common/icon/icon';
+import { ensureToolbarTabStop, toolbarTabStop } from '@app/common/ui/controls/aria-tab-stop';
 
 export interface LegendItem {
   name: string;

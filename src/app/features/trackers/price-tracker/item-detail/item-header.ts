@@ -1,9 +1,9 @@
 import { Component, InputSignal, OutputEmitterRef, Signal, computed, inject, input, output } from '@angular/core';
 import { Item } from '@osrs-tracker/models';
-import { LoadError } from '@app/common/components/general/load-error';
-import { Skeleton } from '@app/common/components/general/skeleton';
-import { Icon } from '@app/common/directives/icon/icon';
-import { AnalyticsService } from '@app/common/services/analytics/analytics-service';
+import { LoadError } from '@app/common/ui/loading/load-error';
+import { Skeleton } from '@app/common/ui/loading/skeleton';
+import { Icon } from '@app/common/icon/icon';
+import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { config } from '@config/config';
 import { PriceTrackerStore } from '../price-tracker-store';
 import { formatWhole } from './item-prices';

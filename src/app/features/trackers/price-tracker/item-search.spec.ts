@@ -3,8 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
 import { delay, of } from 'rxjs';
-import { OsrsPricesRepo } from '@app/common/repositories/osrs-prices-repo';
-import { OsrsTrackerRepo } from '@app/common/repositories/osrs-tracker-repo';
+import { OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
+import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ItemSearch } from './item-search';
 

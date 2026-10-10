@@ -1,6 +1,6 @@
 import { Component, inject, RESPONSE_INIT } from '@angular/core';
-import { BackButton } from '@app/common/components/general/back-button';
-import { StatusPanel } from '@app/common/components/general/status-panel';
+import { BackButton } from '@app/common/ui/page/back-button';
+import { StatusPanel } from '@app/common/ui/page/status-panel';
 
 @Component({
   selector: 'not-found-404',

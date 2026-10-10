@@ -77,7 +77,7 @@ export default tseslint.config(
   {
     // HTTP goes through the repositories, which set the base URL and loading indicator contexts
     files: ['src/app/**/*.ts'],
-    ignores: ['src/app/common/repositories/**', 'src/**/*.spec.ts'],
+    ignores: ['src/app/common/api/**', 'src/**/*.spec.ts'],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -86,7 +86,7 @@ export default tseslint.config(
             {
               name: '@angular/common/http',
               importNames: ['HttpClient'],
-              message: 'Use a repository in common/repositories/.',
+              message: 'Use a repository in common/api/.',
             },
           ],
         },

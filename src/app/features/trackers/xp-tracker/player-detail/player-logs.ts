@@ -3,10 +3,10 @@ import { Component, computed, input, InputSignal, Signal } from '@angular/core';
 import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
 import { HiscoreDiffActivity, HiscoreDiffSkill } from '@osrs-tracker/models';
 import { addDays } from 'date-fns';
-import { Skeleton } from '@app/common/components/general/skeleton';
-import { Icon } from '@app/common/directives/icon/icon';
-import { ShortDatePipe } from '@app/common/pipes/short-date-pipe';
-import { Gains } from '../player-summary';
+import { Skeleton } from '@app/common/ui/loading/skeleton';
+import { Icon } from '@app/common/icon/icon';
+import { ShortDatePipe } from './charts/short-date-pipe';
+import { Gains } from './player-summary';
 
 /**
  * A day with gains (or the days a gap in the history covers, `to` its last), or a run of consecutive days in which

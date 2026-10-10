@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { Route } from '@angular/router';
-import { MetaService } from '@app/common/services/meta-service';
+import { MetaService } from '@app/common/seo/meta-service';
 
 export default [
   {

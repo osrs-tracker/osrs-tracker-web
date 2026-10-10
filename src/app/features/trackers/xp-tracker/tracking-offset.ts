@@ -1,6 +1,6 @@
 import { Component, Signal, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { InfoTooltip } from '@app/common/components/general/tooltip/info-tooltip';
+import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
 import { XpTrackerStore } from './xp-tracker-store';
 
 /** The tracking offset select (stored in `XpTrackerStore`) with its explanation and the UTC hour it shows. */

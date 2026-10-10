@@ -3,7 +3,7 @@ import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
 import { Player } from '@osrs-tracker/models';
 import { catchError, of } from 'rxjs';
-import { OsrsTrackerRepo } from '@app/common/repositories/osrs-tracker-repo';
+import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { resolverErrorHandler } from '@app/core/routing/resolver-error';
 import { XpTrackerStore } from '../xp-tracker-store';
 

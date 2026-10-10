@@ -36,11 +36,12 @@ holds the Angular conventions, SSR rules, deploy and release steps. Keep detail 
 
 ## Where things live
 
-- `src/app/features/<feature>/` single-feature code; `src/app/common/` shared code, HTTP only via `common/repositories/`
-  (lint enforces these layers).
-- `src/app/core/` app-wide plumbing: interceptors (API base URL, loading bar, shared GET requests, SSR user agent, SSR
-  timeout for third-party calls), routing (reuse strategy, resolver errors), platform (`WINDOW`, `isHumanVisitor`), the
-  global error handler.
+- `src/app/features/<feature>/` single-feature code; `src/app/common/` shared code by theme: `ui/` the design system's
+  components, `api/` the repositories (the only HTTP), `format/`, `icon/`, `analytics/`, `storage/`, `theme/`, `seo/`.
+  Lint enforces these layers.
+- `src/app/core/` app-wide plumbing: the app frame (`layout/`: nav, footer, theme toggle), interceptors (API base URL,
+  loading bar, shared GET requests, SSR user agent, SSR timeout for third-party calls), routing (reuse strategy,
+  resolver errors), platform (`WINDOW`, `isHumanVisitor`), the global error handler.
 - `src/server/` the Express server: middleware (CSP nonce, security headers, request logging, metrics, missing assets,
   page cache), the auto-generator that pre-renders pages, `server-config.ts` (env vars).
 - `docs/decisions.md` trade-offs, `docs/runbook.md` rollback and failure modes.

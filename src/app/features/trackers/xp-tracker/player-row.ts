@@ -15,15 +15,15 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { getOverallXpDiff } from '@osrs-tracker/hiscores';
 import { HiscoreEntry, overallOf, Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { Observable, catchError, forkJoin, map, throwError } from 'rxjs';
-import { LoadError } from '@app/common/components/general/load-error';
-import { Skeleton } from '@app/common/components/general/skeleton';
-import { Icon } from '@app/common/directives/icon/icon';
-import { CapitalizePipe } from '@app/common/pipes/capitalize-pipe';
-import { TimeAgoPipe } from '@app/common/pipes/time-ago-pipe';
-import { OsrsProxyRepo } from '@app/common/repositories/osrs-proxy-repo';
-import { OsrsTrackerRepo } from '@app/common/repositories/osrs-tracker-repo';
-import { AnalyticsService } from '@app/common/services/analytics/analytics-service';
-import { XpTrackerStore } from '../xp-tracker-store';
+import { LoadError } from '@app/common/ui/loading/load-error';
+import { Skeleton } from '@app/common/ui/loading/skeleton';
+import { Icon } from '@app/common/icon/icon';
+import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
+import { TimeAgoPipe } from '@app/common/format/time-ago-pipe';
+import { OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
+import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
+import { AnalyticsService } from '@app/common/analytics/analytics-service';
+import { XpTrackerStore } from './xp-tracker-store';
 
 interface PlayerRowData {
   player: Player;

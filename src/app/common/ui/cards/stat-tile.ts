@@ -1,6 +1,6 @@
 import { booleanAttribute, Component, input, InputSignal, InputSignalWithTransform } from '@angular/core';
-import { InfoTooltip } from './tooltip/info-tooltip';
-import { Skeleton } from './skeleton';
+import { InfoTooltip } from '../tooltip/info-tooltip';
+import { Skeleton } from '../loading/skeleton';
 
 /**
  * A labelled value with a line below it, e.g. "XP last 7 days · 3.72M · +24% vs previous week". `tone` colours the line

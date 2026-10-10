@@ -1,6 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { StorageKey } from '@app/common/services/storage/storage';
+import { StorageKey } from '@app/common/storage/storage';
 import { afterEach, describe, expect, it } from 'vitest';
 import { XpTrackerStore } from './xp-tracker-store';
 

@@ -1,7 +1,7 @@
 import { Service, Signal, WritableSignal, afterNextRender, computed, inject, signal } from '@angular/core';
-import { AnalyticsService } from '@app/common/services/analytics/analytics-service';
-import { StorageKey } from '@app/common/services/storage/storage';
-import { StorageService } from '@app/common/services/storage/storage-service';
+import { AnalyticsService } from '@app/common/analytics/analytics-service';
+import { StorageKey } from '@app/common/storage/storage';
+import { StorageService } from '@app/common/storage/storage-service';
 
 @Service()
 export class ThemeService {

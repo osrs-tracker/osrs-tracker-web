@@ -15,8 +15,8 @@ import {
   viewChildren,
   WritableSignal,
 } from '@angular/core';
-import { Icon } from '@app/common/directives/icon/icon';
-import { setToolbarTabStop } from '@app/common/helpers/aria-tab-stop';
+import { Icon } from '@app/common/icon/icon';
+import { setToolbarTabStop } from './aria-tab-stop';
 
 export interface SegmentedOption<T> {
   value: T;

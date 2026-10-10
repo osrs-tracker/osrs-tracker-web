@@ -2,16 +2,16 @@ import { Component, computed, inject, input, InputSignal, Signal } from '@angula
 import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
 import { HiscoreEntry, skillProgress } from '@osrs-tracker/models';
 import { format } from 'date-fns';
-import { Segmented, SegmentedOption } from '@app/common/components/general/segmented';
-import { Skeleton } from '@app/common/components/general/skeleton';
-import { Icon } from '@app/common/directives/icon/icon';
-import { formatNumberLegible } from '@app/common/helpers/number-format';
-import { ActivityChart } from './player-logs/activity-chart';
-import { CHART_CATEGORIES } from './player-logs/chart-categories';
-import { activitySeries, xpGainedSeries } from './player-logs/log-chart-series';
-import { XpGainedChart } from './player-logs/xp-gained-chart';
-import { Gains } from './player-summary';
-import { ActivityView, ChartView, Period, PlayerView } from './player-view';
+import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
+import { Skeleton } from '@app/common/ui/loading/skeleton';
+import { Icon } from '@app/common/icon/icon';
+import { formatNumberLegible } from '@app/common/format/number-format';
+import { ActivityChart } from './activity-chart';
+import { CHART_CATEGORIES } from './chart-categories';
+import { activitySeries, xpGainedSeries } from './log-chart-series';
+import { XpGainedChart } from './xp-gained-chart';
+import { Gains } from '../player-summary';
+import { ActivityView, ChartView, Period, PlayerView } from '../player-view';
 
 const TITLES: Record<ChartView, string> = {
   skills: 'XP gained',

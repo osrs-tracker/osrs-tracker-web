@@ -2,10 +2,10 @@ import { formatNumber } from '@angular/common';
 import { Component } from '@angular/core';
 import { Chart, ChartOptions, Point, TimeScaleOptions } from 'chart.js';
 import { fromUnixTime } from 'date-fns';
-import { BaseChart } from '@app/common/components/charts/base-chart';
-import { token, withAlpha } from '@app/common/components/charts/chart-setup';
-import { formatNumberLegible } from '@app/common/helpers/number-format';
-import { AveragePricesAtTime } from '@app/common/repositories/osrs-prices-repo';
+import { BaseChart } from '../../../charts/base-chart';
+import { token, withAlpha } from '../../../charts/chart-setup';
+import { formatNumberLegible } from '@app/common/format/number-format';
+import { AveragePricesAtTime } from '@app/common/api/osrs-prices-repo';
 
 /** The instant buy price as a solid accent line over a light area, the instant sell price as a dashed muted line. */
 @Component({
