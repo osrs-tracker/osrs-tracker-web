@@ -5,6 +5,7 @@ import { Observable, catchError, map, of } from 'rxjs';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
 import { ICON_IMAGE, PageMeta } from '@app/common/seo/page-meta-strategy';
+import { breadcrumbList, webPage } from '@app/common/seo/structured-data';
 import { XpTrackerStore } from '../xp-tracker-store';
 import { isNotFound } from './player-detail-resolver';
 
@@ -47,13 +48,30 @@ export function playerTitle(player: Player): string {
 /**
  * The canonical is the API's name (lower case, spaces), as the app's own player links use it:
  * `/trackers/xp/the%20fraking` for `the_fraking`, `THE-FRAKING` and the rest. A compact card, like item pages.
+ * The structured data describes the player as a `Thing`, like an item: `ProfilePage` and `Person` are meant for
+ * people's profiles, not game accounts.
  */
 export function playerPageMeta(player: Player): PageMeta {
+  const canonicalPath = `/trackers/xp/${encodeURIComponent(player.username)}`;
+  const name = CapitalizePipe.capitalise(player.username);
+  const description = playerDescription(player);
   return {
-    description: playerDescription(player),
-    canonicalPath: `/trackers/xp/${encodeURIComponent(player.username)}`,
+    description,
+    canonicalPath,
     image: ICON_IMAGE,
     card: 'summary',
+    jsonLd: [
+      breadcrumbList([
+        { name: 'XP Tracker', path: '/trackers/xp' },
+        { name, path: canonicalPath },
+      ]),
+      webPage({
+        path: canonicalPath,
+        title: playerTitle(player),
+        description,
+        about: { '@type': 'Thing', name },
+      }),
+    ],
   };
 }
 

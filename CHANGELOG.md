@@ -23,6 +23,8 @@
   it last changed. The player and item sitemaps are always current, with new items and players listed the day they
   appear instead of after the next site update. The sitemaps drop the priority and update-frequency hints, which search
   engines ignore.
+- Pages describe themselves to search engines in structured data, so results can show the site's name and a trail such
+  as "Price Tracker › Abyssal whip" instead of the page's address.
 
 ### Price pages
 

@@ -4,7 +4,9 @@ import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
 import { catchError, map, of } from 'rxjs';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
+import { wikiIconUrl } from '@app/common/icon/icon';
 import { ICON_IMAGE, PageMeta } from '@app/common/seo/page-meta-strategy';
+import { breadcrumbList, webPage } from '@app/common/seo/structured-data';
 import { formatWhole } from './item-prices';
 
 const MAX_DESCRIPTION_LENGTH = 160;
@@ -42,13 +44,28 @@ export function itemTitle(item: Item): string {
 /**
  * From the item alone, so it doesn't depend on the Wiki's prices, and without a live price: search engines show a
  * snippet for days. The image is the app icon, as the Wiki's icons are below the 144px a `summary` card needs.
+ * The structured data describes the item as a `Thing`, never a `Product` or `Offer`: nothing is sold here.
  */
 export function itemPageMeta(item: Item): PageMeta {
+  const canonicalPath = `/trackers/price/${item.id}`;
+  const description = itemDescription(item);
   return {
-    description: itemDescription(item),
-    canonicalPath: `/trackers/price/${item.id}`,
+    description,
+    canonicalPath,
     image: ICON_IMAGE,
     card: 'summary',
+    jsonLd: [
+      breadcrumbList([
+        { name: 'Price Tracker', path: '/trackers/price' },
+        { name: item.name, path: canonicalPath },
+      ]),
+      webPage({
+        path: canonicalPath,
+        title: itemTitle(item),
+        description,
+        about: { '@type': 'Thing', 'name': item.name, 'description': item.examine, 'image': wikiIconUrl(item.icon) },
+      }),
+    ],
   };
 }
 

@@ -1,5 +1,6 @@
 import { Route } from '@angular/router';
 import { PageMeta } from '@app/common/seo/page-meta-strategy';
+import { breadcrumbList } from '@app/common/seo/structured-data';
 import { itemDetailResolver } from './item-detail/item-detail-resolver';
 import { itemDetailMetaResolver, itemDetailTitleResolver } from './item-detail/item-detail-meta';
 import { browseItemsResolver } from './browse/browse-items-resolver';
@@ -15,6 +16,7 @@ export default [
         description:
           'Check live OSRS prices for every Grand Exchange item: buy and sell prices, margins, buy limits, alch values and price history, all in the OSRS Price Tracker.',
         canonicalPath: '/trackers/price',
+        jsonLd: [breadcrumbList([{ name: 'Price Tracker', path: '/trackers/price' }])],
       } satisfies PageMeta,
     },
     loadComponent: () => import('./price-tracker'),

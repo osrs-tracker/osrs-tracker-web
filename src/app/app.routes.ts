@@ -1,5 +1,6 @@
 import { Route } from '@angular/router';
 import { DEFAULT_DESCRIPTION, PageMeta } from './common/seo/page-meta-strategy';
+import { webSite } from './common/seo/structured-data';
 import RootLayout from './core/layout/root-layout';
 
 export default [
@@ -12,7 +13,9 @@ export default [
         path: '',
         pathMatch: 'full',
         title: 'OSRS Tracker: XP tracker and Grand Exchange prices',
-        data: { meta: { description: DEFAULT_DESCRIPTION, canonicalPath: '/' } satisfies PageMeta },
+        data: {
+          meta: { description: DEFAULT_DESCRIPTION, canonicalPath: '/', jsonLd: [webSite()] } satisfies PageMeta,
+        },
         loadComponent: () => import('./features/home/home'),
       },
       {
