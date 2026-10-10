@@ -50,7 +50,21 @@ Choices that look like accidents without their context: what was decided, why, a
   turned a slow API or GitHub call into the error page (resolvers), a load-error box (player history, Home's news,
   cached for 5 minutes) or a bare 404 (the changelog's resolver has no error handler), while only the Wiki was ever
   slow. Crawlers that hit a timeout see no prices in that page's HTML.
-- **Revisit:** if timeouts (`aborted` `outgoing` lines) are frequent, load the `latest` calls in the browser too.
+- **Update (2026/10/10, #149):** a day of `outgoing` logs (2026-10-09 16:35 to 2026-10-10 17:25 UTC, 1,224 item renders)
+  showed the timeout capping renders (max 4.4 s, no more aborts) but not making them fast: p50 264 ms, p90 2.5 s, 12%
+  over 1.5 s. The slow call was the item's `latest?id=<item>`: p90 2.2 s, 89 of 1,227 timed out. The nature rune's
+  `latest?id=561`, same endpoint, had p90 232 ms and 15 timeouts. The Wiki caches responses for 60 s in Cloudflare by
+  URL: a popular id or the full list is nearly always a `HIT` (about 100 ms), a rarely viewed item an `EXPIRED` that
+  waits on the Wiki's own servers. The API (`items`, p99 226 ms) wasn't the problem. Now `getLatestPrices` always reads
+  the full `/latest` (about 72 KB gzipped). The server keeps it for 60 s for every render (the data in a module-level
+  variable, not the request, as a render only waits for its own `HttpClient`), leaves it out of the transfer cache and
+  hands each item it renders to the browser in `TransferState` (`wiki-latest-<id>`), read until the app is stable like
+  the HTTP transfer cache. The browser fetches the full list for later items too, kept by its HTTP cache for the same
+  minute; the single-item request is gone. Not moved to the browser: crawlers would lose the prices, the item-specific
+  content the SEO work (#159) relies on. The 3 s `SSR_TIMEOUT` stays as the safety net for a Wiki outage and for the
+  request that refreshes the list when Cloudflare's copy has expired.
+- **Revisit:** if `outgoing` lines for the full `/latest` are still slow, or the Wiki asks clients not to fetch the full
+  list.
 
 ## Traefik compresses responses, the server sets cache lifetimes (2026/10/09)
 

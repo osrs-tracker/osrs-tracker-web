@@ -30,6 +30,9 @@
   "Browse all items A–Z" under the price search, or from "More items starting with …" on an item page.
 - The price chart no longer zooms with the mouse wheel or a pinch, or pans when dragged: the period switch (1D to 1Y)
   sets its range. Item pages load a little less code.
+- Item pages load faster, for visitors and search engines alike: their prices come from the OSRS Wiki's list of every
+  item's price, which answers in a tenth of a second and is reused for a minute, instead of a separate request per item
+  that one page in ten waited seconds for.
 
 ### Player pages
 

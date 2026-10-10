@@ -104,7 +104,7 @@ export default class ItemDetail implements OnInit {
 
   readonly latest: ResourceRef<LatestPrices | undefined> = rxResource({
     params: () => this.item()?.id,
-    stream: ({ params: id }) => this.osrsPricesRepo.getLatestPrices(id, { fetchSingle: true }),
+    stream: ({ params: id }) => this.osrsPricesRepo.getLatestPrices(id),
   });
 
   /**
