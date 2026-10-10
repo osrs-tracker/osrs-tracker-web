@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorHandler, Service, inject } from '@angular/core';
-import { AnalyticsService } from 'src/app/common/services/analytics/analytics.service';
+import { AnalyticsService } from '@app/common/services/analytics/analytics-service';
 
 /**
  * Reports uncaught errors to analytics. Failed requests are only logged: the ones users see are shown with

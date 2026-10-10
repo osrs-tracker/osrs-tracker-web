@@ -1,0 +1,136 @@
+import { HttpClient, HttpContext } from '@angular/common/http';
+import { inject, Service } from '@angular/core';
+import { fromUnixTime, getUnixTime } from 'date-fns';
+import { map, Observable, shareReplay } from 'rxjs';
+import { BASE_URL_PREFIX } from '@app/core/interceptors/base-url-interceptor';
+import { LOADING_INDICATOR } from '@app/core/interceptors/loading-indicator-interceptor';
+import { SSR_TIMEOUT } from '@app/core/interceptors/ssr-timeout-interceptor';
+import { config } from '@config/config';
+
+export enum TimeSpan {
+  FIVE_MINUTES = '5m',
+  HOUR = '1h',
+  SIX_HOURS = '6h',
+  DAY = '24h',
+}
+
+export interface LatestPrices {
+  high: number;
+  highTime: Date;
+  low: number;
+  lowTime: Date;
+}
+
+export interface AveragePrices {
+  avgHighPrice: number;
+  highPriceVolume: number;
+  avgLowPrice: number;
+  lowPriceVolume: number;
+}
+
+export interface AveragePricesAtTime extends AveragePrices {
+  timestamp: number;
+}
+
+@Service()
+export class OsrsPricesRepo {
+  private readonly httpClient = inject(HttpClient);
+
+  private averagePriceCache: Record<
+    TimeSpan,
+    Record<number, Observable<{ data: Record<string, AveragePrices>; timestamp: number }>>
+  > = {
+    [TimeSpan.FIVE_MINUTES]: {},
+    [TimeSpan.HOUR]: {},
+    [TimeSpan.SIX_HOURS]: {},
+    [TimeSpan.DAY]: {},
+  };
+
+  getLatestPrices(
+    id: number,
+    options?: { fetchSingle?: boolean; loadingIndicator?: boolean },
+  ): Observable<LatestPrices> {
+    return this.httpClient
+      .get<{ data: Record<string, Record<string, number>> }>(`${config.pricesBaseUrl}/api/v1/osrs/latest`, {
+        ...(options?.fetchSingle && { params: { id } }),
+        context: new HttpContext()
+          .set(BASE_URL_PREFIX, false)
+          .set(SSR_TIMEOUT, true)
+          .set(LOADING_INDICATOR, options?.loadingIndicator),
+      })
+      .pipe(
+        map(response => response.data[id]),
+        map(price => ({
+          high: price?.['high'],
+          low: price?.['low'],
+          highTime: fromUnixTime(price?.['highTime']),
+          lowTime: fromUnixTime(price?.['lowTime']),
+        })),
+      );
+  }
+
+  getPriceTimeSeries(
+    id: number,
+    timeSpan: TimeSpan,
+    options?: { loadingIndicator?: boolean },
+  ): Observable<AveragePricesAtTime[]> {
+    return this.httpClient
+      .get<{ data: AveragePricesAtTime[]; itemId: string }>(`${config.pricesBaseUrl}/api/v1/osrs/timeseries`, {
+        params: { id, timestep: timeSpan },
+        context: new HttpContext()
+          .set(BASE_URL_PREFIX, false)
+          .set(SSR_TIMEOUT, true)
+          .set(LOADING_INDICATOR, options?.loadingIndicator),
+      })
+      .pipe(map(response => response.data));
+  }
+
+  /** Average prices for the `timeSpan` period starting at `timestamp` (the latest period without one) */
+  getPriceAverage(
+    id: number,
+    timeSpan: TimeSpan,
+    timestamp?: Date,
+  ): Observable<{ averagePrices?: AveragePrices; timestamp: Date }> {
+    return this.mapAveragePriceResponse(id, this.fetchAveragePrice(timeSpan, timestamp));
+  }
+
+  /**
+   * Same as `getPriceAverage`, but shares one request per time span and timestamp, since the response holds every item.
+   * A failed request is retried by the next subscriber.
+   */
+  getCachedPriceAverage(
+    id: number,
+    timeSpan: TimeSpan,
+    timestamp: Date,
+  ): Observable<{ averagePrices?: AveragePrices; timestamp: Date }> {
+    const cachedRequest$ = this.averagePriceCache[timeSpan][getUnixTime(timestamp)];
+    if (cachedRequest$) return this.mapAveragePriceResponse(id, cachedRequest$);
+
+    const request$ = this.fetchAveragePrice(timeSpan, timestamp).pipe(shareReplay(1));
+    this.averagePriceCache[timeSpan][getUnixTime(timestamp)] = request$;
+
+    return this.mapAveragePriceResponse(id, request$);
+  }
+
+  private fetchAveragePrice(
+    timeSpan: TimeSpan,
+    timestamp?: Date,
+  ): Observable<{ data: Record<string, AveragePrices>; timestamp: number }> {
+    return this.httpClient.get<{ data: Record<string, AveragePrices>; timestamp: number }>(
+      `${config.pricesBaseUrl}/api/v1/osrs/${timeSpan}`,
+      {
+        ...(timestamp && { params: { timestamp: getUnixTime(timestamp) } }), // Only add the timestamp param if it's defined
+        context: new HttpContext().set(BASE_URL_PREFIX, false).set(SSR_TIMEOUT, true),
+      },
+    );
+  }
+
+  private mapAveragePriceResponse(
+    id: number,
+    request$: Observable<{ data: Record<string, AveragePrices>; timestamp: number }>,
+  ): Observable<{ averagePrices?: AveragePrices; timestamp: Date }> {
+    return request$.pipe(
+      map(response => ({ averagePrices: response.data[id], timestamp: fromUnixTime(response.timestamp) })),
+    );
+  }
+}

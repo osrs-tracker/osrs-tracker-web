@@ -10,13 +10,13 @@ import {
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideRouter, RouteReuseStrategy, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import appRoutes from './app.routes';
-import { AnalyticsService } from './common/services/analytics/analytics.service';
+import { AnalyticsService } from './common/services/analytics/analytics-service';
 import { CustomErrorHandler } from './core/error-handling/error-handler';
-import { baseUrlInterceptor } from './core/interceptors/base-url.interceptors';
-import { loadingIndicatorInterceptor } from './core/interceptors/loading-indicator.interceptor';
-import { shareRequestInterceptor } from './core/interceptors/share-request.interceptors';
-import { ssrTimeoutInterceptor } from './core/interceptors/ssr-timeout.interceptor';
-import { ssrUserAgentInterceptor } from './core/interceptors/ssr-user-agent.interceptor';
+import { baseUrlInterceptor } from './core/interceptors/base-url-interceptor';
+import { loadingIndicatorInterceptor } from './core/interceptors/loading-indicator-interceptor';
+import { shareRequestInterceptor } from './core/interceptors/share-request-interceptor';
+import { ssrTimeoutInterceptor } from './core/interceptors/ssr-timeout-interceptor';
+import { ssrUserAgentInterceptor } from './core/interceptors/ssr-user-agent-interceptor';
 import { ParamAwareReuseStrategy } from './core/routing/param-aware-reuse-strategy';
 
 export const appConfig: ApplicationConfig = {

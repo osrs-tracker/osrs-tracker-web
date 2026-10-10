@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { DAY } from 'src/app/common/helpers/date.helper';
-import { AveragePricesAtTime } from 'src/app/common/repositories/osrs-prices.repo';
+import { DAY } from '@app/common/helpers/utc-day';
+import { AveragePricesAtTime } from '@app/common/repositories/osrs-prices-repo';
 import { dailyVolumes, yesterdayAverageSellPrice } from './item-prices';
 
 const TODAY = 1_791_331_200; // 2026-10-07 00:00 UTC

@@ -1,6 +1,6 @@
 import { getUnixTime } from 'date-fns';
-import { DAY, utcDayStart } from 'src/app/common/helpers/date.helper';
-import { AveragePricesAtTime } from 'src/app/common/repositories/osrs-prices.repo';
+import { DAY, utcDayStart } from '@app/common/helpers/utc-day';
+import { AveragePricesAtTime } from '@app/common/repositories/osrs-prices-repo';
 
 export interface DailyVolume {
   /** The UTC day's start, in seconds */

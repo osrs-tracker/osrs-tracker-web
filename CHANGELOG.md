@@ -20,6 +20,9 @@
 - Unused build settings are gone, and the sitemap and icon scripts use the same module format as the rest of the code.
 - Icons, fonts, sitemaps and the other files served as they are moved to `public/`, where current Angular projects keep
   them. Their addresses stay the same.
+- The code follows Angular's current naming (`home.ts` with `Home`, no `.component` suffixes), imports use `@app/`
+  aliases, and lint now checks that shared code never depends on a page and pages don't reach into each other. The
+  player page's colours and categories moved next to it.
 
 ## 2026/10/09
 
