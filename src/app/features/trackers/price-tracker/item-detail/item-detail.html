@@ -1,4 +1,4 @@
-<div class="max-w-page mx-auto px-4 sm:px-6 pt-4">
+<div class="max-w-page mx-auto flex flex-wrap items-center justify-between gap-x-4 px-4 sm:px-6 pt-4">
   <a routerLink="/trackers/price" class="link inline-flex items-center gap-1.5 min-h-11">
     <svg
       class="size-4.5"
@@ -15,6 +15,11 @@
     </svg>
     Price Tracker
   </a>
+  @if (browseLetter(); as letter) {
+    <a class="link inline-flex items-center min-h-11" [routerLink]="['/trackers/price/browse', letter]"
+      >More items {{ browseStartingWith() }}</a
+    >
+  }
 </div>
 
 @if (item(); as item) {

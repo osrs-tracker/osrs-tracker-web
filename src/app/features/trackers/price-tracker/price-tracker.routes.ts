@@ -2,6 +2,8 @@ import { Route } from '@angular/router';
 import { PageMeta } from '@app/common/seo/page-meta-strategy';
 import { itemDetailResolver } from './item-detail/item-detail-resolver';
 import { itemDetailMetaResolver, itemDetailTitleResolver } from './item-detail/item-detail-meta';
+import { browseItemsResolver } from './browse/browse-items-resolver';
+import { browseMetaResolver, browseTitleResolver } from './browse/browse-meta';
 
 export default [
   {
@@ -16,6 +18,15 @@ export default [
       } satisfies PageMeta,
     },
     loadComponent: () => import('./price-tracker'),
+  },
+  // Before `:id`, which matches `browse` too
+  { path: 'browse', pathMatch: 'full', redirectTo: 'browse/a' },
+  {
+    title: browseTitleResolver,
+    path: 'browse/:letter',
+    pathMatch: 'full',
+    loadComponent: () => import('./browse/browse-items'),
+    resolve: { items: browseItemsResolver, meta: browseMetaResolver },
   },
   {
     title: itemDetailTitleResolver,

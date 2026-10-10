@@ -43,6 +43,8 @@ describe('routeLabel', () => {
     ['/trackers/xp/the%20fraking', '/trackers/xp/:username'],
     ['/trackers/xp/ToxSick/', '/trackers/xp/:username'],
     ['/trackers/price/4151?range=week', '/trackers/price/:id'],
+    ['/trackers/price/browse', '/trackers/price/browse'],
+    ['/trackers/price/browse/a', '/trackers/price/browse/:letter'],
     ['/trackers/xp/a/b', '#unmatched'],
     ['/main-ABC123.js', '/static'],
   ])('labels %s as %s', (url, expected) => {

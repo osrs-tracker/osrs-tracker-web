@@ -22,6 +22,8 @@
 
 ### Price pages
 
+- Browse every Grand Exchange item A–Z: each letter has its own page with all its items and their prices, reached from
+  "Browse all items A–Z" under the price search, or from "More items starting with …" on an item page.
 - The price chart no longer zooms with the mouse wheel or a pinch, or pans when dragged: the period switch (1D to 1Y)
   sets its range. Item pages load a little less code.
 
