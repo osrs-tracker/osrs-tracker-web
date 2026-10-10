@@ -8,6 +8,7 @@ import { missingAssetMiddleware } from './middleware/missing-asset';
 import { protocolRelativeMiddleware } from './middleware/protocol-relative';
 import { securityMiddleware } from './middleware/security';
 import { staticFilesMiddleware } from './middleware/static-files';
+import { trailingSlashMiddleware } from './middleware/trailing-slash';
 import { createHealthRouter } from './routers/health';
 import { createSitemapRouter } from './routers/sitemaps';
 import { serverConfig } from './server-config';
@@ -48,6 +49,7 @@ export function createApp({
     cspNonceMiddleware(), // Generate a CSP nonce for this response
     securityMiddleware(), // Add security headers
     protocolRelativeMiddleware(), // 404 for `//host` paths, which Angular SSR rejects with an error
+    trailingSlashMiddleware(), // Redirect `/path/` to `/path`, so each page has one URL and pre-rendered ones hit the cache
     angularCacheMiddleware(), // Cache rendered pages in memory for faster subsequent responses
   );
 

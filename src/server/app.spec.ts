@@ -105,6 +105,30 @@ describe('createApp', () => {
     expect(handle).not.toHaveBeenCalled();
   });
 
+  it('redirects paths with trailing slashes to the path without them, keeping the query string', async () => {
+    for (const [path, location] of [
+      ['/trackers/price/4151/', '/trackers/price/4151'],
+      ['/trackers/price/4151/?q=x&y=%2F', '/trackers/price/4151?q=x&y=%2F'],
+      ['/about/terms//', '/about/terms'],
+    ]) {
+      const res = await get(path);
+
+      expect(res.status).toBe(301);
+      expect(res.headers.get('location')).toBe(location);
+    }
+    expect((await get('/about/terms/', { method: 'HEAD' })).status).toBe(301);
+    expect(handle).not.toHaveBeenCalled();
+  });
+
+  it('does not redirect the root or protocol-relative paths with a trailing slash', async () => {
+    pageCache.set('/', '<html>cached</html>');
+    expect((await get('/')).status).toBe(200);
+
+    const res = await get('//evil.com/');
+    expect(res.status).toBe(404);
+    expect(res.headers.get('location')).toBeNull();
+  });
+
   it('answers missing assets under a page path with a 404 without rendering them', async () => {
     for (const path of ['/trackers/price/chunk-x.js', '/trackers/xp/styles-X.css', '/chunk-gone.js']) {
       const res = await get(path);
