@@ -2,13 +2,12 @@ import { isPlatformBrowser } from '@angular/common';
 import {
   DestroyRef,
   PLATFORM_ID,
-  ResourceRef,
   Signal,
   WritableSignal,
   computed,
   effect,
   inject,
-  signal,
+  linkedSignal,
   untracked,
 } from '@angular/core';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -23,12 +22,17 @@ const MORE_SIZE = 7;
 /** The history is kept for about 60 days, so 60 days and today is all there is (and 30D's previous period fits) */
 const PERIOD_SIZE = 61;
 
-export interface PlayerHistory {
-  /** The live hiscores, only fetched in the browser. */
-  readonly todayResource: ResourceRef<HiscoreEntry | undefined>;
-  readonly firstPage: ResourceRef<HiscoreEntry[] | undefined>;
+interface Page {
+  entries: HiscoreEntry[];
+  size: number;
+}
 
+/** The history as the page reads it; the resources stay inside, as their `value()` throws in the error state */
+export interface PlayerHistory {
+  /** The live hiscores, only fetched in the browser */
   readonly today: Signal<HiscoreEntry | undefined>;
+  readonly todayFailed: Signal<boolean>;
+  readonly firstPageFailed: Signal<boolean>;
   /** The live hiscores aren't in yet; also during SSR, which doesn't fetch them, so hydration doesn't change the page */
   readonly todayLoading: Signal<boolean>;
   /** The first page is in */
@@ -49,6 +53,9 @@ export interface PlayerHistory {
   loadMore(size?: number): void;
   /** Loads as much as the failed load asked for (a longer period asks for more than a week) */
   retryLoadMore(): void;
+  reloadToday(): void;
+  /** After tracking starts at the offset, which stores its first entry, or when the first page failed */
+  reloadFirstPage(): void;
   /** Reloads the live hiscores, and the first page if it failed */
   retry(): void;
 }
@@ -71,10 +78,13 @@ export function playerHistory(params: {
   const osrsTrackerRepo = inject(OsrsTrackerRepo);
   const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  /** Pages loaded after the first, with the size each asked for: a shorter page is the end of the history */
-  const morePages: WritableSignal<{ entries: HiscoreEntry[]; size: number }[]> = signal([]);
-  const loadingMore = signal(false);
-  const loadMoreFailed = signal(false);
+  /**
+   * Pages loaded after the first, with the size each asked for: a shorter page is the end of the history. Like the first
+   * page, they belong to one offset, so another offset starts over.
+   */
+  const morePages: WritableSignal<Page[]> = linkedSignal({ source: offset, computation: (): Page[] => [] });
+  const loadingMore: WritableSignal<boolean> = linkedSignal({ source: offset, computation: () => false });
+  const loadMoreFailed: WritableSignal<boolean> = linkedSignal({ source: offset, computation: () => false });
   let failedMoreSize = MORE_SIZE;
 
   const todayResource = rxResource({
@@ -102,18 +112,25 @@ export function playerHistory(params: {
   const periodSize = computed(() => Math.min(period() * 2 + 1, PERIOD_SIZE));
 
   function loadMore(size: number = MORE_SIZE): void {
+    const requested = offset();
     loadingMore.set(true);
     loadMoreFailed.set(false);
 
     osrsTrackerRepo
-      .getPlayerHiscores(username, offset(), size, entries().length)
+      .getPlayerHiscores(username, requested, size, entries().length)
       .pipe(
         takeUntilDestroyed(destroyRef),
-        finalize(() => loadingMore.set(false)),
+        finalize(() => {
+          if (offset() === requested) loadingMore.set(false);
+        }),
       )
       .subscribe({
-        next: page => morePages.update(pages => [...pages, { entries: page, size }]),
+        // a page for an offset the visitor has since left doesn't belong to this history
+        next: page => {
+          if (offset() === requested) morePages.update(pages => [...pages, { entries: page, size }]);
+        },
         error: () => {
+          if (offset() !== requested) return;
           failedMoreSize = size;
           loadMoreFailed.set(true);
         },
@@ -130,9 +147,9 @@ export function playerHistory(params: {
   });
 
   return {
-    todayResource,
-    firstPage,
     today,
+    todayFailed: computed(() => !!todayResource.error()),
+    firstPageFailed: computed(() => !!firstPage.error()),
     todayLoading: computed(() => !todayResource.hasValue() && !todayResource.error()),
     loaded,
     entries,
@@ -144,6 +161,8 @@ export function playerHistory(params: {
     loadMoreFailed: loadMoreFailed.asReadonly(),
     loadMore,
     retryLoadMore: () => loadMore(failedMoreSize),
+    reloadToday: () => todayResource.reload(),
+    reloadFirstPage: () => firstPage.reload(),
     retry: () => {
       todayResource.reload();
       if (firstPage.error()) firstPage.reload();

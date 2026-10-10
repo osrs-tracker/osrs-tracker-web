@@ -52,7 +52,9 @@ export function statTilesFor(
     {
       label: 'Boss kills',
       value: summary.bossKills.toLocaleString('en-US'),
-      sub: summary.mostKilled ? `Most: ${summary.mostKilled.name} (${summary.mostKilled.kills})` : '',
+      sub: summary.mostKilled
+        ? `Most: ${summary.mostKilled.name} (${summary.mostKilled.kills.toLocaleString('en-US')})`
+        : '',
       tone: 'muted',
     },
   ];
