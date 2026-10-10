@@ -6,6 +6,8 @@
   on the browser tab icon.
 - Something that failed to load and can be retried, such as a price in a list, shows its retry button in amber, so it
   reads as a failure rather than a refresh button.
+- Price changes are easier to read: green and red are a shade darker in the light theme, and in the dark theme a falling
+  price sits on a solid dark red pill instead of a pinkish one.
 
 ### Search and sharing
 
@@ -75,6 +77,9 @@
   load a little sooner, and they no longer open a connection to a news image server they never use.
 - Pages that only show a message, such as "Page not found", an unknown player or item, or the error page, give it a real
   page heading, like every other page, so reader modes and outline tools see it too. Nothing looks different.
+- When a page can't be loaded, the error page tells search engines to try again in five minutes, so a short outage
+  doesn't slow down how often they visit. The item and player search boxes switch off the browser's autofill with a
+  valid setting.
 
 ## 2026/10/09
 

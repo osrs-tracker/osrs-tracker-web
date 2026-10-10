@@ -66,7 +66,7 @@ interface ItemRowPrice {
     @if (!loading() && !priceResource.error() && changePercent() !== null) {
       <span
         class="shrink-0 min-w-18 px-2.5 py-1 rounded-full text-center text-sm/4 font-bold whitespace-nowrap tabular-nums"
-        [class]="up() ? 'text-up bg-up/16' : 'text-down bg-down/16'"
+        [class]="up() ? 'text-up bg-up/16' : 'text-down bg-down-pill'"
         [title]="changeTitle()"
       >
         {{ sign() }}{{ changePercent() | number: '1.1-1' }}%

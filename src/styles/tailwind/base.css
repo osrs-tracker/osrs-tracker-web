@@ -14,8 +14,10 @@
     --accent: var(--color-emerald-700);
     --accent-hover: var(--color-emerald-800);
     --on-accent: var(--color-white);
-    --up: var(--color-green-700);
-    --down: var(--color-red-700);
+    /* One step darker than 700: the change pills' text needs 4.5:1 on their tint, also on a hovered row */
+    --up: var(--color-green-800);
+    --down: var(--color-red-800);
+    --down-pill: color-mix(in oklab, var(--down) 16%, transparent);
     --amber: var(--color-amber-600);
     --orange: var(--color-orange-500);
     --float-shadow: oklch(0.208 0.042 265.755 / 0.12);
@@ -38,7 +40,9 @@
     --accent-hover: var(--color-emerald-500);
     --on-accent: var(--color-slate-900);
     --up: var(--color-true-green);
-    --down: var(--color-red-400);
+    --down: oklch(0.74 0.155 28);
+    /* Solid: a see-through red over the blue slate turns pink, and too faint for 4.5:1 on a hovered row */
+    --down-pill: oklch(0.35 0.065 27);
     --amber: var(--color-amber-400);
     --orange: var(--color-orange-400);
     --float-shadow: oklch(0.1 0.03 265 / 0.6);
