@@ -15,15 +15,13 @@ const lastmod = file => git(['log', '-1', '--follow', '--diff-filter=AMT', '--fo
     return;
   }
 
-  // The landings have no lastmod: they show live data (recent lookups, news), so they change all the time
+  // The landings have no lastmod: they show live data (recent lookups, news), so they change all the time. Nor do the
+  // browse pages, one per first letter (as BROWSE_LETTERS in the app): their item lists come from the API and change
+  // without a commit, so their template's date would tell search engines a page is unchanged when it isn't.
   const urls = [
     { loc: `${SITE_URL}/` },
     { loc: `${SITE_URL}/trackers/price` },
-    // The browse pages, one per first letter (as BROWSE_LETTERS in the app); their text is the template
-    ...[...'abcdefghijklmnopqrstuvwxyz', '0'].map(letter => ({
-      loc: `${SITE_URL}/trackers/price/browse/${letter}`,
-      lastmod: lastmod('src/app/features/trackers/price-tracker/browse/browse-items.html'),
-    })),
+    ...[...'abcdefghijklmnopqrstuvwxyz', '0'].map(letter => ({ loc: `${SITE_URL}/trackers/price/browse/${letter}` })),
     { loc: `${SITE_URL}/trackers/xp` },
     { loc: `${SITE_URL}/about/changelog`, lastmod: lastmod('CHANGELOG.md') },
     { loc: `${SITE_URL}/about/privacy`, lastmod: lastmod('src/app/features/about/privacy/privacy.html') },
