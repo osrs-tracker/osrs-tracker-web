@@ -17,7 +17,7 @@
     /* One step darker than 700: the change pills' text needs 4.5:1 on their tint, also on a hovered row */
     --up: var(--color-green-800);
     --down: var(--color-red-800);
-    --down-pill: color-mix(in oklab, var(--down) 16%, transparent);
+    --down-pill: color-mix(in oklch, var(--down) 16%, transparent);
     --amber: var(--color-amber-600);
     --orange: var(--color-orange-500);
     --float-shadow: oklch(0.208 0.042 265.755 / 0.12);
