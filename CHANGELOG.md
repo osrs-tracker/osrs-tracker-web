@@ -73,6 +73,8 @@
   page's layout, and icon descriptions read as plain words ("hardcore ironman icon" instead of "hardcore_ironman icon").
 - Pages connect to the hiscores and the OSRS Wiki's prices early, so Home's top players, player pages and item prices
   load a little sooner, and they no longer open a connection to a news image server they never use.
+- Pages that only show a message, such as "Page not found", an unknown player or item, or the error page, give it a real
+  page heading, like every other page, so reader modes and outline tools see it too. Nothing looks different.
 
 ## 2026/10/09
 
