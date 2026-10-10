@@ -38,6 +38,23 @@ describe('Icon', () => {
     expect(img.style.imageRendering).toBe('pixelated');
   });
 
+  it('should write underscores and dashes in the alt text as spaces', async () => {
+    fixture.componentRef.setInput('name', 'hardcore_ironman');
+    await fixture.whenStable();
+
+    expect(img.alt).toBe('hardcore ironman icon');
+  });
+
+  it('should load eagerly with the eager attribute', async () => {
+    @Component({ template: '<img icon eager name="coins">', imports: [Icon] })
+    class EagerComponent {}
+
+    const eagerFixture = TestBed.createComponent(EagerComponent);
+    await eagerFixture.whenStable();
+
+    expect(eagerFixture.debugElement.query(By.directive(Icon)).nativeElement.loading).toBe('eager');
+  });
+
   it('should map "coins" to icon', async () => {
     fixture.componentRef.setInput('name', 'coins');
     await fixture.whenStable();
@@ -103,7 +120,7 @@ describe('Icon', () => {
     await fixture.whenStable();
 
     expect(img.src).toContain('/activities/game_icon_bountyhunterrogue.png');
-    expect(img.alt).toBe(`${ActivityEnum.BountyHunterRogue} icon`);
+    expect(img.alt).toBe('Bounty Hunter Rogue icon');
   });
 
   it('should map ActivityEnum to icon', async () => {
@@ -112,7 +129,7 @@ describe('Icon', () => {
     await fixture.whenStable();
 
     expect(img.src).toContain('/activities/game_icon_lmsrank.png');
-    expect(img.alt).toBe(`${ActivityEnum.LastManStanding} icon`);
+    expect(img.alt).toBe('LMS Rank icon');
   });
 
   it('should map ActivityEnum to icon', async () => {

@@ -43,7 +43,7 @@ const TYPE_LABELS: Record<PlayerType, string> = {
       [tooltipTemplate]="modeTooltip"
       [tooltipUnderline]="false"
     >
-      <img class="size-10" icon [name]="mode().icon.name" [skill]="mode().icon.skill" />
+      <img class="size-10" icon eager [name]="mode().icon.name" [skill]="mode().icon.skill" />
       @if (player.diedAsHardcore) {
         <img
           class="absolute -right-1.75 -bottom-1.75 size-6.5 p-0.75 rounded-full border border-line bg-deep"

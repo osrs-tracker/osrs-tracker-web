@@ -1,4 +1,15 @@
-import { DOCUMENT, Directive, ElementRef, InputSignal, OnInit, effect, inject, input } from '@angular/core';
+import {
+  DOCUMENT,
+  Directive,
+  ElementRef,
+  InputSignal,
+  InputSignalWithTransform,
+  OnInit,
+  booleanAttribute,
+  effect,
+  inject,
+  input,
+} from '@angular/core';
 import { WINDOW } from '@app/core/platform/window-token';
 import { config } from '@config/config';
 import { iconMap } from '@config/icon-map';
@@ -34,6 +45,8 @@ export class Icon implements OnInit {
   readonly skill: InputSignal<boolean> = input(false);
   readonly activity: InputSignal<boolean> = input(false);
   readonly wiki: InputSignal<boolean> = input(false);
+  /** Loads the icon right away instead of lazily: for icons above the fold. */
+  readonly eager: InputSignalWithTransform<boolean, unknown> = input(false, { transform: booleanAttribute });
   /**
    * Scales the icon relative to its natural size. Pixel art only scales cleanly by whole factors, so for
    * fractional ones (e.g. 1.5) the icon is upscaled by `SHARP_FACTOR` with hard edges and then scaled down
@@ -47,13 +60,15 @@ export class Icon implements OnInit {
 
   constructor() {
     effect(() => {
-      this.element.alt = `${this.name().replace(/\.png$/i, '')} icon`;
+      this.element.alt = `${this.name()
+        .replace(/\.png$/i, '')
+        .replace(/[\s_-]+/g, ' ')} icon`;
       this.updateUrl();
     });
   }
 
   ngOnInit() {
-    this.element.loading = 'lazy';
+    this.element.loading = this.eager() ? 'eager' : 'lazy';
     this.element.classList.add('object-contain');
     this.element.addEventListener('error', () => this.showPlaceholder());
 
