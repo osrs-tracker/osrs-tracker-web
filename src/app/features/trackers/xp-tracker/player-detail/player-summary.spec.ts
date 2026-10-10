@@ -1,22 +1,31 @@
-import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
+import { ActivityEnum, fromJagex, JagexHiscoreJson, SkillEnum } from '@osrs-tracker/hiscores';
 import { HiscoreEntry } from '@osrs-tracker/models';
 import { describe, expect, it } from 'vitest';
+import { THE_FRAKING, TOXSICK } from '../testing/jagex-hiscores';
 import { dailyGains, periodSummary } from './player-summary';
 
 const HOUR = 60 * 60 * 1000;
 /** The last daily check was an hour ago */
 const checked = (daysAgo: number): Date => new Date(Date.now() - HOUR - daysAgo * 24 * HOUR);
 
-/** An entry checked `daysAgo`, with `xp` overall XP, a Sailing level and boss kill counts (-1 is unranked) */
-const entry = (xp: number, daysAgo = 0, sailing = 80, kills: Record<string, number> = {}): HiscoreEntry =>
-  ({
-    date: checked(daysAgo),
-    skills: [
-      { name: SkillEnum.Overall, xp, level: 2000, rank: 1 },
-      { name: SkillEnum.Sailing, xp: 0, level: sailing, rank: 1 },
-    ],
-    activities: Object.entries(kills).map(([name, score]) => ({ name, score, rank: 1 })),
-  }) as HiscoreEntry;
+/** An entry checked `daysAgo`, with `xp` overall XP, a Sailing level and boss kill counts (`null` is unranked) */
+const entry = (xp: number, daysAgo = 0, sailing = 80, kills: Record<string, number | null> = {}): HiscoreEntry => ({
+  date: checked(daysAgo),
+  scrapingOffset: 0,
+  skills: {
+    [SkillEnum.Overall]: { xp, level: 2000, rank: 1 },
+    [SkillEnum.Sailing]: { xp: 0, level: sailing, rank: 1 },
+  },
+  activities: Object.fromEntries(
+    Object.entries(kills).map(([name, score]) => [name, score === null ? null : { score, rank: 1 }]),
+  ),
+});
+
+/** A real hiscores response as a stored entry, checked `daysAgo` */
+const jagexEntry = (json: JagexHiscoreJson, daysAgo: number): HiscoreEntry => {
+  const { skills, activities } = fromJagex(json);
+  return { date: checked(daysAgo), scrapingOffset: 0, skills, activities };
+};
 
 describe('periodSummary', () => {
   // Newest first: 100 XP a day for the last two days, 50 a day before that
@@ -80,7 +89,7 @@ describe('periodSummary', () => {
     });
     const old = entry(0, 7, 82, {
       [ActivityEnum.Zulrah]: 7,
-      [ActivityEnum.Vorkath]: -1,
+      [ActivityEnum.Vorkath]: null,
       [ActivityEnum.SoulWarsZeal]: 0,
     });
 
@@ -88,6 +97,45 @@ describe('periodSummary', () => {
       levels: [{ skill: SkillEnum.Sailing, from: 82, to: 84 }],
       bossKills: 61,
       mostKilled: { name: ActivityEnum.Zulrah, kills: 53 },
+    });
+  });
+
+  describe('with real hiscores', () => {
+    it('counts a newly trained skill from level 1 and an activity Jagex added later from 0', () => {
+      const old = jagexEntry(TOXSICK, 7);
+      // Jagex didn't list Doom of Mokhaiotl yet a week ago
+      delete old.activities[ActivityEnum.DoomOfMokhaiotl];
+      const current = jagexEntry(TOXSICK, 0);
+      current.skills[SkillEnum.Overall] = { ...current.skills[SkillEnum.Overall]!, xp: 99_860_556 + 388 };
+      current.skills[SkillEnum.Sailing] = { rank: null, level: 5, xp: 388 };
+      current.activities[ActivityEnum.DoomOfMokhaiotl] = { rank: null, score: 3 };
+      current.activities[ActivityEnum.Zulrah] = { rank: 349_000, score: 224 + 2 };
+
+      expect(old.skills[SkillEnum.Sailing]).toBeNull();
+      expect(periodSummary(current, [old], 7)).toEqual({
+        xp: 388,
+        previousXp: undefined,
+        since: undefined,
+        levels: [{ skill: SkillEnum.Sailing, from: 1, to: 5 }],
+        bossKills: 5,
+        mostKilled: { name: ActivityEnum.DoomOfMokhaiotl, kills: 3 },
+      });
+    });
+
+    it('sums the gains of an active account', () => {
+      const history = [jagexEntry(THE_FRAKING, 0), jagexEntry(THE_FRAKING, 1)];
+      const today = history[0];
+      today.skills[SkillEnum.Overall] = { ...today.skills[SkillEnum.Overall]!, xp: 334_599_439 + 20_000 };
+      today.skills[SkillEnum.Prayer] = { rank: 269_000, level: 94, xp: 7_381_941 + 20_000 };
+      today.activities[ActivityEnum.Vorkath] = { rank: 205_000, score: 500 + 4 };
+
+      expect(periodSummary(today, history, 1)).toMatchObject({
+        xp: 20_000,
+        levels: [{ skill: SkillEnum.Prayer, from: 93, to: 94 }],
+        bossKills: 4,
+        mostKilled: { name: ActivityEnum.Vorkath, kills: 4 },
+      });
+      expect(dailyGains(today, history)[1].skills[SkillEnum.Prayer]).toEqual({ rank: -424, level: 1, xp: 20_000 });
     });
   });
 

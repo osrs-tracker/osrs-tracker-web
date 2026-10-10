@@ -68,16 +68,21 @@ export class XpGainedChartComponent extends BaseChart<'line', Gains[]> {
     () => `${[...this.playerView.skills()].join(', ')} XP gained over the period, cumulative`,
   );
 
-  /** For the chips, in CSS: Overall is the accent token */
+  /** For the chips, in CSS: Overall is the accent token, a skill without a colour (newer than the enum) muted */
   private cssColor(skill: string): string {
-    return skill === SkillEnum.Overall
-      ? 'var(--accent)'
-      : SKILL_COLORS[skill as ChartSkill][this.darkMode() ? 'dark' : 'light'];
+    if (skill === SkillEnum.Overall) return 'var(--accent)';
+    return this.skillColor(skill) ?? 'var(--muted)';
   }
 
   /** For the canvas, which can't read CSS variables */
   private color(skill: string): string {
-    return skill === SkillEnum.Overall ? token('accent') : this.cssColor(skill);
+    if (skill === SkillEnum.Overall) return token('accent');
+    return this.skillColor(skill) ?? token('muted');
+  }
+
+  private skillColor(skill: string): string | undefined {
+    // the skills come from the diffs, which can hold one Jagex added after the enum
+    return (SKILL_COLORS as Partial<typeof SKILL_COLORS>)[skill as ChartSkill]?.[this.darkMode() ? 'dark' : 'light'];
   }
 
   protected chartOptions(): ChartOptions<'line'> {

@@ -1,6 +1,7 @@
 import { hiscoreDiff, SkillEnum } from '@osrs-tracker/hiscores';
 import { HiscoreEntry } from '@osrs-tracker/models';
 import { BOSSES } from '../activity-categories';
+import { named, skillOf } from '../hiscore-values';
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -67,15 +68,16 @@ export function periodSummary(current: HiscoreEntry, history: HiscoreEntry[], da
   const baseline = history[start.index];
   const diff = hiscoreDiff(current, baseline);
 
-  const levels = diff.skills
+  // diff values are never null, and cover the skills and activities of both entries
+  const levels = named(diff.skills)
     .filter(skill => skill.name !== SkillEnum.Overall && skill.level > 0)
     .map(skill => {
-      const to = current.skills.find(({ name }) => name === skill.name)!.level;
+      const to = skillOf(current, skill.name).level;
       return { skill: skill.name, from: to - skill.level, to };
     });
 
-  const bosses = diff.activities.filter(activity => BOSSES.has(activity.name) && activity.score > 0);
-  const mostKilled = bosses.reduce<HiscoreEntry['activities'][number] | undefined>(
+  const bosses = named(diff.activities).filter(activity => BOSSES.has(activity.name) && activity.score > 0);
+  const mostKilled = bosses.reduce<(typeof bosses)[number] | undefined>(
     (most, boss) => (!most || boss.score > most.score ? boss : most),
     undefined,
   );
@@ -106,5 +108,5 @@ function checkAges(current: HiscoreEntry, history: HiscoreEntry[]): number[] {
 }
 
 function overallXp(entry: HiscoreEntry): number {
-  return Math.max(0, entry.skills.find(skill => skill.name === SkillEnum.Overall)?.xp ?? 0);
+  return Math.max(0, skillOf(entry, SkillEnum.Overall).xp);
 }
