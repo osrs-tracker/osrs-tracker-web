@@ -48,7 +48,7 @@ export class OsrsPricesRepo {
   private readonly transferState = inject(TransferState);
   private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
 
-  /** Browser only: until the app is stable, single-item prices come from the server's render (like the transfer cache) */
+  /** Browser only: until the app is stable, the rendered items' prices come from the server (like the transfer cache) */
   private useTransferredPrices = !this.isServer;
   /** Server only: the render's ongoing request for the full `/latest` list, while `latestPricesCache` is stale */
   private latestPricesRequest$?: Observable<Record<string, Record<string, number>>>;
