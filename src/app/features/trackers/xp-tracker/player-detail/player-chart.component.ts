@@ -6,6 +6,7 @@ import { SegmentedComponent, SegmentedOption } from 'src/app/common/components/g
 import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { formatNumberLegible } from 'src/app/common/helpers/number.helper';
+import { activityOf, skillOf } from '../hiscore-values';
 import { percentageToNextLevel } from '../skill-progress';
 import { ActivityChartComponent } from './player-logs/activity-chart.component';
 import { CHART_CATEGORIES } from './player-logs/chart-categories';
@@ -212,7 +213,8 @@ export class PlayerChartComponent {
       return { icon: { name, skill: true }, title: 'Total XP gained', sub: `All skills, ${period}`, total };
     }
 
-    const skill = this.current()?.skills.find(s => s.name === name);
+    const current = this.current();
+    const skill = current && skillOf(current, name);
     const level = !skill
       ? ''
       : skill.level < 99
@@ -231,8 +233,9 @@ export class PlayerChartComponent {
     const sum = shown.reduce((total, { total: gained }) => total + gained, 0);
     const total = sum ? `+${sum.toLocaleString('en-US')}` : 'None';
     const score = (name: string): string => {
-      const value = this.current()?.activities.find(activity => activity.name === name)?.score ?? -1;
-      return value > 0 ? value.toLocaleString('en-US') : '–';
+      const current = this.current();
+      const value = current && activityOf(current, name)?.score;
+      return value != null ? value.toLocaleString('en-US') : '–';
     };
 
     if (view === 'minigames') {
