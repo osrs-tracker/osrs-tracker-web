@@ -1,4 +1,4 @@
-import { iconPath } from 'src/app/common/directives/icon/icon.directive';
+import { iconPath, PLACEHOLDER_ICON } from 'src/app/common/directives/icon/icon.directive';
 
 const DOT = 10;
 const ICON = 18;
@@ -60,7 +60,12 @@ export class TooltipMarkers {
       context.drawImage(icon, DOT + GAP + (ICON - width) / 2, (ICON - height) / 2, width, height);
       marker.src = canvas.toDataURL();
     };
+    // once: the placeholder is inline, so it can't fail in turn
+    icon.onerror = () => {
+      if (icon.src !== PLACEHOLDER_ICON) icon.src = PLACEHOLDER_ICON;
+    };
     const path = iconPath(name, this.kind);
-    icon.src = this.localIcons?.[path] ?? '/assets/icons' + path;
+    // the bundled icons are complete, so a missing one is a name Jagex added: no request
+    icon.src = this.localIcons ? (this.localIcons[path] ?? PLACEHOLDER_ICON) : '/assets/icons' + path;
   }
 }
