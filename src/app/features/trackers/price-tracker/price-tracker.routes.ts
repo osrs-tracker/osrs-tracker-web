@@ -1,7 +1,7 @@
 import { Route } from '@angular/router';
 import { PageMeta } from '@app/common/seo/page-meta-strategy';
 import { itemDetailResolver } from './item-detail/item-detail-resolver';
-import { itemDetailTitleResolver } from './item-detail/item-detail-title-resolver';
+import { itemDetailMetaResolver, itemDetailTitleResolver } from './item-detail/item-detail-meta';
 
 export default [
   {
@@ -22,6 +22,6 @@ export default [
     path: ':id',
     pathMatch: 'full',
     loadComponent: () => import('./item-detail/item-detail'),
-    resolve: { item: itemDetailResolver },
+    resolve: { item: itemDetailResolver, meta: itemDetailMetaResolver },
   },
 ] as Route[];

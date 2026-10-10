@@ -9,8 +9,9 @@ import { PriceTrackerStore } from '../price-tracker-store';
 import { formatWhole } from './item-prices';
 
 /**
- * The item page's header: icon tile, the name linking to the OSRS Wiki, the examine text, the instant sell price with
- * its change since yesterday's 24-hour average, and the favourite star. On phones the price moves below the name.
+ * The item page's header: icon tile, the name with a link to the OSRS Wiki beside it, the examine text, the instant
+ * sell price with its change since yesterday's 24-hour average, and the favourite star. On phones the price moves below
+ * the name.
  */
 @Component({
   selector: 'header[item-header]',
@@ -23,30 +24,32 @@ import { formatWhole } from './item-prices';
     </span>
 
     <div class="flex flex-col gap-1.5 flex-1 basis-0 min-w-0 sm:basis-65">
-      <a
-        class="flex items-center gap-2.5 w-fit max-w-full text-strong hover:text-accent"
-        [href]="wikiUrl()"
-        target="_blank"
-        rel="noopener"
-        title="Open on the OSRS Wiki"
-      >
-        <h1 class="text-2xl/none sm:text-4xl/none font-bold">{{ item().name }}</h1>
-        <svg
-          class="size-4.5 shrink-0 text-muted"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
+      <div class="flex items-center gap-1 min-w-0">
+        <h1 class="text-2xl/none sm:text-4xl/none font-bold text-strong">{{ item().name }}</h1>
+        <a
+          class="flex items-center justify-center size-11 shrink-0 -my-2.5 rounded-full text-muted hover:text-accent hover:bg-row"
+          [href]="wikiUrl()"
+          target="_blank"
+          rel="noopener"
+          title="Open on the OSRS Wiki"
         >
-          <path d="M14 4h6v6" />
-          <path d="M20 4l-9 9" />
-          <path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
-        </svg>
-        <span class="sr-only">(opens the OSRS Wiki)</span>
-      </a>
+          <svg
+            class="size-4.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M14 4h6v6" />
+            <path d="M20 4l-9 9" />
+            <path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
+          </svg>
+          <span class="sr-only">{{ item().name }} on the OSRS Wiki (opens in a new tab)</span>
+        </a>
+      </div>
       <p class="text-base text-muted">{{ item().examine }}</p>
     </div>
 
