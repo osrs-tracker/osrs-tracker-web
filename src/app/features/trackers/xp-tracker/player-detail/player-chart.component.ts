@@ -1,12 +1,11 @@
 import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core';
 import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreEntry } from '@osrs-tracker/models';
+import { HiscoreEntry, skillLevel } from '@osrs-tracker/models';
 import { format } from 'date-fns';
 import { SegmentedComponent, SegmentedOption } from 'src/app/common/components/general/segmented.component';
 import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { formatNumberLegible } from 'src/app/common/helpers/number.helper';
-import { activityOf, skillOf } from '../hiscore-values';
 import { percentageToNextLevel } from '../skill-progress';
 import { ActivityChartComponent } from './player-logs/activity-chart.component';
 import { CHART_CATEGORIES } from './player-logs/chart-categories';
@@ -214,12 +213,13 @@ export class PlayerChartComponent {
     }
 
     const current = this.current();
-    const skill = current && skillOf(current, name);
-    const level = !skill
-      ? ''
-      : skill.level < 99
-        ? `Level ${skill.level} · ${Math.floor(percentageToNextLevel(skill.xp, skill.level))}% to ${skill.level + 1} · `
-        : 'Level 99 · ';
+    const skillLevelNow = current && skillLevel(current.skills[name]);
+    const level =
+      skillLevelNow === undefined
+        ? ''
+        : skillLevelNow < 99
+          ? `Level ${skillLevelNow} · ${Math.floor(percentageToNextLevel(current?.skills[name]?.xp ?? 0, skillLevelNow))}% to ${skillLevelNow + 1} · `
+          : 'Level 99 · ';
     return { icon: { name, skill: true }, title: `${name} XP gained`, sub: level + period, total };
   }
 
@@ -234,7 +234,7 @@ export class PlayerChartComponent {
     const total = sum ? `+${sum.toLocaleString('en-US')}` : 'None';
     const score = (name: string): string => {
       const current = this.current();
-      const value = current && activityOf(current, name)?.score;
+      const value = current?.activities[name]?.score;
       return value != null ? value.toLocaleString('en-US') : '–';
     };
 

@@ -19,8 +19,8 @@ import {
 } from '@angular/core';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreEntry, HiscoreSkill, Player } from '@osrs-tracker/models';
+import { ActivityEnum } from '@osrs-tracker/hiscores';
+import { HiscoreEntry, HiscoreSkill, overallOf, Player } from '@osrs-tracker/models';
 import { format } from 'date-fns';
 import { EMPTY, catchError, finalize } from 'rxjs';
 import { LoadErrorComponent } from 'src/app/common/components/general/load-error.component';
@@ -43,7 +43,6 @@ import { XpTrackerStore } from '../xp-tracker.store';
 import { ActivityGridComponent } from './hiscores/activity-grid.component';
 import { SkillGridComponent } from './hiscores/skill-grid.component';
 import { PlayerChartComponent } from './player-chart.component';
-import { activityOf, named, skillOf } from '../hiscore-values';
 import { isNotFound } from './player-detail.resolver';
 import { PlayerHeaderComponent, TrackingState } from './player-header/player-header.component';
 import { LogNotice, PlayerLogsComponent } from './player-logs/player-logs.component';
@@ -233,7 +232,7 @@ export default class PlayerDetailComponent implements OnInit {
   readonly skillGains: Signal<ReadonlyMap<string, number>> = computed(() => {
     const gains = new Map<string, number>();
     this.periodDiffs().forEach(diff =>
-      named(diff.skills).forEach(({ name, xp }) => {
+      Object.entries(diff.skills).forEach(([name, { xp }]) => {
         if (xp > 0) gains.set(name, (gains.get(name) ?? 0) + xp);
       }),
     );
@@ -243,7 +242,7 @@ export default class PlayerDetailComponent implements OnInit {
   readonly activityGains: Signal<ReadonlyMap<string, number>> = computed(() => {
     const gains = new Map<string, number>();
     this.periodDiffs().forEach(diff =>
-      named(diff.activities).forEach(({ name, score }) => {
+      Object.entries(diff.activities).forEach(([name, { score }]) => {
         if (score > 0) gains.set(name, (gains.get(name) ?? 0) + score);
       }),
     );
@@ -272,19 +271,19 @@ export default class PlayerDetailComponent implements OnInit {
   /** Only the minigames the player is ranked in, each row of three filled up on its own */
   readonly minigameLayout: Signal<(string | null)[]> = computed(() => {
     const current = this.current();
-    const ranked = (name: string): boolean => !!current && activityOf(current, name) !== null;
+    const ranked = (name: string): boolean => current?.activities[name] != null;
     return MINIGAME_ROWS.flatMap(row => fillRows(row.filter(ranked)));
   });
   /** One row of loading cells */
   readonly minigameSkeleton: (string | null)[] = MINIGAME_ROWS[0];
   readonly clueTotal: Signal<number | undefined> = computed(() => {
     const current = this.current();
-    return current && activityOf(current, ActivityEnum.ClueScrollsAll)?.score;
+    return current?.activities[ActivityEnum.ClueScrollsAll]?.score;
   });
 
   readonly overall: Signal<HiscoreSkill | undefined> = computed(() => {
     const current = this.current();
-    return current && skillOf(current, SkillEnum.Overall);
+    return current && overallOf(current);
   });
   readonly statTiles: Signal<StatTile[] | undefined> = computed(() => {
     const overall = this.overall();
