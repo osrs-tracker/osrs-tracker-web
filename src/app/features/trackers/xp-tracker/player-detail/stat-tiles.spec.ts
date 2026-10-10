@@ -1,6 +1,6 @@
 import { HiscoreSkill } from '@osrs-tracker/models';
 import { describe, expect, it } from 'vitest';
-import { statTilesFor } from './player-stats';
+import { statTilesFor } from './stat-tiles';
 import { PeriodSummary } from './player-summary';
 
 const overall: HiscoreSkill = { xp: 200_000_000, level: 2277, rank: 12_345 };
@@ -59,6 +59,6 @@ describe('statTilesFor', () => {
     expect(tiles[0]).toMatchObject({ value: '2,277', sub: 'Rank 12,345' });
     expect(tiles[1]).toMatchObject({ label: 'XP since 4 Oct', value: '1.5M', tip: '1,500,000 XP' });
     expect(tiles[2]).toMatchObject({ value: '3', sub: 'Sailing 80 → 82, Agility 70 → 71' });
-    expect(tiles[3]).toMatchObject({ value: '1,234', sub: 'Most: Vorkath (1000)' });
+    expect(tiles[3]).toMatchObject({ value: '1,234', sub: 'Most: Vorkath (1,000)' });
   });
 });

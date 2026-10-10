@@ -5,7 +5,7 @@ import { HiscoreEntry } from '@osrs-tracker/models';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
-import { CLUES, fillRows, MINIGAME_ROWS } from '../activity-categories';
+import { CLUE_LAYOUT, fillRows, MINIGAME_ROWS } from '../activity-categories';
 import { BottomTab, PlayerView } from '../player-view';
 import { ActivityGrid } from './activity-grid';
 
@@ -13,7 +13,6 @@ const TABS: SegmentedOption<BottomTab>[] = [
   { value: 'clues', label: 'Clues' },
   { value: 'minigames', label: 'Minigames' },
 ];
-const CLUE_LAYOUT: (string | null)[] = Object.values(ActivityEnum).filter(name => CLUES.has(name));
 
 /** The player page's second hiscores card: clues (with the total) or minigames, whichever tab `PlayerView` has open. */
 @Component({

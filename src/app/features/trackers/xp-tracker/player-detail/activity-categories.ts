@@ -75,3 +75,8 @@ export const UNCHARTED_MINIGAMES: Partial<Record<ActivityEnum, string>> = {
 export function fillRows(names: string[]): (string | null)[] {
   return [...names, ...Array<null>((3 - (names.length % 3)) % 3).fill(null)];
 }
+
+/** The bosses card: every boss, in `ActivityEnum` order, the last row filled up */
+export const BOSS_LAYOUT: (string | null)[] = fillRows(Object.values(ActivityEnum).filter(name => BOSSES.has(name)));
+/** The clues card: the six tiers, beginner to master, in two rows (the total is the card's footer) */
+export const CLUE_LAYOUT: (string | null)[] = Object.values(ActivityEnum).filter(name => CLUES.has(name));

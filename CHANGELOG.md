@@ -9,6 +9,8 @@
 
 - A skill or activity Jagex adds before the site has its icon shows a grey question mark instead of a broken image,
   wherever icons appear (the hiscores, the charts and their tooltips).
+- The Boss kills tile writes the most killed boss's count like the total above it: "Vorkath (1,000)" instead of
+  "(1000)".
 
 ### Behind the scenes
 

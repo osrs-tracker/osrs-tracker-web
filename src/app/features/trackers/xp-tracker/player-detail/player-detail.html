@@ -44,7 +44,7 @@
         <button
           type="button"
           class="h-9 px-4 rounded-full border border-border text-sm font-bold text-strong hover:bg-row"
-          (click)="history.todayResource.reload()"
+          (click)="history.reloadToday()"
         >
           Try again
         </button>
@@ -104,13 +104,13 @@
       ></article>
     </aside>
 
-    @if (history.firstPage.error()) {
+    @if (history.firstPageFailed()) {
       <load-error
         class="order-2 md:col-start-2 md:row-start-1"
         panel
         source="player-history"
         message="Couldn't load the history."
-        (retry)="history.firstPage.reload()"
+        (retry)="history.reloadFirstPage()"
       />
     } @else {
       <player-chart
@@ -128,7 +128,7 @@
           [diffs]="diffs()"
           [loading]="!history.loaded()"
           [todayLoading]="history.todayLoading()"
-          [todaySince]="history.todayResource.error() ? undefined : trackedAt()"
+          [todaySince]="history.todayFailed() ? undefined : trackedAt()"
           [notice]="logNotice()"
         />
 

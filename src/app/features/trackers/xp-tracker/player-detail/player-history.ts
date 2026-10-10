@@ -2,13 +2,12 @@ import { isPlatformBrowser } from '@angular/common';
 import {
   DestroyRef,
   PLATFORM_ID,
-  ResourceRef,
   Signal,
   WritableSignal,
   computed,
   effect,
   inject,
-  signal,
+  linkedSignal,
   untracked,
 } from '@angular/core';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -23,12 +22,28 @@ const MORE_SIZE = 7;
 /** The history is kept for about 60 days, so 60 days and today is all there is (and 30D's previous period fits) */
 const PERIOD_SIZE = 61;
 
-export interface PlayerHistory {
-  /** The live hiscores, only fetched in the browser. */
-  readonly todayResource: ResourceRef<HiscoreEntry | undefined>;
-  readonly firstPage: ResourceRef<HiscoreEntry[] | undefined>;
+interface Page {
+  entries: HiscoreEntry[];
+  size: number;
+}
 
+/** The pages loaded after the first, for one offset's history */
+interface Paging {
+  /** New when the history starts over, so a response for an earlier one can tell it doesn't belong */
+  run: object;
+  /** With the size each asked for: a shorter page is the end of the history */
+  pages: Page[];
+  loading: boolean;
+  /** The size the failed load asked for, so a retry loads as much (a longer period asks for more than a week) */
+  failedSize?: number;
+}
+
+/** The history as the page reads it; the resources stay inside, as their `value()` throws in the error state */
+export interface PlayerHistory {
+  /** The live hiscores, only fetched in the browser */
   readonly today: Signal<HiscoreEntry | undefined>;
+  readonly todayFailed: Signal<boolean>;
+  readonly firstPageFailed: Signal<boolean>;
   /** The live hiscores aren't in yet; also during SSR, which doesn't fetch them, so hydration doesn't change the page */
   readonly todayLoading: Signal<boolean>;
   /** The first page is in */
@@ -49,6 +64,9 @@ export interface PlayerHistory {
   loadMore(size?: number): void;
   /** Loads as much as the failed load asked for (a longer period asks for more than a week) */
   retryLoadMore(): void;
+  reloadToday(): void;
+  /** After tracking starts at the offset, which stores its first entry, or when the first page failed */
+  reloadFirstPage(): void;
   /** Reloads the live hiscores, and the first page if it failed */
   retry(): void;
 }
@@ -71,11 +89,14 @@ export function playerHistory(params: {
   const osrsTrackerRepo = inject(OsrsTrackerRepo);
   const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  /** Pages loaded after the first, with the size each asked for: a shorter page is the end of the history */
-  const morePages: WritableSignal<{ entries: HiscoreEntry[]; size: number }[]> = signal([]);
-  const loadingMore = signal(false);
-  const loadMoreFailed = signal(false);
-  let failedMoreSize = MORE_SIZE;
+  // Like the first page, the pages after it belong to one offset, so another offset starts over
+  const paging: WritableSignal<Paging> = linkedSignal({
+    source: offset,
+    computation: (): Paging => ({ run: {}, pages: [], loading: false }),
+  });
+  const morePages = computed(() => paging().pages);
+  const loadingMore = computed(() => paging().loading);
+  const loadMoreFailed = computed(() => paging().failedSize !== undefined);
 
   const todayResource = rxResource({
     params: () => (isBrowser && enabled() ? { username, offset: offset() } : undefined),
@@ -102,21 +123,23 @@ export function playerHistory(params: {
   const periodSize = computed(() => Math.min(period() * 2 + 1, PERIOD_SIZE));
 
   function loadMore(size: number = MORE_SIZE): void {
-    loadingMore.set(true);
-    loadMoreFailed.set(false);
+    const { run } = paging();
+    // a response for a history that has since started over (another offset) doesn't belong to this one
+    const update = (change: Partial<Paging> | ((paging: Paging) => Partial<Paging>)): void => {
+      if (paging().run !== run) return;
+      paging.update(current => ({ ...current, ...(typeof change === 'function' ? change(current) : change) }));
+    };
+    update({ loading: true, failedSize: undefined });
 
     osrsTrackerRepo
       .getPlayerHiscores(username, offset(), size, entries().length)
       .pipe(
         takeUntilDestroyed(destroyRef),
-        finalize(() => loadingMore.set(false)),
+        finalize(() => update({ loading: false })),
       )
       .subscribe({
-        next: page => morePages.update(pages => [...pages, { entries: page, size }]),
-        error: () => {
-          failedMoreSize = size;
-          loadMoreFailed.set(true);
-        },
+        next: page => update(current => ({ pages: [...current.pages, { entries: page, size }] })),
+        error: () => update({ failedSize: size }),
       });
   }
 
@@ -130,9 +153,9 @@ export function playerHistory(params: {
   });
 
   return {
-    todayResource,
-    firstPage,
     today,
+    todayFailed: computed(() => !!todayResource.error()),
+    firstPageFailed: computed(() => !!firstPage.error()),
     todayLoading: computed(() => !todayResource.hasValue() && !todayResource.error()),
     loaded,
     entries,
@@ -140,10 +163,12 @@ export function playerHistory(params: {
     periodLoaded: computed(() => loaded() && (entries().length >= periodSize() || !hasMore() || loadMoreFailed())),
     current: computed(() => today() ?? entries()[0]),
     lastCheckedAt: computed(() => entries()[0]?.date),
-    loadingMore: loadingMore.asReadonly(),
-    loadMoreFailed: loadMoreFailed.asReadonly(),
+    loadingMore,
+    loadMoreFailed,
     loadMore,
-    retryLoadMore: () => loadMore(failedMoreSize),
+    retryLoadMore: () => loadMore(paging().failedSize),
+    reloadToday: () => todayResource.reload(),
+    reloadFirstPage: () => firstPage.reload(),
     retry: () => {
       todayResource.reload();
       if (firstPage.error()) firstPage.reload();

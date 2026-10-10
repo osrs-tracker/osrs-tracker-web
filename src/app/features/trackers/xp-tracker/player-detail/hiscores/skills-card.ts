@@ -1,9 +1,8 @@
 import { Component, inject, input, InputSignal, output, OutputEmitterRef } from '@angular/core';
-import { ActivityEnum } from '@osrs-tracker/hiscores';
 import { HiscoreEntry } from '@osrs-tracker/models';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { LoadError } from '@app/common/ui/loading/load-error';
-import { BOSSES, fillRows, RAID_LAYOUT } from '../activity-categories';
+import { BOSS_LAYOUT, RAID_LAYOUT } from '../activity-categories';
 import { PlayerView, TopTab } from '../player-view';
 import { ActivityGrid } from './activity-grid';
 import { SkillGrid } from './skill-grid';
@@ -13,7 +12,6 @@ const TABS: SegmentedOption<TopTab>[] = [
   { value: 'bosses', label: 'Bosses' },
   { value: 'raids', label: 'Raids' },
 ];
-const BOSS_LAYOUT = fillRows(Object.values(ActivityEnum).filter(name => BOSSES.has(name)));
 
 /** The player page's main hiscores card: skills, bosses or raids, whichever tab `PlayerView` has open. */
 @Component({

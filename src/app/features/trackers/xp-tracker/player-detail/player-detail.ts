@@ -38,7 +38,7 @@ import { isNotFound } from './player-detail-resolver';
 import { PlayerHeader, TrackingState } from './player-header';
 import { playerHistory, PlayerHistory } from './player-history';
 import { LogNotice, PlayerLogs } from './player-logs';
-import { StatTileView, statTilesFor } from './player-stats';
+import { StatTileView, statTilesFor } from './stat-tiles';
 import { Gains, PeriodSummary, dailyGains, periodStart, periodSummary, totalGains } from './player-summary';
 import { PlayerView } from './player-view';
 
@@ -101,14 +101,14 @@ export default class PlayerDetail implements OnInit {
     () =>
       !this.history.today() &&
       !!this.history.entries().length &&
-      (!!this.history.todayResource.error() || !!this.playerDetail()?.refreshFailed),
+      (this.history.todayFailed() || !!this.playerDetail()?.refreshFailed),
   );
   /** Without live hiscores the newest tracked entry stands in, so this only fails when there's none either */
   readonly hiscoresFailed: Signal<boolean> = computed(
     () =>
       !this.history.current() &&
-      !!this.history.todayResource.error() &&
-      (this.history.loaded() || !!this.history.firstPage.error()),
+      this.history.todayFailed() &&
+      (this.history.loaded() || this.history.firstPageFailed()),
   );
 
   readonly trackingState: Signal<TrackingState> = computed(() => {
@@ -233,7 +233,7 @@ export default class PlayerDetail implements OnInit {
           const wasTracked = isTrackedFor(this.playerDetail()!, offset);
           this.playerDetail.set(player);
           // tracking an offset stores its first entry, so load it
-          if (!wasTracked && isTrackedFor(player, offset)) this.history.firstPage.reload();
+          if (!wasTracked && isTrackedFor(player, offset)) this.history.reloadFirstPage();
         },
         error: () => undefined, // already shown by #pageErrorHandler
       });
