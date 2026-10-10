@@ -46,6 +46,8 @@
   "(1000)".
 - Player pages are about a third smaller and quicker to start on phones: the day log opens with the last week instead of
   two ("Load more days" adds the rest), and 30D loads its 30 days instead of 60.
+- The home page and the XP Tracker are a quarter to a third smaller: their recently looked up players come with only
+  what the list shows.
 
 ### Behind the scenes
 
