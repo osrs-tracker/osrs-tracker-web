@@ -9,7 +9,11 @@ export interface PageMeta {
   canonicalPath: string;
   image?: PageImage;
   card?: 'summary' | 'summary_large_image';
+  /** schema.org nodes for the page's JSON-LD, with absolute URLs; rendered as one `@graph` */
+  jsonLd?: JsonLdNode[];
 }
+
+export type JsonLdNode = { '@type': string } & Record<string, unknown>;
 
 export interface PageImage {
   /** Path on this site or an absolute URL */
@@ -40,7 +44,9 @@ export const ICON_IMAGE: PageImage = {
   alt: 'OSRS Tracker',
 };
 
-const SITE_NAME = 'OSRS Tracker';
+export const SITE_NAME = 'OSRS Tracker';
+
+const JSON_LD_ID = 'page-jsonld';
 
 /** Every tag this strategy sets apart from the description, so a page without meta can remove them all. */
 const SOCIAL_TAGS = [
@@ -72,6 +78,8 @@ export class PageMetaStrategy extends TitleStrategy {
 
     const pageMeta = deepestChild(snapshot.root).data['meta'] as PageMeta | undefined;
     this.meta.updateTag({ name: 'description', content: pageMeta?.description ?? DEFAULT_DESCRIPTION });
+
+    this.setJsonLd(pageMeta?.jsonLd);
 
     if (!pageMeta) {
       SOCIAL_TAGS.forEach(selector => this.meta.removeTag(selector));
@@ -108,6 +116,27 @@ export class PageMetaStrategy extends TitleStrategy {
     link.setAttribute('href', url);
   }
 
+  /**
+   * A data block, which browsers never run: the CSP's `script-src` doesn't apply, so it needs no nonce. Angular strips
+   * `<script>` from templates, hence the DOM.
+   */
+  private setJsonLd(nodes: JsonLdNode[] | undefined): void {
+    let script = this.document.getElementById(JSON_LD_ID);
+    if (!nodes?.length) {
+      script?.remove();
+      return;
+    }
+    if (!script) {
+      script = this.document.createElement('script');
+      script.setAttribute('type', 'application/ld+json');
+      script.id = JSON_LD_ID;
+      this.document.head.appendChild(script);
+    }
+    const graph = { '@context': 'https://schema.org', '@graph': nodes };
+    // `<` escaped, so an item name can't close the script element
+    script.textContent = JSON.stringify(graph).replace(/</g, '\\u003c');
+  }
+
   private canonicalLink(): HTMLLinkElement | null {
     return this.document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
   }
@@ -122,6 +151,6 @@ function canonicalUrl(path: string): string {
   return absoluteUrl(path.replace(/[?#].*$/, ''));
 }
 
-function absoluteUrl(pathOrUrl: string): string {
+export function absoluteUrl(pathOrUrl: string): string {
   return /^https?:\/\//.test(pathOrUrl) ? pathOrUrl : config.siteUrl + pathOrUrl;
 }

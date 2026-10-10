@@ -126,7 +126,7 @@ export class Icon implements OnInit {
   }
 
   private iconUrl(): string {
-    if (this.wiki()) return `${config.wikiBaseUrl}/images/${this.name().replaceAll(/\s/g, '_')}`;
+    if (this.wiki()) return wikiIconUrl(this.name());
 
     const path = this.skill()
       ? iconPath(this.name(), 'skill')
@@ -140,6 +140,11 @@ export class Icon implements OnInit {
     // The server keeps the file URL, so the rendered HTML (which isn't cached) doesn't carry the data URIs.
     return (this.window && this.localIcons?.[path]) || '/assets/icons' + path;
   }
+}
+
+/** URL of an item icon on the OSRS Wiki, from the icon's file name */
+export function wikiIconUrl(name: string): string {
+  return `${config.wikiBaseUrl}/images/${name.replaceAll(/\s/g, '_')}`;
 }
 
 /** Path under `/assets/icons` of a skill or activity icon */
