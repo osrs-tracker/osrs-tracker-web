@@ -4,6 +4,13 @@
 
 - The navigation bar shows the OSRS Tracker wordmark ("OSRS" over a green "TRACKER"), as on the browser tab icon.
 
+### Search and sharing
+
+- Links to the home page, the price and XP tracker pages and the about pages, shared on Discord, X, Reddit and other
+  sites, now show a preview with a picture and a short description of the page, instead of only its title.
+- Those pages also have clearer titles and descriptions in search results, and tell search engines their one true
+  address, so variants such as a search in the address bar don't count as separate pages.
+
 ### Price pages
 
 - The price chart no longer zooms with the mouse wheel or a pinch, or pans when dragged: the period switch (1D to 1Y)

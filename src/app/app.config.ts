@@ -8,9 +8,16 @@ import {
   provideZonelessChangeDetection,
 } from '@angular/core';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-import { provideRouter, RouteReuseStrategy, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
+import {
+  provideRouter,
+  RouteReuseStrategy,
+  TitleStrategy,
+  withComponentInputBinding,
+  withInMemoryScrolling,
+} from '@angular/router';
 import appRoutes from './app.routes';
 import { AnalyticsService } from './common/analytics/analytics-service';
+import { PageMetaStrategy } from './common/seo/page-meta-strategy';
 import { CustomErrorHandler } from './core/error-handling/error-handler';
 import { baseUrlInterceptor } from './core/interceptors/base-url-interceptor';
 import { loadingIndicatorInterceptor } from './core/interceptors/loading-indicator-interceptor';
@@ -43,6 +50,7 @@ export const appConfig: ApplicationConfig = {
 
     { provide: ErrorHandler, useClass: CustomErrorHandler },
     { provide: RouteReuseStrategy, useClass: ParamAwareReuseStrategy },
+    { provide: TitleStrategy, useClass: PageMetaStrategy },
 
     provideAppInitializer(() => inject(AnalyticsService).setupPageAnalytics()),
   ],

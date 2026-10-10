@@ -60,9 +60,13 @@ a worktree).
 - **HTTP**: repositories use the `BASE_URL_PREFIX` / `LOADING_INDICATOR` `HttpContext` tokens, not absolute URLs, and
   `SSR_TIMEOUT` on third-party calls (see Third-party calls in SSR). `encodeURIComponent` path segments; query values go
   in `params`.
-- **Routing**: lazy routes with default-exported components, `title: '<Page> - OSRS Tracker'`; resolvers end with
-  `catchError(resolverErrorHandler(<original url>))`. `ParamAwareReuseStrategy` recreates components on param change.
-  Adding or renaming a route means updating `src/server/utils/route-label.ts` (its spec fails CI otherwise).
+- **Routing**: lazy routes with default-exported components and a `title` (`'<Page> - OSRS Tracker'`, or one naming the
+  search term on landing pages); resolvers end with `catchError(resolverErrorHandler(<original url>))`.
+  `ParamAwareReuseStrategy` recreates components on param change. Adding or renaming a route means updating
+  `src/server/utils/route-label.ts` (its spec fails CI otherwise).
+- **Page meta**: `PageMetaStrategy` (`common/seo/`) sets the title, description, canonical and social tags once per
+  navigation from the deepest route's `data['meta']` (a `PageMeta`: static in `data`, or resolved). A route without it
+  gets the default description and no canonical or social tags. Never set meta from components or resolvers.
 
 ## Design system
 
