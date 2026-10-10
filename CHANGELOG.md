@@ -20,7 +20,8 @@
   search engines to the same page. Shared, they get the same compact preview as item pages. A name that isn't on the
   hiscores is titled "Player not found".
 - Search engines can find the pages of players tracked in the last 30 days: the sitemap lists them, each with the date
-  it last changed. The sitemaps drop the priority and update-frequency hints, which search engines ignore.
+  it last changed. The sitemaps drop the priority and update-frequency hints, which search engines ignore, and the
+  sitemap index says when each sitemap last changed.
 
 ### Price pages
 

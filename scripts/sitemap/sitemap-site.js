@@ -1,18 +1,6 @@
-import { execFileSync } from 'node:child_process';
-import { SITE_URL, urlset, writeSitemap } from './sitemap-file.js';
+import { git, hasFullHistory, SITE_URL, urlset, writeSitemap } from './sitemap-file.js';
 
 const OUTPUT = 'public/sitemap-site.xml';
-
-const git = args => execFileSync('git', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
-
-// Dates come from the git history, which a shallow clone lacks and the Docker build has no git or .git for
-const hasFullHistory = () => {
-  try {
-    return git(['rev-parse', '--is-shallow-repository']) === 'false';
-  } catch {
-    return false;
-  }
-};
 
 // The date of the last commit that changed a page's file (for a page in the app, its template, which holds the text).
 // File timestamps won't do: a fresh checkout (the CD workflow) gives every file the checkout time, so every deploy would

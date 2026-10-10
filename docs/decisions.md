@@ -118,8 +118,10 @@ Choices that look like accidents without their context: what was decided, why, a
 - **Decision:** `sitemap-site.js` takes each page's date from the last commit that changed its source file (the template
   for privacy and terms, `CHANGELOG.md`), following renames, which don't count as a change. Without full history (a
   shallow clone, or the Docker build, which has no git or `.git`) it keeps `public/sitemap-site.xml` as it is: the image
-  is built from the file the `CD` workflow just generated. The sitemap index has no `<lastmod>`: the items sitemap has
-  no dated source, and the site and players ones carry their dates in the files themselves.
+  is built from the file the `CD` workflow just generated. The sitemap index dates each sitemap by the day its content
+  last changed (`sitemap-index.js`): today when the run changed it, else its last commit, in UTC. A day, not a time:
+  `CD` commits a few minutes after generating, so a time would change again on the next deploy. Item pages have no date
+  of their own (Wiki item list has none, the API's `lastFetch` is the last lookup).
 - **Revisit:** if a page's content stops living in one file (e.g. it moves to the API or a CMS).
 
 ## Live hiscores load in the browser only (2026/10/08)

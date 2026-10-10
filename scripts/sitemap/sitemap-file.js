@@ -1,9 +1,21 @@
 import xmlFormatter from 'xml-formatter';
+import { execFileSync } from 'node:child_process';
 import { readFile, writeFile } from 'node:fs/promises';
 
 export const SITE_URL = 'https://osrs-tracker.freekmencke.com';
 
 const FETCH_TIMEOUT_MS = 30_000;
+
+export const git = args => execFileSync('git', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+
+/** Dates come from the git history, which a shallow clone lacks and the Docker build has no git or .git for. */
+export const hasFullHistory = () => {
+  try {
+    return git(['rev-parse', '--is-shallow-repository']) === 'false';
+  } catch {
+    return false;
+  }
+};
 
 export const escapeXml = text =>
   text.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[char]);
