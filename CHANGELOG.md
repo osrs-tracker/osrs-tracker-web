@@ -71,6 +71,8 @@
   hour, so building the site no longer fetches anything from the OSRS Wiki or the API.
 - The item or account type icon at the top of item and player pages loads straight away instead of waiting for the
   page's layout, and icon descriptions read as plain words ("hardcore ironman icon" instead of "hardcore_ironman icon").
+- Pages connect to the hiscores and the OSRS Wiki's prices early, so Home's top players, player pages and item prices
+  load a little sooner, and they no longer open a connection to a news image server they never use.
 
 ## 2026/10/09
 
