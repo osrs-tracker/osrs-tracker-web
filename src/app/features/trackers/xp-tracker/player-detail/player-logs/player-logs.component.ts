@@ -6,6 +6,7 @@ import { addDays } from 'date-fns';
 import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { ShortDatePipe } from 'src/app/common/pipes/date-fns.pipe';
+import { named, skillOf } from '../../hiscore-values';
 import { Gains } from '../player-summary';
 
 /**
@@ -65,9 +66,9 @@ export class PlayerLogsComponent {
 
     const diffs = this.todayLoading() ? this.diffs().slice(1) : this.diffs();
     diffs.forEach((diff, i) => {
-      const skills = diff.skills.filter(skill => skill.xp > 0 && skill.name !== SkillEnum.Overall);
+      const skills = named(diff.skills).filter(skill => skill.xp > 0 && skill.name !== SkillEnum.Overall);
       // the total of all clue tiers would count them twice
-      const activities = diff.activities.filter(
+      const activities = named(diff.activities).filter(
         activity => activity.score > 0 && activity.name !== ActivityEnum.ClueScrollsAll,
       );
 
@@ -78,7 +79,7 @@ export class PlayerLogsComponent {
         run = { type: 'empty', from: diff.date, to: run?.to ?? to ?? diff.date, days: (run?.days ?? 0) + diff.days };
       } else {
         flushRun();
-        const overall = diff.skills.find(skill => skill.name === SkillEnum.Overall);
+        const overall = skillOf(diff, SkillEnum.Overall);
         // not on gains across a gap, which reach back before today
         const since = i === 0 && !to && !this.todayLoading() ? this.todaySince() : undefined;
         groups.push({ type: 'day', date: diff.date, to, since, overall, skills, activities });
