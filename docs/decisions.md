@@ -2,6 +2,19 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## Sitemaps are generated once per deploy, and keep the last good file (2026/10/10)
+
+- **Context:** the items and players sitemaps list what the OSRS Wiki and the API return at build time. The Docker build
+  ran `prebuild` and fetched both again, so the image could serve other sitemaps than the ones `CD` commits, and a
+  failed fetch failed the build.
+- **Decision:** `CD` runs `npm run sitemap` once; the Dockerfile builds with `--ignore-scripts` (then runs `postbuild`)
+  and serves those files. A failed, non-2xx or empty fetch keeps the committed file with a warning and exits 0
+  (`fetchList` in `scripts/sitemap/sitemap-file.js`), so a hiccup costs one deploy's freshness, not the deploy. Players
+  come from the API's `GET /sitemap/players` (tracked, not paused, with an entry in the last 30 days), at their
+  canonical lower-case name, dated by their newest entry. No `<priority>` or `<changefreq>`: Google ignores both.
+- **Revisit:** if a sitemap passes 50,000 URLs (the players one had 534 on 2026/10/10), or a source goes stale often
+  enough that keeping the old file hides it.
+
 ## Server logs are JSON with a type (2026/10/09)
 
 - **Context:** the request log was JSON, everything else plain text, and errors spread their stack over many lines,
@@ -104,7 +117,7 @@ Choices that look like accidents without their context: what was decided, why, a
   for privacy and terms, `CHANGELOG.md`), following renames, which don't count as a change. Without full history (a
   shallow clone, or the Docker build, which has no git or `.git`) it keeps `public/sitemap-site.xml` as it is: the image
   is built from the file the `CD` workflow just generated. The sitemap index has no `<lastmod>`: the items sitemap has
-  no dated source, and the site one's dates are in the file itself.
+  no dated source, and the site and players ones carry their dates in the files themselves.
 - **Revisit:** if a page's content stops living in one file (e.g. it moves to the API or a CMS).
 
 ## Live hiscores load in the browser only (2026/10/08)

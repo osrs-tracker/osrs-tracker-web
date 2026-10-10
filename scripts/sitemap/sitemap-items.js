@@ -1,43 +1,20 @@
-import xmlFormatter from 'xml-formatter';
-import { writeFile, readFile } from 'node:fs/promises';
+import { fetchList, SITE_URL, urlset, writeSitemap } from './sitemap-file.js';
 
-const wrapXml = content => {
-  return [
-    '<?xml version="1.0" encoding="UTF-8"?>',
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-    content,
-    '</urlset>',
-  ].join('');
-};
+const OUTPUT = 'public/sitemap-items.xml';
 
+// Every item the Wiki knows, as the API's item refresh reads the same list. No <lastmod>: prices change all the time and
+// the item data rarely, so there's no honest date.
 (async () => {
-  const response = await fetch('https://prices.runescape.wiki/api/v1/osrs/mapping', {
-    headers: { 'User-Agent': 'osrs-tracker-dev' },
-  });
-  const items = await response.json();
-
-  const entries = items
-    .map(({ id }) => id)
-    .sort((a, b) => a - b)
-    .map(id => {
-      return [
-        '<url>',
-        `<loc>https://osrs-tracker.freekmencke.com/trackers/price/${id}</loc>`,
-        '<priority>0.5</priority>',
-        '</url>',
-      ].join('');
-    });
-
-  const xml = xmlFormatter(wrapXml(entries.join('')), {
-    indentation: '  ',
-    collapseContent: true,
-    lineSeparator: '\n',
-  });
-
-  if (xml === (await readFile('public/sitemap-items.xml', 'utf8'))) {
-    console.log('File content is identical, skipping write.');
+  const items = await fetchList('https://prices.runescape.wiki/api/v1/osrs/mapping');
+  if (!items) {
+    console.warn(`Keeping ${OUTPUT}.`);
     return;
   }
 
-  await writeFile('public/sitemap-items.xml', xml, 'utf8');
+  const urls = items
+    .map(({ id }) => id)
+    .sort((a, b) => a - b)
+    .map(id => ({ loc: `${SITE_URL}/trackers/price/${id}` }));
+
+  await writeSitemap(OUTPUT, urlset(urls));
 })();

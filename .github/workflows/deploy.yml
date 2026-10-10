@@ -96,7 +96,8 @@ jobs:
       - if: steps.plan.outputs.deploy == 'true'
         uses: ./.github/actions/setup-deps
 
-      # What predocker:build runs, so the regenerated sitemaps can be committed with the digest
+      # What predocker:build runs: the image is built from these files (the Dockerfile skips prebuild), and the sitemaps are
+      # committed with the digest
       - if: steps.plan.outputs.deploy == 'true'
         run: npm run sitemap && npm run icons
 

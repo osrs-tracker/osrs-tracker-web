@@ -71,8 +71,8 @@ that only breaks with chunk optimisation shows up in CI first (`npm run build` r
 first by `.claude/hooks/pre-push-check.sh`; your own `git push` isn't, so CI catches it.
 
 `npm start` doesn't run the server code (page cache, pre-rendering). To test that, build and run the production server.
-`npm run build` also regenerates the sitemaps (fetching the Wiki's item list) and the icons, so run
-`git restore public/sitemap*.xml` afterwards:
+`npm run build` also regenerates the sitemaps (fetching the Wiki's item list and the API's player list) and the icons,
+so run `git restore public/sitemap*.xml` afterwards:
 
 ```bash
 npm run build

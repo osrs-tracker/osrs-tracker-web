@@ -6,4 +6,7 @@
   <sitemap>
     <loc>https://osrs-tracker.freekmencke.com/sitemap-items.xml</loc>
   </sitemap>
+  <sitemap>
+    <loc>https://osrs-tracker.freekmencke.com/sitemap-players.xml</loc>
+  </sitemap>
 </sitemapindex>

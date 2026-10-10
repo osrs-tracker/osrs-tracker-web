@@ -59,6 +59,7 @@ export const serverConfig = {
     '/robots.txt',
     '/sitemap.xml',
     '/sitemap-items.xml',
+    '/sitemap-players.xml',
     '/sitemap-site.xml',
   ],
 };

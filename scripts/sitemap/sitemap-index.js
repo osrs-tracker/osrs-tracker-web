@@ -1,25 +1,17 @@
-import xmlFormatter from 'xml-formatter';
-import { writeFile } from 'node:fs/promises';
+import { SITE_URL, writeSitemap } from './sitemap-file.js';
 
-// No <lastmod> (it's optional): the pages' own dates are in sitemap-site.xml, and sitemap-items.xml has no source with a
-// date (it lists the Wiki's items). A file timestamp is the checkout time in the CD workflow, wrong on every deploy.
+const SITEMAPS = ['sitemap-site.xml', 'sitemap-items.xml', 'sitemap-players.xml'];
+
+// No <lastmod> (it's optional): the dated pages carry their own dates in sitemap-site.xml and sitemap-players.xml, and
+// sitemap-items.xml has no source with a date (it lists the Wiki's items). A file timestamp is the checkout time in the
+// CD workflow, wrong on every deploy.
 (async () => {
-  const sitemapIndex = `
-<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <sitemap>
-    <loc>https://osrs-tracker.freekmencke.com/sitemap-site.xml</loc>
-  </sitemap>
-  <sitemap>
-    <loc>https://osrs-tracker.freekmencke.com/sitemap-items.xml</loc>
-  </sitemap>
-</sitemapindex>`;
+  const xml = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...SITEMAPS.map(file => `<sitemap><loc>${SITE_URL}/${file}</loc></sitemap>`),
+    '</sitemapindex>',
+  ].join('');
 
-  const xml = xmlFormatter(sitemapIndex, {
-    indentation: '  ',
-    collapseContent: true,
-    lineSeparator: '\n',
-  });
-
-  await writeFile('public/sitemap.xml', xml, 'utf8');
+  await writeSitemap('public/sitemap.xml', xml);
 })();
