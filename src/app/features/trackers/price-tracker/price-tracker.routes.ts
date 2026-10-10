@@ -1,10 +1,10 @@
 import { Route } from '@angular/router';
-import { PageMeta } from '@app/common/seo/page-meta-strategy';
+import { PageMeta, RouteMeta } from '@app/common/seo/page-meta-strategy';
 import { breadcrumbList } from '@app/common/seo/structured-data';
 import { itemDetailResolver } from './item-detail/item-detail-resolver';
-import { itemDetailMetaResolver, itemDetailTitleResolver } from './item-detail/item-detail-meta';
+import { itemDetailMeta } from './item-detail/item-detail-meta';
 import { browseItemsResolver } from './browse/browse-items-resolver';
-import { browseMetaResolver, browseTitleResolver } from './browse/browse-meta';
+import { browseMeta } from './browse/browse-meta';
 
 export default [
   {
@@ -24,17 +24,21 @@ export default [
   // Before `:id`, which matches `browse` too
   { path: 'browse', pathMatch: 'full', redirectTo: 'browse/a' },
   {
-    title: browseTitleResolver,
+    // The meta's title, or this one when there's no meta
+    title: 'Letter not found - OSRS Tracker',
     path: 'browse/:letter',
     pathMatch: 'full',
+    data: { meta: browseMeta satisfies RouteMeta },
     loadComponent: () => import('./browse/browse-items'),
-    resolve: { items: browseItemsResolver, meta: browseMetaResolver },
+    resolve: { items: browseItemsResolver },
   },
   {
-    title: itemDetailTitleResolver,
+    // The meta's title, or this one when there's no meta
+    title: 'Item not found - OSRS Tracker',
     path: ':id',
     pathMatch: 'full',
+    data: { meta: itemDetailMeta satisfies RouteMeta },
     loadComponent: () => import('./item-detail/item-detail'),
-    resolve: { item: itemDetailResolver, meta: itemDetailMetaResolver },
+    resolve: { item: itemDetailResolver },
   },
 ] as Route[];

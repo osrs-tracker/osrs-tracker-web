@@ -1,40 +1,19 @@
-import { inject } from '@angular/core';
-import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
+import { ActivatedRouteSnapshot } from '@angular/router';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
-import { Observable, catchError, map, of } from 'rxjs';
-import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
 import { ICON_IMAGE, PageMeta } from '@app/common/seo/page-meta-strategy';
 import { breadcrumbList, webPage } from '@app/common/seo/structured-data';
-import { XpTrackerStore } from '../xp-tracker-store';
-import { isNotFound } from './player-detail-resolver';
 
 /** "11 Aug 2026", in UTC like the rest of the player page */
 const DAY = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
 
-// Both resolvers ask for the player like `playerDetailResolver` (same name and offset), so the shared-request
-// interceptor makes it one request. They fall back instead of using `resolverErrorHandler`: `playerDetailResolver`
-// already shows the error page.
-
-export const playerDetailTitleResolver: ResolveFn<string> = (route: ActivatedRouteSnapshot) =>
-  resolvedPlayer(route).pipe(
-    map(playerTitle),
-    catchError((err: unknown) =>
-      of(isNotFound(err) ? 'Player not found - OSRS Tracker' : 'OSRS XP Tracker - OSRS Tracker'),
-    ),
-  );
-
-/** No meta for an unknown player or a failed load: the page is a 404 or the error page, neither has a canonical. */
-export const playerDetailMetaResolver: ResolveFn<PageMeta | undefined> = (route: ActivatedRouteSnapshot) =>
-  resolvedPlayer(route).pipe(
-    map(playerPageMeta),
-    catchError(() => of(undefined)),
-  );
-
-function resolvedPlayer(route: ActivatedRouteSnapshot): Observable<Player> {
-  return inject(OsrsTrackerRepo).getPlayerInfo(route.params['username'], inject(XpTrackerStore).scrapingOffset(), {
-    loadingIndicator: true,
-  });
+/**
+ * The player page's meta, from the player `playerDetailResolver` resolved. None for an unknown player (`null`): the page
+ * shows its not-found state, titled by the route, without a canonical. Other failures show the error page.
+ */
+export function playerDetailMeta(route: ActivatedRouteSnapshot): PageMeta | undefined {
+  const player: Player | null = route.data['player'];
+  return player ? playerPageMeta(player) : undefined;
 }
 
 /**
@@ -56,6 +35,7 @@ export function playerPageMeta(player: Player): PageMeta {
   const name = CapitalizePipe.capitalise(player.username);
   const description = playerDescription(player);
   return {
+    title: playerTitle(player),
     description,
     canonicalPath,
     image: ICON_IMAGE,

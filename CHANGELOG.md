@@ -80,6 +80,9 @@
 - When a page can't be loaded, the error page tells search engines to try again in five minutes, so a short outage
   doesn't slow down how often they visit. The item and player search boxes switch off the browser's autofill with a
   valid setting.
+- Item, player and A–Z pages build their title, description and link preview from the data the page already loaded,
+  instead of asking the API for the same item or player up to three times and relying on those requests being merged.
+  Nothing looks different.
 
 ## 2026/10/09
 

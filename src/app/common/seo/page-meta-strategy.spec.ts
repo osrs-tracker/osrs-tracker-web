@@ -1,10 +1,10 @@
-import { Component, DOCUMENT, provideZonelessChangeDetection } from '@angular/core';
+import { Component, DOCUMENT, ErrorHandler, provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideLocationMocks } from '@angular/common/testing';
 import { Meta } from '@angular/platform-browser';
-import { provideRouter, Router, TitleStrategy } from '@angular/router';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { DEFAULT_DESCRIPTION, PageMeta, PageMetaStrategy } from './page-meta-strategy';
+import { ActivatedRouteSnapshot, provideRouter, Router, TitleStrategy } from '@angular/router';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { DEFAULT_DESCRIPTION, PageMeta, PageMetaStrategy, RouteMeta } from './page-meta-strategy';
 
 @Component({ template: '' })
 class PageComponent {}
@@ -20,7 +20,16 @@ const listMeta: PageMeta = {
   jsonLd: [{ '@type': 'WebPage', 'name': 'All items' }],
 };
 
+/** Like an item or player page: meta from what the route's resolver found, none for a name it didn't */
+const playerMeta: RouteMeta = (route: ActivatedRouteSnapshot) => {
+  const player: string | null = route.data['player'];
+  return player
+    ? { title: `${player} stats`, description: `Stats of ${player}`, canonicalPath: `/players/${player}` }
+    : undefined;
+};
+
 describe('PageMetaStrategy', () => {
+  const errorHandler = { handleError: vi.fn() };
   let router: Router;
   let meta: Meta;
   let document: Document;
@@ -39,9 +48,30 @@ describe('PageMetaStrategy', () => {
             data: { meta: { description: 'About', canonicalPath: '/about' } satisfies PageMeta },
           },
           { path: 'items/:id', title: 'Whip', component: PageComponent, data: { meta: itemMeta } },
+          {
+            path: 'players/:name',
+            title: 'Player not found',
+            component: PageComponent,
+            data: { meta: playerMeta },
+            resolve: {
+              player: (route: ActivatedRouteSnapshot) =>
+                route.params['name'] === 'nobody' ? null : route.params['name'],
+            },
+          },
+          {
+            path: 'broken',
+            title: 'Broken',
+            component: PageComponent,
+            data: {
+              meta: (() => {
+                throw new Error('bad data');
+              }) satisfies RouteMeta,
+            },
+          },
           { path: '**', title: 'Not found', component: PageComponent },
         ]),
         { provide: TitleStrategy, useClass: PageMetaStrategy },
+        { provide: ErrorHandler, useValue: errorHandler },
       ],
     });
     router = TestBed.inject(Router);
@@ -89,6 +119,34 @@ describe('PageMetaStrategy', () => {
     expect(meta.getTag('property="og:title"')).toBeNull();
     expect(meta.getTag('property="og:image"')).toBeNull();
     expect(meta.getTag('name="twitter:card"')).toBeNull();
+  });
+
+  it("builds a route's meta from its resolved data, with the meta's title over the route's", async () => {
+    await router.navigateByUrl('/players/zezima');
+
+    expect(document.title).toBe('zezima stats');
+    expect(TestBed.inject(TitleStrategy).buildTitle(router.routerState.snapshot)).toBe('zezima stats');
+    expect(meta.getTag('property="og:title"')?.content).toBe('zezima stats');
+    expect(description()).toBe('Stats of zezima');
+    expect(canonical()).toBe('https://osrs-tracker.freekmencke.com/players/zezima');
+  });
+
+  it("uses the route's title and no canonical when the meta function returns none", async () => {
+    await router.navigateByUrl('/players/zezima');
+    await router.navigateByUrl('/players/nobody');
+
+    expect(document.title).toBe('Player not found');
+    expect(description()).toBe(DEFAULT_DESCRIPTION);
+    expect(canonical()).toBeUndefined();
+  });
+
+  it('reports a meta function that throws, and still completes the navigation without meta', async () => {
+    await router.navigateByUrl('/items/4151');
+
+    expect(await router.navigateByUrl('/broken')).toBe(true);
+    expect(document.title).toBe('Broken');
+    expect(canonical()).toBeUndefined();
+    expect(errorHandler.handleError).toHaveBeenCalledWith(new Error('bad data'));
   });
 
   it('replaces the JSON-LD on navigation, escaped so a name cannot close the script', async () => {

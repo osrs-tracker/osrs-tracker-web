@@ -1,9 +1,5 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
+import { ActivatedRouteSnapshot } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
-import { catchError, map, of } from 'rxjs';
-import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { wikiIconUrl } from '@app/common/icon/icon';
 import { ICON_IMAGE, PageMeta } from '@app/common/seo/page-meta-strategy';
 import { breadcrumbList, webPage } from '@app/common/seo/structured-data';
@@ -11,27 +7,14 @@ import { formatWhole } from './item-prices';
 
 const MAX_DESCRIPTION_LENGTH = 160;
 
-// Both resolvers ask for the item like `itemDetailResolver`; the shared-request interceptor makes it one request.
-// They fall back instead of using `resolverErrorHandler`: `itemDetailResolver` already shows the error page.
-
-export const itemDetailTitleResolver: ResolveFn<string> = (route: ActivatedRouteSnapshot) =>
-  inject(OsrsTrackerRepo)
-    .getItemInfo(route.params['id'], { loadingIndicator: true })
-    .pipe(
-      map(itemTitle),
-      catchError((err: unknown) =>
-        of(isNotFound(err) ? 'Item not found - OSRS Tracker' : 'OSRS Price Tracker - OSRS Tracker'),
-      ),
-    );
-
-/** No meta for an unknown item or a failed load: the page is a 404 or the error page, neither has a canonical. */
-export const itemDetailMetaResolver: ResolveFn<PageMeta | undefined> = (route: ActivatedRouteSnapshot) =>
-  inject(OsrsTrackerRepo)
-    .getItemInfo(route.params['id'], { loadingIndicator: true })
-    .pipe(
-      map(itemPageMeta),
-      catchError(() => of(undefined)),
-    );
+/**
+ * The item page's meta, from the item `itemDetailResolver` resolved. None for an unknown item (`null`): the page shows
+ * its not-found state, titled by the route, without a canonical. Other failures show the error page.
+ */
+export function itemDetailMeta(route: ActivatedRouteSnapshot): PageMeta | undefined {
+  const item: Item | null = route.data['item'];
+  return item ? itemPageMeta(item) : undefined;
+}
 
 /**
  * "Abyssal whip - OSRS Grand Exchange price": the words people search for, without the site name, which search results
@@ -50,6 +33,7 @@ export function itemPageMeta(item: Item): PageMeta {
   const canonicalPath = `/trackers/price/${item.id}`;
   const description = itemDescription(item);
   return {
+    title: itemTitle(item),
     description,
     canonicalPath,
     image: ICON_IMAGE,
@@ -86,8 +70,4 @@ export function itemDescription(item: Item): string {
 
   while (facts.length > 1 && describe(facts).length > MAX_DESCRIPTION_LENGTH) facts.pop();
   return describe(facts);
-}
-
-function isNotFound(err: unknown): boolean {
-  return err instanceof HttpErrorResponse && [400, 404].includes(err.status);
 }

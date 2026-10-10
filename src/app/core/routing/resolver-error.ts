@@ -13,11 +13,14 @@ export function resolverErrorHandler(url: string): (err: unknown) => never {
   const router = inject(Router);
 
   return (err: unknown) => {
-    const notFound = err instanceof HttpErrorResponse && [400, 404].includes(err.status);
-
-    router.navigate([notFound ? '**' : '/error']).then(() => {
+    router.navigate([isNotFound(err) ? '**' : '/error']).then(() => {
       if (router.url !== url) loc.replaceState(url);
     });
     throw err;
   };
+}
+
+/** The API has no such thing (404), or the id or name can't be one (400) */
+export function isNotFound(err: unknown): boolean {
+  return err instanceof HttpErrorResponse && [400, 404].includes(err.status);
 }

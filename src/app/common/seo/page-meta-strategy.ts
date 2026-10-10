@@ -1,9 +1,11 @@
-import { DOCUMENT, inject, Service } from '@angular/core';
+import { DOCUMENT, ErrorHandler, inject, Injector, Service } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRouteSnapshot, RouterStateSnapshot, TitleStrategy } from '@angular/router';
 import { config } from '@config/config';
 
 export interface PageMeta {
+  /** Over the route's `title`, which then only titles the page when there's no meta (a not-found state) */
+  title?: string;
   description: string;
   /** Path only, no query: '/trackers/price/4151' */
   canonicalPath: string;
@@ -12,6 +14,13 @@ export interface PageMeta {
   /** schema.org nodes for the page's JSON-LD, with absolute URLs; rendered as one `@graph` */
   jsonLd?: JsonLdNode[];
 }
+
+/**
+ * A route's `data['meta']`: fixed, or built from the route once its resolvers ran (its resolved `data` and `params`),
+ * `undefined` when the page has none (a not-found state). A function, not a resolver: the page's own resolver already
+ * fetched what it describes.
+ */
+export type RouteMeta = PageMeta | ((route: ActivatedRouteSnapshot) => PageMeta | undefined);
 
 export type JsonLdNode = { '@type': string } & Record<string, unknown>;
 
@@ -64,19 +73,26 @@ const SOCIAL_TAGS = [
 
 /**
  * Sets the title, description, canonical link and social tags once per navigation, from the deepest route's
- * `data['meta']` (static or resolved). Angular calls `updateTitle` after every successful navigation, also during SSR.
+ * `data['meta']` (a `RouteMeta`). Angular calls `updateTitle` after every successful navigation, also during SSR.
  */
 @Service()
 export class PageMetaStrategy extends TitleStrategy {
   private readonly document = inject(DOCUMENT);
+  // `ErrorHandler` only when needed: the app's one reports to `AnalyticsService`, which injects this strategy
+  private readonly injector = inject(Injector);
   private readonly meta = inject(Meta);
   private readonly title = inject(Title);
 
+  /** The meta's title, else the route's: also what `AnalyticsService` reports */
+  override buildTitle(snapshot: RouterStateSnapshot): string | undefined {
+    return this.pageMetaOf(snapshot)?.title ?? super.buildTitle(snapshot);
+  }
+
   override updateTitle(snapshot: RouterStateSnapshot): void {
-    const title = this.buildTitle(snapshot) ?? SITE_NAME;
+    const pageMeta = this.pageMetaOf(snapshot);
+    const title = pageMeta?.title ?? super.buildTitle(snapshot) ?? SITE_NAME;
     this.title.setTitle(title);
 
-    const pageMeta = deepestChild(snapshot.root).data['meta'] as PageMeta | undefined;
     this.meta.updateTag({ name: 'description', content: pageMeta?.description ?? DEFAULT_DESCRIPTION });
 
     this.setJsonLd(pageMeta?.jsonLd);
@@ -104,6 +120,23 @@ export class PageMetaStrategy extends TitleStrategy {
     this.meta.updateTag({ name: 'twitter:card', content: pageMeta.card ?? 'summary_large_image' });
 
     this.setCanonical(url);
+  }
+
+  /**
+   * A meta function that throws (a bug, or data the API never sends) is reported and the page gets no meta, rather than
+   * failing the navigation: Angular calls `updateTitle` at its end without catching, and during SSR the page wouldn't
+   * render. The page is then titled by its route, which for an item or player page is its not-found title.
+   */
+  private pageMetaOf(snapshot: RouterStateSnapshot): PageMeta | undefined {
+    const route = deepestChild(snapshot.root);
+    const meta = route.data['meta'] as RouteMeta | undefined;
+    if (typeof meta !== 'function') return meta;
+    try {
+      return meta(route);
+    } catch (error) {
+      this.injector.get(ErrorHandler).handleError(error);
+      return undefined;
+    }
   }
 
   private setCanonical(url: string): void {

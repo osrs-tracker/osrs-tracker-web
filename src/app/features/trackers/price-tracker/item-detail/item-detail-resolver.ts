@@ -1,10 +1,9 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
 import { catchError, Observable, of, throwError } from 'rxjs';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
-import { resolverErrorHandler } from '@app/core/routing/resolver-error';
+import { isNotFound, resolverErrorHandler } from '@app/core/routing/resolver-error';
 
 /**
  * The item, or `null` when there's no such item (the page shows its not-found state in place). Prices load on the page
@@ -16,10 +15,7 @@ export const itemDetailResolver: ResolveFn<Item | null> = (route: ActivatedRoute
   return inject(OsrsTrackerRepo)
     .getItemInfo(route.params['id'], { loadingIndicator: true })
     .pipe(
-      catchError((err: unknown): Observable<null> => {
-        const notFound = err instanceof HttpErrorResponse && [400, 404].includes(err.status);
-        return notFound ? of(null) : throwError(() => err);
-      }),
+      catchError((err: unknown): Observable<null> => (isNotFound(err) ? of(null) : throwError(() => err))),
       catchError(handleError),
     );
 };

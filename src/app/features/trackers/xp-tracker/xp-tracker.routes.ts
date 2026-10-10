@@ -1,8 +1,8 @@
 import { Route } from '@angular/router';
-import { PageMeta } from '@app/common/seo/page-meta-strategy';
+import { PageMeta, RouteMeta } from '@app/common/seo/page-meta-strategy';
 import { breadcrumbList } from '@app/common/seo/structured-data';
 import { playerDetailResolver } from './player-detail/player-detail-resolver';
-import { playerDetailMetaResolver, playerDetailTitleResolver } from './player-detail/player-detail-meta';
+import { playerDetailMeta } from './player-detail/player-detail-meta';
 
 export default [
   {
@@ -20,9 +20,11 @@ export default [
     loadComponent: () => import('./xp-tracker'),
   },
   {
-    title: playerDetailTitleResolver,
+    // The meta's title, or this one when there's no meta
+    title: 'Player not found - OSRS Tracker',
     path: ':username',
+    data: { meta: playerDetailMeta satisfies RouteMeta },
     loadComponent: () => import('./player-detail/player-detail'),
-    resolve: { player: playerDetailResolver, meta: playerDetailMetaResolver },
+    resolve: { player: playerDetailResolver },
   },
 ] as Route[];

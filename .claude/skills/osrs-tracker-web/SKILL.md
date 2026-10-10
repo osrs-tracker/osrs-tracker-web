@@ -66,8 +66,11 @@ a worktree).
   `ParamAwareReuseStrategy` recreates components on param change. Adding or renaming a route means updating
   `src/server/utils/route-label.ts` (its spec fails CI otherwise).
 - **Page meta**: `PageMetaStrategy` (`common/seo/`) sets the title, description, canonical and social tags once per
-  navigation from the deepest route's `data['meta']` (a `PageMeta`: static in `data`, or resolved). A route without it
-  gets the default description and no canonical or social tags. Never set meta from components or resolvers.
+  navigation from the deepest route's `data['meta']`, a `RouteMeta`: a `PageMeta`, or a function of the route that
+  builds one from its resolved data and params (`itemDetailMeta`), so the page's own resolver is the only fetch. The
+  meta's `title` wins over the route's `title`, which then only names the page without meta (a not-found state). A route
+  without meta gets the default description and no canonical or social tags. Never set meta from components or
+  resolvers.
 
 ## Design system
 
