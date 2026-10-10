@@ -141,7 +141,9 @@ the angular.dev docs for the installed major version.
   the response body (a news title, an item name), not the path.
 - **Transfer state size**: every SSR response is embedded in the page. Load large payloads the first paint doesn't need
   (the Wiki's `/latest` and `/24h`, every item's prices) in the browser only and render skeletons on the server, like
-  item and player rows.
+  item and player rows. The Wiki's `/latest` is the exception: the server keeps the full list for 60 s and transfers
+  only the rendered items' entries (`getLatestPrices` in `osrs-prices-repo.ts`). Don't ask the Wiki for one item
+  (`?id=`): it misses the Wiki's CDN cache (`docs/decisions.md`).
 - **Third-party calls in SSR**: a render waits for every request it makes, so keep third-party calls (the OSRS Wiki)
   small, and render a failed one as loading on the server (`latestLoading` in `item-detail.ts`), as the browser fetches
   it again after hydration. Set the `SSR_TIMEOUT` context token on such calls

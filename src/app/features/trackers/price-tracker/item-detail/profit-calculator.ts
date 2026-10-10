@@ -172,7 +172,7 @@ export class ProfitCalculator {
   readonly error: InputSignal<boolean> = input(false);
 
   readonly natureRune: ResourceRef<LatestPrices | undefined> = rxResource({
-    stream: () => this.osrsPricesRepo.getLatestPrices(NATURE_RUNE_ID, { fetchSingle: true }),
+    stream: () => this.osrsPricesRepo.getLatestPrices(NATURE_RUNE_ID),
   });
 
   readonly mode: WritableSignal<Mode> = signal('flip');
