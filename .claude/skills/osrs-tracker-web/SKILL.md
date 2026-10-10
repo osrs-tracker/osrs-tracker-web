@@ -99,21 +99,20 @@ token in `src/styles/tailwind/theme.css`.
   standalone ones; `.link` for accent links; `.search-box`/`.search-box-input`/`.search-box-button` for the big search;
   `.markdown` for reading text (changelog, privacy, terms).
 
-Which component to use (in `common/ui/`, whose folders follow the table: `cards/`, `controls/`, `page/`, `loading/`,
-`tooltip/`):
+Which component to use (in `common/ui/<folder>/` unless noted):
 
-| Need                                                 | Use                                                                                     |
-| ---------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| A titled section                                     | `article[card]`: 56px header, `[title]` and `[actions]` slots, `subtitle` for two lines |
-| A list of players or items                           | `section[list-card]` with its loading, empty and error states; `list-row-skeleton` rows |
-| One headline number                                  | `stat-tile` (`compact` for six in a row, `loading`, `tone` for a change)                |
-| A choice of views or periods                         | `segmented` (32px pills, a radio group; `variant="slate"` beside an accent button)      |
-| The tracking offset                                  | `tracking-offset` (`features/trackers/xp-tracker/`; a 32px select, stored per device)   |
-| A whole page's state (not found, unavailable, error) | `status-panel`, with a back button or other actions as content                          |
-| Something failed to load                             | `load-error` (default, `panel` or `compact`; see Failures above)                        |
-| Something is loading                                 | `skeleton` blocks sized like the content, never a spinner                               |
-| A short explanation                                  | `info-tooltip`, or `[tooltip]` on any element                                           |
-| A reading page                                       | `information-page` around `<div class="markdown">`                                      |
+| Need                                                          | Use                                                                                     |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| A titled section (`cards/`)                                   | `article[card]`: 56px header, `[title]` and `[actions]` slots, `subtitle` for two lines |
+| A list of players or items (`cards/`)                         | `section[list-card]` with its loading, empty and error states; `list-row-skeleton` rows |
+| One headline number (`cards/`)                                | `stat-tile` (`compact` for six in a row, `loading`, `tone` for a change)                |
+| A choice of views or periods (`controls/`)                    | `segmented` (32px pills, a radio group; `variant="slate"` beside an accent button)      |
+| The tracking offset                                           | `tracking-offset` (`features/trackers/xp-tracker/`; a 32px select, stored per device)   |
+| A whole page's state: not found, unavailable, error (`page/`) | `status-panel`, with `back-button` or other actions as content                          |
+| Something failed to load (`loading/`)                         | `load-error` (default, `panel` or `compact`; see Failures above)                        |
+| Something is loading (`loading/`)                             | `skeleton` blocks sized like the content, never a spinner                               |
+| A short explanation (`tooltip/`)                              | `info-tooltip`, or `[tooltip]` on any element                                           |
+| A reading page (`page/`)                                      | `information-page` around `<div class="markdown">`                                      |
 
 ## Code navigation
 
