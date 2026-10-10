@@ -29,8 +29,6 @@ interface SkillCell {
   name: SkillEnum;
   /** False while the hiscores load; the cell is a skeleton */
   loaded: boolean;
-  /** `null` for an untrained skill, which shows level 1 */
-  skill: HiscoreSkill | null;
   level: number;
   /** XP shown and used for progress; an untrained skill has none */
   xp: number;
@@ -180,14 +178,14 @@ export class SkillGridComponent {
     return SKILL_LAYOUT.map(name => {
       const hiscore = this.hiscore();
       const loaded = !!hiscore;
-      const skill = hiscore?.skills[name] ?? null;
+      // an untrained skill (`null`) shows level 1 with no XP
+      const skill = hiscore?.skills[name];
       const level = skillLevel(skill);
       const xp = skill?.xp ?? 0;
       const gain = this.gains().get(name) ?? 0;
       return {
         name,
         loaded,
-        skill,
         level,
         xp,
         progress: loaded && level < 99 ? percentageToNextLevel(xp, level) : undefined,
