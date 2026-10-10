@@ -70,3 +70,8 @@ export const UNCHARTED_MINIGAMES: Partial<Record<ActivityEnum, string>> = {
   [ActivityEnum.DeadmanPoints]: 'Seasonal points',
   [ActivityEnum.GridPoints]: 'Seasonal points',
 };
+
+/** Empty cells (`null`) that complete the last row of three */
+export function fillRows(names: string[]): (string | null)[] {
+  return [...names, ...Array<null>((3 - (names.length % 3)) % 3).fill(null)];
+}

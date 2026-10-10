@@ -1,4 +1,4 @@
-import { DecimalPipe, isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
@@ -6,7 +6,6 @@ import {
   OnInit,
   PLATFORM_ID,
   RESPONSE_INIT,
-  ResourceRef,
   Signal,
   WritableSignal,
   computed,
@@ -14,65 +13,47 @@ import {
   inject,
   input,
   linkedSignal,
-  signal,
   untracked,
 } from '@angular/core';
-import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ActivityEnum } from '@osrs-tracker/hiscores';
-import { HiscoreEntry, HiscoreSkill, overallOf, Player } from '@osrs-tracker/models';
-import { format } from 'date-fns';
-import { EMPTY, catchError, finalize } from 'rxjs';
+import { HiscoreSkill, overallOf, Player } from '@osrs-tracker/models';
+import { EMPTY, catchError } from 'rxjs';
 import { LoadError } from '@app/common/ui/loading/load-error';
-import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
-import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { StatTile } from '@app/common/ui/cards/stat-tile';
 import { StatusPanel } from '@app/common/ui/page/status-panel';
 import { localIcons } from '@app/common/icon/local-icons.generated';
 import { LOCAL_ICONS } from '@app/common/icon/local-icons-token';
-import { formatNumberLegible } from '@app/common/format/number-format';
 import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
 import { TimeAgoPipe } from '@app/common/format/time-ago-pipe';
-import { OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { isHumanVisitor } from '@app/core/platform/human-visitor';
 import { resolverErrorHandler } from '@app/core/routing/resolver-error';
-import { BOSSES, CLUES, MINIGAME_ROWS, RAID_LAYOUT, UNCHARTED_MINIGAMES } from './activity-categories';
+import { MINIGAME_ROWS, UNCHARTED_MINIGAMES } from './activity-categories';
 import { XpTrackerStore } from '../xp-tracker-store';
-import { ActivityGrid } from './hiscores/activity-grid';
-import { SkillGrid } from './hiscores/skill-grid';
+import { ActivitiesCard } from './hiscores/activities-card';
+import { SkillsCard } from './hiscores/skills-card';
 import { PlayerChart } from './charts/player-chart';
 import { isNotFound } from './player-detail-resolver';
 import { PlayerHeader, TrackingState } from './player-header';
+import { playerHistory, PlayerHistory } from './player-history';
 import { LogNotice, PlayerLogs } from './player-logs';
-import { Gains, PeriodSummary, dailyGains, periodStart, periodSummary } from './player-summary';
-import { BottomTab, PlayerView, TopTab } from './player-view';
-
-interface StatTileView {
-  label: string;
-  value: string;
-  sub: string;
-  tone: 'muted' | 'up' | 'down';
-  tip?: string;
-}
-
-const ACTIVITIES = Object.values(ActivityEnum);
+import { StatTileView, statTilesFor } from './player-stats';
+import { Gains, PeriodSummary, dailyGains, periodStart, periodSummary, totalGains } from './player-summary';
+import { PlayerView } from './player-view';
 
 @Component({
   selector: 'player-detail',
   templateUrl: './player-detail.html',
   imports: [
-    ActivityGrid,
+    ActivitiesCard,
     CapitalizePipe,
-    DecimalPipe,
     LoadError,
     PlayerChart,
     PlayerHeader,
     PlayerLogs,
     RouterLink,
-    Segmented,
-    Skeleton,
-    SkillGrid,
+    SkillsCard,
     StatTile,
     StatusPanel,
     TimeAgoPipe,
@@ -86,7 +67,6 @@ const ACTIVITIES = Object.values(ActivityEnum);
 export default class PlayerDetail implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
-  private readonly osrsProxyRepo = inject(OsrsProxyRepo);
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly xpTrackerStore = inject(XpTrackerStore);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -96,14 +76,6 @@ export default class PlayerDetail implements OnInit {
 
   readonly username: string = inject(ActivatedRoute).snapshot.params['username'];
   readonly #pageErrorHandler = resolverErrorHandler('/trackers/xp/' + this.username);
-
-  /** 15 entries: the last week and the week before it, for the stat tiles. 30D and 60D load up to 61. */
-  readonly #DEFAULT_SIZE = 15;
-  readonly #MORE_SIZE = 7;
-  /** The history is kept for about 60 days, so 60 days and today is all there is (and 30D's previous period fits) */
-  readonly #PERIOD_SIZE = 61;
-  /** Pages loaded after the first, with the size each asked for: a shorter page is the end of the history */
-  readonly #morePages: WritableSignal<{ entries: HiscoreEntry[]; size: number }[]> = signal([]);
 
   /** `null` when there's no such player */
   readonly player = input.required<Player | null>();
@@ -116,84 +88,50 @@ export default class PlayerDetail implements OnInit {
     () => `${String((this.scrapingOffset() + 24) % 24).padStart(2, '0')}:00 UTC`,
   );
 
-  /** The live hiscores, only fetched in the browser. */
-  readonly todayResource: ResourceRef<HiscoreEntry | undefined> = rxResource({
-    // the resolved player, not playerDetail: trackPlayer replacing it mustn't restart the request
-    params: () =>
-      this.isBrowser && this.player() ? { username: this.username, offset: this.scrapingOffset() } : undefined,
-    stream: ({ params: { username, offset } }) => this.osrsProxyRepo.getPlayerHiscore(username, offset),
-  });
-  readonly firstHistoryPage: ResourceRef<HiscoreEntry[] | undefined> = rxResource({
-    params: () => (this.player() ? { username: this.username, offset: this.scrapingOffset() } : undefined),
-    stream: ({ params: { username, offset } }) =>
-      this.osrsTrackerRepo.getPlayerHiscores(username, offset, this.#DEFAULT_SIZE, 0),
+  readonly history: PlayerHistory = playerHistory({
+    username: this.username,
+    offset: this.scrapingOffset,
+    // the resolved player, not playerDetail: trackPlayer replacing it mustn't restart the requests
+    enabled: computed(() => !!this.player()),
+    period: this.playerView.period,
   });
 
-  // value() throws while a resource is in its error state, so read it through hasValue()
-  readonly today: Signal<HiscoreEntry | undefined> = computed(() =>
-    this.todayResource.hasValue() ? this.todayResource.value() : undefined,
-  );
-  /** The live hiscores aren't in yet; also during SSR, which doesn't fetch them, so hydration doesn't change the page */
-  readonly todayLoading: Signal<boolean> = computed(
-    () => !this.todayResource.hasValue() && !this.todayResource.error(),
-  );
-  readonly historyLoaded: Signal<boolean> = computed(() => this.firstHistoryPage.hasValue());
-  readonly history: Signal<HiscoreEntry[]> = computed(() => [
-    ...(this.firstHistoryPage.hasValue() ? (this.firstHistoryPage.value() ?? []) : []),
-    ...this.#morePages().flatMap(page => page.entries),
-  ]);
-  readonly hasMoreEntries: Signal<boolean> = computed(() => {
-    const lastMorePage = this.#morePages().at(-1);
-    if (lastMorePage) return lastMorePage.entries.length === lastMorePage.size;
-    return this.firstHistoryPage.hasValue() && this.firstHistoryPage.value()?.length === this.#DEFAULT_SIZE;
-  });
-
-  readonly loadingMore: WritableSignal<boolean> = signal(false);
-  readonly loadMoreFailed: WritableSignal<boolean> = signal(false);
-  /** The size the failed load asked for, so a retry loads as much (a longer period asks for more than a week) */
-  #failedMoreSize = this.#MORE_SIZE;
-
-  /** The entries the period needs: its days and the period before them, as far as the history goes */
-  readonly #periodSize: Signal<number> = computed(() => Math.min(this.playerView.period() * 2 + 1, this.#PERIOD_SIZE));
-  /** The period's history is in (or there's no more, or it failed), so the chart and tiles are drawn once, complete */
-  readonly periodLoaded: Signal<boolean> = computed(
-    () =>
-      this.historyLoaded() &&
-      (this.history().length >= this.#periodSize() || !this.hasMoreEntries() || this.loadMoreFailed()),
-  );
-
-  /** The live hiscores; until they load (or when they fail) the newest tracked entry */
-  readonly current: Signal<HiscoreEntry | undefined> = computed(() => this.today() ?? this.history()[0]);
   /** The stats shown are the last tracked ones because the hiscores didn't respond (to the API or the browser) */
   readonly stale: Signal<boolean> = computed(
     () =>
-      !this.today() &&
-      !!this.history().length &&
-      (!!this.todayResource.error() || !!this.playerDetail()?.refreshFailed),
+      !this.history.today() &&
+      !!this.history.entries().length &&
+      (!!this.history.todayResource.error() || !!this.playerDetail()?.refreshFailed),
   );
-  /** When the daily check last stored the player's stats (a failed check stores nothing): the newest entry's date */
-  readonly lastCheckedAt: Signal<Date | undefined> = computed(() => this.history()[0]?.date);
+  /** Without live hiscores the newest tracked entry stands in, so this only fails when there's none either */
+  readonly hiscoresFailed: Signal<boolean> = computed(
+    () =>
+      !this.history.current() &&
+      !!this.history.todayResource.error() &&
+      (this.history.loaded() || !!this.history.firstPage.error()),
+  );
 
   readonly trackingState: Signal<TrackingState> = computed(() => {
     const player = this.playerDetail();
     if (!player || !isTrackedFor(player, this.scrapingOffset())) return 'untracked';
-    return this.historyLoaded() && this.history().length <= 1 ? 'started' : 'tracked';
+    return this.history.loaded() && this.history.entries().length <= 1 ? 'started' : 'tracked';
   });
 
   /** Each day's gains, newest first; the first is today's so far when the live hiscores are in */
   readonly diffs: Signal<Gains[]> = computed(() => {
-    const current = this.current();
-    return current ? dailyGains(current, this.history()) : [];
+    const current = this.history.current();
+    return current ? dailyGains(current, this.history.entries()) : [];
   });
   /** The days the chart and tiles cover: the period's days and today so far, newest first */
   readonly periodDiffs: Signal<Gains[]> = computed(() => {
-    const current = this.current();
-    if (!current || !this.history().length) return [];
-    return this.diffs().slice(0, periodStart(current, this.history(), this.playerView.period()).index + 1);
+    const current = this.history.current();
+    const entries = this.history.entries();
+    if (!current || !entries.length) return [];
+    return this.diffs().slice(0, periodStart(current, entries, this.playerView.period()).index + 1);
   });
   readonly chartState: Signal<'loading' | 'empty' | 'ready'> = computed(() => {
-    if (!this.periodLoaded()) return 'loading';
-    return this.history().length > 1 ? 'ready' : 'empty';
+    if (!this.history.periodLoaded()) return 'loading';
+    return this.history.entries().length > 1 ? 'ready' : 'empty';
   });
 
   readonly emptyChartText: Signal<string> = computed(() => {
@@ -223,30 +161,16 @@ export default class PlayerDetail implements OnInit {
   });
 
   readonly summary: Signal<PeriodSummary | undefined> = computed(() => {
-    const current = this.current();
-    return current && periodSummary(current, this.history(), this.playerView.period());
+    const current = this.history.current();
+    return current && periodSummary(current, this.history.entries(), this.playerView.period());
   });
 
   /** Each skill's XP gained over the period, for the skills that gained any */
-  readonly skillGains: Signal<ReadonlyMap<string, number>> = computed(() => {
-    const gains = new Map<string, number>();
-    this.periodDiffs().forEach(diff =>
-      Object.entries(diff.skills).forEach(([name, { xp }]) => {
-        if (xp > 0) gains.set(name, (gains.get(name) ?? 0) + xp);
-      }),
-    );
-    return gains;
-  });
+  readonly skillGains: Signal<ReadonlyMap<string, number>> = computed(() => totalGains(this.periodDiffs(), 'skills'));
   /** Each activity's gains over the period */
-  readonly activityGains: Signal<ReadonlyMap<string, number>> = computed(() => {
-    const gains = new Map<string, number>();
-    this.periodDiffs().forEach(diff =>
-      Object.entries(diff.activities).forEach(([name, { score }]) => {
-        if (score > 0) gains.set(name, (gains.get(name) ?? 0) + score);
-      }),
-    );
-    return gains;
-  });
+  readonly activityGains: Signal<ReadonlyMap<string, number>> = computed(() =>
+    totalGains(this.periodDiffs(), 'activities'),
+  );
   /** The picked minigame, or the first running total with gains */
   readonly chartedMinigame: Signal<string | undefined> = computed(
     () =>
@@ -254,91 +178,20 @@ export default class PlayerDetail implements OnInit {
       MINIGAME_ROWS.flat().find(name => !(name in UNCHARTED_MINIGAMES) && this.activityGains().has(name)),
   );
 
-  readonly topTabs: SegmentedOption<TopTab>[] = [
-    { value: 'skills', label: 'Skills' },
-    { value: 'bosses', label: 'Bosses' },
-    { value: 'raids', label: 'Raids' },
-  ];
-  readonly bottomTabs: SegmentedOption<BottomTab>[] = [
-    { value: 'clues', label: 'Clues' },
-    { value: 'minigames', label: 'Minigames' },
-  ];
-
-  readonly bossLayout: (string | null)[] = fillRows(ACTIVITIES.filter(name => BOSSES.has(name)));
-  readonly raidLayout: (string | null)[] = RAID_LAYOUT;
-  readonly clueLayout: (string | null)[] = ACTIVITIES.filter(name => CLUES.has(name));
-  /** Only the minigames the player is ranked in, each row of three filled up on its own */
-  readonly minigameLayout: Signal<(string | null)[]> = computed(() => {
-    const current = this.current();
-    const ranked = (name: string): boolean => current?.activities[name] != null;
-    return MINIGAME_ROWS.flatMap(row => fillRows(row.filter(ranked)));
-  });
-  /** One row of loading cells */
-  readonly minigameSkeleton: (string | null)[] = MINIGAME_ROWS[0];
-  readonly clueTotal: Signal<number | undefined> = computed(() => {
-    const current = this.current();
-    return current?.activities[ActivityEnum.ClueScrollsAll]?.score;
-  });
-
   readonly overall: Signal<HiscoreSkill | undefined> = computed(() => {
-    const current = this.current();
+    const current = this.history.current();
     return current && overallOf(current);
   });
   readonly statTiles: Signal<StatTileView[] | undefined> = computed(() => {
     const overall = this.overall();
-    if (!overall || !this.periodLoaded()) return undefined;
-
-    const totalLevel: StatTileView = {
-      label: 'Total level',
-      value: overall.level.toLocaleString('en-US'),
-      sub: overall.rank !== null ? `Rank ${overall.rank.toLocaleString('en-US')}` : 'Unranked',
-      tone: 'muted',
-    };
-    const summary = this.summary();
-    const since = summary?.since;
-    const xpLabel = since ? `XP since ${format(since, 'd MMM')}` : `XP last ${this.playerView.period()} days`;
-    if (!summary) {
-      return [
-        totalLevel,
-        { label: xpLabel, value: '–', sub: 'From the next check', tone: 'muted' },
-        { label: 'Levels gained', value: '–', sub: '', tone: 'muted' },
-        { label: 'Boss kills', value: '–', sub: '', tone: 'muted' },
-      ];
-    }
-
-    const levelCount = summary.levels.reduce((total, { from, to }) => total + to - from, 0);
-    const levels = summary.levels.map(({ skill, from, to }) => `${skill} ${from} → ${to}`).join(', ');
-    return [
-      totalLevel,
-      {
-        label: xpLabel,
-        value: formatNumberLegible(summary.xp),
-        tip: `${summary.xp.toLocaleString('en-US')} XP`,
-        ...this.periodComparison(summary),
-      },
-      { label: 'Levels gained', value: String(levelCount), sub: levels, tip: levels, tone: 'muted' },
-      {
-        label: 'Boss kills',
-        value: summary.bossKills.toLocaleString('en-US'),
-        sub: summary.mostKilled ? `Most: ${summary.mostKilled.name} (${summary.mostKilled.kills})` : '',
-        tone: 'muted',
-      },
-    ];
+    if (!overall || !this.history.periodLoaded()) return undefined;
+    return statTilesFor(overall, this.summary(), this.playerView.period());
   });
 
   constructor() {
     // Only during SSR: the page is a 404 when there's no such player
     effect(() => {
       if (this.responseInit && !this.playerDetail()) this.responseInit.status = 404;
-    });
-
-    // A longer period loads the history it needs
-    effect(() => {
-      const needed = this.#periodSize();
-      if (!this.historyLoaded() || this.history().length >= needed || !this.hasMoreEntries()) return;
-      untracked(() => {
-        if (!this.loadingMore()) this.loadMore(needed - this.history().length);
-      });
     });
 
     // Only skills with gains can be picked, so a shorter period drops the picks that gained nothing in it
@@ -352,11 +205,6 @@ export default class PlayerDetail implements OnInit {
     if (!this.player()) return;
     if (this.isBrowser) this.xpTrackerStore.pushRecentPlayer(this.player()!.username);
     if (this.isHumanVisitor) this.trackPlayer();
-  }
-
-  retryHiscores(): void {
-    this.todayResource.reload();
-    if (this.firstHistoryPage.error()) this.firstHistoryPage.reload();
   }
 
   search(username: string): void {
@@ -385,56 +233,11 @@ export default class PlayerDetail implements OnInit {
           const wasTracked = isTrackedFor(this.playerDetail()!, offset);
           this.playerDetail.set(player);
           // tracking an offset stores its first entry, so load it
-          if (!wasTracked && isTrackedFor(player, offset)) this.firstHistoryPage.reload();
+          if (!wasTracked && isTrackedFor(player, offset)) this.history.firstPage.reload();
         },
         error: () => undefined, // already shown by #pageErrorHandler
       });
   }
-
-  /** Loads the next `size` days of history, a week by default */
-  loadMore(size: number = this.#MORE_SIZE): void {
-    this.loadingMore.set(true);
-    this.loadMoreFailed.set(false);
-
-    this.osrsTrackerRepo
-      .getPlayerHiscores(this.username, this.scrapingOffset(), size, this.history().length)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        finalize(() => this.loadingMore.set(false)),
-      )
-      .subscribe({
-        next: scrapedHiscores => this.#morePages.update(pages => [...pages, { entries: scrapedHiscores, size }]),
-        error: () => {
-          this.#failedMoreSize = size;
-          this.loadMoreFailed.set(true);
-        },
-      });
-  }
-
-  retryLoadMore(): void {
-    this.loadMore(this.#failedMoreSize);
-  }
-
-  /** Compared with the period before it, e.g. "+24% vs previous week"; 60 days back is as far as the history goes */
-  private periodComparison(summary: PeriodSummary): Pick<StatTileView, 'sub' | 'tone'> {
-    const { xp, previousXp } = summary;
-    const previous = this.playerView.period() === 7 ? 'week' : `${this.playerView.period()} days`;
-    if (previousXp === undefined) return { sub: '', tone: 'muted' };
-    if (!previousXp)
-      return { sub: xp ? `None the ${previous} before` : `None the ${previous} before either`, tone: 'muted' };
-
-    const change = Math.round(((xp - previousXp) / previousXp) * 100);
-    if (!change) return { sub: `Same as previous ${previous}`, tone: 'muted' };
-    return {
-      sub: `${change > 0 ? '+' : '−'}${Math.abs(change)}% vs previous ${previous}`,
-      tone: change > 0 ? 'up' : 'down',
-    };
-  }
-}
-
-/** Empty cells (`null`) that complete the last row of three */
-function fillRows(names: string[]): (string | null)[] {
-  return [...names, ...Array<null>((3 - (names.length % 3)) % 3).fill(null)];
 }
 
 /**

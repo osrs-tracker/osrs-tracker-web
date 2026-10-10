@@ -39,12 +39,12 @@
         </svg>
         <p class="grow basis-70 text-base/6 text-strong">
           The hiscores aren’t responding, so these are {{ player.username | capitalizeWords }}’s stats from
-          {{ lastCheckedAt() | timeAgo }}.
+          {{ history.lastCheckedAt() | timeAgo }}.
         </p>
         <button
           type="button"
           class="h-9 px-4 rounded-full border border-border text-sm font-bold text-strong hover:bg-row"
-          (click)="todayResource.reload()"
+          (click)="history.todayResource.reload()"
         >
           Try again
         </button>
@@ -57,7 +57,7 @@
       [playerDetail]="player"
       [trackingState]="trackingState()"
       [trackedAt]="trackedAt()"
-      [lastCheckedAt]="lastCheckedAt()"
+      [lastCheckedAt]="history.lastCheckedAt()"
       [stale]="stale()"
     />
 
@@ -83,112 +83,40 @@
   <main class="max-w-page mx-auto px-4 sm:px-6 pt-6 pb-18 grid items-start gap-6 md:grid-player-tablet lg:grid-player">
     <aside class="contents md:flex md:flex-col md:gap-6 md:col-start-1 md:row-start-1 md:row-span-2 min-w-0">
       <!-- Skills, Bosses or Raids: beside the chart, so on phones it comes first -->
-      <article class="order-1 min-w-0 pb-4 rounded-2xl bg-card overflow-hidden">
-        <div class="flex items-center min-h-14 px-4 py-1.5 border-b border-line">
-          <segmented
-            class="grow"
-            stretch
-            label="Hiscores category"
-            [options]="topTabs"
-            [value]="playerView.top()"
-            (valueChange)="playerView.showTop($event)"
-          />
-        </div>
-        <div class="px-4 pt-4">
-          <!-- without live hiscores the newest tracked entry stands in, so this only shows when there's none either -->
-          @if (!current() && todayResource.error() && (historyLoaded() || firstHistoryPage.error())) {
-            <load-error source="player-hiscore" message="Couldn't load the hiscores." (retry)="retryHiscores()" />
-          } @else {
-            @switch (playerView.top()) {
-              @case ('skills') {
-                <skill-grid [hiscore]="current()" [gains]="skillGains()" />
-              }
-              @case ('bosses') {
-                <activity-grid
-                  view="bosses"
-                  scoreLabel="Kill count"
-                  [layout]="bossLayout"
-                  [hiscore]="current()"
-                  [gains]="activityGains()"
-                />
-              }
-              @case ('raids') {
-                <activity-grid
-                  view="raids"
-                  scoreLabel="Completed"
-                  [layout]="raidLayout"
-                  [hiscore]="current()"
-                  [gains]="activityGains()"
-                />
-              }
-            }
-          }
-        </div>
-      </article>
+      <article
+        skills-card
+        class="order-1"
+        [hiscore]="history.current()"
+        [skillGains]="skillGains()"
+        [activityGains]="activityGains()"
+        [failed]="hiscoresFailed()"
+        (retry)="history.retry()"
+      ></article>
 
       <!-- Clues or Minigames: on phones after the chart -->
-      <article class="order-3 min-w-0 pb-4 rounded-2xl bg-card overflow-hidden">
-        <div class="flex items-center min-h-14 px-4 py-1.5 border-b border-line">
-          <segmented
-            class="grow"
-            stretch
-            label="Clues and minigames"
-            [options]="bottomTabs"
-            [value]="playerView.bottom()"
-            (valueChange)="playerView.showBottom($event)"
-          />
-        </div>
-        <div class="px-4 pt-4">
-          @if (playerView.bottom() === 'clues') {
-            <activity-grid
-              view="clues"
-              scoreLabel="Completed"
-              [layout]="clueLayout"
-              [hiscore]="current()"
-              [gains]="activityGains()"
-              [hasFooter]="true"
-            >
-              <div class="flex items-center justify-center gap-1.5 h-11 bg-inner text-base">
-                @if (clueTotal() !== undefined) {
-                  <span>Total clues:</span>
-                  <span class="font-bold text-strong tabular-nums">{{
-                    clueTotal()! > 0 ? (clueTotal() | number) : '–'
-                  }}</span>
-                } @else {
-                  <skeleton class="h-5 w-32" />
-                }
-              </div>
-            </activity-grid>
-          } @else if (!current() || minigameLayout().length) {
-            <activity-grid
-              view="minigames"
-              [layout]="current() ? minigameLayout() : minigameSkeleton"
-              [hiscore]="current()"
-              [gains]="activityGains()"
-              [minigame]="chartedMinigame()"
-            />
-          } @else {
-            <p class="py-3 text-center text-base text-muted">
-              {{ player.username | capitalizeWords }} isn’t ranked in any minigame.
-            </p>
-          }
-        </div>
-      </article>
+      <article
+        activities-card
+        class="order-3"
+        [username]="player.username"
+        [hiscore]="history.current()"
+        [gains]="activityGains()"
+        [minigame]="chartedMinigame()"
+      ></article>
     </aside>
 
-    @if (firstHistoryPage.error()) {
+    @if (history.firstPage.error()) {
       <load-error
         class="order-2 md:col-start-2 md:row-start-1"
         panel
         source="player-history"
         message="Couldn't load the history."
-        (retry)="firstHistoryPage.reload()"
+        (retry)="history.firstPage.reload()"
       />
     } @else {
       <player-chart
         class="order-2 md:col-start-2 md:row-start-1"
         [diffs]="periodDiffs()"
-        [current]="current()"
+        [current]="history.current()"
         [since]="summary()?.since"
         [state]="chartState()"
         [minigame]="chartedMinigame()"
@@ -198,23 +126,27 @@
       <section class="order-4 md:col-start-2 md:row-start-2 min-w-0 flex flex-col gap-6" aria-label="Day log">
         <player-logs
           [diffs]="diffs()"
-          [loading]="!historyLoaded()"
-          [todayLoading]="todayLoading()"
-          [todaySince]="todayResource.error() ? undefined : trackedAt()"
+          [loading]="!history.loaded()"
+          [todayLoading]="history.todayLoading()"
+          [todaySince]="history.todayResource.error() ? undefined : trackedAt()"
           [notice]="logNotice()"
         />
 
-        @if (hasMoreEntries()) {
-          @if (loadMoreFailed()) {
-            <load-error source="player-history-more" message="Couldn't load more days." (retry)="retryLoadMore()" />
+        @if (history.hasMore()) {
+          @if (history.loadMoreFailed()) {
+            <load-error
+              source="player-history-more"
+              message="Couldn't load more days."
+              (retry)="history.retryLoadMore()"
+            />
           } @else {
             <button
               type="button"
               class="button--default button--rounded self-center px-12 bg-card disabled:opacity-60"
-              [disabled]="loadingMore()"
-              (click)="loadMore()"
+              [disabled]="history.loadingMore()"
+              (click)="history.loadMore()"
             >
-              {{ loadingMore() ? 'Loading…' : 'Load more days' }}
+              {{ history.loadingMore() ? 'Loading…' : 'Load more days' }}
             </button>
           }
         }

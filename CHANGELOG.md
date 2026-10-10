@@ -24,6 +24,8 @@
   aliases, and lint now checks that shared code never depends on a page and pages don't reach into each other. Shared
   code is grouped by what it's for (the design system's parts, the API, formatting) instead of by kind, and the player
   page's chart, log list, hiscores and colours each have their own place.
+- The player page's code is split into smaller parts (loading the history, the stat tiles, the two hiscores cards).
+  Nothing looks or works differently.
 
 ## 2026/10/09
 

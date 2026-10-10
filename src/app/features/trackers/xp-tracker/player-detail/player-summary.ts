@@ -98,6 +98,19 @@ export function periodSummary(current: HiscoreEntry, history: HiscoreEntry[], da
   };
 }
 
+/** Each skill's XP, or each activity's score, gained over the days, for those that gained any */
+export function totalGains(days: Gains[], kind: 'skills' | 'activities'): ReadonlyMap<string, number> {
+  const totals = new Map<string, number>();
+  for (const day of days) {
+    const gains =
+      kind === 'skills'
+        ? Object.entries(day.skills).map(([name, { xp }]) => [name, xp] as const)
+        : Object.entries(day.activities).map(([name, { score }]) => [name, score] as const);
+    for (const [name, gain] of gains) if (gain > 0) totals.set(name, (totals.get(name) ?? 0) + gain);
+  }
+  return totals;
+}
+
 /**
  * How many days before the current stats each stored entry was checked. The checks are whole days apart, give or take
  * how long a check took; the live hiscores fall somewhere in the day after the newest check.
