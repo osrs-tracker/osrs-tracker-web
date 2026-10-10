@@ -2,167 +2,131 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://osrs-tracker.freekmencke.com/</loc>
-    <priority>1.0</priority>
-    <changefreq>weekly</changefreq>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price</loc>
-    <priority>1.0</priority>
-    <changefreq>weekly</changefreq>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/a</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/b</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/c</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/d</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/e</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/f</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/g</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/h</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/i</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/j</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/k</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/l</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/m</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/n</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/o</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/p</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/q</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/r</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/s</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/t</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/u</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/v</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/w</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/x</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/y</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/z</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/0</loc>
-    <priority>0.8</priority>
     <lastmod>2026-10-10T18:20:31+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/xp</loc>
-    <priority>1.0</priority>
-    <changefreq>weekly</changefreq>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/about/changelog</loc>
-    <priority>0.7</priority>
-    <lastmod>2026-10-10T18:20:31+02:00</lastmod>
+    <lastmod>2026-10-10T18:54:57+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/about/privacy</loc>
-    <priority>0.3</priority>
     <lastmod>2026-10-07T20:12:54+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/about/terms</loc>
-    <priority>0.3</priority>
     <lastmod>2026-10-07T20:12:54+02:00</lastmod>
   </url>
 </urlset>

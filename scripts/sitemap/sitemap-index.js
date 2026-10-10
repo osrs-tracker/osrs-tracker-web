@@ -1,25 +1,47 @@
-import xmlFormatter from 'xml-formatter';
-import { writeFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
+import { git, hasFullHistory, SITE_URL, writeSitemap } from './sitemap-file.js';
 
-// No <lastmod> (it's optional): the pages' own dates are in sitemap-site.xml, and sitemap-items.xml has no source with a
-// date (it lists the Wiki's items). A file timestamp is the checkout time in the CD workflow, wrong on every deploy.
+const OUTPUT = 'public/sitemap.xml';
+const SITEMAPS = ['sitemap-site.xml', 'sitemap-items.xml', 'sitemap-players.xml'];
+
+const day = date => date.toISOString().slice(0, 10);
+
+// The day a sitemap's content last changed: today when this run changed it (it differs from the committed copy), else
+// the day of the last commit that changed it. Not the file's timestamp, which in the CD workflow is the checkout time.
+// A day, not a time: the CD workflow commits a few minutes after generating, and a time would then change once more on
+// the next deploy without the content changing. UTC, as the deploy commits are.
+const lastmod = async file => {
+  const path = `public/${file}`;
+  let committed;
+  try {
+    committed = git(['show', `HEAD:${path}`]);
+  } catch {
+    // Not committed yet
+  }
+  if (committed !== (await readFile(path, 'utf8')).trim()) return day(new Date());
+
+  return day(new Date(Number(git(['log', '-1', '--format=%ct', '--', path])) * 1000));
+};
+
 (async () => {
-  const sitemapIndex = `
-<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <sitemap>
-    <loc>https://osrs-tracker.freekmencke.com/sitemap-site.xml</loc>
-  </sitemap>
-  <sitemap>
-    <loc>https://osrs-tracker.freekmencke.com/sitemap-items.xml</loc>
-  </sitemap>
-</sitemapindex>`;
+  // The committed file (or the one the CD workflow just generated, which the image is built from) is right already
+  if (!hasFullHistory()) {
+    console.log(`No full git history, keeping ${OUTPUT}.`);
+    return;
+  }
 
-  const xml = xmlFormatter(sitemapIndex, {
-    indentation: '  ',
-    collapseContent: true,
-    lineSeparator: '\n',
-  });
+  const sitemaps = await Promise.all(
+    SITEMAPS.map(
+      async file => `<sitemap><loc>${SITE_URL}/${file}</loc><lastmod>${await lastmod(file)}</lastmod></sitemap>`,
+    ),
+  );
 
-  await writeFile('public/sitemap.xml', xml, 'utf8');
+  const xml = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...sitemaps,
+    '</sitemapindex>',
+  ].join('');
+
+  await writeSitemap(OUTPUT, xml);
 })();

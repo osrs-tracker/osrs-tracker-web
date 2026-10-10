@@ -2,8 +2,14 @@
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
     <loc>https://osrs-tracker.freekmencke.com/sitemap-site.xml</loc>
+    <lastmod>2026-10-10</lastmod>
   </sitemap>
   <sitemap>
     <loc>https://osrs-tracker.freekmencke.com/sitemap-items.xml</loc>
+    <lastmod>2026-10-10</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://osrs-tracker.freekmencke.com/sitemap-players.xml</loc>
+    <lastmod>2026-10-10</lastmod>
   </sitemap>
 </sitemapindex>
