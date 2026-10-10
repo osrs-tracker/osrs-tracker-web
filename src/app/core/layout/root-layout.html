@@ -4,14 +4,15 @@
     <div
       class="max-w-page mx-auto flex flex-wrap items-center gap-x-4 gap-y-1 px-4 pt-3 pb-1.5 sm:gap-6 sm:px-6 sm:py-4"
     >
-      <!-- The wordmark, as on the favicon and the link preview image. Hover fills a tile like the theme button's; the
-           negative margin keeps the text on the page edge -->
+      <!-- The wordmark, as on the favicon: a big "OSRS" over a small "TRACKER" of the same width. Hover fills a tile
+           like the theme button's, padded evenly around the letters (pb-1 as TRACKER's line box leaves more below it);
+           the negative margins keep the text on the page edge and the nav height unchanged -->
       <a
-        class="flex flex-col -mx-2 px-2 py-1.5 rounded-xl font-bold text-sm/4 uppercase tracking-widest hover:bg-row transition-colors"
+        class="flex flex-col items-start -mx-1.5 -my-1.5 px-1.5 pt-1.5 pb-1 rounded-xl font-bold uppercase hover:bg-row transition-colors"
         routerLink="/"
       >
-        <span>OSRS</span>
-        <span class="text-accent">Tracker</span>
+        <span class="text-3xl/6">OSRS</span>
+        <span class="text-xs/4 text-accent wordmark-spread">Tracker</span>
       </a>
 
       <div class="grow"></div>

@@ -9,6 +9,15 @@
     background-size: 22px 22px;
   }
 
+  /* The wordmark's "TRACKER": spaced out to the width of "OSRS" above it (SOLIX bold, text-3xl over text-xs), as on
+     the favicon. Measured on the ink: the inset lines the T's bar up with the round O, which starts further in; the
+     negative margin drops the spacing after the last letter. Remeasure after changing the font or either size. */
+  .wordmark-spread {
+    padding-inline-start: 0.083em;
+    letter-spacing: 0.311em;
+    margin-inline-end: -0.311em;
+  }
+
   /* safe-area-inset */
   .sa-t {
     padding-top: env(safe-area-inset-top);
