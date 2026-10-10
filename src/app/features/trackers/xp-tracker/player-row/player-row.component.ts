@@ -12,8 +12,8 @@ import {
   input,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { SkillEnum, getOverallXpDiff } from '@osrs-tracker/hiscores';
-import { HiscoreEntry, Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
+import { getOverallXpDiff } from '@osrs-tracker/hiscores';
+import { HiscoreEntry, overallOf, Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { Observable, catchError, forkJoin, map, throwError } from 'rxjs';
 import { LoadErrorComponent } from 'src/app/common/components/general/load-error.component';
 import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
@@ -23,7 +23,6 @@ import { TimeAgoPipe } from 'src/app/common/pipes/time-ago.pipe';
 import { OsrsProxyRepo } from 'src/app/common/repositories/osrs-proxy.repo';
 import { OsrsTrackerRepo } from 'src/app/common/repositories/osrs-tracker.repo';
 import { AnalyticsService } from 'src/app/common/services/analytics/analytics.service';
-import { skillOf } from '../hiscore-values';
 import { XpTrackerStore } from '../xp-tracker.store';
 
 interface PlayerRowData {
@@ -206,7 +205,7 @@ export class PlayerRowComponent implements OnInit {
     return {
       player,
       overallDiff: player.hiscoreEntries?.length ? getOverallXpDiff(hiscore, player.hiscoreEntries[0]) : null,
-      totalLevel: skillOf(hiscore, SkillEnum.Overall).level,
+      totalLevel: overallOf(hiscore).level,
     };
   }
 

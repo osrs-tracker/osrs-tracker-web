@@ -2,7 +2,7 @@ import { Grid, GridCell, GridCellWidget, GridRow } from '@angular/aria/grid';
 import { DecimalPipe } from '@angular/common';
 import { Component, computed, effect, inject, input, InputSignal, Signal, viewChild } from '@angular/core';
 import { calculateXPForSkillLevel, SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreEntry, HiscoreSkill } from '@osrs-tracker/models';
+import { HiscoreEntry, HiscoreSkill, overallOf, skillLevel } from '@osrs-tracker/models';
 import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
 import { TooltipComponent } from 'src/app/common/components/general/tooltip/tooltip.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
@@ -10,7 +10,6 @@ import { setGridTabStop } from 'src/app/common/helpers/aria-tab-stop';
 import { ThemeService } from 'src/app/common/services/theme.service';
 import { ChartSkill, SKILL_COLORS } from '../../skill-colors';
 import { percentageToNextLevel } from '../../skill-progress';
-import { skillOf } from '../../hiscore-values';
 import { PlayerView } from '../player-view';
 import { pickedCellBackground, pickedCellRing } from './picked-cell';
 
@@ -28,7 +27,11 @@ const SKILL_LAYOUT: SkillEnum[] = [
 
 interface SkillCell {
   name: SkillEnum;
-  skill?: HiscoreSkill;
+  /** False while the hiscores load; the cell is a skeleton */
+  loaded: boolean;
+  level: number;
+  /** XP shown and used for progress; an untrained skill has none */
+  xp: number;
   /** Below 99 only */
   progress?: number;
   /** XP gained in the charted days */
@@ -82,15 +85,15 @@ const OVERALL_COLOR = 'var(--accent)';
                 [attr.aria-disabled]="!cell.charted"
                 [attr.aria-pressed]="cell.charted ? cell.on : null"
                 [attr.aria-label]="label(cell)"
-                [tooltip]="!!cell.skill"
+                [tooltip]="cell.loaded"
                 [tooltipTemplate]="tooltipTemplate"
                 [tooltipUnderline]="false"
                 (click)="cell.charted && playerView.toggleSkill(cell.name)"
               >
                 <span class="flex items-center justify-between h-9.25 pt-1.75 pb-1.5 px-3">
-                  @if (cell.skill; as skill) {
+                  @if (cell.loaded) {
                     <img class="h-6 w-auto" icon [name]="cell.name" [skill]="true" />
-                    <span class="text-base font-bold text-strong tabular-nums">{{ skill.level }}</span>
+                    <span class="text-base font-bold text-strong tabular-nums">{{ cell.level }}</span>
                   } @else {
                     <skeleton class="mx-auto h-5 w-16" />
                   }
@@ -114,17 +117,15 @@ const OVERALL_COLOR = 'var(--accent)';
                   }
                 </div>
                 <div class="text-right tabular-nums">
-                  <div>{{ cell.skill?.xp | number }}</div>
+                  <div>{{ cell.xp | number }}</div>
                   @if (cell.progress !== undefined) {
-                    <div>{{ xpForNextLevel(cell.skill!) | number }}</div>
-                    <div>{{ xpForNextLevel(cell.skill!) - cell.skill!.xp | number }}</div>
+                    <div>{{ xpForNextLevel(cell.level) | number }}</div>
+                    <div>{{ xpForNextLevel(cell.level) - cell.xp | number }}</div>
                   }
                 </div>
               </div>
               @if (cell.progress !== undefined) {
-                <div class="pt-1 text-muted">
-                  {{ cell.progress | number: '1.0-0' }}% to level {{ cell.skill!.level + 1 }}
-                </div>
+                <div class="pt-1 text-muted">{{ cell.progress | number: '1.0-0' }}% to level {{ cell.level + 1 }}</div>
               }
               <div class="pt-1 text-muted">
                 {{ cell.charted ? '+' + (cell.gain | number) + ' XP in these days' : 'No XP gained in these days' }}
@@ -176,14 +177,20 @@ export class SkillGridComponent {
     const theme = this.darkMode() ? 'dark' : 'light';
     return SKILL_LAYOUT.map(name => {
       const hiscore = this.hiscore();
-      const skill = hiscore && skillOf(hiscore, name);
+      const loaded = !!hiscore;
+      // an untrained skill (`null`) shows level 1 with no XP
+      const skill = hiscore?.skills[name];
+      const level = skillLevel(skill);
+      const xp = skill?.xp ?? 0;
       const gain = this.gains().get(name) ?? 0;
       return {
         name,
-        skill,
-        progress: skill && skill.level < 99 ? percentageToNextLevel(skill.xp, skill.level) : undefined,
+        loaded,
+        level,
+        xp,
+        progress: loaded && level < 99 ? percentageToNextLevel(xp, level) : undefined,
         gain,
-        charted: !!skill && gain > 0,
+        charted: loaded && gain > 0,
         on: selected.has(name),
         color: SKILL_COLORS[name as ChartSkill][theme],
       };
@@ -196,7 +203,7 @@ export class SkillGridComponent {
   });
   readonly overall: Signal<HiscoreSkill | undefined> = computed(() => {
     const hiscore = this.hiscore();
-    return hiscore && skillOf(hiscore, SkillEnum.Overall);
+    return hiscore && overallOf(hiscore);
   });
   readonly overallOn: Signal<boolean> = computed(() => this.playerView.skills().has(SkillEnum.Overall));
 
@@ -216,13 +223,13 @@ export class SkillGridComponent {
     return pickedCellRing(color);
   }
 
-  xpForNextLevel(skill: HiscoreSkill): number {
-    return calculateXPForSkillLevel(skill.level + 1);
+  xpForNextLevel(level: number): number {
+    return calculateXPForSkillLevel(level + 1);
   }
 
   label(cell: SkillCell): string {
-    if (!cell.skill) return cell.name;
-    const progress = cell.progress === undefined ? '' : `, ${Math.floor(cell.progress)}% to ${cell.skill.level + 1}`;
-    return `${cell.name} level ${cell.skill.level}${progress}`;
+    if (!cell.loaded) return cell.name;
+    const progress = cell.progress === undefined ? '' : `, ${Math.floor(cell.progress)}% to ${cell.level + 1}`;
+    return `${cell.name} level ${cell.level}${progress}`;
   }
 }
