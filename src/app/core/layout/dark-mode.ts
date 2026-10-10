@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { ThemeService } from '@app/common/services/theme-service';
+import { ThemeService } from '@app/common/theme/theme-service';
 
 @Component({
   selector: 'dark-mode',

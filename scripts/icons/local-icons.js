@@ -5,7 +5,7 @@ import { readdir, readFile, writeFile } from 'node:fs/promises';
 const ICONS_DIR = 'public/assets/icons';
 const FOLDERS = ['skills', 'activities'];
 const MIME_TYPES = { '.gif': 'image/gif', '.png': 'image/png' };
-const OUTPUT = 'src/app/common/directives/icon/local-icons.generated.ts';
+const OUTPUT = 'src/app/common/icon/local-icons.generated.ts';
 
 (async () => {
   const entries = [];

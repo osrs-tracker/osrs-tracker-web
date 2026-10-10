@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals';
-import { StorageKey } from '@app/common/services/storage/storage';
-import { StorageService } from '@app/common/services/storage/storage-service';
+import { StorageKey } from '@app/common/storage/storage';
+import { StorageService } from '@app/common/storage/storage-service';
 import { config } from '@config/config';
 
 export class XpTrackerState {

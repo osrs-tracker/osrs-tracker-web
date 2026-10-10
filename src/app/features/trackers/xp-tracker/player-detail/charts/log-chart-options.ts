@@ -39,10 +39,3 @@ export function logChartOptions<TType extends 'line' | 'bar'>(markers: TooltipMa
   };
   return options as unknown as ChartOptions<TType>;
 }
-
-/** A copy of the set with the name added, or removed if it was in it */
-export function toggled(set: ReadonlySet<string>, name: string): ReadonlySet<string> {
-  const next = new Set(set);
-  if (!next.delete(name)) next.add(name);
-  return next;
-}

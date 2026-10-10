@@ -21,8 +21,9 @@
 - Icons, fonts, sitemaps and the other files served as they are moved to `public/`, where current Angular projects keep
   them. Their addresses stay the same.
 - The code follows Angular's current naming (`home.ts` with `Home`, no `.component` suffixes), imports use `@app/`
-  aliases, and lint now checks that shared code never depends on a page and pages don't reach into each other. The
-  player page's colours and categories moved next to it.
+  aliases, and lint now checks that shared code never depends on a page and pages don't reach into each other. Shared
+  code is grouped by what it's for (the design system's parts, the API, formatting) instead of by kind, and the player
+  page's chart, log list, hiscores and colours each have their own place.
 
 ## 2026/10/09
 

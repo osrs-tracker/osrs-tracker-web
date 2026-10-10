@@ -1,7 +1,7 @@
 import { ActivityEnum, fromJagex, JagexHiscoreJson, SkillEnum } from '@osrs-tracker/hiscores';
 import { HiscoreEntry } from '@osrs-tracker/models';
 import { describe, expect, it } from 'vitest';
-import { THE_FRAKING, TOXSICK } from '../testing/jagex-hiscores';
+import { THE_FRAKING, TOXSICK } from './testing/jagex-hiscores';
 import { dailyGains, periodSummary } from './player-summary';
 
 const HOUR = 60 * 60 * 1000;

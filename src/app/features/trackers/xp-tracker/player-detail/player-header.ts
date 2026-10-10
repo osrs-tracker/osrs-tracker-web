@@ -2,12 +2,12 @@ import { DatePipe } from '@angular/common';
 import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core';
 import { SkillEnum } from '@osrs-tracker/hiscores';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
-import { Tooltip } from '@app/common/components/general/tooltip/tooltip';
-import { Icon } from '@app/common/directives/icon/icon';
-import { CapitalizePipe } from '@app/common/pipes/capitalize-pipe';
-import { TimeAgoPipe } from '@app/common/pipes/time-ago-pipe';
-import { AnalyticsService } from '@app/common/services/analytics/analytics-service';
-import { XpTrackerStore } from '../../xp-tracker-store';
+import { Tooltip } from '@app/common/ui/tooltip/tooltip';
+import { Icon } from '@app/common/icon/icon';
+import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
+import { TimeAgoPipe } from '@app/common/format/time-ago-pipe';
+import { AnalyticsService } from '@app/common/analytics/analytics-service';
+import { XpTrackerStore } from '../xp-tracker-store';
 
 /** Whether the player has a history at the visitor's offset yet, which decides the line under the name */
 export type TrackingState = 'tracked' | 'started' | 'untracked';

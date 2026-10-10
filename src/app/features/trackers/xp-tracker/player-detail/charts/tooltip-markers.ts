@@ -1,4 +1,4 @@
-import { iconPath, PLACEHOLDER_ICON } from '@app/common/directives/icon/icon';
+import { iconPath, PLACEHOLDER_ICON } from '@app/common/icon/icon';
 
 const DOT = 10;
 const ICON = 18;

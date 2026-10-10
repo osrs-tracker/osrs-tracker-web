@@ -3,13 +3,13 @@ import { Component, InputSignal, PLATFORM_ID, ResourceRef, Signal, computed, inj
 import { rxResource } from '@angular/core/rxjs-interop';
 import { fromUnixTime, getUnixTime } from 'date-fns';
 import { forkJoin, map } from 'rxjs';
-import { LoadError } from '@app/common/components/general/load-error';
-import { Skeleton } from '@app/common/components/general/skeleton';
-import { Icon } from '@app/common/directives/icon/icon';
-import { DAY, utcDayStart } from '@app/common/helpers/utc-day';
-import { formatNumberLegible } from '@app/common/helpers/number-format';
-import { OsrsPricesRepo, TimeSpan } from '@app/common/repositories/osrs-prices-repo';
-import { RecentItem } from '../price-tracker-store';
+import { LoadError } from '@app/common/ui/loading/load-error';
+import { Skeleton } from '@app/common/ui/loading/skeleton';
+import { Icon } from '@app/common/icon/icon';
+import { DAY, utcDayStart } from './utc-day';
+import { formatNumberLegible } from '@app/common/format/number-format';
+import { OsrsPricesRepo, TimeSpan } from '@app/common/api/osrs-prices-repo';
+import { RecentItem } from './price-tracker-store';
 
 interface ItemRowPrice {
   /** The latest instant-sell price. */

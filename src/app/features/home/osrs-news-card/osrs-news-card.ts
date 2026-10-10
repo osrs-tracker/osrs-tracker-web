@@ -1,6 +1,6 @@
 import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, InputSignal, Signal, computed, input } from '@angular/core';
-import { OsrsNewsItem } from '@app/common/repositories/osrs-tracker-repo';
+import { OsrsNewsItem } from '@app/common/api/osrs-tracker-repo';
 import { config } from '@config/config';
 
 /** A news post: image, date and category, title and text; the whole card links to the post. */

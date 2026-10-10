@@ -71,7 +71,7 @@ Choices that look like accidents without their context: what was decided, why, a
 - **Initial Tab stop:** the toolbar makes its first option the Tab stop and has no public API to change it, so
   `segmented` sets the toolbar's active item to the checked option through its `_pattern` while focus is outside (and to
   the focused one on `focusin`). It runs as an `effect`, so it also runs during SSR and the server HTML has the Tab stop
-  before hydration. Every `_pattern` use lives in `common/helpers/aria-tab-stop.ts`: recheck that file on every
+  before hydration. Every `_pattern` use lives in `common/ui/controls/aria-tab-stop.ts`: recheck that file on every
   `@angular/aria` update.
 - **Disabled options** stay soft-disabled (the toolbar's default, `aria-disabled` instead of `disabled`): the arrow keys
   reach them, so keyboard and screen reader users find them and their reason, and the click handler ignores them.

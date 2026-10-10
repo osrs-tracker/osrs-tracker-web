@@ -12,11 +12,11 @@ import {
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Item } from '@osrs-tracker/models';
-import { LoadError } from '@app/common/components/general/load-error';
-import { Segmented, SegmentedOption } from '@app/common/components/general/segmented';
-import { Skeleton } from '@app/common/components/general/skeleton';
-import { InfoTooltip } from '@app/common/components/general/tooltip/info-tooltip';
-import { LatestPrices, OsrsPricesRepo } from '@app/common/repositories/osrs-prices-repo';
+import { LoadError } from '@app/common/ui/loading/load-error';
+import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
+import { Skeleton } from '@app/common/ui/loading/skeleton';
+import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
+import { LatestPrices, OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
 import { breakEvenSellPrice, geTax, isGeTaxExempt } from './ge-tax';
 import { formatWhole } from './item-prices';
 

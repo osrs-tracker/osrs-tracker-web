@@ -10,7 +10,7 @@ import {
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideRouter, RouteReuseStrategy, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import appRoutes from './app.routes';
-import { AnalyticsService } from './common/services/analytics/analytics-service';
+import { AnalyticsService } from './common/analytics/analytics-service';
 import { CustomErrorHandler } from './core/error-handling/error-handler';
 import { baseUrlInterceptor } from './core/interceptors/base-url-interceptor';
 import { loadingIndicatorInterceptor } from './core/interceptors/loading-indicator-interceptor';

@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { Route } from '@angular/router';
-import RootLayout from './common/components/layout/root-layout/root-layout';
-import { MetaService } from './common/services/meta-service';
+import RootLayout from './core/layout/root-layout';
+import { MetaService } from './common/seo/meta-service';
 
 export default [
   {

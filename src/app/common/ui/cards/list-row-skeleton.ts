@@ -1,5 +1,5 @@
 import { Component, computed, input, InputSignal, Signal } from '@angular/core';
-import { Skeleton } from './skeleton';
+import { Skeleton } from '../loading/skeleton';
 
 /** Name bar widths, varied per row so a list of skeleton rows doesn't look like a barcode. */
 const NAME_WIDTHS = ['w-32', 'w-24', 'w-36', 'w-28', 'w-20'];

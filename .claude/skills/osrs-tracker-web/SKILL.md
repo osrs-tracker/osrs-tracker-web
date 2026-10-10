@@ -39,13 +39,13 @@ a worktree).
   directives have no suffix (`home.ts` with `class Home`, its template `home.html`). Other classes keep theirs and the
   file joins it with a hyphen (`ThemeService` in `theme-service.ts`, `TimeAgoPipe` in `time-ago-pipe.ts`, also `-repo`,
   `-store`, `-resolver`, `-interceptor`); generate a service with the suffix in its name
-  (`ng g s common/services/theme-service`). Only the CLI's own names keep a dot: `main.server.ts`, `app.config*.ts`,
+  (`ng g s common/theme/theme-service`). Only the CLI's own names keep a dot: `main.server.ts`, `app.config*.ts`,
   `*.routes.ts`.
 - **Imports**: relative within a feature or a folder of `common/` or `core/` (and from the root `app.*` files into their
   subfolders); `@app/…`, `@config/…` or `@server/…` otherwise. Lint enforces the layers (`import-x/no-restricted-paths`
   in `eslint.config.js`): `common/` and `core/` never import a feature, features don't import each other (Home may
   import the trackers), none of them imports `src/server` (only the root `app.config.server.ts` does), and `HttpClient`
-  is only used in `common/repositories/` (and specs).
+  is only used in `common/api/` (and specs).
 - **DI**: `inject()` only; root services use `@Service()`, not `@Injectable({ providedIn: 'root' })`.
 - **State**: signals, with explicitly typed public fields (`readonly foo: Signal<Bar> = computed(...)`). localStorage
   goes through a per-feature `@ngrx/signals` store (`XpTrackerStore`, `PriceTrackerStore`), never from components.
@@ -99,20 +99,20 @@ token in `src/styles/tailwind/theme.css`.
   standalone ones; `.link` for accent links; `.search-box`/`.search-box-input`/`.search-box-button` for the big search;
   `.markdown` for reading text (changelog, privacy, terms).
 
-Which component to use (`common/components/general/` unless noted):
+Which component to use (in `common/ui/<folder>/` unless noted):
 
-| Need                                                 | Use                                                                                     |
-| ---------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| A titled section                                     | `article[card]`: 56px header, `[title]` and `[actions]` slots, `subtitle` for two lines |
-| A list of players or items                           | `section[list-card]` with its loading, empty and error states; `list-row-skeleton` rows |
-| One headline number                                  | `stat-tile` (`compact` for six in a row, `loading`, `tone` for a change)                |
-| A choice of views or periods                         | `segmented` (32px pills, a radio group; `variant="slate"` beside an accent button)      |
-| The tracking offset                                  | `tracking-offset` (`features/trackers/xp-tracker/`; a 32px select, stored per device)   |
-| A whole page's state (not found, unavailable, error) | `status-panel`, with a back button or other actions as content                          |
-| Something failed to load                             | `load-error` (default, `panel` or `compact`; see Failures above)                        |
-| Something is loading                                 | `skeleton` blocks sized like the content, never a spinner                               |
-| A short explanation                                  | `info-tooltip`, or `[tooltip]` on any element                                           |
-| A reading page                                       | `information-page` (`common/components/layout/`) around `<div class="markdown">`        |
+| Need                                                          | Use                                                                                     |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| A titled section (`cards/`)                                   | `article[card]`: 56px header, `[title]` and `[actions]` slots, `subtitle` for two lines |
+| A list of players or items (`cards/`)                         | `section[list-card]` with its loading, empty and error states; `list-row-skeleton` rows |
+| One headline number (`cards/`)                                | `stat-tile` (`compact` for six in a row, `loading`, `tone` for a change)                |
+| A choice of views or periods (`controls/`)                    | `segmented` (32px pills, a radio group; `variant="slate"` beside an accent button)      |
+| The tracking offset                                           | `tracking-offset` (`features/trackers/xp-tracker/`; a 32px select, stored per device)   |
+| A whole page's state: not found, unavailable, error (`page/`) | `status-panel`, with `back-button` or other actions as content                          |
+| Something failed to load (`loading/`)                         | `load-error` (default, `panel` or `compact`; see Failures above)                        |
+| Something is loading (`loading/`)                             | `skeleton` blocks sized like the content, never a spinner                               |
+| A short explanation (`tooltip/`)                              | `info-tooltip`, or `[tooltip]` on any element                                           |
+| A reading page (`page/`)                                      | `information-page` around `<div class="markdown">`                                      |
 
 ## Code navigation
 
@@ -153,8 +153,8 @@ the angular.dev docs for the installed major version.
   spying on it sees nothing.
 - **Writes**: requests that record something (lookups, starting to track a player) run only when `isHumanVisitor()`
   (`core/platform/human-visitor.ts`): never during SSR or for crawlers, which would fill the recent lookups.
-- **Chart.js**: shared registrations and the date adapter in `common/components/charts/chart-setup.ts`; never
-  `Chart.unregister`. Time series charts extend `common/components/charts/base-chart.ts`; their `setData` may build new
+- **Chart.js**: shared registrations and the date adapter in `features/trackers/charts/chart-setup.ts`; never
+  `Chart.unregister`. Time series charts extend `features/trackers/charts/base-chart.ts`; their `setData` may build new
   datasets, as `BaseChart` keeps a drawn one in place when its label and dates match, so only changed points animate
   (Chart.js redraws a new object from the axis).
 - **Icons**: after changing `public/assets/icons/{skills,activities}`, run `npm run icons` and commit

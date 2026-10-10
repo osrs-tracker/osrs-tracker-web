@@ -1,6 +1,5 @@
 import { Service, signal, WritableSignal } from '@angular/core';
 import { SkillEnum } from '@osrs-tracker/hiscores';
-import { toggled } from './player-logs/log-chart-options';
 
 export type TopTab = 'skills' | 'bosses' | 'raids';
 export type BottomTab = 'clues' | 'minigames';
@@ -72,4 +71,11 @@ export class PlayerView {
     this.chart.set(view);
     this.hidden.set(new Set());
   }
+}
+
+/** A copy of the set with the name added, or removed if it was in it */
+function toggled(set: ReadonlySet<string>, name: string): ReadonlySet<string> {
+  const next = new Set(set);
+  if (!next.delete(name)) next.add(name);
+  return next;
 }

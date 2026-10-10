@@ -2,10 +2,10 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { GTAG_TOKEN } from '@app/common/services/analytics/gtag-token';
-import { StorageKey } from '@app/common/services/storage/storage';
+import { GTAG_TOKEN } from '@app/common/analytics/gtag-token';
+import { StorageKey } from '@app/common/storage/storage';
 import { afterEach, describe, expect, it } from 'vitest';
-import { XpTrackerStore } from '../xp-tracker-store';
+import { XpTrackerStore } from './xp-tracker-store';
 import { PlayerRow } from './player-row';
 
 describe('PlayerRow', () => {

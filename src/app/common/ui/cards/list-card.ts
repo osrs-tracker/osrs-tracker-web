@@ -1,6 +1,6 @@
 import { Component, input, InputSignal, output, Resource } from '@angular/core';
 import { ListRowSkeleton } from './list-row-skeleton';
-import { LoadError } from './load-error';
+import { LoadError } from '../loading/load-error';
 
 export type ListCardState = 'ready' | 'loading' | 'empty' | 'error';
 

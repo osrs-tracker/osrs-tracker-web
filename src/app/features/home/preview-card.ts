@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Icon } from '@app/common/directives/icon/icon';
+import { Icon } from '@app/common/icon/icon';
 
 interface PreviewSkill {
   name: string;

@@ -1,9 +1,9 @@
 import { Location } from '@angular/common';
 import { afterNextRender, Component, inject, RESPONSE_INIT } from '@angular/core';
 import { Router } from '@angular/router';
-import { BackButton } from '@app/common/components/general/back-button';
-import { StatusPanel } from '@app/common/components/general/status-panel';
-import { AnalyticsService } from '@app/common/services/analytics/analytics-service';
+import { BackButton } from '@app/common/ui/page/back-button';
+import { StatusPanel } from '@app/common/ui/page/status-panel';
+import { AnalyticsService } from '@app/common/analytics/analytics-service';
 
 /** Shown when a page's data failed to load for a reason other than not found, see `resolverErrorHandler`. */
 @Component({

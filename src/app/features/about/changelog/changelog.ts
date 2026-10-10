@@ -1,7 +1,7 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, InputSignal, Signal, computed, input } from '@angular/core';
 import { marked } from 'marked';
-import { InformationPage } from '@app/common/components/layout/information-page';
+import { InformationPage } from '@app/common/ui/page/information-page';
 
 @Component({
   selector: 'changelog',

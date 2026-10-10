@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Skeleton } from '@app/common/components/general/skeleton';
+import { Skeleton } from '@app/common/ui/loading/skeleton';
 
 @Component({
   selector: 'osrs-news-card-skeleton',

@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { Route } from '@angular/router';
 import { catchError } from 'rxjs';
-import { GithubRepo } from '@app/common/repositories/github-repo';
+import { GithubRepo } from '@app/common/api/github-repo';
 import { resolverErrorHandler } from '@app/core/routing/resolver-error';
 
 export default [

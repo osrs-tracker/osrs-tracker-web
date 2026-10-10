@@ -22,12 +22,12 @@ import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
 import { Subscription, finalize, forkJoin, map, of } from 'rxjs';
-import { LoadError } from '@app/common/components/general/load-error';
-import { Skeleton } from '@app/common/components/general/skeleton';
-import { Icon } from '@app/common/directives/icon/icon';
-import { formatNumberLegible } from '@app/common/helpers/number-format';
-import { OsrsPricesRepo } from '@app/common/repositories/osrs-prices-repo';
-import { OsrsTrackerRepo } from '@app/common/repositories/osrs-tracker-repo';
+import { LoadError } from '@app/common/ui/loading/load-error';
+import { Skeleton } from '@app/common/ui/loading/skeleton';
+import { Icon } from '@app/common/icon/icon';
+import { formatNumberLegible } from '@app/common/format/number-format';
+import { OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
+import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 
 /** Keys the combobox passes on to the listbox to move the active option */
 const NAVIGATION_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageUp', 'PageDown']);
