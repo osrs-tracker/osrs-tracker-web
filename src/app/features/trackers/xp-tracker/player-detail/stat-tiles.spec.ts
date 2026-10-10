@@ -35,6 +35,16 @@ describe('statTilesFor', () => {
     expect(comparison(summary(100))).toEqual({ sub: '', tone: 'muted' });
   });
 
+  it('offers a retry when the period before failed to load, unless there was nothing to compare', () => {
+    expect(statTilesFor(overall, summary(100), 7, true)[1]).toMatchObject({ sub: '', comparisonFailed: true });
+    // loaded through the longer history after all
+    expect(statTilesFor(overall, summary(124, 100), 7, true)[1]).toMatchObject({ sub: '+24% vs previous week' });
+    // cut short: no comparison either way
+    expect(statTilesFor(overall, summary(100, undefined, { since: new Date() }), 7, true)[1].comparisonFailed).toBe(
+      undefined,
+    );
+  });
+
   it('waits for the next check without a summary', () => {
     const [total, xp, levels, kills] = statTilesFor({ ...overall, rank: null }, undefined, 7);
     expect(total).toMatchObject({ value: '2,277', sub: 'Unranked' });

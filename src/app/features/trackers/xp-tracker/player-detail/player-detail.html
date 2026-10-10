@@ -70,7 +70,17 @@
             [sub]="tile.sub"
             [tone]="tile.tone"
             [tip]="tile.tip ?? ''"
-          />
+          >
+            @if (tile.comparisonFailed) {
+              <load-error
+                inline
+                class="flex min-w-0"
+                source="player-history-previous"
+                message="Compare failed"
+                (retry)="history.reloadPreviousPeriod()"
+              />
+            }
+          </stat-tile>
         }
       } @else {
         @for (tile of [0, 1, 2, 3]; track tile) {

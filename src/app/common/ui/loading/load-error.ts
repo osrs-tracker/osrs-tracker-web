@@ -13,7 +13,8 @@ import { AnalyticsService } from '@app/common/analytics/analytics-service';
 /**
  * Shown in place of data that failed to load, with a retry button. Reports itself to analytics once it's visible in the
  * browser, labelled with `source`, so failures users actually see can be counted. `panel` gives it the same surface as
- * the cards around it, for when it replaces one; `compact` is a lone retry icon, for when it replaces a single value.
+ * the cards around it, for when it replaces one; `compact` is a lone retry icon, for when it replaces a single value;
+ * `inline` is an amber line of text (`message`, kept short), for when it replaces a line under a value.
  */
 @Component({
   selector: 'load-error',
@@ -21,7 +22,7 @@ import { AnalyticsService } from '@app/common/analytics/analytics-service';
     @if (compact()) {
       <button
         type="button"
-        class="flex items-center justify-center size-8 rounded-full text-strong hover:bg-row"
+        class="flex items-center justify-center size-8 rounded-full text-amber hover:bg-row"
         [title]="message() + ' Click to retry.'"
         [attr.aria-label]="message() + ' Retry'"
         (click)="onRetry($event)"
@@ -33,6 +34,31 @@ import { AnalyticsService } from '@app/common/analytics/analytics-service';
           stroke-width="2"
           stroke="currentColor"
           class="size-5"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+          />
+        </svg>
+      </button>
+    } @else if (inline()) {
+      <button
+        type="button"
+        class="flex items-center gap-0.5 min-w-0 h-4.5 text-sm/4.5 font-bold text-amber hover:underline"
+        [title]="message() + '. Click to retry.'"
+        [attr.aria-label]="message() + '. Retry'"
+        (click)="onRetry($event)"
+      >
+        <span class="truncate">{{ message() }}</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="2.5"
+          stroke="currentColor"
+          class="size-3.5 shrink-0"
           aria-hidden="true"
         >
           <path
@@ -68,6 +94,7 @@ export class LoadError {
   readonly hint: InputSignal<string> = input('Check your connection, then try again.');
   readonly compact: InputSignalWithTransform<boolean, unknown> = input(false, { transform: booleanAttribute });
   readonly panel: InputSignalWithTransform<boolean, unknown> = input(false, { transform: booleanAttribute });
+  readonly inline: InputSignalWithTransform<boolean, unknown> = input(false, { transform: booleanAttribute });
 
   readonly retry = output<void>();
 

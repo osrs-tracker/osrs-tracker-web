@@ -162,7 +162,7 @@ export default class PlayerDetail implements OnInit {
 
   readonly summary: Signal<PeriodSummary | undefined> = computed(() => {
     const current = this.history.current();
-    return current && periodSummary(current, this.history.entries(), this.playerView.period());
+    return current && periodSummary(current, this.history.comparedEntries(), this.playerView.period());
   });
 
   /** Each skill's XP gained over the period, for the skills that gained any */
@@ -185,7 +185,7 @@ export default class PlayerDetail implements OnInit {
   readonly statTiles: Signal<StatTileView[] | undefined> = computed(() => {
     const overall = this.overall();
     if (!overall || !this.history.periodLoaded()) return undefined;
-    return statTilesFor(overall, this.summary(), this.playerView.period());
+    return statTilesFor(overall, this.summary(), this.playerView.period(), this.history.previousPeriodFailed());
   });
 
   constructor() {

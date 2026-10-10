@@ -10,16 +10,20 @@ export interface StatTileView {
   sub: string;
   tone: 'muted' | 'up' | 'down';
   tip?: string;
+  /** The period before failed to load, so the line is a retry instead of the comparison */
+  comparisonFailed?: boolean;
 }
 
 /**
  * The stat tiles above the player page: total level, XP gained over the period (compared with the period before it),
  * levels gained and boss kills. Without a summary (a single stored entry), the gains wait for the next check.
+ * `comparisonFailed`: the check the period before starts from didn't load.
  */
 export function statTilesFor(
   overall: HiscoreSkill,
   summary: PeriodSummary | undefined,
   period: Period,
+  comparisonFailed = false,
 ): StatTileView[] {
   const totalLevel: StatTileView = {
     label: 'Total level',
@@ -46,7 +50,10 @@ export function statTilesFor(
       label: xpLabel,
       value: formatNumberLegible(summary.xp),
       tip: `${summary.xp.toLocaleString('en-US')} XP`,
-      ...periodComparison(summary, period),
+      // a period cut short by the history's start or a gap has nothing to compare with anyway
+      ...(comparisonFailed && !summary.since && summary.previousXp === undefined
+        ? { sub: '', tone: 'muted', comparisonFailed }
+        : periodComparison(summary, period)),
     },
     { label: 'Levels gained', value: String(levelCount), sub: levels, tip: levels, tone: 'muted' },
     {
