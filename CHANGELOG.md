@@ -27,6 +27,8 @@
   engines ignore.
 - Pages describe themselves to search engines in structured data, so results can show the site's name and a trail such
   as "Price Tracker › Abyssal whip" instead of the page's address.
+- Addresses ending in a slash, such as `/about/terms/`, redirect to the same page without it, so every page has one
+  address and those pages load as fast as the address without the slash.
 
 ### Price pages
 
