@@ -54,12 +54,5 @@ export const serverConfig = {
   ],
 
   // Static files without a hash in their name that change with every deploy: revalidated on every use
-  noCacheStaticFiles: [
-    '/manifest.webmanifest',
-    '/robots.txt',
-    '/sitemap.xml',
-    '/sitemap-items.xml',
-    '/sitemap-players.xml',
-    '/sitemap-site.xml',
-  ],
+  noCacheStaticFiles: ['/manifest.webmanifest', '/robots.txt', '/sitemap.xml', '/sitemap-site.xml'],
 };

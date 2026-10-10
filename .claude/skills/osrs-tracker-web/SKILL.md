@@ -199,9 +199,10 @@ Only for complex or important logic, never for coverage. Break the protected cod
 
 - `npm start` (`ng serve --open`) for browser-side work; it has no auto-generator or page cache. If port 4200 is taken
   it offers another port: decline and stop the other process, as the API's CORS rejects any other port.
-- Server code needs the production build. `npm run build` first regenerates `public/sitemap*.xml` (fetching the Wiki's
-  item list and the API's player list) and the icons, which dirties tracked files: `git restore public/sitemap*.xml`
-  afterwards, or build with `npx ng build --configuration production`. Then
+- Server code needs the production build. `npm run build` first regenerates `public/sitemap*.xml` (the site sitemap and
+  the index, dated from git; the items and players sitemaps are built by the server, `routers/sitemaps.ts`) and the
+  icons, which dirties tracked files: `git restore public/sitemap*.xml` afterwards, or build with
+  `npx ng build --configuration production`. Then
   `HOST=localhost PORT=4200 node dist/osrs-tracker-web/server/server.mjs`. Smoke test with
   `curl -s -D - http://localhost:4200/<path>` (unknown routes 404, generated pages `x-cache: HIT`). Stop with
   `lsof -ti:4200 -sTCP:LISTEN | xargs -r kill`.

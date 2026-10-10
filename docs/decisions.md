@@ -2,20 +2,21 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
-## Sitemaps are generated once per deploy, and keep the last good file (2026/10/10)
+## The item and player sitemaps are built by the server (2026/10/10)
 
-- **Context:** the items and players sitemaps list what the OSRS Wiki and the API return at build time. The Docker build
-  ran `prebuild` and fetched both again, so the image could serve other sitemaps than the ones `CD` commits, and a
-  failed fetch failed the build.
-- **Decision:** `CD` runs `npm run sitemap` once; the Dockerfile builds with `--ignore-scripts` (then runs `postbuild`)
-  and serves those files. A failed, non-2xx or empty fetch keeps the committed file with a warning and exits 0
-  (`fetchList` in `scripts/sitemap/sitemap-file.js`), so a hiccup costs one deploy's freshness, not the deploy. Players
-  come from the API's `GET /sitemap/players` (tracked, not paused, with an entry in the last 30 days), at their
-  canonical lower-case name, dated by their newest entry. No `<priority>` or `<changefreq>`: Google ignores both. A
-  commit that changes only sitemaps still skips the deploy (`NOT_IN_IMAGE` in `deploy.yml`): the next deploy regenerates
-  them anyway.
-- **Revisit:** if a sitemap passes 50,000 URLs (the players one had 534 on 2026/10/10), or a source goes stale often
-  enough that keeping the old file hides it.
+- **Context:** the build wrote every sitemap, so the players one (a new hiscore entry for every tracked player each day)
+  and the items one were only as fresh as the last deploy, which can be a week. A scheduled regeneration wouldn't help:
+  a sitemap-only commit skips the deploy (`NOT_IN_IMAGE` in `deploy.yml`), so the image keeps the old files.
+- **Decision:** `routers/sitemaps.ts` builds `/sitemap-items.xml` and `/sitemap-players.xml` from the API on request
+  (through `API_INTERNAL_URL`), kept in memory per replica for as long as the API caches the lists: items a day, from
+  the 27 `GET /items/browse/:letter` lists, so every listed id resolves (not the Wiki's list, which can be ahead of the
+  API); players an hour, from `GET /sitemap/players` (tracked, not paused, an entry in the last 30 days), at their
+  canonical lower-case name, dated by the newest entry. A failed or empty load keeps the last good copy and retries
+  after a minute; with none yet, 503. The site sitemap and the index stay build-time files: their dates come from git,
+  which the image doesn't have. The index dates only the site sitemap. No `<priority>` or `<changefreq>`: Google ignores
+  both.
+- **Revisit:** if a sitemap nears 50,000 URLs (4,663 items and 534 players on 2026/10/10), or the API gets one endpoint
+  for every item id.
 
 ## Server logs are JSON with a type (2026/10/09)
 
@@ -118,10 +119,11 @@ Choices that look like accidents without their context: what was decided, why, a
 - **Decision:** `sitemap-site.js` takes each page's date from the last commit that changed its source file (the template
   for privacy and terms, `CHANGELOG.md`), following renames, which don't count as a change. Without full history (a
   shallow clone, or the Docker build, which has no git or `.git`) it keeps `public/sitemap-site.xml` as it is: the image
-  is built from the file the `CD` workflow just generated. The sitemap index dates each sitemap by the day its content
-  last changed (`sitemap-index.js`): today when the run changed it, else its last commit, in UTC. A day, not a time:
-  `CD` commits a few minutes after generating, so a time would change again on the next deploy. Item pages have no date
-  of their own (Wiki item list has none, the API's `lastFetch` is the last lookup).
+  is built from the file the `CD` workflow just generated. The sitemap index dates the site sitemap by the day its
+  content last changed (`sitemap-index.js`): today when the run changed it, else its last commit, in UTC. A day, not a
+  time: `CD` commits a few minutes after generating, so a time would change again on the next deploy. The server-built
+  items and players sitemaps get no date in the index. Item pages have no date of their own (the API's `lastFetch` is
+  the last lookup).
 - **Revisit:** if a page's content stops living in one file (e.g. it moves to the API or a CMS).
 
 ## Live hiscores load in the browser only (2026/10/08)

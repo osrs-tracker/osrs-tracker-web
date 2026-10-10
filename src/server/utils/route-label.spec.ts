@@ -54,4 +54,10 @@ describe('routeLabel', () => {
   it('labels missing files as unmatched, so 404 scans do not count as static files', () => {
     expect(label('/wp-login.php', 404)).toBe('#unmatched');
   });
+
+  it('labels the server-built sitemaps by their path, also when they fail', () => {
+    expect(label('/sitemap-players.xml', 503)).toBe('/sitemap-players.xml');
+    expect(label('/sitemap-items.xml')).toBe('/sitemap-items.xml');
+    expect(label('/sitemap-site.xml')).toBe('/static');
+  });
 });

@@ -20,8 +20,9 @@
   search engines to the same page. Shared, they get the same compact preview as item pages. A name that isn't on the
   hiscores is titled "Player not found".
 - Search engines can find the pages of players tracked in the last 30 days: the sitemap lists them, each with the date
-  it last changed. The sitemaps drop the priority and update-frequency hints, which search engines ignore, and the
-  sitemap index says when each sitemap last changed.
+  it last changed. The player and item sitemaps are always current, with new items and players listed the day they
+  appear instead of after the next site update. The sitemaps drop the priority and update-frequency hints, which search
+  engines ignore.
 
 ### Price pages
 
@@ -53,8 +54,8 @@
   page's chart, log list, hiscores and colours each have their own place.
 - The player page's code is split into smaller parts (loading the history, the stat tiles, the two hiscores cards).
   Nothing looks or works differently.
-- A deploy keeps the previous sitemaps when the OSRS Wiki or the API doesn't answer, instead of failing, and the site
-  serves the same sitemaps the deploy saves, instead of fetching them a second time.
+- The server builds the item and player sitemaps from the API when they're requested, keeping them for a day and an
+  hour, so building the site no longer fetches anything from the OSRS Wiki or the API.
 
 ## 2026/10/09
 

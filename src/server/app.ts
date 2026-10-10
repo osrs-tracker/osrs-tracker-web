@@ -9,6 +9,7 @@ import { protocolRelativeMiddleware } from './middleware/protocol-relative';
 import { securityMiddleware } from './middleware/security';
 import { staticFilesMiddleware } from './middleware/static-files';
 import { createHealthRouter } from './routers/health';
+import { createSitemapRouter } from './routers/sitemaps';
 import { serverConfig } from './server-config';
 import { logger as serverLogger, renderingPage, type WebLogType } from './utils/log';
 import { routeLabel } from './utils/route-label';
@@ -50,6 +51,8 @@ export function createApp({
     angularCacheMiddleware(), // Cache rendered pages in memory for faster subsequent responses
   );
 
+  // The item and player sitemaps come from the API; the site sitemap and the index are static files
+  app.use(createSitemapRouter({ logger }));
   app.use(staticFilesMiddleware());
   // After the static files, so only missing assets get a 404 instead of being rendered as a page
   app.use(missingAssetMiddleware());

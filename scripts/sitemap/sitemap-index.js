@@ -2,7 +2,10 @@ import { readFile } from 'node:fs/promises';
 import { git, hasFullHistory, SITE_URL, writeSitemap } from './sitemap-file.js';
 
 const OUTPUT = 'public/sitemap.xml';
-const SITEMAPS = ['sitemap-site.xml', 'sitemap-items.xml', 'sitemap-players.xml'];
+// The site sitemap is a file in public/; the items and players ones are built by the server from the API
+// (src/server/routers/sitemaps.ts), so they change without a deploy and have no build-time date.
+const DATED = ['sitemap-site.xml'];
+const UNDATED = ['sitemap-items.xml', 'sitemap-players.xml'];
 
 const day = date => date.toISOString().slice(0, 10);
 
@@ -30,11 +33,14 @@ const lastmod = async file => {
     return;
   }
 
-  const sitemaps = await Promise.all(
-    SITEMAPS.map(
-      async file => `<sitemap><loc>${SITE_URL}/${file}</loc><lastmod>${await lastmod(file)}</lastmod></sitemap>`,
-    ),
-  );
+  const sitemaps = [
+    ...(await Promise.all(
+      DATED.map(
+        async file => `<sitemap><loc>${SITE_URL}/${file}</loc><lastmod>${await lastmod(file)}</lastmod></sitemap>`,
+      ),
+    )),
+    ...UNDATED.map(file => `<sitemap><loc>${SITE_URL}/${file}</loc></sitemap>`),
+  ];
 
   const xml = [
     '<?xml version="1.0" encoding="UTF-8"?>',
