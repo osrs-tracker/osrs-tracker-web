@@ -1,6 +1,5 @@
 import { SkillEnum } from '@osrs-tracker/hiscores';
 import { addDays } from 'date-fns';
-import { activityOf, skillOf } from '../../hiscore-values';
 import { Gains } from '../player-summary';
 
 /** A day's point; gains across a gap in the history go on its last day, with `from` its first */
@@ -27,7 +26,7 @@ export function xpGainedSeries(diffs: Gains[], skills: readonly string[] = skill
   return skills
     .map(name => {
       let total = 0;
-      const points = days.map(diff => pointOf(diff, (total += Math.max(0, skillOf(diff, name).xp))));
+      const points = days.map(diff => pointOf(diff, (total += Math.max(0, diff.skills[name]?.xp ?? 0))));
       return { name, total, points };
     })
     .filter(series => series.total > 0)
@@ -40,7 +39,7 @@ export function activitySeries(diffs: Gains[], category: ReadonlySet<string>): C
 
   return [...category]
     .map(name => {
-      const points = days.map(diff => pointOf(diff, Math.max(0, activityOf(diff, name)?.score ?? 0)));
+      const points = days.map(diff => pointOf(diff, Math.max(0, diff.activities[name]?.score ?? 0)));
       return { name, total: points.reduce((total, point) => total + point.y, 0), points };
     })
     .filter(series => series.total > 0)

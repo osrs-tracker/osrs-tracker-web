@@ -1,12 +1,11 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, computed, input, InputSignal, Signal } from '@angular/core';
 import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreActivity, HiscoreSkill } from '@osrs-tracker/models';
+import { HiscoreDiffActivity, HiscoreDiffSkill } from '@osrs-tracker/models';
 import { addDays } from 'date-fns';
 import { SkeletonComponent } from 'src/app/common/components/general/skeleton.component';
 import { IconDirective } from 'src/app/common/directives/icon/icon.directive';
 import { ShortDatePipe } from 'src/app/common/pipes/date-fns.pipe';
-import { Named, named, skillOf } from '../../hiscore-values';
 import { Gains } from '../player-summary';
 
 /**
@@ -20,9 +19,9 @@ type LogGroup =
       to?: Date;
       /** Today's gains so far: the hour they count from */
       since?: string;
-      overall?: HiscoreSkill;
-      skills: Named<HiscoreSkill>[];
-      activities: Named<HiscoreActivity>[];
+      overall?: HiscoreDiffSkill;
+      skills: (HiscoreDiffSkill & { name: string })[];
+      activities: (HiscoreDiffActivity & { name: string })[];
     }
   | { type: 'empty'; from: Date; to: Date; days: number };
 
@@ -66,11 +65,13 @@ export class PlayerLogsComponent {
 
     const diffs = this.todayLoading() ? this.diffs().slice(1) : this.diffs();
     diffs.forEach((diff, i) => {
-      const skills = named(diff.skills).filter(skill => skill.xp > 0 && skill.name !== SkillEnum.Overall);
+      const skills = Object.entries(diff.skills)
+        .map(([name, skill]) => ({ name, ...skill }))
+        .filter(skill => skill.xp > 0 && skill.name !== SkillEnum.Overall);
       // the total of all clue tiers would count them twice
-      const activities = named(diff.activities).filter(
-        activity => activity.score > 0 && activity.name !== ActivityEnum.ClueScrollsAll,
-      );
+      const activities = Object.entries(diff.activities)
+        .map(([name, activity]) => ({ name, ...activity }))
+        .filter(activity => activity.score > 0 && activity.name !== ActivityEnum.ClueScrollsAll);
 
       const to = diff.days > 1 ? addDays(diff.date, diff.days - 1) : undefined;
 
@@ -79,7 +80,7 @@ export class PlayerLogsComponent {
         run = { type: 'empty', from: diff.date, to: run?.to ?? to ?? diff.date, days: (run?.days ?? 0) + diff.days };
       } else {
         flushRun();
-        const overall = skillOf(diff, SkillEnum.Overall);
+        const overall = diff.skills[SkillEnum.Overall];
         // not on gains across a gap, which reach back before today
         const since = i === 0 && !to && !this.todayLoading() ? this.todaySince() : undefined;
         groups.push({ type: 'day', date: diff.date, to, since, overall, skills, activities });
