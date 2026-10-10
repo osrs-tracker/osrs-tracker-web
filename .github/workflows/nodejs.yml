@@ -6,7 +6,7 @@ on:
     # Deploy commits (and reverting them to roll back) only change these, which Flux applies by itself, so they need no
     # CI run, and with no CI run there's no deploy run to skip. A push skips only when every file matches. Never on
     # pull_request: the required checks would never report on a PR that only changes these.
-    paths-ignore: ['osrs-tracker-web.yaml', 'src/sitemap*.xml']
+    paths-ignore: ['osrs-tracker-web.yaml', 'public/sitemap*.xml']
   pull_request:
     branches: ['main']
 
@@ -42,7 +42,7 @@ jobs:
           if [ "$GITHUB_EVENT_NAME" = push ] && [ -n "$BEFORE" ]; then
             for _ in 1 2 3 4 5; do
               only=$(git diff --name-only "$BEFORE^" "$BEFORE" 2>/dev/null) || break
-              printf '%s\n' "$only" | grep -q -v -E '^(osrs-tracker-web\.yaml|src/sitemap[^/]*\.xml)$' && break
+              printf '%s\n' "$only" | grep -q -v -E '^(osrs-tracker-web\.yaml|public/sitemap[^/]*\.xml)$' && break
               echo "$BEFORE only changes the manifest or sitemaps (no CI run), comparing with its parent."
               BEFORE=$(git rev-parse "$BEFORE^")
             done
@@ -54,8 +54,8 @@ jobs:
             exit 0
           fi
           printf 'Changed files:\n%s\n' "$files"
-          if printf '%s\n' "$files" | grep -v -E '^src/sitemap[^/]*\.xml$' \
-            | grep -q -E '^(src/|scripts/|\.github/|package(-lock)?\.json$|angular\.json$|tsconfig[^/]*\.json$|\.postcssrc\.json$)'; then
+          if printf '%s\n' "$files" | grep -v -E '^public/sitemap[^/]*\.xml$' \
+            | grep -q -E '^(src/|public/|scripts/|\.github/|package(-lock)?\.json$|angular\.json$|tsconfig[^/]*\.json$|\.postcssrc\.json$)'; then
             echo "code=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi

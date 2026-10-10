@@ -18,6 +18,8 @@
   counts include only the bosses the site lists).
 - The build tools' install steps run again: their approvals were pinned to versions an earlier update had replaced.
 - Unused build settings are gone, and the sitemap and icon scripts use the same module format as the rest of the code.
+- Icons, fonts, sitemaps and the other files served as they are moved to `public/`, where current Angular projects keep
+  them. Their addresses stay the same.
 
 ## 2026/10/09
 

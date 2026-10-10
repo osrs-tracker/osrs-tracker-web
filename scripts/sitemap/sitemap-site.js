@@ -24,7 +24,7 @@ const lastmod = path => {
 (async () => {
   // The committed file (or the one the CD workflow just generated, which the image is built from) is right already
   if (!hasFullHistory()) {
-    console.log('No full git history, keeping src/sitemap-site.xml.');
+    console.log('No full git history, keeping public/sitemap-site.xml.');
     return;
   }
 
@@ -69,10 +69,10 @@ const lastmod = path => {
     lineSeparator: '\n',
   });
 
-  if (xml === (await readFile('src/sitemap-site.xml', 'utf8'))) {
+  if (xml === (await readFile('public/sitemap-site.xml', 'utf8'))) {
     console.log('File content is identical, skipping write.');
     return;
   }
 
-  await writeFile('src/sitemap-site.xml', xml, 'utf8');
+  await writeFile('public/sitemap-site.xml', xml, 'utf8');
 })();

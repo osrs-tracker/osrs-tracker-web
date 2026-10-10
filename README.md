@@ -9,8 +9,8 @@
 <div align="center">
   <a href="https://osrs-tracker.freekmencke.com">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="src/favicon-dark.png">
-      <img alt="OSRS Tracker" src="src/favicon.png">
+      <source media="(prefers-color-scheme: dark)" srcset="public/favicon-dark.png">
+      <img alt="OSRS Tracker" src="public/favicon.png">
     </picture>
     <div>Visit OSRS Tracker</div>
   </a>
@@ -72,7 +72,7 @@ first by `.claude/hooks/pre-push-check.sh`; your own `git push` isn't, so CI cat
 
 `npm start` doesn't run the server code (page cache, pre-rendering). To test that, build and run the production server.
 `npm run build` also regenerates the sitemaps (fetching the Wiki's item list) and the icons, so run
-`git restore src/sitemap*.xml` afterwards:
+`git restore public/sitemap*.xml` afterwards:
 
 ```bash
 npm run build

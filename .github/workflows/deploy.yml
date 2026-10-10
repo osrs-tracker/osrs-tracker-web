@@ -52,7 +52,7 @@ jobs:
           # osrs-tracker-web.yaml by itself.
           # CHANGELOG.md too: /about/changelog fetches it from GitHub's main branch at runtime, so a changelog-only
           # commit is live without a deploy
-          NOT_IN_IMAGE: '^(osrs-tracker-web\.yaml|src/sitemap[^/]*\.xml|docs/.*|\.claude/.*|\.github/.*|CLAUDE\.md|README\.md|CHANGELOG\.md|LICENSE|\.gitignore)$'
+          NOT_IN_IMAGE: '^(osrs-tracker-web\.yaml|public/sitemap[^/]*\.xml|docs/.*|\.claude/.*|\.github/.*|CLAUDE\.md|README\.md|CHANGELOG\.md|LICENSE|\.gitignore)$'
         run: |
           target=$RUN_SHA
           tip=$(git rev-parse HEAD)
@@ -140,7 +140,7 @@ jobs:
             echo "::error::Couldn't find the image: line in osrs-tracker-web.yaml"
             exit 1
           fi
-          cp ../src/sitemap*.xml src/
+          cp ../public/sitemap*.xml public/
 
           # Docker builds the same image when nothing in it changed: then there's nothing to deploy or check
           if git diff --quiet -- osrs-tracker-web.yaml; then
@@ -150,7 +150,7 @@ jobs:
 
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add osrs-tracker-web.yaml src/sitemap*.xml
+          git add osrs-tracker-web.yaml public/sitemap*.xml
           # The Deployed-from trailer tells later runs what's live. CI ignores pushes that only change the manifest and
           # sitemaps, so this commit starts no second deploy; if it did, the plan step would skip it.
           git commit --quiet -m "chore(deploy): deploy ${DIGEST:0:15} and update sitemaps" \
