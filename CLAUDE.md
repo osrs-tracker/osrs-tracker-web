@@ -26,9 +26,10 @@ holds the Angular conventions, SSR rules, deploy and release steps. Keep detail 
   `## YYYY/MM/DD` (Europe/Amsterdam date); doc-only changes don't. Parallel PRs all add that heading: when merging one
   after another, rebase and fold the entries under one heading. `/about/changelog` fetches the file from GitHub's `main`
   at runtime, so an entry is public the moment it reaches `main`: never push one ahead of its code.
-- Doc-only changes (`docs/`, `.claude/`, `CLAUDE.md`, `README.md`) go straight to `main`: commit in the worktree,
-  `git fetch origin && git rebase origin/main`, then `git push origin HEAD:main`. For anything else, ask: `main` or a PR
-  (unless releasing).
+- Doc-only changes (`docs/`, `.claude/skills/`, `.claude/agents/`, `CLAUDE.md`, `README.md`) go straight to `main`:
+  commit in the worktree, `git fetch origin && git rebase origin/main`, then `git push origin HEAD:main`. For anything
+  else, ask: `main` or a PR (unless releasing). `.claude/hooks/` and `.claude/settings.json` are tooling, not docs: they
+  get a changelog entry and that question too.
 - Deploying is merging to `main` (GitHub Actions `CD` → Flux). Never build, push or `kubectl apply` by hand.
 - Never `--no-gpg-sign`, never `'unsafe-inline'` in the CSP, never write to disk at runtime (read-only root filesystem).
 - Read `docs/decisions.md` before "fixing" something that looks odd; many trade-offs are deliberate.

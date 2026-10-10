@@ -252,10 +252,10 @@ When merging several, wait for one's digest commit before rebasing the next.
 
 ## Commit and push
 
-- Conventional commits. Doc-only changes include skills, docs and `CLAUDE.md` (how to push them: `CLAUDE.md`). Admin
-  bypasses `main`'s PR rule; after a direct push, check its CI run (`gh run watch --exit-status`, or the commit's checks
-  with `gh api repos/osrs-tracker/osrs-tracker-web/commits/<sha>/check-runs` if that's blocked). A direct push that
-  changes the image deploys too.
+- Conventional commits. What counts as doc-only, and how to push it: `CLAUDE.md`. Admin bypasses `main`'s PR rule; after
+  a direct push, check its CI run (`gh run watch --exit-status`, or the commit's checks with
+  `gh api repos/osrs-tracker/osrs-tracker-web/commits/<sha>/check-runs` if that's blocked). A direct push that changes
+  the image deploys too.
 - `chore(deploy)` is reserved for the `CD` workflow's digest commits.
 - Deploys start from `main` only, so production never runs unmerged code.
 - `CHANGELOG.md` entries cover deps and tooling too (not Dependabot PRs), newest date first. It's shown on
