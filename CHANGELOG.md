@@ -2,9 +2,10 @@
 
 ### Behind the scenes
 
-- Player pages read the API's new, more compact hiscore history (`@osrs-tracker/models` 2.1.0 and
+- Player pages read the API's new, more compact hiscore history (`@osrs-tracker/models` 2.2.0 and
   `@osrs-tracker/hiscores` 4.1.0). Nothing looks different: the same levels, XP, kill counts and "Unranked" labels, and
-  a skill or activity Jagex adds later counts in the totals before the site knows its name.
+  a skill or activity Jagex adds later counts in the XP and activity totals before the site knows its name (boss kill
+  counts include only the bosses the site lists).
 
 ## 2026/10/09
 
