@@ -19,6 +19,8 @@
   combat level and how long they've been tracked), and every spelling of a name (`the_fraking`, `THE-FRAKING`) points
   search engines to the same page. Shared, they get the same compact preview as item pages. A name that isn't on the
   hiscores is titled "Player not found".
+- Search engines can find the pages of players tracked in the last 30 days: the sitemap lists them, each with the date
+  it last changed. The sitemaps drop the priority and update-frequency hints, which search engines ignore.
 
 ### Price pages
 
@@ -50,10 +52,8 @@
   page's chart, log list, hiscores and colours each have their own place.
 - The player page's code is split into smaller parts (loading the history, the stat tiles, the two hiscores cards).
   Nothing looks or works differently.
-- The sitemap now lists the pages of tracked players with a hiscore entry in the last 30 days, so search engines can
-  find them, each with the date it last changed. The sitemaps drop the priority and update-frequency hints, which search
-  engines ignore. A deploy keeps the previous sitemap when the OSRS Wiki or the API doesn't answer, instead of failing,
-  and the site serves the same sitemaps the deploy saves, instead of fetching them a second time.
+- A deploy keeps the previous sitemaps when the OSRS Wiki or the API doesn't answer, instead of failing, and the site
+  serves the same sitemaps the deploy saves, instead of fetching them a second time.
 
 ## 2026/10/09
 

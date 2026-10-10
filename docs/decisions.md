@@ -11,7 +11,9 @@ Choices that look like accidents without their context: what was decided, why, a
   and serves those files. A failed, non-2xx or empty fetch keeps the committed file with a warning and exits 0
   (`fetchList` in `scripts/sitemap/sitemap-file.js`), so a hiccup costs one deploy's freshness, not the deploy. Players
   come from the API's `GET /sitemap/players` (tracked, not paused, with an entry in the last 30 days), at their
-  canonical lower-case name, dated by their newest entry. No `<priority>` or `<changefreq>`: Google ignores both.
+  canonical lower-case name, dated by their newest entry. No `<priority>` or `<changefreq>`: Google ignores both. A
+  commit that changes only sitemaps still skips the deploy (`NOT_IN_IMAGE` in `deploy.yml`): the next deploy regenerates
+  them anyway.
 - **Revisit:** if a sitemap passes 50,000 URLs (the players one had 534 on 2026/10/10), or a source goes stale often
   enough that keeping the old file hides it.
 
