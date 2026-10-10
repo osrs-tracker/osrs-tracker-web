@@ -17,7 +17,7 @@ import { RouterLink } from '@angular/router';
         placeholder="Player name, e.g. Zezima"
         name="player"
         [(ngModel)]="usernameQuery"
-        autocomplete="hidden"
+        autocomplete="off"
       />
       <button
         type="submit"

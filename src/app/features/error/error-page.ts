@@ -5,6 +5,9 @@ import { BackButton } from '@app/common/ui/page/back-button';
 import { StatusPanel } from '@app/common/ui/page/status-panel';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 
+/** Long enough for an API restart, short enough that a crawler retries the same day */
+const RETRY_AFTER_SECONDS = 300;
+
 /** Shown when a page's data failed to load for a reason other than not found, see `resolverErrorHandler`. */
 @Component({
   selector: 'error-page',
@@ -31,8 +34,14 @@ export default class ErrorPage {
 
   constructor() {
     // Only available during SSR, `null` in the browser. A non-2xx status also keeps the page out of the page cache.
+    // `Retry-After` tells crawlers when to come back, instead of slowing down crawling or dropping the URL.
     const responseInit = inject(RESPONSE_INIT, { optional: true });
-    if (responseInit) responseInit.status = 503;
+    if (responseInit) {
+      responseInit.status = 503;
+      const headers = new Headers(responseInit.headers);
+      headers.set('Retry-After', String(RETRY_AFTER_SECONDS));
+      responseInit.headers = headers;
+    }
 
     // Reported like a <load-error>, so all failures users see are counted the same way
     afterNextRender(() => this.analyticsService.trackEvent('load-error', 'errors', 'page', undefined));
