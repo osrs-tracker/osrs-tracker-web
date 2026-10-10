@@ -187,7 +187,8 @@ export function playerHistory(params: {
     periodLoaded: computed(
       () =>
         loaded() &&
-        !previousPeriodStart.isLoading() &&
+        // not while it reloads after failing: the tiles stay, showing the failure until it's in
+        previousPeriodStart.status() !== 'loading' &&
         (entries().length >= periodSize() || !hasMore() || loadMoreFailed()),
     ),
     current: computed(() => today() ?? entries()[0]),

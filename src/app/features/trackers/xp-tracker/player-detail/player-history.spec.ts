@@ -139,6 +139,7 @@ describe('playerHistory', () => {
 
     history.reloadPreviousPeriod();
     TestBed.tick();
+    expect(history.periodLoaded()).toBe(true);
     previousWeekStart(0).flush(entries(15, 0).slice(14));
     await settle();
 
