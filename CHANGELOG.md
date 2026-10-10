@@ -4,6 +4,8 @@
 
 - The navigation bar and link previews show the OSRS Tracker wordmark, a large "OSRS" over a small green "TRACKER", as
   on the browser tab icon.
+- Something that failed to load and can be retried, such as a price in a list, shows its retry button in amber, so it
+  reads as a failure rather than a refresh button.
 
 ### Search and sharing
 
@@ -42,6 +44,8 @@
   wherever icons appear (the hiscores, the charts and their tooltips).
 - The Boss kills tile writes the most killed boss's count like the total above it: "Vorkath (1,000)" instead of
   "(1000)".
+- Player pages are about a third smaller and quicker to start on phones: the day log opens with the last week instead of
+  two ("Load more days" adds the rest), and 30D loads its 30 days instead of 60.
 
 ### Behind the scenes
 

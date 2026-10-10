@@ -52,8 +52,9 @@ a worktree).
 - **Async data**: prefer `httpResource` / `rxResource`; if you subscribe, reset loading state in `finalize`.
 - **Failures**: every failable load shows its failure. `value()` throws in the error state, so check `error()` (or
   `hasValue()`) first and render `<load-error source="…" (retry)="resource.reload()" />`: `compact` when it replaces a
-  single value in a row or widget, the default when it replaces a list or section, `panel` for a panel. Never
-  `catchError(() => of(empty))` or an `error` callback that only empties the data.
+  single value in a row or widget, `inline` (amber text, a short message) when it replaces a line under a value, the
+  default when it replaces a list or section, `panel` for a panel. Never `catchError(() => of(empty))` or an `error`
+  callback that only empties the data.
 - **Keyboard patterns**: use `@angular/aria` (headless) for toolbars, listboxes, comboboxes and grids instead of
   hand-written arrow-key handling; style its state with `aria-*:` variants (`aria-disabled:`, `aria-checked:`).
   `segmented` shows the pattern and its SSR caveat (`docs/decisions.md`).
@@ -113,7 +114,7 @@ Which component to use (in `common/ui/<folder>/` unless noted):
 | A choice of views or periods (`controls/`)                    | `segmented` (32px pills, a radio group; `variant="slate"` beside an accent button)      |
 | The tracking offset                                           | `tracking-offset` (`features/trackers/xp-tracker/`; a 32px select, stored per device)   |
 | A whole page's state: not found, unavailable, error (`page/`) | `status-panel`, with `back-button` or other actions as content                          |
-| Something failed to load (`loading/`)                         | `load-error` (default, `panel` or `compact`; see Failures above)                        |
+| Something failed to load (`loading/`)                         | `load-error` (default, `panel`, `compact` or `inline`; see Failures above)              |
 | Something is loading (`loading/`)                             | `skeleton` blocks sized like the content, never a spinner                               |
 | A short explanation (`tooltip/`)                              | `info-tooltip`, or `[tooltip]` on any element                                           |
 | A reading page (`page/`)                                      | `information-page` around `<div class="markdown">`                                      |
