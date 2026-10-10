@@ -69,6 +69,8 @@
   Nothing looks or works differently.
 - The server builds the item and player sitemaps from the API when they're requested, keeping them for a day and an
   hour, so building the site no longer fetches anything from the OSRS Wiki or the API.
+- The item or account type icon at the top of item and player pages loads straight away instead of waiting for the
+  page's layout, and icon descriptions read as plain words ("hardcore ironman icon" instead of "hardcore_ironman icon").
 
 ## 2026/10/09
 
