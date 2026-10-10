@@ -82,7 +82,8 @@ token in `src/styles/tailwind/theme.css`.
 - **Colours:** semantic tokens that swap under `.dark` (`base.css`), never `dark:` pairs: `ground` page, `card`, `line`
   dividers, `row` row lines and hover, `inner` inner tiles, `deep` hero band and icon tiles, `border` controls,
   `muted`/`text`/`strong` text, `accent` (+ `accent-hover`, `on-accent`) links and primary actions, `up`/`down` changes
-  (a true green in the dark theme, apart from the emerald accent), `amber`/`orange` warnings. Charts read them through
+  (a true green in the dark theme, apart from the emerald accent), `down-pill` the red change pill's background (a tint
+  in light, solid in dark: a see-through red over slate turns pink), `amber`/`orange` warnings. Charts read them through
   `token()` in `chart-setup.ts`, which lists the ones they use.
 - **Tints:** a colour see-through (`color-mix(in oklch, <colour> N%, transparent)`), layered over the surface when one
   is needed (`hiscores/picked-cell.ts`, the chart legend). Never mix a colour with a slate token: the blend takes the
