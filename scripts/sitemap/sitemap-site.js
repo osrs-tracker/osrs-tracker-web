@@ -29,6 +29,18 @@ const lastmod = file => {
     return;
   }
 
+  // The browse pages, one per first letter (as BROWSE_LETTERS in the app); their text is the template
+  const browsePages = [...'abcdefghijklmnopqrstuvwxyz', '0']
+    .map(
+      letter => `
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/${letter}</loc>
+    <priority>0.8</priority>
+    ${lastmod('src/app/features/trackers/price-tracker/browse/browse-items.html')}
+  </url>`,
+    )
+    .join('');
+
   const sitemapIndex = `
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -42,6 +54,7 @@ const lastmod = file => {
     <priority>1.0</priority>
     <changefreq>weekly</changefreq>
   </url>
+  ${browsePages}
   <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/xp</loc>
     <priority>1.0</priority>

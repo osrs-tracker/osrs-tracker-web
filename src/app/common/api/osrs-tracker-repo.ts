@@ -84,6 +84,16 @@ export class OsrsTrackerRepo {
     return this.httpClient.get<Item[]>(`/items/search/${encodeURIComponent(query)}`);
   }
 
+  /**
+   * Every item whose name starts with `letter` (`a`–`z`, or `0` for any other first character), sorted by name. A 400
+   * for any other letter.
+   */
+  getItemsByLetter(letter: string): Observable<Pick<Item, 'id' | 'name' | 'icon'>[]> {
+    return this.httpClient.get<Pick<Item, 'id' | 'name' | 'icon'>[]>(`/items/browse/${encodeURIComponent(letter)}`, {
+      context: new HttpContext().set(LOADING_INDICATOR, true),
+    });
+  }
+
   getItemInfo(itemId: number, options?: { loadingIndicator: boolean }): Observable<Item> {
     return this.httpClient.get<Item>(`/items/${itemId}`, {
       context: new HttpContext().set(LOADING_INDICATOR, options?.loadingIndicator),

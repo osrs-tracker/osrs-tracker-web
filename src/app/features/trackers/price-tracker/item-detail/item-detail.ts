@@ -28,6 +28,7 @@ import { AveragePricesAtTime, LatestPrices, OsrsPricesRepo, TimeSpan } from '@ap
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { isHumanVisitor } from '@app/core/platform/human-visitor';
 import { PriceTrackerStore } from '../price-tracker-store';
+import { browseLetterOf, startingWith } from '../browse/browse-letters';
 import { PriceChart } from './charts/price-chart';
 import { geTax, isGeTaxExempt } from './ge-tax';
 import { ItemHeader } from './item-header';
@@ -86,6 +87,13 @@ export default class ItemDetail implements OnInit {
 
   /** `null` when there's no such item */
   readonly item: InputSignal<Item | null> = input.required();
+
+  /** The browse page the item is listed on */
+  readonly browseLetter: Signal<string | undefined> = computed(() => {
+    const item = this.item();
+    return item ? browseLetterOf(item.name) : undefined;
+  });
+  readonly browseStartingWith: Signal<string> = computed(() => startingWith(this.browseLetter() ?? ''));
 
   readonly rangeOptions: SegmentedOption<PriceRange>[] = (Object.keys(PRICE_RANGES) as PriceRange[]).map(range => ({
     value: range,
