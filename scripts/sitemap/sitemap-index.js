@@ -1,5 +1,5 @@
-const xmlFormatter = require('xml-formatter');
-const { writeFile } = require('fs').promises;
+import xmlFormatter from 'xml-formatter';
+import { writeFile } from 'node:fs/promises';
 
 // No <lastmod> (it's optional): the pages' own dates are in sitemap-site.xml, and sitemap-items.xml has no source with a
 // date (it lists the Wiki's items). A file timestamp is the checkout time in the CD workflow, wrong on every deploy.

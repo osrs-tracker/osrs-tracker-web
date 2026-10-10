@@ -15,7 +15,7 @@ import {
   runInInjectionContext,
   viewChild,
 } from '@angular/core';
-import { Chart, ChartOptions, Plugin, Point } from 'chart.js';
+import { Chart, ChartOptions, Point } from 'chart.js';
 import { merge } from 'chart.js/helpers';
 import { ThemeService } from 'src/app/common/services/theme.service';
 import './chart-setup';
@@ -31,7 +31,6 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   private chart?: Chart<TType, Point[]>;
-  private destroyed = false;
   private readonly canvas: Signal<ElementRef<HTMLCanvasElement>> = viewChild.required('chart');
 
   readonly data: InputSignal<TData> = input.required();
@@ -47,11 +46,10 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
   protected abstract setData(chart: Chart<TType, Point[]>, data: TData): void;
 
   ngOnInit(): void {
-    if (this.isBrowser) void this.initChart();
+    if (this.isBrowser) this.initChart();
   }
 
   ngOnDestroy(): void {
-    this.destroyed = true;
     this.chart?.destroy();
   }
 
@@ -70,14 +68,8 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
     }
   }
 
-  private async initChart(): Promise<void> {
-    // The zoom plugin is loaded lazily (it needs the browser), so it's passed to the chart instead of registered globally
-    const zoom = (await import('chartjs-plugin-zoom')).default;
-
-    // The component can be destroyed while the zoom plugin is loading
-    if (this.destroyed) return;
-
-    this.chart = this.createChart([zoom]);
+  private initChart(): void {
+    this.chart = this.createChart();
 
     runInInjectionContext(this.injector, () => {
       effect(() => this.updateChart(this.chart!, this.data()));
@@ -86,7 +78,7 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
     });
   }
 
-  private createChart(plugins: Plugin[]): Chart<TType, Point[]> {
+  private createChart(): Chart<TType, Point[]> {
     const sharedOptions: ChartOptions = {
       responsive: true,
       maintainAspectRatio: false,
@@ -128,29 +120,12 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
           intersect: false,
           usePointStyle: true,
         },
-        zoom: {
-          limits: {
-            x: { min: 'original', max: 'original' },
-            y: { min: 'original', max: 'original' },
-          },
-          pan: {
-            enabled: true,
-            threshold: 10,
-            mode: 'x',
-          },
-          zoom: {
-            wheel: { enabled: true },
-            pinch: { enabled: true },
-            mode: 'x',
-          },
-        },
       },
     };
 
     return new Chart(this.canvas().nativeElement, {
       type: this.type,
       data: { datasets: [] },
-      plugins: plugins as Plugin<TType>[],
       options: merge(sharedOptions as ChartOptions<TType>, this.chartOptions()),
     });
   }
@@ -168,7 +143,6 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
     });
 
     chart.update();
-    chart.resetZoom();
   }
 }
 

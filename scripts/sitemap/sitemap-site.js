@@ -1,6 +1,6 @@
-const xmlFormatter = require('xml-formatter');
-const { execFileSync } = require('child_process');
-const { readFile, writeFile } = require('fs').promises;
+import xmlFormatter from 'xml-formatter';
+import { execFileSync } from 'node:child_process';
+import { readFile, writeFile } from 'node:fs/promises';
 
 const git = args => execFileSync('git', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
 

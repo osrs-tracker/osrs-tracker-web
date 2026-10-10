@@ -1,4 +1,4 @@
-const { readdir, readFile, writeFile } = require('fs').promises;
+import { readdir, readFile, writeFile } from 'node:fs/promises';
 
 // The skill and activity icons are all shown on every player page, so they're bundled into its chunk as data URIs (see
 // LOCAL_ICONS) instead of being fetched one by one.
