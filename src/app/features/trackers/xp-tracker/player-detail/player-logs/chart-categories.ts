@@ -1,4 +1,4 @@
-import { BOSSES, CLUES, MINIGAMES, RAIDS, UNCHARTED_MINIGAMES } from '../../activity-categories';
+import { BOSSES, CLUES, MINIGAMES, RAIDS, UNCHARTED_MINIGAMES } from '../activity-categories';
 import { ActivityView } from '../player-view';
 
 /**

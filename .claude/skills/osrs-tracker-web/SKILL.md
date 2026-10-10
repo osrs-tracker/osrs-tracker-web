@@ -23,7 +23,7 @@ a worktree).
   `awsBaseUrl` is the API Gateway hiscores proxy, browser only; the API and a Lambda share it, so check changes in all
   three repos.
 - In the cluster, SSR calls the API at `API_INTERNAL_URL` (the API Service, set in `osrs-tracker-web.yaml`), not the
-  public URL: `provideInternalApiBaseUrl` in `core/interceptors/base-url.interceptors.ts` swaps the base URL on the
+  public URL: `provideInternalApiBaseUrl` in `core/interceptors/base-url-interceptor.ts` swaps the base URL on the
   server and maps that origin back to `apiBaseUrl` for the transfer cache (`HTTP_TRANSFER_CACHE_ORIGIN_MAP`), so the
   browser still finds the responses. Unset locally. URLs that end up in the HTML (the news `<img>`) use
   `config.apiBaseUrl` directly and stay public.
@@ -35,6 +35,17 @@ a worktree).
 
 ## Angular conventions
 
+- **Names** (the 2025 style guide, the CLI's default): a file is named after its main identifier. Components and
+  directives have no suffix (`home.ts` with `class Home`, its template `home.html`). Other classes keep theirs and the
+  file joins it with a hyphen (`ThemeService` in `theme-service.ts`, `TimeAgoPipe` in `time-ago-pipe.ts`, also `-repo`,
+  `-store`, `-resolver`, `-interceptor`); generate a service with the suffix in its name
+  (`ng g s common/services/theme-service`). Only the CLI's own names keep a dot: `main.server.ts`, `app.config*.ts`,
+  `*.routes.ts`.
+- **Imports**: relative within a feature or a folder of `common/` or `core/` (and from the root `app.*` files into their
+  subfolders); `@app/…`, `@config/…` or `@server/…` otherwise. Lint enforces the layers (`import-x/no-restricted-paths`
+  in `eslint.config.js`): `common/` and `core/` never import a feature, features don't import each other (Home may
+  import the trackers), none of them imports `src/server` (only the root `app.config.server.ts` does), and `HttpClient`
+  is only used in `common/repositories/` (and specs).
 - **DI**: `inject()` only; root services use `@Service()`, not `@Injectable({ providedIn: 'root' })`.
 - **State**: signals, with explicitly typed public fields (`readonly foo: Signal<Bar> = computed(...)`). localStorage
   goes through a per-feature `@ngrx/signals` store (`XpTrackerStore`, `PriceTrackerStore`), never from components.
@@ -128,9 +139,9 @@ the angular.dev docs for the installed major version.
   (the Wiki's `/latest` and `/24h`, every item's prices) in the browser only and render skeletons on the server, like
   item and player rows.
 - **Third-party calls in SSR**: a render waits for every request it makes, so keep third-party calls (the OSRS Wiki)
-  small, and render a failed one as loading on the server (`latestLoading` in `item-detail.component.ts`), as the
-  browser fetches it again after hydration. Set the `SSR_TIMEOUT` context token on such calls
-  (`core/interceptors/ssr-timeout.interceptor.ts`): during SSR they fail after `ssrRequestTimeout` (3 s).
+  small, and render a failed one as loading on the server (`latestLoading` in `item-detail.ts`), as the browser fetches
+  it again after hydration. Set the `SSR_TIMEOUT` context token on such calls
+  (`core/interceptors/ssr-timeout-interceptor.ts`): during SSR they fail after `ssrRequestTimeout` (3 s).
   `logOutgoingRequests` logs every request a render makes, with its duration and the page `renderingPage()`
   (`server/utils/log.ts`) set (undici's `diagnostics_channel`, so it sees every `fetch`).
 - **Server logs**: request logs match the API's shape: 5xx `error`, 4xx `warn`, else `info`; a client that disconnects

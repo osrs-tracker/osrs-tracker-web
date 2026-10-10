@@ -2,13 +2,13 @@ import { Component, provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { fromJagex } from '@osrs-tracker/hiscores';
 import { HiscoreEntry } from '@osrs-tracker/models';
-import { GTAG_TOKEN } from 'src/app/common/services/analytics/analytics.token';
+import { GTAG_TOKEN } from '@app/common/services/analytics/gtag-token';
 import { describe, expect, it } from 'vitest';
 import { TOXSICK } from '../../testing/jagex-hiscores';
-import { ChartLegendComponent, LegendItem } from '../player-logs/chart-legend.component';
+import { ChartLegend, LegendItem } from '../player-logs/chart-legend';
 import { PlayerView } from '../player-view';
-import { ActivityGridComponent } from './activity-grid.component';
-import { SkillGridComponent } from './skill-grid.component';
+import { ActivityGrid } from './activity-grid';
+import { SkillGrid } from './skill-grid';
 
 @Component({
   selector: 'host',
@@ -17,7 +17,7 @@ import { SkillGridComponent } from './skill-grid.component';
     <activity-grid view="raids" [layout]="layout" [hiscore]="undefined" [gains]="gains" />
     <chart-legend kind="skill" [items]="items" [collapseAfter]="1" />
   `,
-  imports: [ActivityGridComponent, ChartLegendComponent, SkillGridComponent],
+  imports: [ActivityGrid, ChartLegend, SkillGrid],
   providers: [PlayerView],
 })
 class HostComponent {
@@ -50,7 +50,7 @@ describe('hiscores grids and chart legend before render hooks run (as on the ser
   });
 });
 
-describe('SkillGridComponent keyboard', () => {
+describe('SkillGrid keyboard', () => {
   const SKILLS = ['Attack', 'Hitpoints', 'Mining', 'Overall'];
 
   async function render(): Promise<{
@@ -61,7 +61,7 @@ describe('SkillGridComponent keyboard', () => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection(), PlayerView, { provide: GTAG_TOKEN, useValue: null }],
     });
-    const fixture = TestBed.createComponent(SkillGridComponent);
+    const fixture = TestBed.createComponent(SkillGrid);
     const hiscore: HiscoreEntry = {
       date: new Date(),
       scrapingOffset: 0,
@@ -139,7 +139,7 @@ describe('grids with a real response (ToxSick: Sailing at 0 XP, unranked boss ki
   }
 
   it('shows an untrained skill as level 1, not a skeleton', () => {
-    const el = render(SkillGridComponent, { hiscore, gains: new Map() });
+    const el = render(SkillGrid, { hiscore, gains: new Map() });
     const sailing = el.querySelector('button[aria-label^="Sailing"]')!;
     expect(sailing.getAttribute('aria-label')).toBe('Sailing level 1, 0% to 2');
     expect(sailing.querySelector('skeleton')).toBeNull();
@@ -147,7 +147,7 @@ describe('grids with a real response (ToxSick: Sailing at 0 XP, unranked boss ki
   });
 
   it('shows an unranked boss with its score', () => {
-    const el = render(ActivityGridComponent, {
+    const el = render(ActivityGrid, {
       view: 'raids',
       layout: ['Chambers of Xeric'],
       hiscore,
@@ -160,7 +160,7 @@ describe('grids with a real response (ToxSick: Sailing at 0 XP, unranked boss ki
   });
 
   it('shows a skeleton only while loading', () => {
-    const el = render(ActivityGridComponent, {
+    const el = render(ActivityGrid, {
       view: 'raids',
       layout: ['Chambers of Xeric'],
       hiscore: undefined,
@@ -170,12 +170,12 @@ describe('grids with a real response (ToxSick: Sailing at 0 XP, unranked boss ki
   });
 });
 
-describe('ChartLegendComponent focus', () => {
+describe('ChartLegend focus', () => {
   it('moves focus to its new Tab stop when the focused chip goes behind "+N"', async () => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection(), { provide: GTAG_TOKEN, useValue: null }],
     });
-    const fixture = TestBed.createComponent(ChartLegendComponent);
+    const fixture = TestBed.createComponent(ChartLegend);
     fixture.componentRef.setInput('kind', 'skill');
     fixture.componentRef.setInput('collapseAfter', 1);
     fixture.componentRef.setInput('items', [

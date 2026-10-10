@@ -1,9 +1,9 @@
 import { ApplicationConfig, mergeApplicationConfig } from '@angular/core';
 import { provideServerRendering, RenderMode, withRoutes } from '@angular/ssr';
-import { serverConfig } from 'src/server/server-config';
+import { serverConfig } from '@server/server-config';
 import { appConfig } from './app.config';
-import { provideInternalApiBaseUrl } from './core/interceptors/base-url.interceptors';
-import { provideSsrRequestTimeout } from './core/interceptors/ssr-timeout.interceptor';
+import { provideInternalApiBaseUrl } from './core/interceptors/base-url-interceptor';
+import { provideSsrRequestTimeout } from './core/interceptors/ssr-timeout-interceptor';
 
 const serverAppConfig: ApplicationConfig = {
   providers: [

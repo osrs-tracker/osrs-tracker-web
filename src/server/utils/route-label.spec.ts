@@ -1,6 +1,6 @@
 import { Route, Routes } from '@angular/router';
 import { Request, Response } from 'express';
-import appRoutes from 'src/app/app.routes';
+import appRoutes from '@app/app.routes';
 import { describe, expect, it } from 'vitest';
 import { routeLabel } from './route-label';
 

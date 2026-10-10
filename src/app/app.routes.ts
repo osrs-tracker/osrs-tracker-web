@@ -1,20 +1,20 @@
 import { inject } from '@angular/core';
 import { Route } from '@angular/router';
-import RootLayoutComponent from './common/components/layout/root-layout/root-layout.component';
-import { MetaService } from './common/services/meta.service';
+import RootLayout from './common/components/layout/root-layout/root-layout';
+import { MetaService } from './common/services/meta-service';
 
 export default [
   {
     path: '',
     pathMatch: 'prefix',
-    component: RootLayoutComponent,
+    component: RootLayout,
     children: [
       {
         path: '',
         pathMatch: 'full',
         title: 'Home - OSRS Tracker',
         resolve: { metaDescription: () => inject(MetaService).setDefaultMeta() },
-        loadComponent: () => import('./features/home/home.component'),
+        loadComponent: () => import('./features/home/home'),
       },
       {
         path: 'trackers',
@@ -31,14 +31,14 @@ export default [
         path: 'error',
         title: 'Error - OSRS Tracker',
         resolve: { metaDescription: () => inject(MetaService).setDefaultMeta() },
-        loadComponent: () => import('./features/error/error.component'),
+        loadComponent: () => import('./features/error/error-page'),
       },
       {
         path: '**',
         pathMatch: 'full',
         title: '404 Not Found - OSRS Tracker',
         resolve: { metaDescription: () => inject(MetaService).setDefaultMeta() },
-        loadComponent: () => import('./features/not-found/not-found.component'),
+        loadComponent: () => import('./features/not-found/not-found'),
       },
     ],
   },

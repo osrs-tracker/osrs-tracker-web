@@ -36,8 +36,8 @@ holds the Angular conventions, SSR rules, deploy and release steps. Keep detail 
 
 ## Where things live
 
-- `src/app/features/<feature>/` single-feature code; `src/app/common/` shared code, HTTP only via
-  `common/repositories/`.
+- `src/app/features/<feature>/` single-feature code; `src/app/common/` shared code, HTTP only via `common/repositories/`
+  (lint enforces these layers).
 - `src/app/core/` app-wide plumbing: interceptors (API base URL, loading bar, shared GET requests, SSR user agent, SSR
   timeout for third-party calls), routing (reuse strategy, resolver errors), platform (`WINDOW`, `isHumanVisitor`), the
   global error handler.

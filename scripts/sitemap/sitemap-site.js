@@ -13,11 +13,12 @@ const hasFullHistory = () => {
   }
 };
 
-// The date of the last commit that changed a page's source. File timestamps won't do: a fresh checkout (the CD
-// workflow) gives every file the checkout time, so every deploy would move the dates without the pages changing.
-// A path with no commits yet gets no <lastmod> rather than a made-up date.
-const lastmod = path => {
-  const date = git(['log', '-1', '--format=%cI', '--', path]);
+// The date of the last commit that changed a page's file (for a page in the app, its template, which holds the text).
+// File timestamps won't do: a fresh checkout (the CD workflow) gives every file the checkout time, so every deploy would
+// move the dates without the pages changing. A rename doesn't count, and older commits are followed across it. A file
+// with no commits yet gets no <lastmod> rather than a made-up date.
+const lastmod = file => {
+  const date = git(['log', '-1', '--follow', '--diff-filter=AMT', '--format=%cI', '--', file]);
   return date ? `<lastmod>${date}</lastmod>` : '';
 };
 
@@ -54,12 +55,12 @@ const lastmod = path => {
   <url>
     <loc>https://osrs-tracker.freekmencke.com/about/privacy</loc>
     <priority>0.3</priority>
-    ${lastmod('src/app/features/about/privacy')}
+    ${lastmod('src/app/features/about/privacy/privacy.html')}
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/about/terms</loc>
     <priority>0.3</priority>
-    ${lastmod('src/app/features/about/terms')}
+    ${lastmod('src/app/features/about/terms/terms.html')}
   </url>
 </urlset>`;
 

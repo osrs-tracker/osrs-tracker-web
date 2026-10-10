@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { isbot } from 'isbot';
-import { WINDOW } from './window.token';
+import { WINDOW } from './window-token';
 
 /**
  * Whether this is a person's browser: false during SSR and for crawlers. Lookups and player tracking are only recorded

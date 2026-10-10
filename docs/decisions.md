@@ -100,11 +100,12 @@ Choices that look like accidents without their context: what was decided, why, a
 
 - **Context:** `<lastmod>` came from file timestamps, which a fresh checkout (the `CD` workflow) sets to the checkout
   time, so every deploy moved every date and search engines learn to ignore them.
-- **Decision:** `sitemap-site.js` takes each page's date from the last commit that changed its source. Without full
-  history (a shallow clone, or the Docker build, which has no git or `.git`) it keeps `public/sitemap-site.xml` as it
-  is: the image is built from the file the `CD` workflow just generated. The sitemap index has no `<lastmod>`: the items
-  sitemap has no dated source, and the site one's dates are in the file itself.
-- **Revisit:** if a page's content stops living in one path (e.g. it moves to the API or a CMS).
+- **Decision:** `sitemap-site.js` takes each page's date from the last commit that changed its source file (the template
+  for privacy and terms, `CHANGELOG.md`), following renames, which don't count as a change. Without full history (a
+  shallow clone, or the Docker build, which has no git or `.git`) it keeps `public/sitemap-site.xml` as it is: the image
+  is built from the file the `CD` workflow just generated. The sitemap index has no `<lastmod>`: the items sitemap has
+  no dated source, and the site one's dates are in the file itself.
+- **Revisit:** if a page's content stops living in one file (e.g. it moves to the API or a CMS).
 
 ## Live hiscores load in the browser only (2026/10/08)
 

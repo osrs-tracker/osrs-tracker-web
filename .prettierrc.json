@@ -15,5 +15,6 @@
   "endOfLine": "lf",
   "embeddedLanguageFormatting": "auto",
   "singleAttributePerLine": false,
-  "semi": true
+  "semi": true,
+  "overrides": [{ "files": "src/app/**/*.html", "options": { "parser": "angular" } }]
 }

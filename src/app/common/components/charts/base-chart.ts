@@ -17,7 +17,7 @@ import {
 } from '@angular/core';
 import { Chart, ChartOptions, Point } from 'chart.js';
 import { merge } from 'chart.js/helpers';
-import { ThemeService } from 'src/app/common/services/theme.service';
+import { ThemeService } from '@app/common/services/theme-service';
 import './chart-setup';
 
 /**
