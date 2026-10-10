@@ -1,7 +1,6 @@
-import { inject } from '@angular/core';
 import { Route } from '@angular/router';
+import { DEFAULT_DESCRIPTION, PageMeta } from './common/seo/page-meta-strategy';
 import RootLayout from './core/layout/root-layout';
-import { MetaService } from './common/seo/meta-service';
 
 export default [
   {
@@ -12,8 +11,8 @@ export default [
       {
         path: '',
         pathMatch: 'full',
-        title: 'Home - OSRS Tracker',
-        resolve: { metaDescription: () => inject(MetaService).setDefaultMeta() },
+        title: 'OSRS Tracker: XP tracker and Grand Exchange prices',
+        data: { meta: { description: DEFAULT_DESCRIPTION, canonicalPath: '/' } satisfies PageMeta },
         loadComponent: () => import('./features/home/home'),
       },
       {
@@ -24,20 +23,17 @@ export default [
       {
         path: 'about',
         pathMatch: 'prefix',
-        resolve: { metaDescription: () => inject(MetaService).setDefaultMeta() },
         loadChildren: () => import('./features/about/about.routes'),
       },
       {
         path: 'error',
         title: 'Error - OSRS Tracker',
-        resolve: { metaDescription: () => inject(MetaService).setDefaultMeta() },
         loadComponent: () => import('./features/error/error-page'),
       },
       {
         path: '**',
         pathMatch: 'full',
         title: '404 Not Found - OSRS Tracker',
-        resolve: { metaDescription: () => inject(MetaService).setDefaultMeta() },
         loadComponent: () => import('./features/not-found/not-found'),
       },
     ],

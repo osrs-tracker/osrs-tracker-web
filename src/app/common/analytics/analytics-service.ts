@@ -1,5 +1,5 @@
 import { inject, Service } from '@angular/core';
-import { DefaultTitleStrategy, NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router, TitleStrategy } from '@angular/router';
 import { filter } from 'rxjs';
 import { GTAG_TOKEN } from './gtag-token';
 
@@ -7,7 +7,7 @@ import { GTAG_TOKEN } from './gtag-token';
 export class AnalyticsService {
   private readonly gtag = inject(GTAG_TOKEN);
   private readonly router = inject(Router);
-  private readonly titleStrategy = inject(DefaultTitleStrategy);
+  private readonly titleStrategy = inject(TitleStrategy);
 
   setupPageAnalytics() {
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
