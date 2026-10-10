@@ -44,9 +44,11 @@ import { FormsModule } from '@angular/forms';
     </span>
 
     <div class="flex flex-col items-center gap-2">
-      <div role="heading" [attr.aria-level]="headingLevel()" class="text-3xl/8.5 font-bold text-strong">
-        {{ heading() }}
-      </div>
+      @if (headingLevel() === 1) {
+        <h1 class="text-3xl/8.5 font-bold text-strong">{{ heading() }}</h1>
+      } @else {
+        <h2 class="text-3xl/8.5 font-bold text-strong">{{ heading() }}</h2>
+      }
       <p class="max-w-md text-base/6 text-muted">{{ message() }}</p>
     </div>
 
