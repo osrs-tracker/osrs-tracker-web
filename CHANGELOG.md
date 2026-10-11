@@ -1,16 +1,21 @@
 ## 2026/10/11
 
+### Look and feel
+
 - On tablets, the home page is about half as long: the example player card stays beside the search, the latest news
   shows four compact cards in a row (as on phones, two by two), and the recently looked up players and items sit side by
   side.
+- A former ironman keeps their original helm instead of a crossed-out one, with a badge for what changed: a red × when
+  they de-ironed, the ironman helm when an ultimate ironman de-ultimated, and the skull when a hardcore died. In player
+  lists, hovering the helm explains it, as on the player's page.
+
+### Player pages
+
 - In a player's day log, boss kills, clues and other activities sit below a line under the skills, so a kill count is no
   longer mistaken for XP.
 - On a player's page, clicking the tab that's already open (such as Clues while the chart shows skills) charts that
   category again.
 - On a player's page, hovering over the levels gained below the count lists them all, one per line.
-- A former ironman keeps their original helm instead of a crossed-out one, with a badge for what changed: a red × when
-  they de-ironed, the ironman helm when an ultimate ironman de-ultimated, and the skull when a hardcore died. In player
-  lists, hovering the helm explains it, as on the player's page.
 
 ## 2026/10/10
 

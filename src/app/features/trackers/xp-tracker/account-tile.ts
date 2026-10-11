@@ -84,7 +84,12 @@ const TYPE_LABELS: Record<PlayerType, string> = {
           </svg>
         </span>
       } @else if (player.status === PlayerStatus.DeUltimated) {
-        <img [class]="badgeClass() + (large() ? ' p-0.75' : ' p-0.5')" icon [name]="PlayerType.Ironman" />
+        <img
+          [class]="badgeClass() + (large() ? ' p-0.75' : ' p-0.5')"
+          icon
+          [eager]="large()"
+          [name]="PlayerType.Ironman"
+        />
       }
       @if (player.diedAsHardcore) {
         <img
@@ -94,6 +99,7 @@ const TYPE_LABELS: Record<PlayerType, string> = {
               : 'absolute -right-1.5 -bottom-1.5 size-5 p-0.5 rounded-full border border-line bg-deep'
           "
           icon
+          [eager]="large()"
           name="dead"
         />
       }
