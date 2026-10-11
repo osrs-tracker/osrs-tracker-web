@@ -17,6 +17,11 @@
   category again.
 - On a player's page, hovering over the levels gained below the count lists them all, one per line.
 
+### Fixes
+
+- A tab left open while the site updates no longer gets stuck when you open a page or chart you hadn't visited yet: it
+  reloads into the new version, on the page you clicked.
+
 ## 2026/10/10
 
 ### Look and feel
