@@ -6,6 +6,15 @@
 @custom-variant dark (&:where(.dark, .dark *));
 /* The current page's nav link (`ariaCurrentWhenActive="page"`) */
 @custom-variant current (&[aria-current='page']);
+/* Home's narrow news cards: two in a row on phones, four on tablets (768–1279px); both get the compact card */
+@custom-variant compact {
+  @media (width < 40rem) {
+    @slot;
+  }
+  @media (width >= 48rem) and (width < 80rem) {
+    @slot;
+  }
+}
 
 @import './tailwind/base' layer(base);
 @import './tailwind/components' layer(components);

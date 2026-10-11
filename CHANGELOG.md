@@ -1,3 +1,9 @@
+## 2026/10/11
+
+- On tablets, the home page is about half as long: the example player card stays beside the search, the latest news
+  shows four compact cards in a row (as on phones, two by two), and the recently looked up players and items sit side by
+  side.
+
 ## 2026/10/10
 
 ### Look and feel

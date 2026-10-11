@@ -1,7 +1,10 @@
 <!-- Above the page content, so the item search's dropdown can overlap it -->
 <header class="relative z-10 bg-deep dot-grid border-b border-line">
-  <div class="max-w-page mx-auto flex flex-wrap items-center gap-10 px-4 sm:px-6 py-12">
-    <div class="flex flex-1 basis-130 flex-col gap-6 min-w-0">
+  <!-- On tablets (768–1279px) the preview card stays beside the text at 300px instead of wrapping under it -->
+  <div
+    class="max-w-page mx-auto flex flex-wrap md:max-xl:flex-nowrap items-center gap-10 md:max-xl:gap-8 px-4 sm:px-6 py-12"
+  >
+    <div class="flex flex-1 basis-130 md:max-xl:basis-0 flex-col gap-6 min-w-0">
       <h1 class="text-4xl/none md:text-5xl/none lg:text-6xl/none font-bold text-strong">
         Track your OSRS <span class="text-accent">progress.</span>
       </h1>
@@ -14,7 +17,7 @@
         <player-search class="max-w-160">
           <segmented
             leading
-            class="max-sm:basis-full"
+            class="max-sm:basis-full md:max-xl:basis-full"
             variant="slate"
             label="Search for"
             [options]="SEARCH_MODES"
@@ -27,7 +30,7 @@
         <item-search class="max-w-160">
           <segmented
             leading
-            class="max-sm:basis-full"
+            class="max-sm:basis-full md:max-xl:basis-full"
             variant="slate"
             label="Search for"
             [options]="SEARCH_MODES"
@@ -51,7 +54,7 @@
       }
     </div>
 
-    <preview-card class="flex-1 basis-90 max-w-110 mx-auto" />
+    <preview-card class="flex-1 basis-90 max-w-110 mx-auto md:max-xl:flex-none md:max-xl:w-75 md:max-xl:mx-0" />
   </div>
 </header>
 
@@ -67,7 +70,7 @@
     @if (osrsNewsItems.error()) {
       <load-error source="home-news" message="Couldn't load the latest news." (retry)="osrsNewsItems.reload()" />
     } @else {
-      <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 md:max-xl:gap-4">
         @for (newsItem of osrsNewsItems.value(); track newsItem.link) {
           <osrs-news-card [osrsNewsItem]="newsItem" />
         } @empty {
@@ -79,7 +82,7 @@
     }
   </section>
 
-  <div class="grid lg:grid-cols-2 items-start gap-6">
+  <div class="grid md:grid-cols-2 items-start gap-6">
     <section
       list-card
       heading="XP Tracker"
