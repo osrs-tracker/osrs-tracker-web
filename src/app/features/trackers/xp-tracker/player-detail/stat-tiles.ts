@@ -10,6 +10,8 @@ export interface StatTileView {
   sub: string;
   tone: 'muted' | 'up' | 'down';
   tip?: string;
+  /** The whole line, for when it's cut off; one item per line */
+  subTip?: string;
   /** The period before failed to load, so the line is a retry instead of the comparison */
   comparisonFailed?: boolean;
 }
@@ -43,7 +45,7 @@ export function statTilesFor(
   }
 
   const levelCount = summary.levels.reduce((total, { from, to }) => total + to - from, 0);
-  const levels = summary.levels.map(({ skill, from, to }) => `${skill} ${from} → ${to}`).join(', ');
+  const levels = summary.levels.map(({ skill, from, to }) => `${skill} ${from} → ${to}`);
   return [
     totalLevel,
     {
@@ -55,7 +57,13 @@ export function statTilesFor(
         ? { sub: '', tone: 'muted', comparisonFailed }
         : periodComparison(summary, period)),
     },
-    { label: 'Levels gained', value: String(levelCount), sub: levels, tip: levels, tone: 'muted' },
+    {
+      label: 'Levels gained',
+      value: String(levelCount),
+      sub: levels.join(', '),
+      subTip: levels.join('\n'),
+      tone: 'muted',
+    },
     {
       label: 'Boss kills',
       value: summary.bossKills.toLocaleString('en-US'),

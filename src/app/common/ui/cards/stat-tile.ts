@@ -1,11 +1,13 @@
 import { booleanAttribute, Component, input, InputSignal, InputSignalWithTransform } from '@angular/core';
 import { InfoTooltip } from '../tooltip/info-tooltip';
+import { Tooltip } from '../tooltip/tooltip';
 import { Skeleton } from '../loading/skeleton';
 
 /**
  * A labelled value with a line below it, e.g. "XP last 7 days · 3.72M · +24% vs previous week". `tone` colours the line
  * for a change; `compact` (24px value instead of 30px) fits six in a row; `loading` shows skeletons of the same size.
- * Content goes below the value, e.g. an `inline` `load-error` in place of the line.
+ * `subTip` shows a line that may be cut off in full. Content goes below the value, e.g. an `inline` `load-error` in
+ * place of the line.
  */
 @Component({
   selector: 'stat-tile',
@@ -35,7 +37,14 @@ import { Skeleton } from '../loading/skeleton';
         <span
           class="text-sm/4.5 truncate"
           [class]="tone() === 'up' ? 'font-bold text-up' : tone() === 'down' ? 'font-bold text-down' : 'text-muted'"
+          [tooltip]="!!subTip()"
+          [tooltipTemplate]="subTipTemplate"
+          [tooltipUnderline]="false"
+          [attr.tabindex]="subTip() ? 0 : null"
           >{{ sub() }}</span
+        >
+        <ng-template #subTipTemplate
+          ><span class="whitespace-pre-line">{{ subTip() }}</span></ng-template
         >
       }
       <ng-content />
@@ -45,7 +54,7 @@ import { Skeleton } from '../loading/skeleton';
     'class': 'flex flex-col gap-1 min-w-0 px-4.5 py-4 rounded-2xl bg-card',
     '[attr.aria-busy]': 'loading()',
   },
-  imports: [InfoTooltip, Skeleton],
+  imports: [InfoTooltip, Skeleton, Tooltip],
 })
 export class StatTile {
   readonly label: InputSignal<string> = input('');
@@ -56,6 +65,8 @@ export class StatTile {
   readonly info: InputSignal<string> = input('');
   /** Shown on hover over the value, e.g. the exact number behind a short one */
   readonly tip: InputSignal<string> = input('');
+  /** Shown in a tooltip over the line, e.g. the whole of a list the line cuts off; `\n` starts a new line */
+  readonly subTip: InputSignal<string> = input('');
   readonly compact: InputSignalWithTransform<boolean, unknown> = input(false, { transform: booleanAttribute });
   readonly loading: InputSignalWithTransform<boolean, unknown> = input(false, { transform: booleanAttribute });
 }

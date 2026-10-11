@@ -7,6 +7,7 @@
   longer mistaken for XP.
 - On a player's page, clicking the tab that's already open (such as Clues while the chart shows skills) charts that
   category again.
+- On a player's page, hovering over the levels gained below the count lists them all, one per line.
 
 ## 2026/10/10
 
