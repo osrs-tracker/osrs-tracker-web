@@ -2,6 +2,26 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## Item link previews are drawn by the server (2026/10/11)
+
+- **Context:** every item page sent the square app icon as its `og:image`, so every shared item link looked the same
+  (#208). The Wiki's item icons are about 30px, too small for any card.
+- **Decision:** the server draws a 1200×630 card per item at `/og/item/:id.png` (`routers/og-images.ts`,
+  `og/item-card.ts`): its icon, name, examine text, buy limit and alch values, never a price, as chat apps keep a
+  preview for weeks. `satori` lays it out as SVG and `@resvg/resvg-wasm` turns that into a PNG. Both are plain JS and
+  WebAssembly, bundled into `server.mjs` with the SOLIX TTFs and the `.wasm` (esbuild's `binary` loader in
+  `angular.json`): the image ships only `dist/`, without `node_modules`, which rules out native `sharp` or
+  `@resvg/resvg-js`, and `sharp` would also need system fonts on Alpine. The renderer chunk (about 4 MB) loads on the
+  first image request. Images live a week in browsers and preview caches, the last 200 in memory; `?v=` in the page
+  meta's URL busts them when the design changes. Rendering in the API (it has `sharp`) was dropped: two repos for one
+  feature, and the same font problem.
+- **satori stays on 0.32:** 0.33 depends on `harfbuzzjs`, whose Emscripten loader reads `hb.wasm` from `__dirname` at
+  runtime and fails inside the bundle. Check that before accepting a bump.
+- **Fonts:** `satori` reads TTF, OTF or WOFF, not WOFF2 or variable fonts. `og/fonts/` holds static Regular (400) and
+  SemiBold (600) instances of `SOLIX-Variable.ttf` from the SOLIX release
+  (`fonttools varLib.instancer SOLIX-Variable.ttf wght=600`), outside `public/` so they aren't served. Redo them when
+  the site's SOLIX is bumped.
+
 ## Tablet layout for Home (2026/10/11)
 
 - **Context:** between `md` and `xl` (768–1279px), Home stacked the hero's preview card under the search, kept the news
