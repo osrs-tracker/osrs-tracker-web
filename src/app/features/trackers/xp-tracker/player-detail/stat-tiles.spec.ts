@@ -68,7 +68,11 @@ describe('statTilesFor', () => {
     );
     expect(tiles[0]).toMatchObject({ value: '2,277', sub: 'Rank 12,345' });
     expect(tiles[1]).toMatchObject({ label: 'XP since 4 Oct', value: '1.5M', tip: '1,500,000 XP' });
-    expect(tiles[2]).toMatchObject({ value: '3', sub: 'Sailing 80 → 82, Agility 70 → 71' });
+    expect(tiles[2]).toMatchObject({
+      value: '3',
+      sub: 'Sailing 80 → 82, Agility 70 → 71',
+      subTip: 'Sailing 80 → 82\nAgility 70 → 71',
+    });
     expect(tiles[3]).toMatchObject({ value: '1,234', sub: 'Most: Vorkath (1,000)' });
   });
 });
