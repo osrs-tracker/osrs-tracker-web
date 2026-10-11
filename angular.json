@@ -53,6 +53,9 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "test": {
+              "loader": { ".ttf": "file", ".wasm": "file" }
             }
           },
           "defaultConfiguration": "production"
@@ -70,7 +73,8 @@
           "defaultConfiguration": "development"
         },
         "test": {
-          "builder": "@angular/build:unit-test"
+          "builder": "@angular/build:unit-test",
+          "options": { "buildTarget": "::development,test" }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",

@@ -21,6 +21,10 @@ Choices that look like accidents without their context: what was decided, why, a
   SemiBold (600) instances of `SOLIX-Variable.ttf` from the SOLIX release
   (`fonttools varLib.instancer SOLIX-Variable.ttf wght=600`), outside `public/` so they aren't served. Redo them when
   the site's SOLIX is bumped.
+- **Tests load them as files:** with a `binary` loader, Angular's external-packages plugin resolves every bare import
+  itself, and the browser-platform test build can't resolve `node:fs`, so every server spec failed to bundle. `ng test`
+  builds with `development,test`; the `test` configuration switches both to the `file` loader, which leaves package
+  handling alone. Specs never render a card: the router spec injects its renderer.
 
 ## Tablet layout for Home (2026/10/11)
 
