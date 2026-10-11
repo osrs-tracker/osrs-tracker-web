@@ -63,6 +63,11 @@ Choices that look like accidents without their context: what was decided, why, a
   minute; the single-item request is gone. Not moved to the browser: crawlers would lose the prices, the item-specific
   content the SEO work (#159) relies on. The 3 s `SSR_TIMEOUT` stays as the safety net for a Wiki outage and for the
   request that refreshes the list when Cloudflare's copy has expired.
+- **Update (2026/10/11):** 15 hours of logs after that deploy (2026-10-10 17:45 to 2026-10-11 08:41 UTC, 2,115 item
+  renders, all page-cache misses): item renders p50 46 ms, p90 192 ms, p99 290 ms, 2 over 1.5 s. The full `/latest` was
+  fetched 477 times (the other renders used the server's copy), all 200: p50 136 ms, p90 226 ms, p99 259 ms, max 2.24 s,
+  no aborts. The slowest render (4.2 s) waited on our own API (`items/<id>`), which `SSR_TIMEOUT` doesn't cover. The
+  timeout stays: it hasn't fired, but it's a few lines and still caps a render during a Wiki outage.
 - **Revisit:** if `outgoing` lines for the full `/latest` are still slow, or the Wiki asks clients not to fetch the full
   list.
 
