@@ -17,10 +17,13 @@ Choices that look like accidents without their context: what was decided, why, a
   feature, and the same font problem.
 - **satori stays on 0.32:** 0.33 depends on `harfbuzzjs`, whose Emscripten loader reads `hb.wasm` from `__dirname` at
   runtime and fails inside the bundle. Check that before accepting a bump.
-- **Fonts:** `satori` reads TTF, OTF or WOFF, not WOFF2 or variable fonts. `og/fonts/` holds static Regular (400) and
-  SemiBold (600) instances of `SOLIX-Variable.ttf` from the SOLIX release
-  (`fonttools varLib.instancer SOLIX-Variable.ttf wght=600`), outside `public/` so they aren't served. Redo them when
-  the site's SOLIX is bumped.
+- **Fonts:** `satori` reads TTF, OTF or WOFF, not WOFF2 or variable fonts, and 0.32 draws kerning without laying it out
+  (a gap after "Tumeken's") and can't turn on OpenType features such as `tnum`. `og/fonts/` holds static Regular (400)
+  and SemiBold (600) instances of `SOLIX-Variable.ttf` from the SOLIX release
+  (`fonttools varLib.instancer SOLIX-Variable.ttf wght=600`, or the release's static TTF where it has the weight)
+  without their `GPOS` table (only `kern`), and `SOLIX-SemiBold-Tabular.ttf`, the SemiBold with the digits mapped to
+  their `.tf` glyphs in `cmap`, for the tiles' values. Outside `public/`, so they aren't served. Redo them when the
+  site's SOLIX is bumped.
 - **Tests load them as files:** with a `binary` loader, Angular's external-packages plugin resolves every bare import
   itself, and the browser-platform test build can't resolve `node:fs`, so every server spec failed to bundle. `ng test`
   builds with `development,test`; the `test` configuration switches both to the `file` loader, which leaves package

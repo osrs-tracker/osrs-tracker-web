@@ -3,6 +3,7 @@ import resvgWasm from '@resvg/resvg-wasm/index_bg.wasm';
 import { initWasm, Resvg } from '@resvg/resvg-wasm';
 import satori, { type Font } from 'satori';
 import regular from './fonts/SOLIX-Regular.ttf';
+import semiBoldTabular from './fonts/SOLIX-SemiBold-Tabular.ttf';
 import semiBold from './fonts/SOLIX-SemiBold.ttf';
 
 /** A satori element: plain `{ type, props }` objects, as there is no React */
@@ -24,14 +25,13 @@ const ICON_TILE = 224;
 const ICON_MAX = 176;
 // A third of the card's inner width (1200 - 2 × 64 - 2 × 40) less the gaps: tiles keep it when one is left out
 const TILE_WIDTH = (992 - 2 * 20) / 3;
-const VALUE_SIZE = 34;
-/** SOLIX SemiBold's tabular digit advance, and how far each `.tf` glyph sits right of the proportional one, in em */
-const TNUM_ADVANCE = 0.671;
-const TNUM_SHIFT = [-0.012, 0.177, 0.036, 0.027, 0.011, 0.035, 0.028, 0.058, 0.024, 0.028];
 
+// Static instances without kerning, which satori 0.32 draws but doesn't lay out, and a copy whose digits are its
+// tabular ones, as satori can't turn on OpenType features (`docs/decisions.md`)
 const fonts: Font[] = [
-  { name: 'SOLIX', data: withoutKerning(regular), weight: 400, style: 'normal' },
-  { name: 'SOLIX', data: withoutKerning(semiBold), weight: 600, style: 'normal' },
+  { name: 'SOLIX', data: arrayBuffer(regular), weight: 400, style: 'normal' },
+  { name: 'SOLIX', data: arrayBuffer(semiBold), weight: 600, style: 'normal' },
+  { name: 'SOLIX Tabular', data: arrayBuffer(semiBoldTabular), weight: 600, style: 'normal' },
 ];
 
 let wasmReady: Promise<void> | undefined;
@@ -174,26 +174,12 @@ function tile(label: string, value: number | undefined, unit: string): Node | un
     },
     [
       el({ fontSize: 22, lineHeight: '28px', color: '#94a3b8' }, label),
-      el({ display: 'flex', fontSize: VALUE_SIZE, lineHeight: '40px', fontWeight: 600, whiteSpace: 'pre' }, [
-        ...tabularDigits(Math.round(value).toLocaleString('en-US')),
-        unit,
-      ]),
+      el(
+        { fontFamily: 'SOLIX Tabular', fontSize: 34, lineHeight: '40px', fontWeight: 600 },
+        Math.round(value).toLocaleString('en-US') + unit,
+      ),
     ],
   );
-}
-
-/**
- * Tabular figures, which satori can't turn on (it ignores `font-variant-numeric` and OpenType features): each digit gets
- * SOLIX SemiBold's tabular advance and is shifted to where its `.tf` glyph sits in that advance.
- */
-function tabularDigits(text: string): Child[] {
-  return [...text].map(char => {
-    const digit = Number.parseInt(char, 10);
-    if (Number.isNaN(digit)) return char;
-    return el({ display: 'flex', width: TNUM_ADVANCE * VALUE_SIZE }, [
-      el({ marginLeft: TNUM_SHIFT[digit] * VALUE_SIZE }, char),
-    ]);
-  });
 }
 
 function footer(): Node {
@@ -227,24 +213,7 @@ function base64(bytes: Uint8Array): string {
   return btoa(binary);
 }
 
-/**
- * A copy of the font with its GPOS `kern` feature renamed, so it no longer applies. satori 0.32 lays out words by the
- * sum of their letters' advances, but draws them kerned: a word with negative kerning ("Tumeken's") ends early and
- * leaves a wide gap before the next one.
- */
-function withoutKerning(font: Uint8Array): ArrayBuffer {
-  const bytes = font.slice();
-  const view = new DataView(bytes.buffer);
-  const tagAt = (offset: number) => String.fromCharCode(...bytes.subarray(offset, offset + 4));
-  for (let table = 0; table < view.getUint16(4); table++) {
-    const record = 12 + table * 16;
-    if (tagAt(record) !== 'GPOS') continue;
-    const gpos = view.getUint32(record + 8);
-    const featureList = gpos + view.getUint16(gpos + 6);
-    for (let feature = 0; feature < view.getUint16(featureList); feature++) {
-      const featureRecord = featureList + 2 + feature * 6;
-      if (tagAt(featureRecord) === 'kern') bytes.set([0x78, 0x6b, 0x72, 0x6e], featureRecord); // 'xkrn'
-    }
-  }
-  return bytes.buffer;
+/** satori wants an `ArrayBuffer`; the loader's bytes may be a view into a larger one */
+function arrayBuffer(bytes: Uint8Array): ArrayBuffer {
+  return bytes.slice().buffer;
 }
