@@ -10,6 +10,8 @@ import {
   InputSignalWithTransform,
   model,
   ModelSignal,
+  output,
+  OutputEmitterRef,
   Signal,
   signal,
   viewChildren,
@@ -37,6 +39,7 @@ export interface SegmentedOption<T> {
  * A radio group on `@angular/aria`'s toolbar: one Tab stop (the checked option), arrow keys move focus between the
  * options, Enter or Space chooses one. Disabled options stay reachable by the arrow keys (`aria-disabled`) but can't be
  * chosen, so keyboard users find them and their `title`.
+ * `picked` also fires when the checked option is chosen again.
  */
 @Component({
   selector: 'segmented',
@@ -56,7 +59,7 @@ export interface SegmentedOption<T> {
         [attr.aria-checked]="option.value === value()"
         [attr.title]="option.title ?? null"
         [disabled]="!!option.disabled"
-        (click)="option.disabled || value.set(option.value)"
+        (click)="option.disabled || choose(option.value)"
       >
         @if (option.icon; as icon) {
           <img class="h-4 w-auto" icon [name]="icon.name" [skill]="!!icon.skill" aria-hidden="true" />
@@ -81,6 +84,8 @@ export interface SegmentedOption<T> {
 export class Segmented<T> {
   readonly options: InputSignal<SegmentedOption<T>[]> = input.required();
   readonly value: ModelSignal<T> = model.required();
+  /** Every choice, also of the checked option, which `valueChange` skips */
+  readonly picked: OutputEmitterRef<T> = output();
   /** What the options choose between, e.g. "Period" */
   readonly label: InputSignal<string> = input.required();
   readonly variant: InputSignal<'accent' | 'slate'> = input<'accent' | 'slate'>('accent');
@@ -101,6 +106,11 @@ export class Segmented<T> {
       const checked = this.widgets()[index];
       if (checked && !this.options()[index].disabled && !this.focusWithin()) setToolbarTabStop(this.toolbar, checked);
     });
+  }
+
+  protected choose(value: T): void {
+    this.value.set(value);
+    this.picked.emit(value);
   }
 
   /** Focus can also arrive by code (Home's switch): the focused option becomes the one the arrow keys start from. */

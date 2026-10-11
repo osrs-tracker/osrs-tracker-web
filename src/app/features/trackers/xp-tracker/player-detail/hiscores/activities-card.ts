@@ -26,7 +26,7 @@ const TABS: SegmentedOption<BottomTab>[] = [
         label="Clues and minigames"
         [options]="tabs"
         [value]="playerView.bottom()"
-        (valueChange)="playerView.showBottom($event)"
+        (picked)="playerView.showBottom($event)"
       />
     </div>
     <div class="px-4 pt-4">

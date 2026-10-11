@@ -25,7 +25,7 @@ const TABS: SegmentedOption<TopTab>[] = [
         label="Hiscores category"
         [options]="tabs"
         [value]="playerView.top()"
-        (valueChange)="playerView.showTop($event)"
+        (picked)="playerView.showTop($event)"
       />
     </div>
     <div class="px-4 pt-4">
