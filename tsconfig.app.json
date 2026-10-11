@@ -4,7 +4,7 @@
     "outDir": "./out-tsc/app",
     "types": ["gtag.js", "node"]
   },
-  "files": ["src/main.ts", "src/main.server.ts", "src/server/server.ts"],
+  "files": ["src/main.ts", "src/main.server.ts", "src/server/server.ts", "src/server/og/binary-assets.d.ts"],
   "angularCompilerOptions": {
     "extendedDiagnostics": {
       "checks": {
