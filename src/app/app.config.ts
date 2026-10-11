@@ -14,6 +14,7 @@ import {
   TitleStrategy,
   withComponentInputBinding,
   withInMemoryScrolling,
+  withNavigationErrorHandler,
 } from '@angular/router';
 import appRoutes from './app.routes';
 import { AnalyticsService } from './common/analytics/analytics-service';
@@ -25,6 +26,7 @@ import { shareRequestInterceptor } from './core/interceptors/share-request-inter
 import { ssrTimeoutInterceptor } from './core/interceptors/ssr-timeout-interceptor';
 import { ssrUserAgentInterceptor } from './core/interceptors/ssr-user-agent-interceptor';
 import { ParamAwareReuseStrategy } from './core/routing/param-aware-reuse-strategy';
+import { reloadOnStaleChunk } from './core/routing/stale-chunk-reloader';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -41,6 +43,7 @@ export const appConfig: ApplicationConfig = {
       appRoutes,
       withComponentInputBinding(),
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
+      withNavigationErrorHandler(reloadOnStaleChunk),
     ),
 
     provideClientHydration(withEventReplay()),
