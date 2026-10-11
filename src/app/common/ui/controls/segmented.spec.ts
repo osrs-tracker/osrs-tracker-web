@@ -50,6 +50,15 @@ describe('Segmented', () => {
     expect(fixture.componentInstance.value()).toBe(7);
   });
 
+  it('reports a click on the checked option as picked', async () => {
+    const { fixture, buttons } = await render();
+    const picked: number[] = [];
+    fixture.componentInstance.picked.subscribe(value => picked.push(value));
+
+    buttons[1].click();
+    expect(picked).toEqual([30]);
+  });
+
   it('reaches a disabled option with the arrow keys but never chooses it', async () => {
     const { fixture, buttons } = await render();
     buttons[1].focus();
