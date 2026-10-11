@@ -266,9 +266,9 @@ Run end to end without asking; stop only on failure. Verify locally once before 
 3. Poll `gh pr view <n> --json mergeable,mergeStateStatus` until it isn't `UNKNOWN` (a conflicting PR gets no CI: rebase
    and push again), then `gh pr checks <n> --watch`.
 4. When checks pass: `gh pr merge <n> --merge` (it deploys; if Claude Code's permission check blocks it, give the user
-   the command and wait, don't retry or work around it), switch to `main`, pull, `git branch -d <branch>`,
-   `git fetch --prune`.
-5. Done: the deploy runs on its own (see Deploy). Pull `main` again later for the digest commit.
+   the command and wait, don't retry or work around it), then `git fetch --prune origin`,
+   `git switch --detach origin/main` (in a worktree, `main` is checked out elsewhere) and `git branch -d <branch>`.
+5. Done: the deploy runs on its own (see Deploy). Fetch `origin/main` again later for the digest commit.
 
 Each merge adds a digest commit to `main` a few minutes later, and `main` requires branches to be up to date, so other
 open PRs turn `BEHIND`: rebase them (`git rebase origin/main`), push with `--force-with-lease` and wait for CI again.
