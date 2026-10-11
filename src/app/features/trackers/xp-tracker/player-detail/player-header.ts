@@ -1,32 +1,15 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core';
-import { SkillEnum } from '@osrs-tracker/hiscores';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
-import { Tooltip } from '@app/common/ui/tooltip/tooltip';
 import { Icon } from '@app/common/icon/icon';
 import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
 import { TimeAgoPipe } from '@app/common/format/time-ago-pipe';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
+import { AccountTile } from '../account-tile';
 import { XpTrackerStore } from '../xp-tracker-store';
 
 /** Whether the player has a history at the visitor's offset yet, which decides the line under the name */
 export type TrackingState = 'tracked' | 'started' | 'untracked';
-
-interface AccountMode {
-  icon: { name: string; skill: boolean };
-  label: string;
-  /** What changed, e.g. "De-ironed" */
-  change?: string;
-  /** Which hiscores they're ranked on since */
-  note?: string;
-}
-
-const TYPE_LABELS: Record<PlayerType, string> = {
-  [PlayerType.Normal]: 'Regular',
-  [PlayerType.Ironman]: 'Ironman',
-  [PlayerType.Hardcore]: 'Hardcore ironman',
-  [PlayerType.Ultimate]: 'Ultimate ironman',
-};
 
 /** The player's account type, name (to the official hiscores), combat level, history line and favourite star. */
 @Component({
@@ -34,35 +17,7 @@ const TYPE_LABELS: Record<PlayerType, string> = {
   template: `
     @let player = playerDetail();
 
-    <!-- a tooltip rather than a title, so the account type also shows on touch -->
-    <span
-      class="relative flex items-center justify-center size-16 shrink-0 rounded-2xl border border-line bg-deep"
-      tabindex="0"
-      [attr.aria-label]="modeText()"
-      [tooltip]="true"
-      [tooltipTemplate]="modeTooltip"
-      [tooltipUnderline]="false"
-    >
-      <img class="size-10" icon eager [name]="mode().icon.name" [skill]="mode().icon.skill" />
-      @if (player.diedAsHardcore) {
-        <img
-          class="absolute -right-1.75 -bottom-1.75 size-6.5 p-0.75 rounded-full border border-line bg-deep"
-          icon
-          name="dead"
-        />
-      }
-    </span>
-    <ng-template #modeTooltip>
-      <div class="font-bold text-strong">
-        {{ mode().label }}
-        @if (mode().change) {
-          · <span class="text-down">{{ mode().change }}</span>
-        }
-      </div>
-      @if (mode().note) {
-        <div>{{ mode().note }}</div>
-      }
-    </ng-template>
+    <account-tile large [account]="player" />
 
     <div class="flex flex-col gap-1.5 grow basis-0 sm:basis-60 min-w-0">
       <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -140,7 +95,7 @@ const TYPE_LABELS: Record<PlayerType, string> = {
     </button>
   `,
   host: { class: 'flex flex-wrap items-center gap-4' },
-  imports: [CapitalizePipe, DatePipe, Icon, TimeAgoPipe, Tooltip],
+  imports: [AccountTile, CapitalizePipe, DatePipe, Icon, TimeAgoPipe],
 })
 export class PlayerHeader {
   private readonly analyticsService = inject(AnalyticsService);
@@ -157,30 +112,6 @@ export class PlayerHeader {
 
   readonly isFavorite: Signal<boolean> = computed(() =>
     this.xpTrackerStore.isFavoritePlayer(this.playerDetail().username),
-  );
-
-  readonly mode: Signal<AccountMode> = computed(() => {
-    const { type, status, diedAsHardcore } = this.playerDetail();
-    const label = TYPE_LABELS[type];
-
-    if (type === PlayerType.Normal) return { icon: { name: SkillEnum.Overall, skill: true }, label };
-    if (status === PlayerStatus.DeIroned) {
-      const icon = type === PlayerType.Hardcore ? `${status}_${type}` : status;
-      const note = 'No longer an ironman; ranked on the regular hiscores.';
-      return { icon: { name: icon, skill: false }, label, change: 'De-ironed', note };
-    }
-    if (status === PlayerStatus.DeUltimated) {
-      const note = 'Now a regular ironman; ranked on the ironman hiscores.';
-      return { icon: { name: status, skill: false }, label, change: 'De-ultimated', note };
-    }
-    if (diedAsHardcore) {
-      const note = 'Lost hardcore status; now ranked on the regular ironman hiscores.';
-      return { icon: { name: type, skill: false }, label, change: 'Died', note };
-    }
-    return { icon: { name: type, skill: false }, label };
-  });
-  readonly modeText: Signal<string> = computed(() =>
-    [this.mode().label, this.mode().change, this.mode().note].filter(Boolean).join('. '),
   );
 
   /** The account type's hiscores, where the player is ranked now */

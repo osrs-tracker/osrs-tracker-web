@@ -13,16 +13,16 @@ import {
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { getOverallXpDiff } from '@osrs-tracker/hiscores';
-import { HiscoreEntry, overallOf, Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
+import { HiscoreEntry, overallOf, Player } from '@osrs-tracker/models';
 import { Observable, catchError, forkJoin, map, throwError } from 'rxjs';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
-import { Icon } from '@app/common/icon/icon';
 import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
 import { TimeAgoPipe } from '@app/common/format/time-ago-pipe';
 import { OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
+import { AccountTile } from './account-tile';
 import { XpTrackerStore } from './xp-tracker-store';
 
 interface PlayerRowData {
@@ -32,16 +32,6 @@ interface PlayerRowData {
   totalLevel: number | null;
 }
 
-const MODE_LABELS: Record<PlayerType | PlayerStatus, string> = {
-  [PlayerType.Normal]: 'Regular',
-  [PlayerType.Ironman]: 'Ironman',
-  [PlayerType.Hardcore]: 'Hardcore ironman',
-  [PlayerType.Ultimate]: 'Ultimate ironman',
-  [PlayerStatus.Default]: 'Regular',
-  [PlayerStatus.DeIroned]: 'Former ironman',
-  [PlayerStatus.DeUltimated]: 'Former ultimate ironman',
-};
-
 /**
  * A 65px list row linking to a player: account type, name, total level and the XP gained since they were last tracked.
  * Known parts show straight away, the rest is a skeleton until the browser has fetched it.
@@ -50,38 +40,7 @@ const MODE_LABELS: Record<PlayerType | PlayerStatus, string> = {
   selector: 'a[player-row]',
   template: `
     @if (playerDetails(); as playerDetails) {
-      <span
-        class="relative flex items-center justify-center size-10 max-sm:size-8 shrink-0 rounded-xl bg-deep border border-line"
-        [title]="modeTitle()"
-      >
-        @if (playerDetails.type === PlayerType.Normal) {
-          <svg
-            class="size-5.5 max-sm:size-4.5 stroke-text"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <circle cx="12" cy="8" r="4" />
-            <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
-          </svg>
-        } @else {
-          <img
-            class="size-6 max-sm:size-5"
-            icon
-            [name]="playerDetails.status === PlayerStatus.Default ? playerDetails.type : playerDetails.status"
-          />
-        }
-        @if (playerDetails.diedAsHardcore) {
-          <img
-            class="absolute -right-1.5 -bottom-1.5 size-5 p-0.5 rounded-full bg-deep border border-line"
-            icon
-            name="dead"
-          />
-        }
-      </span>
+      <account-tile [account]="playerDetails" />
     } @else {
       <skeleton class="size-10 max-sm:size-8 rounded-xl" />
     }
@@ -125,7 +84,7 @@ const MODE_LABELS: Record<PlayerType | PlayerStatus, string> = {
     class:
       'flex items-center gap-3.5 max-sm:gap-3 px-5 max-sm:px-4 py-3 max-sm:py-2.5 border-b border-row bg-card hover:bg-row focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent',
   },
-  imports: [CapitalizePipe, DecimalPipe, Icon, LoadError, Skeleton],
+  imports: [AccountTile, CapitalizePipe, DecimalPipe, LoadError, Skeleton],
 })
 export class PlayerRow implements OnInit {
   private readonly analyticsService = inject(AnalyticsService);
@@ -134,9 +93,6 @@ export class PlayerRow implements OnInit {
   private readonly xpTrackerStore = inject(XpTrackerStore);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly timeAgoPipe = new TimeAgoPipe();
-
-  readonly PlayerType: typeof PlayerType = PlayerType;
-  readonly PlayerStatus: typeof PlayerStatus = PlayerStatus;
 
   readonly username: InputSignal<string | null> = input<string | null>(null);
   readonly player: InputSignal<Player | null> = input<Player | null>(null);
@@ -161,14 +117,6 @@ export class PlayerRow implements OnInit {
   readonly totalLevel: Signal<number | null> = computed(() => this.data()?.totalLevel ?? null);
   // The server renders skeletons, the browser fetches
   readonly loading: Signal<boolean> = computed(() => !this.isBrowser || this.overallDiffResource.isLoading());
-
-  readonly modeTitle: Signal<string> = computed(() => {
-    const player = this.playerDetails();
-    if (!player) return '';
-
-    const label = MODE_LABELS[player.status === PlayerStatus.Default ? player.type : player.status];
-    return player.diedAsHardcore ? `${label}, died. Now ranked on the regular ironman hiscores.` : label;
-  });
 
   readonly xpTitle: Signal<string> = computed(() => {
     const lastTracked = this.playerDetails()?.hiscoreEntries?.[0]?.date;

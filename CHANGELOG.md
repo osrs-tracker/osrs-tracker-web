@@ -8,6 +8,9 @@
 - On a player's page, clicking the tab that's already open (such as Clues while the chart shows skills) charts that
   category again.
 - On a player's page, hovering over the levels gained below the count lists them all, one per line.
+- A former ironman keeps their original helm instead of a crossed-out one, with a badge for what changed: a red × when
+  they de-ironed, the ironman helm when an ultimate ironman de-ultimated, and the skull when a hardcore died. In player
+  lists, hovering the helm explains it, as on the player's page.
 
 ## 2026/10/10
 
