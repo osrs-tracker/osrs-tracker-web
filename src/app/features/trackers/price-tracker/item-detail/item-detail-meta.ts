@@ -54,23 +54,22 @@ export function itemPageMeta(item: Item): PageMeta {
 }
 
 /**
- * "Track Abyssal whip prices with OSRS Tracker: updated live, with charts of how they've moved over time. Buy limit 70,
- * high alch 72,000 gp." Leaves out what the item lacks, and the facts that don't fit 160 characters, last first.
+ * "Track Abyssal whip prices with OSRS Tracker: updated live, with charts of how they've moved over time · Buy limit 70
+ * · High alch 72,000 gp". Search results show no line breaks, so a `·` separates the facts. Leaves out what the item
+ * lacks, and the facts that don't fit 160 characters, last first.
  * Not whether it's members only: nearly every visitor is a member or doesn't care.
  */
 export function itemDescription(item: Item): string {
   const facts = [
-    item.limit ? `buy limit ${formatWhole(item.limit)}` : '',
-    item.highalch ? `high alch ${formatWhole(item.highalch)} gp` : '',
+    item.limit ? `Buy limit ${formatWhole(item.limit)}` : '',
+    item.highalch ? `High alch ${formatWhole(item.highalch)} gp` : '',
   ].filter(Boolean);
   const describe = (shown: string[]) =>
-    `Track ${item.name} prices with OSRS Tracker: updated live, with charts of how they've moved over time.` +
-    (shown.length ? ` ${capitalize(shown.join(', '))}.` : '');
+    [
+      `Track ${item.name} prices with OSRS Tracker: updated live, with charts of how they've moved over time`,
+      ...shown,
+    ].join(' · ');
 
   while (facts.length && describe(facts).length > MAX_DESCRIPTION_LENGTH) facts.pop();
   return describe(facts);
-}
-
-function capitalize(text: string): string {
-  return text.charAt(0).toUpperCase() + text.slice(1);
 }
