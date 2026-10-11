@@ -22,6 +22,11 @@
 - A tab left open while the site updates no longer gets stuck when you open a page or chart you hadn't visited yet: it
   reloads into the new version, on the page you clicked.
 
+### Search and sharing
+
+- An item page's description in search results is clearer: "Track Abyssal whip prices with OSRS Tracker", what the page
+  shows, then the buy limit and high alch value. It no longer says whether it's a members or free-to-play item.
+
 ## 2026/10/10
 
 ### Look and feel

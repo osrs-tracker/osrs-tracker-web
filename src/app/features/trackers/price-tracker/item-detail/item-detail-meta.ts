@@ -54,20 +54,23 @@ export function itemPageMeta(item: Item): PageMeta {
 }
 
 /**
- * "Live OSRS Grand Exchange prices for Abyssal whip: instant buy and sell, margin after tax, price history. Members
- * item, buy limit 70, high alch 72,000 gp." Leaves out what the item lacks, and the facts that don't fit 160
- * characters, last first.
+ * "Track Abyssal whip prices with OSRS Tracker: updated live, with charts of how they've moved over time. Buy limit 70,
+ * high alch 72,000 gp." Leaves out what the item lacks, and the facts that don't fit 160 characters, last first.
+ * Not whether it's members only: nearly every visitor is a member or doesn't care.
  */
 export function itemDescription(item: Item): string {
   const facts = [
-    item.members ? 'Members item' : 'Free-to-play item',
     item.limit ? `buy limit ${formatWhole(item.limit)}` : '',
     item.highalch ? `high alch ${formatWhole(item.highalch)} gp` : '',
   ].filter(Boolean);
   const describe = (shown: string[]) =>
-    `Live OSRS Grand Exchange prices for ${item.name}: instant buy and sell, margin after tax, price history. ` +
-    `${shown.join(', ')}.`;
+    `Track ${item.name} prices with OSRS Tracker: updated live, with charts of how they've moved over time.` +
+    (shown.length ? ` ${capitalize(shown.join(', '))}.` : '');
 
-  while (facts.length > 1 && describe(facts).length > MAX_DESCRIPTION_LENGTH) facts.pop();
+  while (facts.length && describe(facts).length > MAX_DESCRIPTION_LENGTH) facts.pop();
   return describe(facts);
+}
+
+function capitalize(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
 }
