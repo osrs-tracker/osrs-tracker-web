@@ -25,7 +25,8 @@
 ### Search and sharing
 
 - An item page's description in search results is clearer: "Track Abyssal whip prices with OSRS Tracker", what the page
-  shows, then the buy limit and high alch value. It no longer says whether it's a members or free-to-play item.
+  shows, then the buy limit and high alch value, each after a dot. It no longer says whether it's a members or
+  free-to-play item.
 
 ## 2026/10/10
 
