@@ -57,7 +57,7 @@ export function itemPageMeta(item: Item): PageMeta {
  * The item's link preview card: its icon, name and static facts, never a price, as chat apps keep a preview for weeks.
  * `?v=` busts the caches of shared links when the card's design changes.
  */
-export function itemImage(item: Item): PageImage {
+function itemImage(item: Item): PageImage {
   return { url: `/og/item/${item.id}.png?v=1`, width: 1200, height: 630, alt: item.name };
 }
 
