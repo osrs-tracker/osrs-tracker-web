@@ -75,31 +75,38 @@
           }
         </div>
 
-        <ul class="grid grid-cols-log gap-x-6 gap-y-2 px-5 py-4">
-          @for (skill of group.skills; track skill.name) {
-            <li class="flex items-center gap-2.5 min-h-6">
-              <span class="flex items-center justify-center size-6 shrink-0">
-                <img class="max-h-6 w-auto" icon [name]="skill.name" [skill]="true" />
-              </span>
-              <span>{{ skill.name }}</span>
-              <span class="mr-auto text-sm font-bold text-accent tabular-nums">
-                @if (skill.level > 0) {
-                  +{{ skill.level }}<span class="sr-only"> {{ skill.level === 1 ? 'level' : 'levels' }}</span>
-                }
-              </span>
-              <span class="font-bold text-strong tabular-nums">+{{ skill.xp | number }}</span>
-            </li>
-          }
-          @for (activity of group.activities; track activity.name) {
-            <li class="flex items-center gap-2.5 min-h-6">
-              <span class="flex items-center justify-center size-6 shrink-0">
-                <img class="max-h-6 max-w-6" icon [name]="activity.name" [activity]="true" />
-              </span>
-              <span class="mr-auto">{{ activity.name }}</span>
-              <span class="font-bold text-strong tabular-nums">+{{ activity.score | number }}</span>
-            </li>
-          }
-        </ul>
+        @if (group.skills.length) {
+          <ul class="grid grid-cols-log gap-x-6 gap-y-2 px-5 py-4">
+            @for (skill of group.skills; track skill.name) {
+              <li class="flex items-center gap-2.5 min-h-6">
+                <span class="flex items-center justify-center size-6 shrink-0">
+                  <img class="max-h-6 w-auto" icon [name]="skill.name" [skill]="true" />
+                </span>
+                <span>{{ skill.name }}</span>
+                <span class="mr-auto text-sm font-bold text-accent tabular-nums">
+                  @if (skill.level > 0) {
+                    +{{ skill.level }}<span class="sr-only"> {{ skill.level === 1 ? 'level' : 'levels' }}</span>
+                  }
+                </span>
+                <span class="font-bold text-strong tabular-nums">+{{ skill.xp | number }}</span>
+              </li>
+            }
+          </ul>
+        }
+        @if (group.activities.length) {
+          <!-- its own rows under a full-width line: scores and kill counts, not XP -->
+          <ul class="grid grid-cols-log gap-x-6 gap-y-2 px-5 py-4 border-row" [class.border-t]="group.skills.length">
+            @for (activity of group.activities; track activity.name) {
+              <li class="flex items-center gap-2.5 min-h-6">
+                <span class="flex items-center justify-center size-6 shrink-0">
+                  <img class="max-h-6 max-w-6" icon [name]="activity.name" [activity]="true" />
+                </span>
+                <span class="mr-auto">{{ activity.name }}</span>
+                <span class="font-bold text-strong tabular-nums">+{{ activity.score | number }}</span>
+              </li>
+            }
+          </ul>
+        }
       </article>
     } @else {
       <article class="rounded-2xl border border-line">

@@ -3,6 +3,8 @@
 - On tablets, the home page is about half as long: the example player card stays beside the search, the latest news
   shows four compact cards in a row (as on phones, two by two), and the recently looked up players and items sit side by
   side.
+- In a player's day log, boss kills, clues and other activities sit below a line under the skills, so a kill count is no
+  longer mistaken for XP.
 
 ## 2026/10/10
 
