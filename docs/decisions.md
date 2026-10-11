@@ -166,6 +166,17 @@ Choices that look like accidents without their context: what was decided, why, a
   broke the page margins). List rows drop to one line: no total level, the item price beside the change.
 - **Revisit:** if the news gets more than four items, or the lists need the total level back on phones.
 
+## Tablet layout for Home (2026/10/11)
+
+- **Context:** between `md` and `xl` (768–1279px), Home stacked the hero's preview card under the search, kept the news
+  at two large cards per row and the tracker lists at one column, so a tablet's Home (about 2,750px at 820px wide) was
+  longer than the phone's.
+- **Decision:** from `md` to `xl` the preview card stays beside the hero text at 300px (the Player/Item switch takes its
+  own row in the search box), the news is four cards in a row with the phone's compact card (the `compact` variant in
+  `tailwind.css`: below `sm`, and `md` to `xl`), and the lists sit side by side from `md`. Tried in the design canvas
+  first (Home's tablet artboard, the `layout` tweak); about 1,460px at 820px wide.
+- **Revisit:** if the news gets more than four items, or the hero gets more content beside the search.
+
 ## Missing asset paths get a plain 404 (2026/10/08)
 
 - **Context:** some crawlers (OAI-SearchBot) ignore `<base href="/">` and request `/trackers/price/chunk-*.js`. Those

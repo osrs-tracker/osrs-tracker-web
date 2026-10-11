@@ -102,8 +102,9 @@ token in `src/styles/tailwind/theme.css`.
   16px between stat tiles; pages `max-w-page mx-auto px-4 sm:px-6`, 48px from the nav (`pt-12`) and 72px above the
   footer (`pb-18`); reading pages narrow to `max-w-3xl`.
 - **Phones** (below `sm`): keep pages symmetric inside the 16px margins and check balance against the cards around a
-  change. Pictures are never cropped (Home's news is a 2×2 grid of picture-on-top cards). List rows are one line: no
-  second line, 32px tiles, 16px names, the item price beside the change pill.
+  change. Pictures are never cropped (Home's news is a 2×2 grid of picture-on-top cards; tablets show four of them in a
+  row, the `compact:` variant). List rows are one line: no second line, 32px tiles, 16px names, the item price beside
+  the change pill.
 - **Classes** (`components.css`): `.button--primary` (accent) and `.button--default` (outlined), `.button--rounded` for
   standalone ones; `.link` for accent links; `.search-box`/`.search-box-input`/`.search-box-button` for the big search;
   `.markdown` for reading text (changelog, privacy, terms).
