@@ -10,6 +10,7 @@ import { securityMiddleware } from './middleware/security';
 import { staticFilesMiddleware } from './middleware/static-files';
 import { trailingSlashMiddleware } from './middleware/trailing-slash';
 import { createHealthRouter } from './routers/health';
+import { createOgImageRouter } from './routers/og-images';
 import { createSitemapRouter } from './routers/sitemaps';
 import { serverConfig } from './server-config';
 import { logger as serverLogger, renderingPage, type WebLogType } from './utils/log';
@@ -55,6 +56,8 @@ export function createApp({
 
   // The item and player sitemaps come from the API; the site sitemap and the index are static files
   app.use(createSitemapRouter({ logger }));
+  // The item link preview images are drawn on demand; the page cache skips paths with an extension
+  app.use(createOgImageRouter({ logger }));
   app.use(staticFilesMiddleware());
   // After the static files, so only missing assets get a 404 instead of being rendered as a page
   app.use(missingAssetMiddleware());
