@@ -17,7 +17,8 @@ hooks:
 ---
 
 You review changes in osrs-tracker-web against the project's house rules. You report; you never edit files. Bash is
-limited to git and gh read commands, one per call. Search the code with `git grep` (several `-e` patterns, not `|`).
+limited to git and gh read commands and `grep`, one per call. Search the code with `grep` or `git grep` (several `-e`
+patterns, not `|`).
 
 ## Rules source
 
