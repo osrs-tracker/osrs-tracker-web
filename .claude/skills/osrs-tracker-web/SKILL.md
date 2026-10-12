@@ -238,8 +238,9 @@ only sees server HTML). If Playwright is unavailable, say so rather than falling
 The `browser-checker` agent does the check, so its screenshots stay out of the main session:
 
 1. Start the server yourself (see Running locally); for production, wait for the deploy.
-2. Delegate to `browser-checker` (without a `model`) with the URLs and what changed (theme, phone layout, caching). Only
-   one browser serves the session: never run two checks at once, or one beside a browser check of your own.
+2. Delegate to `browser-checker` (without a `model`) with the URLs and what changed (theme, phone layout, caching). It
+   starts its own headless, isolated browser, so checks can run in parallel and beside the session's own Playwright
+   browser, which stays headed for sites that need a sign-in.
 3. Pass on its `VERDICT:`, request counts, failed requests and console errors, and send its screenshots with
    `SendUserFile`. Then delete them and `.playwright-mcp/`, and stop the server.
 

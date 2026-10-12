@@ -1,15 +1,23 @@
 ---
 name: browser-checker
 description:
-  Checks a running osrs-tracker-web page in the Playwright browser (local or production) and returns a short report with
-  screenshot paths, so screenshots stay out of the caller's context. Use for the skill's browser check after visible or
-  request-changing work and after a deploy. The caller starts the server and names the URLs and what changed.
+  Checks a running osrs-tracker-web page in its own headless Playwright browser (local or production) and returns a
+  short report with screenshot paths, so screenshots stay out of the caller's context. Use for the skill's browser check
+  after visible or request-changing work and after a deploy. The caller starts the server and names the URLs and what
+  changed.
 tools:
-  Read, mcp__plugin_playwright_playwright__browser_navigate, mcp__plugin_playwright_playwright__browser_snapshot,
-  mcp__plugin_playwright_playwright__browser_take_screenshot, mcp__plugin_playwright_playwright__browser_click,
-  mcp__plugin_playwright_playwright__browser_resize, mcp__plugin_playwright_playwright__browser_emulate_media,
-  mcp__plugin_playwright_playwright__browser_wait_for, mcp__plugin_playwright_playwright__browser_console_messages,
-  mcp__plugin_playwright_playwright__browser_network_requests, mcp__plugin_playwright_playwright__browser_close
+  Read, mcp__playwright-headless__browser_navigate, mcp__playwright-headless__browser_snapshot,
+  mcp__playwright-headless__browser_take_screenshot, mcp__playwright-headless__browser_click,
+  mcp__playwright-headless__browser_resize, mcp__playwright-headless__browser_emulate_media,
+  mcp__playwright-headless__browser_wait_for, mcp__playwright-headless__browser_console_messages,
+  mcp__playwright-headless__browser_network_requests, mcp__playwright-headless__browser_close
+# Its own browser: headless, so no window opens, and isolated (an in-memory profile), so it never shares the session's
+# Playwright browser or another check's. The osrs-tracker pages need no sign-in; other sites keep the headed plugin one.
+mcpServers:
+  - playwright-headless:
+      type: stdio
+      command: npx
+      args: ['-y', '@playwright/mcp@latest', '--headless', '--isolated']
 model: sonnet
 effort: medium
 skills:
