@@ -1,6 +1,7 @@
 import { getUnixTime } from 'date-fns';
 import { DAY, utcDayStart } from '../utc-day';
 import { AveragePricesAtTime } from '@app/common/api/osrs-prices-repo';
+import { formatNumberLegible } from '@app/common/format/number-format';
 
 export interface DailyVolume {
   /** The UTC day's start, in seconds */
@@ -63,6 +64,17 @@ export function yesterdayAverageSellPrice(hourly: AveragePricesAtTime[], now: Da
 export function formatWhole(value: number, signed = false): string {
   const sign = value < 0 ? '−' : signed && value > 0 ? '+' : '';
   return sign + Math.abs(Math.round(value)).toLocaleString('en-US');
+}
+
+/**
+ * A whole number short enough for a compact stat tile on a 390px phone, which fits nine characters: in full as
+ * `formatWhole` writes it while it fits ("9,999,999", "−999,999"), otherwise as the item lists write prices, rounded to
+ * two decimals with a true minus ("786.71M", "−1.76M", "2.15B").
+ */
+export function formatWholeCompact(value: number): string {
+  const whole = Math.round(value);
+  if (whole < 10_000_000 && whole > -1_000_000) return formatWhole(whole);
+  return (whole < 0 ? '−' : '') + formatNumberLegible(Math.abs(whole));
 }
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

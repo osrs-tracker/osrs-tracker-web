@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { DAY } from '../utc-day';
 import { AveragePricesAtTime } from '@app/common/api/osrs-prices-repo';
-import { dailyVolumes, yesterdayAverageSellPrice } from './item-prices';
+import { dailyVolumes, formatWholeCompact, yesterdayAverageSellPrice } from './item-prices';
 
 const TODAY = 1_791_331_200; // 2026-10-07 00:00 UTC
 const NOW = new Date((TODAY + 17 * 3600 + 300) * 1000);
@@ -48,5 +48,26 @@ describe('yesterdayAverageSellPrice', () => {
 
   it('is null without trades yesterday', () => {
     expect(yesterdayAverageSellPrice([hour(TODAY, 100, 1)], NOW)).toBeNull();
+  });
+});
+
+describe('formatWholeCompact', () => {
+  it('writes amounts that fit in nine characters in full', () => {
+    expect(formatWholeCompact(9_999_999)).toBe('9,999,999');
+    expect(formatWholeCompact(-999_999)).toBe('−999,999');
+    expect(formatWholeCompact(0)).toBe('0');
+  });
+
+  it('writes positive amounts from 10M with up to two decimals', () => {
+    expect(formatWholeCompact(10_000_000)).toBe('10M');
+    expect(formatWholeCompact(786_705_873)).toBe('786.71M');
+    expect(formatWholeCompact(784_000_000)).toBe('784M');
+    expect(formatWholeCompact(2_147_483_647)).toBe('2.15B');
+  });
+
+  it('writes negative amounts from 1M with a true minus', () => {
+    expect(formatWholeCompact(-1_000_000)).toBe('−1M');
+    expect(formatWholeCompact(-1_756_095)).toBe('−1.76M');
+    expect(formatWholeCompact(-2_147_483_647)).toBe('−2.15B');
   });
 });
