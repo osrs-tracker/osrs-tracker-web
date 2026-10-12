@@ -4,6 +4,8 @@
   instead of the small OSRS Tracker icon, so each item is recognisable in Discord, Reddit and chat apps.
 - Item names with accents, such as Imperial rosé, show in the site's font, on the site and in their link preview card,
   which dropped the accented letter.
+- On an item's page, the stat tiles write large amounts as the item lists do (786.71M, 2.15B) instead of cutting them
+  off; hover for the exact amount.
 - Link preview pictures, for item pages and every other page, also show in tools and apps that load them straight into a
   web page, such as opengraph.xyz, where they showed as a broken image.
 - The review agent that checks changes against the project's conventions can only read: a guard lets it run nothing but

@@ -32,7 +32,14 @@ import { browseLetterOf, startingWith } from '../browse/browse-letters';
 import { PriceChart } from './charts/price-chart';
 import { geTax, isGeTaxExempt } from './ge-tax';
 import { ItemHeader } from './item-header';
-import { DailyVolume, dailyVolumes, formatWhole, last24HourVolume, yesterdayAverageSellPrice } from './item-prices';
+import {
+  DailyVolume,
+  dailyVolumes,
+  formatWhole,
+  formatWholeCompact,
+  last24HourVolume,
+  yesterdayAverageSellPrice,
+} from './item-prices';
 import { ItemVolume } from './item-volume';
 import { ProfitCalculator } from './profit-calculator';
 
@@ -178,6 +185,12 @@ export default class ItemDetail implements OnInit {
     const latestLoading = this.latestLoading();
     const latestFailed = this.latestFailed();
     const exempt = isGeTaxExempt(item.id);
+    // A value shortened to fit ("786.71M"), with the exact amount on hover: "786,705,873 gp."
+    const amount = (value: number, unit: string): Pick<ItemStat, 'value' | 'tip'> => {
+      const short = formatWholeCompact(value);
+      const whole = formatWhole(value);
+      return { value: short, tip: short === whole ? undefined : `${whole} ${unit}.` };
+    };
 
     const price = (label: string, info: string, value?: number, time?: Date): ItemStat => {
       if (latestFailed) return { label, info, value: '–', sub: "Couldn't load the price" };
@@ -188,7 +201,9 @@ export default class ItemDetail implements OnInit {
         .replace(/ seconds? /, ' sec ')
         .replace(/ minutes? /, ' min ')
         .replace(/ hours? /, ' hr ');
-      return { label, info, value: formatWhole(value), sub: `Last trade ${short}`, tip: `Last trade was ${ago}.` };
+      const { value: text, tip } = amount(value, 'gp');
+      const lastTrade = `Last trade was ${ago}.`;
+      return { label, info, value: text, sub: `Last trade ${short}`, tip: tip ? `${tip} ${lastTrade}` : lastTrade };
     };
 
     const high = latest?.high;
@@ -198,7 +213,7 @@ export default class ItemDetail implements OnInit {
       info: exempt
         ? 'Instant buy minus instant sell. This item is exempt from GE tax.'
         : 'Instant buy minus instant sell, minus the 2% GE tax on the sale.',
-      value: high && low ? formatWhole(high - low - geTax(item.id, high)) : '–',
+      ...(high && low ? amount(high - low - geTax(item.id, high), 'gp') : { value: '–' }),
       sub: latestFailed ? "Couldn't load the price" : exempt ? 'No tax on this item' : 'Buy − sell − 2% tax',
       loading: latestLoading,
     };
@@ -210,21 +225,21 @@ export default class ItemDetail implements OnInit {
       {
         label: 'Daily volume',
         info: 'The number of times the item has been traded within the last 24 hours.',
-        value: this.hourly.error() ? '–' : formatWhole(last24HourVolume(this.hourlySeries(), new Date())),
+        ...(this.hourly.error() ? { value: '–' } : amount(last24HourVolume(this.hourlySeries(), new Date()), 'traded')),
         sub: this.hourly.error() ? "Couldn't load the volume" : 'Last 24 hours',
         loading: this.hourlyLoading(),
       },
       {
         label: 'Buy limit',
         info: 'The amount of times the item can be bought every 4 hours.',
-        value: item.limit ? formatWhole(item.limit) : '–',
+        ...(item.limit ? amount(item.limit, 'items') : { value: '–' }),
         sub: item.limit ? 'Every 4 hours' : 'Unknown',
       },
       {
         label: 'High alch',
         info: 'Coins received from casting High Level Alchemy on the item.',
-        value: item.highalch ? formatWhole(item.highalch) : '–',
-        sub: item.highalch ? `Low alch ${formatWhole(item.lowalch ?? 0)}` : "Can't be alched for coins",
+        ...(item.highalch ? amount(item.highalch, 'gp') : { value: '–' }),
+        sub: item.highalch ? `Low alch ${formatWholeCompact(item.lowalch ?? 0)}` : "Can't be alched for coins",
       },
     ];
   });
