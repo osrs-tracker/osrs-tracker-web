@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# PreToolUse hook for every Bash command: before Claude runs `git push`, lint and prettier-check the checkout being
-# pushed. That's the session's own worktree when it has one (or the `git -C` path), not $CLAUDE_PROJECT_DIR, which is
-# always the main checkout. It fails open (exit 0) when it can't tell what's pushed; CI still lints.
+# PreToolUse hook for Bash commands that run git: before Claude runs `git push`, lint and prettier-check the checkout
+# being pushed. That's the session's own worktree when it has one (or the `git -C` path), not $CLAUDE_PROJECT_DIR, which
+# is always the main checkout. It fails open (exit 0) when it can't tell what's pushed; CI still lints.
 input=$(cat)
 
-# No `if` filter in the settings: `Bash(git push*)` misses `git -C <path> push`, so the script decides. Git options may
-# come before `push`: -C/-c with their argument, or --flags.
+# The settings' `if` is only `Bash(git *)`, since `Bash(git push*)` misses `git -C <path> push`, so the script decides.
+# Git options may come before `push`: -C/-c with their argument, or --flags.
 cmd=$(jq -r '.tool_input.command // empty' <<<"$input")
 opt='[[:space:]]+(-[Cc][[:space:]]+[^[:space:]]+|--[^[:space:]]+)'
 push_re="(^|[;&|(]|[[:space:]])git(${opt})*[[:space:]]+push([[:space:]]|\$)"

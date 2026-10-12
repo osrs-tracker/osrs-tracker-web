@@ -23,6 +23,8 @@
 - The review agent that checks changes against the project's conventions can only read: a guard lets it run nothing but
   git and GitHub read commands (including searching the code), one at a time. It starts with the project guide loaded,
   flags fewer things to double-check, and opens its report with a one-line verdict.
+- Claude Code gets a `verify` skill that runs the build, lint, formatting and tests, which Claude Code runs before each
+  commit of a code change, and the lint check before a push now only starts for commands that run git.
 
 ## 2026/10/11
 
