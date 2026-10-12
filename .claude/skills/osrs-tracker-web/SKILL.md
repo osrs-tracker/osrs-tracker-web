@@ -12,7 +12,7 @@ description:
 Detailed guide; the always-on summary, commands and hard rules are in `CLAUDE.md` and aren't repeated here. Deliberate
 trade-offs in `docs/decisions.md` include production-only config, per-replica pre-rendering and the CSP nonce. The
 `conventions-reviewer` agent reviews diffs against this file and `CLAUDE.md` at runtime, so keep code rules here or
-there, not in the agent.
+there, not in the agent; repo-specific review rules go in `## Review rules`.
 
 ## Related repos
 
@@ -203,6 +203,17 @@ Only for complex or important logic, never for coverage. Break the protected cod
 - App specs: `TestBed` with `provideZonelessChangeDetection()` and `HttpTestingController`; clear `localStorage` in
   `afterEach`.
 
+## Review rules
+
+What `conventions-reviewer` checks beyond the rules above. It reads this section; keep repo rules here, not in the
+agent.
+
+- Read `docs/decisions.md` every review and never flag what it explains.
+- Rules that span files, checked against the whole diff: a new or renamed route and `src/server/utils/route-label.ts`;
+  changed icons and `local-icons.generated.ts`; a user-visible change and `CHANGELOG.md`.
+- **breaks** here also covers: blocks scripts under the CSP, refetches on hydration. A typical **check**: the API's
+  `Cache-Control` for a new SSR request (name the endpoint and the header to verify).
+
 ## Running locally
 
 - `npm start` (`ng serve --open`) for browser-side work; it has no auto-generator or page cache. If port 4200 is taken
@@ -262,7 +273,9 @@ Run end to end without asking; stop only on failure. Verify locally once before 
 
 1. Commit on `<type>/<short-name>` (in a worktree, `git switch -c` it from the `claude/…` branch you started on),
    `git fetch origin && git rebase origin/main`, push, `gh pr create --base main`.
-2. Review `gh pr diff` for bugs and leftovers while the `conventions-reviewer` agent checks the PR; fix both and push.
+2. Review `gh pr diff` for bugs and leftovers while the `conventions-reviewer` agent checks the PR (spawn it without a
+   `model`, which would override its Sonnet pin). Its first line is a `VERDICT:`; check each finding against the code
+   before fixing it and drop the ones that don't hold. Fix both and push.
 3. Poll `gh pr view <n> --json mergeable,mergeStateStatus` until it isn't `UNKNOWN` (a conflicting PR gets no CI: rebase
    and push again), then `gh pr checks <n> --watch`.
 4. When checks pass: `gh pr merge <n> --merge` (it deploys; if Claude Code's permission check blocks it, give the user
