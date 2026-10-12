@@ -64,8 +64,9 @@ The `kubectl` commands use the `kubernetes-admin@kubernetes` context. Claude Cod
 - Pods and events: `kubectl -n osrs-tracker get pods` and `kubectl -n osrs-tracker describe deploy osrs-tracker-web`.
 - Logs: `kubectl -n osrs-tracker logs deploy/osrs-tracker-web --since=15m`, or Loki in Grafana (grafana.freekmencke.com)
   for older logs. The server's own lines are JSON with a `type`, written by `@osrs-tracker/logger`
-  (`src/server/utils/log.ts` adds `prerender`): `incoming` (requests it answered), `outgoing` (requests a render made),
-  `lifecycle` (startup, shutdown), `prerender` (auto page generation) and `uncaught` (errors that reached Express' error
+  (`src/server/utils/log.ts` adds `prerender`, `sitemap` and `og-image`): `incoming` (requests it answered), `outgoing`
+  (requests a render made), `lifecycle` (startup, shutdown), `prerender` (auto page generation), `sitemap` (the item and
+  player sitemaps), `og-image` (the item link preview images) and `uncaught` (errors that reached Express' error
   handler, stack in `error`); Angular's own output is plain text. Pick one with `| json | type="…"`, e.g.
   `{namespace="osrs-tracker", app="osrs-tracker-web"} | json | type="uncaught"`.
 - Requests: `incoming` lines have `status`, `route` and `cache`; a client that gave up before the response is a `warn`
