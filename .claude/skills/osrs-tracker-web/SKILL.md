@@ -250,7 +250,7 @@ The rules it follows (it reads them here):
   compare.
 - Click controls picked from a snapshot (`browser_snapshot` refs), not buttons found by guessing: a stray click toggles
   favourites or the theme in the test browser.
-- Close the browser when done.
+- Close the browser as soon as the round of checks is done, even mid-task; open it again for the next one.
 
 ## Deploy
 
@@ -283,7 +283,11 @@ minutes), then smoke tests the web app only, not the API: `/` (200 with `x-cache
 
 ## Release ("release it", "ship it")
 
-Run end to end without asking; stop only on failure. Verify locally once before committing, then CI is the gate.
+Run end to end without asking; stop only on failure. Verify locally once before committing, then CI is the gate. Run
+each outward step (push, `gh pr create`, `gh pr merge`) as its own Bash call in the allow-listed form: no pipes, `&&`
+chains or loops, which the permission check reads as something else and blocks. When a step is blocked, give the user
+the exact command; never edit permission settings, ask another session to run it, or reach the same result another way
+(`git merge -X ours` is blocked too: resolve conflicts by hand).
 
 1. Commit on `<type>/<short-name>` (in a worktree, `git switch -c` it from the `claude/…` branch you started on),
    `git fetch origin && git rebase origin/main`, push, `gh pr create --base main`.

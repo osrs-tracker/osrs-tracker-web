@@ -40,6 +40,48 @@ Choices that look like accidents without their context: what was decided, why, a
   first (Home's tablet artboard, the `layout` tweak); about 1,460px at 820px wide.
 - **Revisit:** if the news gets more than four items, or the hero gets more content beside the search.
 
+## Browse pages render every row at once (2026/10/10)
+
+- **Context:** PageSpeed's mobile lab run gives the A–Z browse pages a high Total Blocking Time
+  (`/trackers/price/browse/s`, 600 rows: 0.7–1 s). Profiling showed the per-row `rxResource`s are only about 10% of it;
+  most of it is rendering every row's prices at once after the shared `/latest` and `/24h` fetch. On desktop it's about
+  300 ms.
+- **Decision:** leave it. There's no field data, so the lab number has no ranking effect, and the pages exist as a crawl
+  path: CDK virtual scrolling would drop the item links from the server HTML.
+- **Revisit:** with field data (Core Web Vitals in Search Console) or a visitor's complaint, not from throttled lab runs
+  alone.
+
+## Red in the dark theme is solid, not a tint (2026/10/10)
+
+- **Context:** the change pill (`item-row.ts`) needs 4.5:1 contrast at rest and on a hovered row, in both themes. In the
+  dark theme a see-through red over the blue slate turns pink or mauve, and the lighter reds that pass the contrast read
+  as pink or salmon.
+- **Decision:** light theme: `up` green-800 and `down` red-800 on a 16% see-through pill. Dark theme: `down`
+  `oklch(0.74 0.155 28)` on a solid `down-pill` `oklch(0.35 0.065 27)` (`base.css`), picked from mock-ups. Rejected:
+  red-400 on a darker pill (dull), a 12% warm tint (too faint), `oklch(0.30 0.08 27)` and a filled red-600 pill (too
+  loud).
+- **Revisit:** before changing a red in the dark theme, show mock-ups in both themes with the contrast at rest and on
+  hover.
+
+## XP gains count a first appearance as gained (2026/10/10)
+
+- **Context:** since the keyed hiscore entries (#176), `hiscoreDiff` (`@osrs-tracker/hiscores`) counts a missing or
+  `null` value as 0. When a value first appears, all of it counts as gained that day: Jagex adds or renames a hiscore
+  with backfilled counts, or an activity crosses Jagex's ranking minimum ("+5" boss kills at the fifth kill).
+- **Decision:** that's fine; no special case. Likewise `overallOf` (`@osrs-tracker/models`) throws when Overall is
+  missing, with no fallback: every hiscore entry, stored or live, has Overall.
+- **Revisit:** if a visitor reports a misleading gain, or Jagex ever omits Overall.
+
+## No visible text for search engines only (2026/10/10)
+
+- **Context:** SEO issues proposed visible additions: a summary sentence on item pages (#162, built) and a "related
+  items" card from a name search (#167).
+- **Decision:** both dropped. The sentence repeated the tiles and header, and a templated sentence is as alike across
+  pages as the tiles, so it doesn't fix thin content either; related items by name made no sense to visitors. SEO work
+  goes into meta (title, description, canonical), internal links that make sense to visitors (the A–Z browse pages,
+  #168) and speed; never hidden text.
+- **Revisit:** a proposal for visible copy or UI that tells visitors something the page doesn't already show.
+
 ## The item and player sitemaps are built by the server (2026/10/10)
 
 - **Context:** the build wrote every sitemap, so the players one (a new hiscore entry for every tracked player each day)
@@ -239,6 +281,23 @@ Choices that look like accidents without their context: what was decided, why, a
 - **Decision:** log them as `warn` with `aborted: true` and the time until the disconnect, the same shape as the API.
   Not `info` and not dropped: they're the only sign that slow SSR pages make visitors give up.
 - **Revisit:** if aborts stay high on one route; then that page's render time needs work.
+
+## One visual system for the redesign (2026/10/07)
+
+- **Context:** a review of the design canvas found drift: four card radii, about 19 font sizes, three segmented styles,
+  12–18px card headers, 16 or 24px gaps, and an up green that was nearly the emerald accent.
+- **Decision:** one scale each (the skill's Design system section lists them). The reasons that aren't obvious from the
+  rules:
+  - **Flat cards:** depth comes from the lighter card on the navy ground; a shadow is reserved for layers that float.
+  - **Up is a true green** (`oklch(0.79 0.22 142)`), so a rise never reads as a link or button. Changes carry a sign
+    (−8,402 (−0.6%)), no ▼/▲.
+  - **Segmented:** the active pill is accent-filled, except beside an accent button (Home's Player/Item switch), where
+    two accent fills would compete.
+  - **Tabular figures on values only:** in a line of text ("Regular · Total 2,316") they look spaced out.
+  - **Tracker landings keep three equal cards** (global lookups, your lookups, your favourites), each list scrolling in
+    its card. Favourites as hero tiles, to avoid identical cards, was tried and reverted: three parallel lists read more
+    clearly. The hero accents the subject ("XP", "Price"), not "Tracker".
+- **Revisit:** when a component needs a value the scales lack: add a token, don't make a one-off.
 
 ## Semantic colour tokens instead of `dark:` pairs (2026/10/07)
 
