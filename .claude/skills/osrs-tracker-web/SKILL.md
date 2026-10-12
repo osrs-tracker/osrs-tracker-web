@@ -228,15 +228,25 @@ agent.
 
 ## Browser check
 
-For visible or request-changing work, use the Playwright MCP locally and on production after a deploy (curl only sees
-server HTML). If it's unavailable, say so rather than falling back to curl silently.
+For visible or request-changing work, check in the Playwright browser locally and on production after a deploy (curl
+only sees server HTML). If Playwright is unavailable, say so rather than falling back to curl silently.
 
-- Dark mode first (the MCP default and most visitors); light mode too for theme changes.
-- Send a screenshot (`SendUserFile`) and report request count, failed requests and console errors. For caching, load
-  twice and compare.
+The `browser-checker` agent does the check, so its screenshots stay out of the main session:
+
+1. Start the server yourself (see Running locally); for production, wait for the deploy.
+2. Delegate to `browser-checker` (without a `model`) with the URLs and what changed (theme, phone layout, caching). Only
+   one browser serves the session: never run two checks at once, or one beside a browser check of your own.
+3. Pass on its `VERDICT:`, request counts, failed requests and console errors, and send its screenshots with
+   `SendUserFile`. Then delete `.playwright-mcp/` and stop the server.
+
+The rules it follows (it reads them here):
+
+- Dark mode first (most visitors); light mode too for theme changes.
+- A screenshot per URL and mode, and request count, failed requests and console errors. For caching, load twice and
+  compare.
 - Click controls picked from a snapshot (`browser_snapshot` refs), not buttons found by guessing: a stray click toggles
   favourites or the theme in the test browser.
-- Close the browser and delete `.playwright-mcp/` when done.
+- Close the browser when done.
 
 ## Deploy
 

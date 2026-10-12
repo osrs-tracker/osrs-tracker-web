@@ -47,3 +47,5 @@ holds the Angular conventions, SSR rules, deploy and release steps. Keep detail 
 - `docs/decisions.md` trade-offs, `docs/runbook.md` rollback and failure modes.
 - `.claude/agents/conventions-reviewer.md` reviews diffs against the skill and this file;
   `.claude/hooks/read-only-bash.sh` keeps review agents to git and gh reads.
+- `.claude/agents/browser-checker.md` runs the skill's browser check in Playwright and returns a short report with
+  screenshot paths, so screenshots stay out of the main session.
