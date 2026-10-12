@@ -2,8 +2,8 @@
 name: bug-reviewer
 description:
   Reviews a diff in osrs-tracker-web for real defects (wrong results, crashes, broken SSR or hydration, security holes),
-  in a fresh context. Not conventions: that's conventions-reviewer. Use before opening or merging a PR, in parallel
-  with conventions-reviewer.
+  in a fresh context. Not conventions, which conventions-reviewer checks. Use before opening or merging a PR, in
+  parallel with conventions-reviewer.
 tools: Read, Grep, Glob, Bash
 model: opus
 effort: high
