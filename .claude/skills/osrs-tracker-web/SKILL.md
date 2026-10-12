@@ -237,7 +237,7 @@ The `browser-checker` agent does the check, so its screenshots stay out of the m
 2. Delegate to `browser-checker` (without a `model`) with the URLs and what changed (theme, phone layout, caching). Only
    one browser serves the session: never run two checks at once, or one beside a browser check of your own.
 3. Pass on its `VERDICT:`, request counts, failed requests and console errors, and send its screenshots with
-   `SendUserFile`. Then delete `.playwright-mcp/` and stop the server.
+   `SendUserFile`. Then delete them and `.playwright-mcp/`, and stop the server.
 
 The rules it follows (it reads them here):
 
