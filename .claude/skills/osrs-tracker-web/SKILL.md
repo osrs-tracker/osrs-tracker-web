@@ -179,8 +179,8 @@ the angular.dev docs for the installed major version.
   `base.css` and `index.html`. The link preview card has its own copies of the font (`docs/decisions.md`).
 - **Missing assets**: `middleware/missing-asset.ts` answers paths ending in a build asset extension (`.js`, `.css`,
   `.woff2`…) with a 404 after `express.static`, before Angular, as some crawlers resolve the asset links against the
-  page path. No Angular route may end in one of those extensions; the one exception is `/og/item/:id.png`
-  (`routers/og-images.ts`), which `app.ts` registers before this middleware.
+  page path. Angular routes can't end in one of those extensions; a server router that does (`/og/item/:id.png`,
+  `routers/og-images.ts`) must be registered before this middleware in `app.ts`.
 - **Static files and compression**: `middleware/static-files.ts` sets the cache lifetimes (hashed bundles a year,
   `noCacheStaticFiles` revalidated, the rest a day). Traefik compresses text (`osrs-tracker-web-compress` in
   `osrs-tracker-web.yaml`): don't add Express's `compression`, and add a new text content type there. The request log's
