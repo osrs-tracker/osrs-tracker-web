@@ -2,6 +2,7 @@ import { config } from '@config/config';
 import type { Logger } from '@osrs-tracker/logger';
 import type { Item } from '@osrs-tracker/models';
 import express from 'express';
+import { allowCrossOriginEmbedding } from '../middleware/security';
 import { serverConfig } from '../server-config';
 import type { WebLogType } from '../utils/log';
 
@@ -109,6 +110,7 @@ export function createOgImageRouter({
       res.status(404).set('Cache-Control', SHORT_CACHE).type('text/plain').send('Not found');
       return;
     }
+    allowCrossOriginEmbedding(res);
     res
       .set('Cache-Control', card.kind === 'ok' ? LONG_CACHE : SHORT_CACHE)
       .type('image/png')

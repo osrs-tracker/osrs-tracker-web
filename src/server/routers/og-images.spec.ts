@@ -40,6 +40,7 @@ describe('createOgImageRouter', () => {
     expect(res.status).toBe(200);
     expect(res.headers.get('content-type')).toBe('image/png');
     expect(res.headers.get('cache-control')).toBe('public, max-age=604800, immutable');
+    expect(res.headers.get('cross-origin-resource-policy')).toBe('cross-origin');
     expect(new Uint8Array(await res.arrayBuffer())).toEqual(PNG);
     expect(render).toHaveBeenCalledExactlyOnceWith(item(4151), ICON);
   });

@@ -1,6 +1,19 @@
 import { RequestHandler, Response } from 'express';
+import type { ServerResponse } from 'node:http';
 import helmet from 'helmet';
 import { getCspNonce } from './csp-nonce';
+
+/** The images pages name as `og:image`: link previews show them on other sites (`allowCrossOriginEmbedding`) */
+export const LINK_PREVIEW_IMAGE = /^\/assets\/(?:og\/[^/]+|pwa\/icon-512x512\.png)$/;
+
+/**
+ * Lets other sites show this response, over helmet's `Cross-Origin-Resource-Policy: same-origin`: for link preview
+ * images, which tools such as opengraph.xyz load straight into their page. Chat apps that fetch them on their own
+ * servers ignore the header.
+ */
+export function allowCrossOriginEmbedding(res: ServerResponse): void {
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+}
 
 export function securityMiddleware(): RequestHandler {
   return helmet({

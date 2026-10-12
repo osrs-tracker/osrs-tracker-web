@@ -1,6 +1,7 @@
 import express, { RequestHandler } from 'express';
 import { relative, sep } from 'node:path';
 import { serverConfig } from '../server-config';
+import { allowCrossOriginEmbedding, LINK_PREVIEW_IMAGE } from './security';
 
 // The build hashes the names of the bundles it writes to the root (`main-*.js`, `chunk-*.js`, `styles-*.css`), so a
 // changed bundle gets a new URL and an old one never changes
@@ -20,6 +21,8 @@ export function staticFilesMiddleware(): RequestHandler {
       if (serverConfig.noCacheStaticFiles.includes(url)) res.setHeader('Cache-Control', 'no-cache');
       else if (HASHED_FILE.test(url)) res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
       else res.setHeader('Cache-Control', 'public, max-age=86400');
+
+      if (LINK_PREVIEW_IMAGE.test(url)) allowCrossOriginEmbedding(res);
     },
   });
 }

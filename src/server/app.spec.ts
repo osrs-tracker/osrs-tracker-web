@@ -24,12 +24,14 @@ vi.mock('@angular/ssr/node', () => ({
 }));
 
 describe('createApp', () => {
-  // A browser build with a chunk, an icon and a sitemap, so the static middleware has real files to serve
+  // A browser build with a chunk, an icon, a preview image and a sitemap, so the static middleware has real files to serve
   serverConfig.browserDistFolder = mkdtempSync(join(tmpdir(), 'osrs-tracker-browser-'));
   writeFileSync(join(serverConfig.browserDistFolder, 'chunk-real.js'), 'export {};');
   writeFileSync(join(serverConfig.browserDistFolder, 'sitemap-site.xml'), '<urlset/>');
   mkdirSync(join(serverConfig.browserDistFolder, 'assets/icons'), { recursive: true });
   writeFileSync(join(serverConfig.browserDistFolder, 'assets/icons/coins.png'), 'png');
+  mkdirSync(join(serverConfig.browserDistFolder, 'assets/og'), { recursive: true });
+  writeFileSync(join(serverConfig.browserDistFolder, 'assets/og/osrs-tracker.png'), 'png');
   afterAll(() => rmSync(serverConfig.browserDistFolder, { recursive: true }));
 
   let ready = true;
@@ -153,6 +155,14 @@ describe('createApp', () => {
     expect(await cacheControl('/chunk-real.js')).toBe('public, max-age=31536000, immutable');
     expect(await cacheControl('/assets/icons/coins.png')).toBe('public, max-age=86400');
     expect(await cacheControl('/sitemap-site.xml')).toBe('no-cache');
+  });
+
+  it('lets other sites show the link preview images, and only those', async () => {
+    const policy = async (path: string) => (await get(path)).headers.get('cross-origin-resource-policy');
+
+    expect(await policy('/assets/og/osrs-tracker.png?v=2')).toBe('cross-origin');
+    expect(await policy('/assets/icons/coins.png')).toBe('same-origin');
+    expect(await policy('/chunk-real.js')).toBe('same-origin');
   });
 
   it('answers the readiness probe with 503 until it is ready', async () => {
