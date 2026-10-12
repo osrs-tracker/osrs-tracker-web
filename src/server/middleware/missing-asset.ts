@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 
-// File types the production build emits (plus source maps). No route ends in one: item ids are numeric and RuneScape
-// names can't contain a `.`.
+// File types the production build emits (plus source maps). No Angular route ends in one: item ids are numeric and
+// RuneScape names can't contain a `.`. Server routers that do (`/og/item/:id.png`) are registered before this in `app.ts`.
 const ASSET_PATH = /\.(?:js|mjs|css|map|woff2|png|gif)$/i;
 
 /**
