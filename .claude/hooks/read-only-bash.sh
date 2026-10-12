@@ -11,9 +11,15 @@ case $cmd in
     ;;
 esac
 
-git_re='^git( -C [^ ]+)? (diff|log|show|status|fetch|rev-parse|merge-base|ls-files|blame)( |$)'
+# git grep -O / --open-files-in-pager runs a command; a short -O may be bundled (-nO).
+if [[ $cmd =~ (^|\ )-[A-Za-z]*O || $cmd == *--open-files-in-pager* ]]; then
+  echo 'Read-only reviewer: no -O or --open-files-in-pager.' >&2
+  exit 2
+fi
+
+git_re='^git( -C [^ ]+)? (diff|log|show|status|fetch|rev-parse|merge-base|ls-files|blame|grep)( |$)'
 gh_re='^gh pr (view|diff|checks)( |$)'
 [[ $cmd =~ $git_re || $cmd =~ $gh_re ]] && exit 0
 
-echo 'Read-only reviewer: allowed are git diff/log/show/status/fetch/rev-parse/merge-base/ls-files/blame and gh pr view/diff/checks.' >&2
+echo 'Read-only reviewer: allowed are git diff/log/show/status/fetch/rev-parse/merge-base/ls-files/blame/grep and gh pr view/diff/checks.' >&2
 exit 2

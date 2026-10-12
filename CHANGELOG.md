@@ -1,8 +1,8 @@
 ## 2026/10/12
 
 - The review agent that checks changes against the project's conventions can only read: a guard lets it run nothing but
-  git and GitHub read commands, one at a time. It starts with the project guide loaded, flags fewer things to
-  double-check, and opens its report with a one-line verdict.
+  git and GitHub read commands (including searching the code), one at a time. It starts with the project guide loaded,
+  flags fewer things to double-check, and opens its report with a one-line verdict.
 
 ## 2026/10/11
 
