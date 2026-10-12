@@ -9,7 +9,9 @@ holds the Angular conventions, SSR rules, deploy and release steps. Keep detail 
 
 ## Commands
 
-- Verify: `npx ng build --configuration production && npx ng lint && npm run prettier:ci && npx ng test --watch=false`
+- Verify: `npx ng build --configuration production && npx ng lint && npm run prettier:ci && npx ng test --watch=false`.
+  The `verify` skill (`.claude/skills/verify/`) runs it step by step; Claude Code's commit instructions run it before
+  each commit of a code change.
 - One spec: `npx ng test --watch=false --include <path>`
 - Dev server: `npm start`, always on port 4200 (the API's CORS allows only that).
 - Worktrees in `.claude/worktrees/` use the main checkout's `node_modules` (found in a parent folder), which match the
