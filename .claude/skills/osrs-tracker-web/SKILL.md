@@ -285,8 +285,8 @@ Run end to end without asking; stop only on failure. Verify locally once before 
    `git fetch origin && git rebase origin/main`, push, `gh pr create --base main`.
 2. Run `bug-reviewer` and `conventions-reviewer` on the PR in parallel (don't pass `model`, which would override their
    pins). Each report starts with a `VERDICT:` line. Check each finding against the code before fixing it, and drop the
-   ones that don't hold. At most 2 rounds of fixes, then ask. Until #222 is closed, also run `/code-review` at its
-   default level and record both reviews on #222 (its step 3 says what to record).
+   ones that don't hold. At most 2 rounds of fixes, then ask. Until #222 is closed, also run `/code-review high <n>` and
+   record both reviews on #222 (its step 3 says what to record).
 3. Poll `gh pr view <n> --json mergeable,mergeStateStatus` until it isn't `UNKNOWN` (a conflicting PR gets no CI: rebase
    and push again), then `gh pr checks <n> --watch`.
 4. When checks pass: `gh pr merge <n> --merge` (it deploys; if Claude Code's permission check blocks it, give the user
