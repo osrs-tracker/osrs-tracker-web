@@ -58,12 +58,12 @@ describe('baseUrlInterceptor', () => {
     const { http, httpTesting } = setup(provideInternalApiBaseUrl(internalOrigin));
 
     http
-      .get('https://prices.runescape.wiki/api/v1/osrs/latest', {
+      .get('https://prices.runescape.wiki/api/v2/osrs/latest', {
         context: new HttpContext().set(BASE_URL_PREFIX, false),
       })
       .subscribe();
 
-    httpTesting.expectOne('https://prices.runescape.wiki/api/v1/osrs/latest');
+    httpTesting.expectOne('https://prices.runescape.wiki/api/v2/osrs/latest');
     httpTesting.verify();
   });
 

@@ -4,8 +4,8 @@ const { GE_TAX_CAP, GE_TAX_EXEMPT_IDS, GE_TAX_PERCENT } =
   await import('../../src/app/features/trackers/price-tracker/item-detail/ge-tax.ts');
 
 const WIKI_API = 'https://oldschool.runescape.wiki/api.php';
-const MAPPING_API = 'https://prices.runescape.wiki/api/v1/osrs/mapping';
-const HEADERS = { 'User-Agent': 'osrs-tracker-dev' };
+const MAPPING_API = 'https://prices.runescape.wiki/api/v2/osrs/mapping';
+const HEADERS = { 'User-Agent': 'osrs-tracker-web check:ge-tax - https://github.com/osrs-tracker/osrs-tracker-web' };
 
 const getJson = async url => {
   const response = await fetch(url, { headers: HEADERS });

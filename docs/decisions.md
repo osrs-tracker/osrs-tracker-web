@@ -2,6 +2,21 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## The Wiki prices API is called through v2, as its guidelines ask (2026/10/13)
+
+- **Context:** a Wiki prices API developer pointed out on Reddit that per-item time series are hard for them to cache,
+  and that tools overloading their database are why the endpoint is slow. The API's guidelines
+  ([Real-time Prices](https://oldschool.runescape.wiki/w/RuneScape:Real-time_Prices), short link `osrs.wiki/RS:PRICES`)
+  ask for a descriptive User-Agent and bulk lists over one request per item, and say v1 "may be removed in the future".
+  v1's `timeseries?timestep=` misses the Wiki's CDN; v2's `timeseries?lookback=` is served from it
+  (`cf-cache-status: HIT`, cached for minutes to a day by lookback).
+- **Decision:** every Wiki prices call uses `/api/v2/osrs` (`pricesBaseUrl` in `src/config/config.ts`). The item page's
+  ranges map to lookbacks: 1D `24h` (5-minute steps), 1W `7d` (hourly), 1M `30d` (6-hourly), 1Y `1y` (daily). The time
+  series stay browser only and load on demand: one on page load, one more per range clicked, never on a timer. Server
+  requests send `OSRS Tracker SSR - https://osrs-tracker.freekmencke.com`.
+- **Revisit:** if the Wiki changes a lookback's step (it doesn't guarantee it), or the site's traffic grows enough that
+  the API should fetch and cache the series for every visitor.
+
 ## Item link previews are drawn by the server (2026/10/11)
 
 - **Context:** every item page sent the square app icon as its `og:image`, so every shared item link looked the same
@@ -328,12 +343,12 @@ Choices that look like accidents without their context: what was decided, why, a
 ## Item page volumes and averages come from the hourly series (2026/10/07)
 
 - **Context:** the item page needs yesterday's 24-hour average (for the change in its header), the volume over the last
-  24 hours and 14 days of daily volumes. The Wiki's `/24h` and `/volumes` endpoints return every item (about 390KB and
-  50KB), and SSR would embed them in the page's transfer state. Its `24h` time series lags a day or two behind.
-- **Decision:** derive all three from the item's `1h` time series (365 hours), which the page loads anyway for the 1W
-  price range: volume-weighted per UTC day, which matches `/24h` exactly. The item lists still use `/24h` (in the
-  browser, shared between rows).
-- **Revisit:** if the Wiki shortens the `1h` series below 15 days, or the numbers drift from the lists.
+  24 hours and a week of daily volumes. The Wiki's `/24h` and `/volumes` endpoints return every item (about 390KB and
+  50KB), and SSR would embed them in the page's transfer state. Its daily time series lags a day or two behind.
+- **Decision:** derive all three from the item's hourly time series (v2's `7d` lookback, 168 hours; v1's had 365 and fed
+  14 days), which the page loads anyway for the 1W price range: volume-weighted per UTC day, which matches `/24h`
+  exactly. The item lists still use `/24h` (in the browser, shared between rows).
+- **Revisit:** if the Wiki shortens the `7d` series or changes its step, or the numbers drift from the lists.
 
 ## GE tax rules are hard-coded (2026/10/07)
 

@@ -30,7 +30,7 @@ const fetchItem: GetItem = async id => {
 /** The Wiki's icon, with the user agent SSR sends it */
 const fetchIcon: GetIcon = async item => {
   const response = await fetch(`${config.wikiBaseUrl}/images/${item.icon.replaceAll(/\s/g, '_')}`, {
-    headers: { 'User-Agent': 'OSRS Tracker SSR' },
+    headers: { 'User-Agent': 'OSRS Tracker SSR - https://osrs-tracker.freekmencke.com' },
     signal: AbortSignal.timeout(serverConfig.ssrRequestTimeout),
   });
   if (!response.ok) throw new Error(`Icon answered ${response.status}`);

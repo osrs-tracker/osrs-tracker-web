@@ -24,7 +24,7 @@ import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { StatTile } from '@app/common/ui/cards/stat-tile';
 import { StatusPanel } from '@app/common/ui/page/status-panel';
 import { TimeAgoPipe } from '@app/common/format/time-ago-pipe';
-import { AveragePricesAtTime, LatestPrices, OsrsPricesRepo, TimeSpan } from '@app/common/api/osrs-prices-repo';
+import { AveragePricesAtTime, LatestPrices, Lookback, OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { isHumanVisitor } from '@app/core/platform/human-visitor';
 import { PriceTrackerStore } from '../price-tracker-store';
@@ -45,15 +45,19 @@ import { ProfitCalculator } from './profit-calculator';
 
 type PriceRange = '1D' | '1W' | '1M' | '1Y';
 
-/** The Wiki time series behind each range, and how far back the range goes. The 1h series also feeds the volume. */
-const PRICE_RANGES: Record<PriceRange, { timeSpan: TimeSpan; seconds: number; title: string }> = {
-  '1D': { timeSpan: TimeSpan.FIVE_MINUTES, seconds: 86400, title: 'day' },
-  '1W': { timeSpan: TimeSpan.HOUR, seconds: 7 * 86400, title: 'week' },
-  '1M': { timeSpan: TimeSpan.SIX_HOURS, seconds: 30 * 86400, title: 'month' },
-  '1Y': { timeSpan: TimeSpan.DAY, seconds: 365 * 86400, title: 'year' },
+/**
+ * The Wiki time series behind each range, and how far back the range goes. The 1W series, hourly, also feeds the
+ * volume.
+ */
+const PRICE_RANGES: Record<PriceRange, { lookback: Lookback; seconds: number; title: string }> = {
+  '1D': { lookback: '24h', seconds: 86400, title: 'day' },
+  '1W': { lookback: '7d', seconds: 7 * 86400, title: 'week' },
+  '1M': { lookback: '30d', seconds: 30 * 86400, title: 'month' },
+  '1Y': { lookback: '1y', seconds: 365 * 86400, title: 'year' },
 };
 
-const VOLUME_DAYS = 14;
+/** As many days as the hourly series covers in full, today included: it ends with the last full hour, 168 hours back */
+const VOLUME_DAYS = 7;
 
 interface ItemStat {
   label: string;
@@ -125,24 +129,24 @@ export default class ItemDetail implements OnInit {
 
   /**
    * Shared per item, so switching back and forth between ranges doesn't refetch. Browser only: the hourly series is
-   * about 40KB that SSR would wait for and embed in the page, and the chart it feeds isn't rendered on the server.
+   * about 20KB that SSR would wait for and embed in the page, and the chart it feeds isn't rendered on the server.
    */
   private readonly timeSeries: Signal<Record<PriceRange, Observable<AveragePricesAtTime[]>> | undefined> = computed(
     () => {
       const id = this.item()?.id;
       if (id === undefined || !this.isBrowser) return undefined;
 
-      const fetch = (timeSpan: TimeSpan) => this.osrsPricesRepo.getPriceTimeSeries(id, timeSpan).pipe(shareReplay(1));
+      const fetch = (lookback: Lookback) => this.osrsPricesRepo.getPriceTimeSeries(id, lookback).pipe(shareReplay(1));
       return {
-        '1D': fetch(PRICE_RANGES['1D'].timeSpan),
-        '1W': fetch(PRICE_RANGES['1W'].timeSpan),
-        '1M': fetch(PRICE_RANGES['1M'].timeSpan),
-        '1Y': fetch(PRICE_RANGES['1Y'].timeSpan),
+        '1D': fetch(PRICE_RANGES['1D'].lookback),
+        '1W': fetch(PRICE_RANGES['1W'].lookback),
+        '1M': fetch(PRICE_RANGES['1M'].lookback),
+        '1Y': fetch(PRICE_RANGES['1Y'].lookback),
       };
     },
   );
 
-  /** The last 365 hours: the volume, the 24-hour volume and yesterday's average come from it, as does the 1W range */
+  /** The last 168 hours: the volume, the 24-hour volume and yesterday's average come from it, as does the 1W range */
   readonly hourly: ResourceRef<AveragePricesAtTime[]> = rxResource({
     params: () => this.timeSeries()?.['1W'],
     stream: ({ params: hourly$ }) => hourly$,

@@ -8,12 +8,16 @@ import { LOADING_INDICATOR } from '@app/core/interceptors/loading-indicator-inte
 import { SSR_TIMEOUT } from '@app/core/interceptors/ssr-timeout-interceptor';
 import { config } from '@config/config';
 
+/** The Wiki's average price lists (`/5m`, `/1h`, `/6h`, `/24h`), each holding every item */
 export enum TimeSpan {
   FIVE_MINUTES = '5m',
   HOUR = '1h',
   SIX_HOURS = '6h',
   DAY = '24h',
 }
+
+/** How far back an item's time series goes; the Wiki picks the step (5 minutes for `24h`, hourly for `7d`, …) */
+export type Lookback = '6h' | '24h' | '7d' | '30d' | '6m' | '1y';
 
 export interface LatestPrices {
   high: number;
@@ -42,6 +46,10 @@ const SERVER_LATEST_PRICES_TTL = 60_000;
  */
 let latestPricesCache: { data: Record<string, Record<string, number>>; fetchedAt: number } | undefined;
 
+/**
+ * The OSRS Wiki's prices API (v2), as its guidelines ask: bulk lists over single items, and time series by `lookback`,
+ * which its CDN caches for everyone, unlike the old `timestep` series that waited on its database (`docs/decisions.md`).
+ */
 @Service()
 export class OsrsPricesRepo {
   private readonly httpClient = inject(HttpClient);
@@ -91,12 +99,12 @@ export class OsrsPricesRepo {
 
   getPriceTimeSeries(
     id: number,
-    timeSpan: TimeSpan,
+    lookback: Lookback,
     options?: { loadingIndicator?: boolean },
   ): Observable<AveragePricesAtTime[]> {
     return this.httpClient
-      .get<{ data: AveragePricesAtTime[]; itemId: string }>(`${config.pricesBaseUrl}/api/v1/osrs/timeseries`, {
-        params: { id, timestep: timeSpan },
+      .get<{ data: AveragePricesAtTime[]; itemId: string }>(`${config.pricesBaseUrl}/timeseries`, {
+        params: { id, lookback },
         context: new HttpContext()
           .set(BASE_URL_PREFIX, false)
           .set(SSR_TIMEOUT, true)
@@ -151,7 +159,7 @@ export class OsrsPricesRepo {
     transferCache?: boolean;
   }): Observable<Record<string, Record<string, number>>> {
     return this.httpClient
-      .get<{ data: Record<string, Record<string, number>> }>(`${config.pricesBaseUrl}/api/v1/osrs/latest`, {
+      .get<{ data: Record<string, Record<string, number>> }>(`${config.pricesBaseUrl}/latest`, {
         transferCache: options?.transferCache,
         context: new HttpContext()
           .set(BASE_URL_PREFIX, false)
@@ -166,7 +174,7 @@ export class OsrsPricesRepo {
     timestamp?: Date,
   ): Observable<{ data: Record<string, AveragePrices>; timestamp: number }> {
     return this.httpClient.get<{ data: Record<string, AveragePrices>; timestamp: number }>(
-      `${config.pricesBaseUrl}/api/v1/osrs/${timeSpan}`,
+      `${config.pricesBaseUrl}/${timeSpan}`,
       {
         ...(timestamp && { params: { timestamp: getUnixTime(timestamp) } }), // Only add the timestamp param if it's defined
         context: new HttpContext().set(BASE_URL_PREFIX, false).set(SSR_TIMEOUT, true),
