@@ -25,8 +25,10 @@ or change data. The design system and the "Browser check" section of the preload
    theming. Desktop width, then 390px if the caller mentions phones or layout.
 2. Use `browser_snapshot` for structure and to pick click targets by ref. Never click guessed buttons: a stray click
    toggles favourites or the theme.
-3. Take one screenshot per URL and mode with `browser_take_screenshot` and a `filename`. Element screenshots when the
-   change is one component.
+3. Take one screenshot per URL and mode with `browser_take_screenshot` and a `filename` under `.playwright-mcp/` (such
+   as `.playwright-mcp/home-dark.png`; a bare name lands in the checkout's root). Element screenshots when the change is
+   one component. `Read` each screenshot to look at it: without that you haven't seen the page. Report the path the tool
+   returned, not one you assume.
 4. Collect console errors and failed requests; for caching checks, load twice and compare request counts.
 5. Compare what you see with the caller's description of the change and the skill's design rules (tokens, radii,
    spacing, phone rules). Report differences you can point to; don't redesign.
