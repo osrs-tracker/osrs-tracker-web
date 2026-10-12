@@ -1,13 +1,25 @@
 ## 2026/10/12
 
-- Shared item links show a large preview card with the item's icon, name, examine text, buy limit and alch values,
-  instead of the small OSRS Tracker icon, so each item is recognisable in Discord, Reddit and chat apps.
-- Item names with accents, such as Imperial rosé, show in the site's font, on the site and in their link preview card,
-  which dropped the accented letter.
+### Item pages
+
+- Item page headers work better with long names such as Tumeken's shadow (uncharged). The name itself links to the OSRS
+  Wiki, as a player's name links to the hiscores, with the icon following its last word when it wraps. On phones the
+  favourite star sits beside the price instead of squeezing the name, and the link to the item's letter reads "Items
+  starting with T" with a forward arrow, so it fits beside the "Price Tracker" back link.
 - On an item's page, the stat tiles write large amounts as the item lists do (786.71M, 2.15B) instead of cutting them
   off; hover for the exact amount.
+- Item names with accents, such as Imperial rosé, show in the site's font, on the site and in their link preview card,
+  which dropped the accented letter.
+
+### Link previews
+
+- Shared item links show a large preview card with the item's icon, name, examine text, buy limit and alch values,
+  instead of the small OSRS Tracker icon, so each item is recognisable in Discord, Reddit and chat apps.
 - Link preview pictures, for item pages and every other page, also show in tools and apps that load them straight into a
   web page, such as opengraph.xyz, where they showed as a broken image.
+
+### Behind the scenes
+
 - The review agent that checks changes against the project's conventions can only read: a guard lets it run nothing but
   git and GitHub read commands (including searching the code), one at a time. It starts with the project guide loaded,
   flags fewer things to double-check, and opens its report with a one-line verdict.
