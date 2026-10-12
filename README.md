@@ -59,10 +59,11 @@ Local runs use the production API, so player lookups show up in the live "Global
 
 ## Contributing
 
-Before pushing, run the same checks as CI:
+Before pushing, run the same checks as CI (lint, Prettier, the tests and a production build, all at once, reporting
+every failure):
 
 ```bash
-npx ng build --configuration production && npx ng lint && npm run prettier:ci && npx ng test --watch=false
+.claude/skills/verify/verify.sh
 ```
 
 CI builds with `npm run build` instead, which also regenerates the sitemaps and icons and optimises chunks, so a build
