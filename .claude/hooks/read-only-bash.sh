@@ -5,8 +5,8 @@
 cmd=$(jq -r '.tool_input.command // empty')
 
 case $cmd in
-  *';'* | *'&'* | *'|'* | *'>'* | *'<'* | *'$('* | *'`'* | *$'\n'* | *--output*)
-    echo 'Read-only reviewer: one plain git or gh read command per call (no chaining, pipes, redirects or --output).' >&2
+  *';'* | *'&'* | *'|'* | *'>'* | *'<'* | *'$('* | *'`'* | *$'\n'* | *--output* | *--upload-pack* | *--exec*)
+    echo 'Read-only reviewer: one plain git or gh read command per call (no chaining, pipes, redirects, --output, --upload-pack or --exec).' >&2
     exit 2
     ;;
 esac
