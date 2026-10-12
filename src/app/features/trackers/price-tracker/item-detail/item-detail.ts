@@ -202,13 +202,8 @@ export default class ItemDetail implements OnInit {
         .replace(/ minutes? /, ' min ')
         .replace(/ hours? /, ' hr ');
       const { value: text, tip } = amount(value, 'gp');
-      return {
-        label,
-        info,
-        value: text,
-        sub: `Last trade ${short}`,
-        tip: [tip, `Last trade was ${ago}.`].join(' ').trim(),
-      };
+      const lastTrade = `Last trade was ${ago}.`;
+      return { label, info, value: text, sub: `Last trade ${short}`, tip: tip ? `${tip} ${lastTrade}` : lastTrade };
     };
 
     const high = latest?.high;
@@ -243,8 +238,8 @@ export default class ItemDetail implements OnInit {
       {
         label: 'High alch',
         info: 'Coins received from casting High Level Alchemy on the item.',
-        ...(item.highalch ? amount(item.highalch, 'coins') : { value: '–' }),
-        sub: item.highalch ? `Low alch ${formatWhole(item.lowalch ?? 0)}` : "Can't be alched for coins",
+        ...(item.highalch ? amount(item.highalch, 'gp') : { value: '–' }),
+        sub: item.highalch ? `Low alch ${formatWholeCompact(item.lowalch ?? 0)}` : "Can't be alched for coins",
       },
     ];
   });
