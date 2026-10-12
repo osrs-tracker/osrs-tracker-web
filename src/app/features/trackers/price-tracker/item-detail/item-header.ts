@@ -9,9 +9,9 @@ import { PriceTrackerStore } from '../price-tracker-store';
 import { formatWhole } from './item-prices';
 
 /**
- * The item page's header: icon tile, the name (to the OSRS Wiki), the examine text, the instant
- * sell price with its change since yesterday's 24-hour average, and the favourite star beside it. On phones the price
- * and star move below the name, so a long name gets the full width.
+ * The item page's header: icon tile, the name (to the OSRS Wiki), the examine text, the instant sell price with its
+ * change since yesterday's 24-hour average, and the favourite star beside it. On phones the price and star move below
+ * the name, so a long name gets the full width.
  */
 @Component({
   selector: 'header[item-header]',
@@ -25,17 +25,17 @@ import { formatWhole } from './item-prices';
 
     <div class="flex flex-col gap-1.5 flex-1 basis-0 min-w-0 sm:basis-65">
       <!-- The name links to the wiki, as the player page's name links to the hiscores. Inline, so the icon follows the
-           last word when a long name wraps: the word joiner keeps them together, and the top margin centres the icon on
-           the line (24px, 36px from sm). -->
+           last word when a long name wraps: the word joiner keeps them together (outside the h1, so copying the name
+           leaves it out; prettier-ignore, as a line break around it would let them part), and the top margin centres
+           the icon on the line (24px, 36px from sm). -->
+      <!-- prettier-ignore -->
       <a
-        class="text-2xl/none sm:text-4xl/none font-bold text-strong hover:text-accent"
+        class="self-start text-2xl/none sm:text-4xl/none font-bold text-strong hover:text-accent"
         [href]="wikiUrl()"
         target="_blank"
         rel="noopener"
         title="Open on the OSRS Wiki"
-      >
-        <h1 class="inline">{{ item().name }}&#8288;</h1>
-        <svg
+      ><h1 class="inline">{{ item().name }}</h1>&#8288;<svg
           class="inline size-4.5 ml-2.5 mt-0.75 align-top text-muted sm:mt-2.25"
           viewBox="0 0 24 24"
           fill="none"
