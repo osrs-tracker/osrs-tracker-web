@@ -62,6 +62,7 @@
     "@osrs-tracker/hiscores": "^4.1.0",
     "@osrs-tracker/logger": "^0.2.0",
     "@osrs-tracker/models": "^2.2.0",
+    "@resvg/resvg-wasm": "~2.6.2",
     "chart.js": "^4.5.1",
     "chartjs-adapter-date-fns": "^3.0.0",
     "chartjs-plugin-annotation": "^3.1.0",
@@ -71,6 +72,7 @@
     "isbot": "^5.2.2",
     "marked": "^18.0.14",
     "rxjs": "~7.8.2",
+    "satori": "^0.32.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {

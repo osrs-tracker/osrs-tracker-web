@@ -1,5 +1,7 @@
 ## 2026/10/12
 
+- Shared item links show a large preview card with the item's icon, name, examine text, buy limit and alch values,
+  instead of the small OSRS Tracker icon, so each item is recognisable in Discord, Reddit and chat apps.
 - The review agent that checks changes against the project's conventions can only read: a guard lets it run nothing but
   git and GitHub read commands (including searching the code), one at a time. It starts with the project guide loaded,
   flags fewer things to double-check, and opens its report with a one-line verdict.

@@ -1,7 +1,7 @@
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
 import { wikiIconUrl } from '@app/common/icon/icon';
-import { ICON_IMAGE, PageMeta } from '@app/common/seo/page-meta-strategy';
+import { PageImage, PageMeta } from '@app/common/seo/page-meta-strategy';
 import { breadcrumbList, webPage } from '@app/common/seo/structured-data';
 import { formatWhole } from './item-prices';
 
@@ -26,7 +26,7 @@ export function itemTitle(item: Item): string {
 
 /**
  * From the item alone, so it doesn't depend on the Wiki's prices, and without a live price: search engines show a
- * snippet for days. The image is the app icon, as the Wiki's icons are below the 144px a `summary` card needs.
+ * snippet for days. The image is the item's preview card, which the server draws (`src/server/routers/og-images.ts`).
  * The structured data describes the item as a `Thing`, never a `Product` or `Offer`: nothing is sold here.
  */
 export function itemPageMeta(item: Item): PageMeta {
@@ -36,8 +36,8 @@ export function itemPageMeta(item: Item): PageMeta {
     title: itemTitle(item),
     description,
     canonicalPath,
-    image: ICON_IMAGE,
-    card: 'summary',
+    image: itemImage(item),
+    card: 'summary_large_image',
     jsonLd: [
       breadcrumbList([
         { name: 'Price Tracker', path: '/trackers/price' },
@@ -51,6 +51,14 @@ export function itemPageMeta(item: Item): PageMeta {
       }),
     ],
   };
+}
+
+/**
+ * The item's link preview card: its icon, name and static facts, never a price, as chat apps keep a preview for weeks.
+ * `?v=` busts the caches of shared links when the card's design changes.
+ */
+function itemImage(item: Item): PageImage {
+  return { url: `/og/item/${item.id}.png?v=1`, width: 1200, height: 630, alt: item.name };
 }
 
 /**

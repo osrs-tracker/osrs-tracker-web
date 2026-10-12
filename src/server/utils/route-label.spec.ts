@@ -60,4 +60,9 @@ describe('routeLabel', () => {
     expect(label('/sitemap-items.xml')).toBe('/sitemap-items.xml');
     expect(label('/sitemap-site.xml')).toBe('/static');
   });
+
+  it('labels the item link preview images by template, and a non-numeric id stays unmatched', () => {
+    expect(label('/og/item/4151.png?v=1')).toBe('/og/item/:id.png');
+    expect(label('/og/item/abc.png', 404)).toBe('#unmatched');
+  });
 });
