@@ -1,3 +1,8 @@
+## 2026/10/13
+
+- An item's daily volume covers the last week instead of two weeks. Item prices and charts now come from version 2 of
+  the OSRS Wiki's prices API, as the Wiki asks, which serves the price history from its cache instead of its database.
+
 ## 2026/10/12
 
 ### Item pages

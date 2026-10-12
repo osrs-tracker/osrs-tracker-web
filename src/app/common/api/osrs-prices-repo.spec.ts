@@ -54,7 +54,7 @@ describe('OsrsPricesRepo', () => {
       repo.getLatestPrices(4151).subscribe(price => prices.push(price.high));
       repo.getLatestPrices(561).subscribe(price => prices.push(price.high));
 
-      const req = httpTesting.expectOne(`${config.pricesBaseUrl}/api/v1/osrs/latest`);
+      const req = httpTesting.expectOne(`${config.pricesBaseUrl}/latest`);
       expect(req.request.transferCache).toBe(false);
       expect(req.request.context.get(SSR_TIMEOUT)).toBe(true);
       req.flush({ data: { 4151: { high: 1_500_000 }, 561: { high: 100 }, 995: { high: 1 } } });
@@ -67,7 +67,7 @@ describe('OsrsPricesRepo', () => {
 
     it('keeps the full list for every render for 60 seconds', () => {
       repo.getLatestPrices(4151).subscribe();
-      httpTesting.expectOne(`${config.pricesBaseUrl}/api/v1/osrs/latest`).flush({ data: { 4151: { high: 1 } } });
+      httpTesting.expectOne(`${config.pricesBaseUrl}/latest`).flush({ data: { 4151: { high: 1 } } });
 
       vi.setSystemTime(Date.now() + 59_000);
       let high: number | undefined;
@@ -77,7 +77,7 @@ describe('OsrsPricesRepo', () => {
 
       vi.setSystemTime(Date.now() + 1_000);
       repo.getLatestPrices(4151).subscribe();
-      httpTesting.expectOne(`${config.pricesBaseUrl}/api/v1/osrs/latest`);
+      httpTesting.expectOne(`${config.pricesBaseUrl}/latest`);
     });
   });
 
@@ -97,6 +97,6 @@ describe('OsrsPricesRepo', () => {
 
     await TestBed.inject(ApplicationRef).whenStable();
     repo.getLatestPrices(4151).subscribe();
-    httpTesting.expectOne(`${config.pricesBaseUrl}/api/v1/osrs/latest`);
+    httpTesting.expectOne(`${config.pricesBaseUrl}/latest`);
   });
 });
