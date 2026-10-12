@@ -172,8 +172,11 @@ the angular.dev docs for the installed major version.
 - **Icons**: after changing `public/assets/icons/{skills,activities}`, run `npm run icons` and commit
   `local-icons.generated.ts`.
 - **Font**: SOLIX comes from the private [FreekMencke/solix](https://github.com/FreekMencke/solix) releases
-  (`gh release download -R FreekMencke/solix`); copy `variable/SOLIX-Variable.woff2` to `public/assets/fonts` and bump
-  `?v=` in `base.css` and `index.html`.
+  (`gh release download -R FreekMencke/solix`). Cut `variable/SOLIX-Variable.ttf` to the weights the `@font-face`
+  declares (`python3 -m fontTools.varLib.instancer SOLIX-Variable.ttf wght=300:700 -o cut.ttf`; since 3.00 the release
+  spans 100–900, and the full axis makes the preloaded file 62 KB instead of 38 KB), save it as WOFF2
+  (`python3 -m fontTools.ttLib.woff2 compress cut.ttf -o public/assets/fonts/SOLIX-Variable.woff2`) and bump `?v=` in
+  `base.css` and `index.html`. The link preview card has its own copies of the font (`docs/decisions.md`).
 - **Missing assets**: `middleware/missing-asset.ts` answers paths ending in a build asset extension (`.js`, `.css`,
   `.woff2`…) with a 404 after `express.static`, before Angular, as some crawlers resolve the asset links against the
   page path. No route may end in one of those extensions.
