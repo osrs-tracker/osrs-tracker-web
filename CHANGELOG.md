@@ -28,7 +28,8 @@
 - Back after a break? "Since you last played" on the news page shows only the posts after a day you pick on a calendar,
   so you can catch up on what changed; a year dropdown in the calendar jumps straight back to the year you stopped. The
   day is in the link, so it can be shared, and this device remembers it: from then on the Game menu has a link straight
-  to the news since that day, above "Latest news".
+  to the news since that day, above "Latest news". Clearing the day on the news page forgets it again, and takes the
+  link out of the Game menu.
 
 ### Privacy
 
