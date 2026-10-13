@@ -1,4 +1,4 @@
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, Location } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
@@ -13,6 +13,7 @@ import {
   inject,
   input,
   linkedSignal,
+  signal,
   untracked,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -20,6 +21,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HiscoreSkill, overallOf, Player } from '@osrs-tracker/models';
 import { EMPTY, catchError } from 'rxjs';
 import { LoadError } from '@app/common/ui/loading/load-error';
+import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { StatTile } from '@app/common/ui/cards/stat-tile';
 import { StatusPanel } from '@app/common/ui/page/status-panel';
 import { localIcons } from '@app/common/icon/local-icons.generated';
@@ -36,6 +38,7 @@ import { ActivitiesCard } from './hiscores/activities-card';
 import { ModeRanks } from './hiscores/mode-ranks';
 import { SkillsCard } from './hiscores/skills-card';
 import { PlayerChart } from './charts/player-chart';
+import { CompareDays } from './compare/compare-days';
 import { PlayerHeader, TrackingState } from './player-header';
 import { playerHistory, PlayerHistory } from './player-history';
 import { LogNotice, PlayerLogs } from './player-logs';
@@ -43,17 +46,26 @@ import { StatTileView, statTilesFor } from './stat-tiles';
 import { Gains, PeriodSummary, dailyGains, periodStart, periodSummary, totalGains } from './player-summary';
 import { PlayerView } from './player-view';
 
+type LogView = 'days' | 'compare';
+
+const LOG_VIEWS: SegmentedOption<LogView>[] = [
+  { value: 'days', label: 'Days' },
+  { value: 'compare', label: 'Compare' },
+];
+
 @Component({
   selector: 'player-detail',
   templateUrl: './player-detail.html',
   imports: [
     ActivitiesCard,
     CapitalizePipe,
+    CompareDays,
     LoadError,
     PlayerChart,
     PlayerHeader,
     PlayerLogs,
     RouterLink,
+    Segmented,
     SkillsCard,
     StatTile,
     StatusPanel,
@@ -77,7 +89,19 @@ export default class PlayerDetail implements OnInit {
   private readonly responseInit = inject(RESPONSE_INIT, { optional: true });
   readonly playerView = inject(PlayerView);
 
-  readonly username: string = inject(ActivatedRoute).snapshot.params['username'];
+  private readonly route = inject(ActivatedRoute);
+  readonly username: string = this.route.snapshot.params['username'];
+  private readonly location = inject(Location);
+
+  readonly logViews: SegmentedOption<LogView>[] = LOG_VIEWS;
+  /** The day log, or two days compared in its place; a shared link with picked days opens the comparison */
+  readonly logView: WritableSignal<LogView> = signal(this.route.snapshot.queryParamMap.has('day') ? 'compare' : 'days');
+  /** Once opened, the comparison stays (hidden on Days), so going back to it keeps the picks and loads nothing again */
+  readonly compareOpened: WritableSignal<boolean> = signal(this.logView() === 'compare');
+  /** Compare is shown in the day log's place; a new player's single day has nothing to compare */
+  readonly comparing: Signal<boolean> = computed(
+    () => this.logView() === 'compare' && this.history.entries().length > 1,
+  );
   readonly #pageErrorHandler = resolverErrorHandler('/trackers/xp/' + this.username);
 
   /** `null` when there's no such player */
@@ -227,6 +251,23 @@ export default class PlayerDetail implements OnInit {
   loadMoreDays(): void {
     this.history.loadMore();
     this.analyticsService.trackEvent('load_more_days');
+  }
+
+  /** Days or Compare; back to Days takes the picked days out of the URL, so a reload or a copied link shows the days */
+  setLogView(view: LogView): void {
+    this.logView.set(view);
+    this.analyticsService.trackOption('log_view', view);
+    if (view === 'compare') this.compareOpened.set(true);
+    // the URL as the browser has it: the router never saw the picks
+    if (view === 'days' && this.router.parseUrl(this.location.path()).queryParamMap.has('day')) {
+      const url = this.router.createUrlTree([], {
+        relativeTo: this.route,
+        queryParams: { day: null, vs: null },
+        queryParamsHandling: 'merge',
+      });
+      // as the compare card writes them: without navigating, keeping the router's state
+      this.location.replaceState(this.router.serializeUrl(url), '', this.location.getState());
+    }
   }
 
   /** The stale hiscores notice's Try again */

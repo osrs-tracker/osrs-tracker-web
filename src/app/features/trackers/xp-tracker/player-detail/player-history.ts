@@ -20,7 +20,7 @@ import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 const DEFAULT_SIZE = 8;
 const MORE_SIZE = 7;
 /** The history is kept for about 90 days, so 90 days and today is all there is */
-const PERIOD_SIZE = 91;
+export const PERIOD_SIZE = 91;
 
 interface Page {
   entries: HiscoreEntry[];

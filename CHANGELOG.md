@@ -42,6 +42,11 @@
   word.
 - Player pages have a 90D period, as OSRS Tracker now keeps 90 days of stats instead of 60. The history fills up from
   today: until 12 November, 90D shows the gains since the oldest day kept.
+- Player pages can compare any two days in the history, or show the stats on a single day. Compare, beside Days above
+  the day log, shows in its place what each skill and activity gained between the two days, biggest first, with the XP
+  and levels gained in total; "Show all stats" lists every level, XP, score and rank, and how many places each rank
+  moved. Only days with a stored check can be picked, so a day the check missed is skipped. The days picked are in the
+  link, so a comparison can be shared, and the history loads only once Compare is opened.
 - Player pages respond sooner after they load, especially on phones: the charts are drawn just after the page comes
   alive instead of during it, the skills, bosses and raids card starts up a moment later, and on phones the clues and
   minigames card and the day log only start up once you scroll to them. Item pages benefit from the chart change too.
