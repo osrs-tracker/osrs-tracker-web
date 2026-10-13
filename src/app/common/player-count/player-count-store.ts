@@ -61,8 +61,8 @@ export const PlayerCountStore = signalStore(
 
     return {
       /**
-       * Refreshes every minute while the tab is visible, and on coming back to the tab after a missed minute; stops when
-       * the last `watch`er is destroyed. Browser only.
+       * Refreshes every minute while the tab is visible, and on coming back to the tab after a missed minute; stops
+       * when the last `watch`er is destroyed. Browser only.
        */
       _refreshes: defer(() => {
         const document = window!.document;
@@ -89,8 +89,8 @@ export const PlayerCountStore = signalStore(
   withMethods(store => ({
     /**
      * For a component that shows the count while it's on screen: loads both counts (also during SSR; on hydration they
-     * come from the transfer cache), or refreshes them if they loaded earlier (the Game menu's card), then refreshes as `_refreshes` describes
-     * until the component is destroyed. `onRefresh` runs with each refresh after the first.
+     * come from the transfer cache), or refreshes them if they loaded earlier (the Game menu's card), then refreshes
+     * as `_refreshes` describes until the component is destroyed. `onRefresh` runs with each of those refreshes.
      */
     watch(onRefresh?: () => void): void {
       const destroyRef = inject(DestroyRef);
