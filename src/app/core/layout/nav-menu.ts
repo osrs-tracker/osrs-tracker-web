@@ -21,7 +21,7 @@ import { filter, map } from 'rxjs';
  */
 export const NAV_TAB =
   'relative flex grow items-center justify-center gap-1 max-sm:min-h-11 whitespace-nowrap max-xs:text-sm font-bold ' +
-  'hover:text-accent-hover current:text-accent max-sm:current:after:absolute max-sm:current:after:inset-x-0 ' +
+  'sm:hover:text-accent-hover current:text-accent max-sm:current:after:absolute max-sm:current:after:inset-x-0 ' +
   'max-sm:current:after:-bottom-1.5 max-sm:current:after:h-0.5 max-sm:current:after:rounded-xs ' +
   'max-sm:current:after:bg-accent';
 
