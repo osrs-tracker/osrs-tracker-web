@@ -20,6 +20,8 @@
 - An item's daily volume covers the last week instead of two weeks. Item prices and charts now come from version 2 of
   the OSRS Wiki's prices API, as the Wiki asks, which serves the price history from its cache instead of its database.
   The monthly check of the GE tax rules uses version 2 too.
+- Item pages in search results lead with the item: the title names its price, high alch and buy limit (for example
+  "Abyssal whip - OSRS price, high alch and buy limit"), and the description starts with the item's examine text.
 
 ### Behind the scenes
 
