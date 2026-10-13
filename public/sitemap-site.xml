@@ -91,8 +91,11 @@
     <loc>https://osrs-tracker.freekmencke.com/trackers/xp</loc>
   </url>
   <url>
+    <loc>https://osrs-tracker.freekmencke.com/players-online</loc>
+  </url>
+  <url>
     <loc>https://osrs-tracker.freekmencke.com/about/changelog</loc>
-    <lastmod>2026-10-13T18:53:52+02:00</lastmod>
+    <lastmod>2026-10-13T19:19:09+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/about/privacy</loc>
