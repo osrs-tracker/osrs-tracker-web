@@ -15,6 +15,7 @@ import { ConsentService } from '@app/common/analytics/consent-service';
       class="flex flex-col gap-4 p-5 rounded-2xl border border-line bg-card shadow-float outline-none"
       aria-labelledby="consent-heading"
       tabindex="-1"
+      data-nosnippet
     >
       <div class="flex items-center gap-3">
         <span
@@ -67,11 +68,7 @@ import { ConsentService } from '@app/common/analytics/consent-service';
       </div>
     </section>
   `,
-  host: {
-    'class': 'fixed z-50 bottom-4 inset-x-4 sm:bottom-6 sm:left-6 sm:right-auto sm:w-100',
-    // In every page's HTML, so search results never quote it
-    'data-nosnippet': '',
-  },
+  host: { class: 'fixed z-50 bottom-4 inset-x-4 sm:bottom-6 sm:left-6 sm:right-auto sm:w-100' },
   imports: [RouterLink],
 })
 export class ConsentBanner {
