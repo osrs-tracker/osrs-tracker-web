@@ -1,7 +1,5 @@
 ## 2026/10/13
 
-- On iPhones in Brave, the menu no longer slides under the Dynamic Island after refreshing a page, which also kept the
-  page from scrolling up until it had been scrolled down first.
 - Shared player links show a large preview card in Discord, Reddit and chat apps instead of the small OSRS Tracker icon:
   the player's account type, name, combat level, total level and XP, and every skill level as in the game's stats tab,
   with 99s in gold. The card says which day the stats are from, as apps keep a preview for weeks.
