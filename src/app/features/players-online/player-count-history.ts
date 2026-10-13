@@ -26,13 +26,14 @@ const HOUR = 3_600_000;
 const DAY = 24 * HOUR;
 
 /** Each range's name, how far back it reaches and how late its first point may be before it counts as incomplete */
-const RANGES: Record<PlayerCountRange, { label: string; title: string; span?: number; slack?: number }> = {
-  '24h': { label: '24h', title: 'the last 24 hours', span: DAY, slack: HOUR },
-  '7d': { label: '7D', title: 'the last 7 days', span: 7 * DAY, slack: HOUR },
-  '30d': { label: '30D', title: 'the last 30 days', span: 30 * DAY, slack: 2 * HOUR },
-  '1y': { label: '1Y', title: 'the last year', span: 365 * DAY, slack: 2 * DAY },
-  'all': { label: 'All', title: 'all time' },
-};
+const RANGES: Record<PlayerCountRange, { label: string; title: string; name: string; span?: number; slack?: number }> =
+  {
+    '24h': { label: '24h', title: 'Last 24 hours', name: 'the last 24 hours', span: DAY, slack: HOUR },
+    '7d': { label: '7D', title: 'Last 7 days', name: 'the last 7 days', span: 7 * DAY, slack: HOUR },
+    '30d': { label: '30D', title: 'Last 30 days', name: 'the last 30 days', span: 30 * DAY, slack: 2 * HOUR },
+    '1y': { label: '1Y', title: 'Last year', name: 'the last year', span: 365 * DAY, slack: 2 * DAY },
+    'all': { label: 'All', title: 'All time', name: 'all time' },
+  };
 
 const isDaily = (range: PlayerCountRange) => range === '1y' || range === 'all';
 const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
@@ -85,10 +86,12 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
           <p
             class="flex items-center justify-center h-56 sm:h-70 p-6 rounded-xl border border-dashed border-line text-center text-muted"
           >
-            @if (series.points.length) {
+            @if (!series.points.length) {
+              No players counted yet.
+            } @else if (daily()) {
               Daily averages start once {{ firstDay() }} is complete. Pick 24h or 7D for today's counts.
             } @else {
-              No players counted yet.
+              Only one count so far. The chart starts with the next one, 10 minutes later.
             }
           </p>
         }
@@ -123,7 +126,7 @@ export class PlayerCountHistory {
   readonly locationOrder: InputSignal<readonly string[]> = input.required();
 
   readonly rangeOptions: SegmentedOption<PlayerCountRange>[] = (Object.keys(RANGES) as PlayerCountRange[]).map(
-    range => ({ value: range, label: RANGES[range].label, title: RANGES[range].title.replace(/^the l/, 'L') }),
+    range => ({ value: range, label: RANGES[range].label, title: RANGES[range].title }),
   );
   readonly range: WritableSignal<PlayerCountRange> = signal('24h');
   readonly daily: Signal<boolean> = computed(() => isDaily(this.range()));
@@ -174,7 +177,8 @@ export class PlayerCountHistory {
       : isYesterday(peak.date)
         ? `at ${time} yesterday`
         : `on ${format(peak.date, 'EEEE d MMMM')} at ${time}`;
-    return { label: 'Peak', value, when };
+    // 30D's points are hourly averages: its peak is the busiest hour's
+    return { label: this.range() === '30d' ? 'Busiest hour' : 'Peak', value, when };
   });
 
   /** When counting started, if that's within the range */
@@ -189,7 +193,7 @@ export class PlayerCountHistory {
     const points = this.series()?.points ?? [];
     const totals = points.map(point => point.total);
     return (
-      `Players online over ${RANGES[this.range()].title}, between ${fmt(Math.min(...totals))} and ` +
+      `Players online over ${RANGES[this.range()].name}, between ${fmt(Math.min(...totals))} and ` +
       `${fmt(Math.max(...totals))}; now ${fmt(totals.at(-1) ?? 0)}`
     );
   });
