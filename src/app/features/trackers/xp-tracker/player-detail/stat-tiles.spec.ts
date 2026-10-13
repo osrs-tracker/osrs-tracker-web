@@ -2,6 +2,7 @@ import { HiscoreSkill } from '@osrs-tracker/models';
 import { describe, expect, it } from 'vitest';
 import { statTilesFor } from './stat-tiles';
 import { PeriodSummary } from './player-summary';
+import { Period } from './player-view';
 
 const overall: HiscoreSkill = { xp: 200_000_000, level: 2277, rank: 12_345 };
 
@@ -14,7 +15,7 @@ const summary = (xp: number, previousXp?: number, extra: Partial<PeriodSummary> 
 });
 
 /** The XP tile's comparison line and tone */
-const comparison = (s: PeriodSummary, period: 7 | 30 | 60 = 7): { sub: string; tone: string } => {
+const comparison = (s: PeriodSummary, period: Period = 7): { sub: string; tone: string } => {
   const { sub, tone } = statTilesFor(overall, s, period)[1];
   return { sub, tone };
 };
@@ -28,7 +29,7 @@ describe('statTilesFor', () => {
 
   it('says when the period before gained nothing', () => {
     expect(comparison(summary(100, 0))).toEqual({ sub: 'None the week before', tone: 'muted' });
-    expect(comparison(summary(0, 0), 60)).toEqual({ sub: 'None the 60 days before either', tone: 'muted' });
+    expect(comparison(summary(0, 0), 30)).toEqual({ sub: 'None the 30 days before either', tone: 'muted' });
   });
 
   it("doesn't compare when the history doesn't cover the period before", () => {

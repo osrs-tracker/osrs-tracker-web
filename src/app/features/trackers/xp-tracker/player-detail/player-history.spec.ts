@@ -4,6 +4,7 @@ import { Injector, PLATFORM_ID, provideZonelessChangeDetection, runInInjectionCo
 import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { playerHistory, PlayerHistory } from './player-history';
+import { Period } from './player-view';
 
 /** `count` stored entries at `offset`, a day apart */
 const entries = (count: number, offset: number): object[] =>
@@ -24,6 +25,7 @@ const settle = async (): Promise<void> => {
 describe('playerHistory', () => {
   let httpTesting: HttpTestingController;
   const offset = signal(0);
+  const period = signal<Period>(7);
   let history: PlayerHistory;
 
   const page = (scrapingOffset: number, skip: number, size?: number): TestRequest =>
@@ -49,8 +51,9 @@ describe('playerHistory', () => {
     });
     httpTesting = TestBed.inject(HttpTestingController);
     offset.set(0);
+    period.set(7);
     history = runInInjectionContext(TestBed.inject(Injector), () =>
-      playerHistory({ username: 'zezima', offset, enabled: signal(true), period: signal(7) }),
+      playerHistory({ username: 'zezima', offset, enabled: signal(true), period }),
     );
     TestBed.tick();
   });
@@ -145,6 +148,31 @@ describe('playerHistory', () => {
 
     expect(history.previousPeriodFailed()).toBe(false);
     expect(history.comparedEntries()).toHaveLength(9);
+    httpTesting.verify();
+  });
+
+  // The history holds 90 days: 90D loads them all, and only 7D and 30D have a whole period before to compare with
+  it('loads what a longer period needs, and the period before only where the history covers it', async () => {
+    page(0, 0, 8).flush(entries(8, 0));
+    previousWeekStart(0).flush([]);
+    await settle();
+
+    period.set(90);
+    await settle();
+    expect(history.periodLoaded()).toBe(false);
+    page(0, 8, 83).flush(entries(91, 0).slice(8));
+    await settle();
+    expect(history.periodLoaded()).toBe(true);
+    expect(history.entries()).toHaveLength(91);
+
+    period.set(30);
+    await settle();
+    page(0, 60, 1).flush(entries(61, 0).slice(60));
+    await settle();
+
+    period.set(60);
+    await settle();
+    expect(history.periodLoaded()).toBe(true);
     httpTesting.verify();
   });
 });

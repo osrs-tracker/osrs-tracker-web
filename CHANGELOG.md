@@ -22,6 +22,8 @@
   The monthly check of the GE tax rules uses version 2 too.
 - Item pages in search results lead with the item: the title says the page has its price, high alch and buy limit
   ("Abyssal whip - OSRS price, high alch and buy limit"), and the description starts with the item's examine text.
+- Player pages have a 90D period, as OSRS Tracker now keeps 90 days of stats instead of 60. The history fills up from
+  today: until 12 November, 90D shows the gains since the oldest day kept.
 - Player pages respond sooner after they load, especially on phones: the charts are drawn just after the page comes
   alive instead of during it, and on phones the clues and minigames card and the day log only start up once you scroll
   to them. Item pages benefit from the chart change too.

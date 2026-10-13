@@ -90,7 +90,7 @@ export class XpGainedChart extends BaseChart<'line', Gains[]> {
       datasets: {
         line: {
           borderWidth: 2.5,
-          // a point per day while they fit; 30 and 60 days only show the one under the cursor
+          // a point per day while they fit; longer periods only show the one under the cursor
           pointRadius: context => ((context.dataset.data as Point[]).length > MAX_POINTS ? 0 : 4),
           pointHoverRadius: 6,
           pointBorderWidth: 2.5,

@@ -75,7 +75,7 @@ export function statTilesFor(
   ];
 }
 
-/** Compared with the period before it, e.g. "+24% vs previous week"; 60 days back is as far as the history goes */
+/** Compared with the period before it, e.g. "+24% vs previous week"; 90 days back is as far as the history goes, so only 7D and 30D compare */
 function periodComparison(summary: PeriodSummary, period: Period): Pick<StatTileView, 'sub' | 'tone'> {
   const { xp, previousXp } = summary;
   const previous = period === 7 ? 'week' : `${period} days`;
