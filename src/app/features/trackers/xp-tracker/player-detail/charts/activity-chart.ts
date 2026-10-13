@@ -2,7 +2,7 @@ import { formatNumber } from '@angular/common';
 import { DOCUMENT, Component, computed, inject, input, InputSignal, Signal } from '@angular/core';
 import { Chart, ChartOptions, Point } from 'chart.js';
 import { merge } from 'chart.js/helpers';
-import { BaseChart } from '../../../charts/base-chart';
+import { BaseChart } from '@app/common/charts/base-chart';
 import { LOCAL_ICONS } from '@app/common/icon/local-icons-token';
 import { chartColors } from '../colors/chart-colors';
 import { Gains } from '../player-summary';

@@ -24,6 +24,18 @@ export default [
         loadChildren: () => import('./features/trackers/trackers.routes'),
       },
       {
+        path: 'players-online',
+        title: 'Players online - OSRS Tracker',
+        data: {
+          meta: {
+            description:
+              'How many people are playing Old School RuneScape right now, per world location, and the player count over the last day, week, month and year.',
+            canonicalPath: '/players-online',
+          } satisfies PageMeta,
+        },
+        loadComponent: () => import('./features/players-online/players-online'),
+      },
+      {
         path: 'about',
         pathMatch: 'prefix',
         loadChildren: () => import('./features/about/about.routes'),

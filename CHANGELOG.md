@@ -1,5 +1,14 @@
 ## 2026-10-13
 
+### Players online
+
+- A new page, [Players online](https://osrs-tracker.freekmencke.com/players-online), shows how many people are playing
+  Old School RuneScape right now: the count, the split between members and free-to-play, and the players on each
+  country's worlds, with the flags from the game's World Select. Below it, a chart shows the count over the last day,
+  week, month, year or all time, with the busiest moment of each range. Hovering the chart shows the count at that
+  moment, per country and split by members. The count comes from the game's world list every 10 minutes, so it starts on
+  13 October 2026 and the longer ranges fill in from there.
+
 ### Privacy
 
 - Google Analytics only runs if you allow it. A banner asks once, with two equal buttons, Allow and Don't allow, and
@@ -47,6 +56,7 @@
 - Changes go through GitHub's merge queue, which tests each one on top of the latest version and the changes queued
   ahead of it before merging. Ready changes no longer wait to be updated and retested by hand after every other merge,
   so they go live sooner.
+- The chart code moved to the shared code, so pages outside the trackers can draw charts too.
 
 ## 2026-10-12
 
