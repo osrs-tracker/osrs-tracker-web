@@ -16,6 +16,7 @@ import { format } from 'date-fns';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
+import { everyMinute } from './every-minute';
 import { PlayerCountHistory } from './player-count-history';
 import { formatShare, LocationCount, locationCounts } from './world-locations';
 
@@ -78,5 +79,6 @@ export default class PlayersOnline {
 
   constructor() {
     afterNextRender(() => this.hydrated.set(true));
+    everyMinute(() => this.latest.reload());
   }
 }

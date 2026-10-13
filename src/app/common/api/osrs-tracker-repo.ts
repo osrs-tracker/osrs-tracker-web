@@ -152,17 +152,20 @@ export class OsrsTrackerRepo {
   // Player counts
   //
 
+  // The player counts revalidate with the API (a 304 when unchanged) instead of using the browser cache's copy, which
+  // the API's `max-age=300` keeps for 5 minutes, so the page's refresh every minute sees a new sample
+
   /** The newest sample of the players online, taken every 10 minutes */
   getLatestPlayerCount(): Observable<PlayerCount> {
     return this.httpClient
-      .get<PlayerCount>('/player-counts/latest')
+      .get<PlayerCount>('/player-counts/latest', { cache: 'no-cache' })
       .pipe(map(playerCount => ({ ...playerCount, date: new Date(playerCount.date) })));
   }
 
   /** The players online over `range`, oldest first */
   getPlayerCountHistory(range: PlayerCountRange): Observable<PlayerCountPoint[]> {
     return this.httpClient
-      .get<PlayerCountPoint[]>('/player-counts', { params: { range } })
+      .get<PlayerCountPoint[]>('/player-counts', { params: { range }, cache: 'no-cache' })
       .pipe(map(points => points.map(point => ({ ...point, date: new Date(point.date) }))));
   }
 

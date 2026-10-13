@@ -20,6 +20,7 @@ import { Card } from '@app/common/ui/cards/card';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
+import { everyMinute } from './every-minute';
 import { lineName, PlayerCountChart, PlayerCountSeries } from './player-count-chart';
 
 const HOUR = 3_600_000;
@@ -144,10 +145,13 @@ export class PlayerCountHistory {
         ),
   });
 
-  readonly loading: Signal<boolean> = computed(() => !this.isBrowser || this.history.isLoading());
+  // A refresh keeps the drawn chart until its points arrive: only a first load, a new range or a retry shows skeletons
+  readonly loading: Signal<boolean> = computed(
+    () => !this.isBrowser || (this.history.isLoading() && !this.history.hasValue()),
+  );
 
   readonly series: Signal<PlayerCountSeries | undefined> = computed(() =>
-    this.history.hasValue() && !this.history.isLoading()
+    this.history.hasValue()
       ? { range: this.range(), points: this.history.value()!, locationOrder: this.locationOrder() }
       : undefined,
   );
@@ -197,6 +201,10 @@ export class PlayerCountHistory {
       `${fmt(Math.max(...totals))}; now ${fmt(totals.at(-1) ?? 0)}`
     );
   });
+
+  constructor() {
+    everyMinute(() => this.history.reload());
+  }
 
   selectRange(range: PlayerCountRange): void {
     this.range.set(range);
