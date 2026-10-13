@@ -50,7 +50,8 @@
   the day log, shows in its place what each skill and activity gained between the two days, biggest first, with the XP
   and levels gained in total; "Show all stats" lists every level, XP, score and rank, and how many places each rank
   moved. The two days are picked on a calendar, where a bar under each date shows how much XP was gained by that check,
-  so the busy days are easy to find, and the days between the two picks are shaded. Only days with a stored check can be
+  so the busy days are easy to find, and the days between the two picks are shaded. Days are named by the check's UTC
+  date, so a picked day's name matches its date in the calendar wherever you are. Only days with a stored check can be
   picked, so a day the check missed is skipped. The days picked are in the link, so a comparison can be shared, and the
   history loads only once Compare is opened.
 - Player pages respond sooner after they load, especially on phones: the charts are drawn just after the page comes
