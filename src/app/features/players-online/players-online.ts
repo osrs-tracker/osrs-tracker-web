@@ -1,27 +1,16 @@
-import { DecimalPipe, isPlatformBrowser } from '@angular/common';
-import {
-  afterNextRender,
-  Component,
-  computed,
-  inject,
-  PLATFORM_ID,
-  ResourceRef,
-  Signal,
-  signal,
-  WritableSignal,
-} from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { DecimalPipe } from '@angular/common';
+import { afterNextRender, Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
 import { PlayerCount } from '@osrs-tracker/models';
 import { format } from 'date-fns';
-import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
+import { PlayerCountStore } from '@app/common/player-count/player-count-store';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { PlayerCountHistory } from './player-count-history';
 import { formatShare, LocationCount, locationCounts } from './world-locations';
 
 /**
- * The players online: the latest count, its members and free-to-play split and its world locations, rendered on the
- * server, and the history below, drawn in the browser.
+ * The players online: the count (`PlayerCountStore`: the stored sample on the server, live in the browser), its
+ * members and free-to-play split and its world locations, and the history below, drawn in the browser.
  */
 @Component({
   selector: 'players-online',
@@ -29,20 +18,17 @@ import { formatShare, LocationCount, locationCounts } from './world-locations';
   imports: [DecimalPipe, LoadError, PlayerCountHistory, Skeleton],
 })
 export default class PlayersOnline {
-  private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
-  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly hydrated: WritableSignal<boolean> = signal(false);
 
-  readonly latest: ResourceRef<PlayerCount | undefined> = rxResource({
-    stream: () => this.osrsTrackerRepo.getLatestPlayerCount(),
-  });
+  private readonly playerCountStore = inject(PlayerCountStore);
 
-  /** During SSR a failed load renders as loading, as the browser fetches it again after hydration */
-  readonly latestFailed: Signal<boolean> = computed(() => this.isBrowser && !!this.latest.error());
+  readonly count: Signal<PlayerCount | undefined> = this.playerCountStore.count;
+  readonly failed: Signal<boolean> = this.playerCountStore.failed;
 
   readonly locations: Signal<(LocationCount & { share: string; percent: number })[]> = computed(() => {
-    if (!this.latest.hasValue() || !this.latest.value()) return [];
-    const { byLocation, total } = this.latest.value()!;
+    const count = this.count();
+    if (!count) return [];
+    const { byLocation, total } = count;
     return locationCounts(byLocation).map(location => ({
       ...location,
       share: formatShare(location.players, total),
@@ -53,7 +39,7 @@ export default class PlayersOnline {
   readonly locationOrder: Signal<string[]> = computed(() => this.locations().map(location => location.key));
 
   readonly split: Signal<{ label: string; players: number; share: string; color: string }[]> = computed(() => {
-    const count = this.latest.hasValue() ? this.latest.value() : undefined;
+    const count = this.count();
     if (!count) return [];
     const players = count.members + count.f2p;
     return [
@@ -63,20 +49,24 @@ export default class PlayersOnline {
   });
 
   readonly membersPercent: Signal<number> = computed(() => {
-    const count = this.latest.hasValue() ? this.latest.value() : undefined;
+    const count = this.count();
     return count && count.members + count.f2p ? (count.members / (count.members + count.f2p)) * 100 : 0;
   });
 
-  /** The sample's time in the viewer's time zone, so only set in the browser, after hydration */
-  readonly countedAt: Signal<string | undefined> = computed(() =>
-    this.hydrated() && this.latest.hasValue() && this.latest.value()
-      ? format(this.latest.value()!.date, 'HH:mm')
-      : undefined,
-  );
+  /** The count's time in the viewer's time zone, so only set in the browser, after hydration */
+  readonly countedAt: Signal<string | undefined> = computed(() => {
+    const count = this.count();
+    return this.hydrated() && count ? format(count.date, 'HH:mm') : undefined;
+  });
 
   readonly skeletonRows: number[] = Array.from({ length: 8 }, (_, i) => i);
 
   constructor() {
     afterNextRender(() => this.hydrated.set(true));
+    this.playerCountStore.watch();
+  }
+
+  retry(): void {
+    this.playerCountStore.refresh();
   }
 }

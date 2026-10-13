@@ -152,17 +152,28 @@ export class OsrsTrackerRepo {
   // Player counts
   //
 
-  /** The newest sample of the players online, taken every 10 minutes */
+  // The browser-only requests, refreshed every minute, revalidate with the API (a 304 when unchanged) instead of using
+  // the browser cache's copy (`max-age=60` live, 300 history). Not `/latest`: SSR renders it, and the transfer cache
+  // leaves out a request with `cache: 'no-cache'`, so the browser would fetch it again on hydration
+
+  /** The newest stored sample of the players online, taken every 10 minutes */
   getLatestPlayerCount(): Observable<PlayerCount> {
     return this.httpClient
       .get<PlayerCount>('/player-counts/latest')
       .pipe(map(playerCount => ({ ...playerCount, date: new Date(playerCount.date) })));
   }
 
+  /** The players online right now, from Jagex's world list (the API keeps it for up to a minute). Browser only. */
+  getLivePlayerCount(): Observable<PlayerCount> {
+    return this.httpClient
+      .get<PlayerCount>('/player-counts/live', { cache: 'no-cache' })
+      .pipe(map(playerCount => ({ ...playerCount, date: new Date(playerCount.date) })));
+  }
+
   /** The players online over `range`, oldest first */
   getPlayerCountHistory(range: PlayerCountRange): Observable<PlayerCountPoint[]> {
     return this.httpClient
-      .get<PlayerCountPoint[]>('/player-counts', { params: { range } })
+      .get<PlayerCountPoint[]>('/player-counts', { params: { range }, cache: 'no-cache' })
       .pipe(map(points => points.map(point => ({ ...point, date: new Date(point.date) }))));
   }
 
