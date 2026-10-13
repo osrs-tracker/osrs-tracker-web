@@ -27,6 +27,7 @@ import { LOCAL_ICONS } from '@app/common/icon/local-icons-token';
 import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
 import { TimeAgoPipe } from '@app/common/format/time-ago-pipe';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
+import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { isHumanVisitor } from '@app/core/platform/human-visitor';
 import { isNotFound, resolverErrorHandler } from '@app/core/routing/resolver-error';
 import { MINIGAME_ROWS, UNCHARTED_MINIGAMES } from './activity-categories';
@@ -67,6 +68,7 @@ export default class PlayerDetail implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
+  private readonly analyticsService = inject(AnalyticsService);
   private readonly xpTrackerStore = inject(XpTrackerStore);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly isHumanVisitor = isHumanVisitor();
@@ -193,6 +195,13 @@ export default class PlayerDetail implements OnInit {
       if (this.responseInit && !this.playerDetail()) this.responseInit.status = 404;
     });
 
+    // Only in the browser, where AnalyticsService sends: also when tracking finds the player no longer exists
+    effect(() => {
+      if (!this.playerDetail()) {
+        this.analyticsService.trackEvent('player_not_found', { username: this.username.toLowerCase() });
+      }
+    });
+
     // Only skills with gains can be picked, so a shorter period drops the picks that gained nothing in it
     effect(() => {
       const gains = this.skillGains();
@@ -207,7 +216,19 @@ export default class PlayerDetail implements OnInit {
   }
 
   search(username: string): void {
+    this.analyticsService.trackEvent('search', { search_term: username.toLowerCase(), search_type: 'player' });
     void this.router.navigate(['/trackers/xp', username]);
+  }
+
+  loadMoreDays(): void {
+    this.history.loadMore();
+    this.analyticsService.trackEvent('load_more_days');
+  }
+
+  /** The stale hiscores notice's Try again */
+  reloadToday(): void {
+    this.history.reloadToday();
+    this.analyticsService.trackEvent('retry', { source: 'player-stale' });
   }
 
   /** Starts tracking the player (or refreshes them when stale) and shows the player it returns. */

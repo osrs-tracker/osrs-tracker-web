@@ -55,6 +55,10 @@ export const appConfig: ApplicationConfig = {
     { provide: RouteReuseStrategy, useClass: ParamAwareReuseStrategy },
     { provide: TitleStrategy, useClass: PageMetaStrategy },
 
-    provideAppInitializer(() => inject(AnalyticsService).setupPageAnalytics()),
+    provideAppInitializer(() => {
+      const analyticsService = inject(AnalyticsService);
+      analyticsService.setupPageAnalytics();
+      analyticsService.setupWebVitals();
+    }),
   ],
 };

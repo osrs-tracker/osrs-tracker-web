@@ -1,6 +1,7 @@
 import { Component, Signal, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
+import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { XpTrackerStore } from './xp-tracker-store';
 
 /** The tracking offset select (stored in `XpTrackerStore`) with its explanation and the UTC hour it shows. */
@@ -23,7 +24,7 @@ import { XpTrackerStore } from './xp-tracker-store';
       class="h-8 pl-2 pr-8 py-0 rounded-xl border-line bg-card font-bold text-strong tabular-nums cursor-pointer focus:border-accent focus:ring-accent"
       name="scrapingOffset"
       [ngModel]="scrapingOffset()"
-      (ngModelChange)="xpTrackerStore.setScrapingOffset($event)"
+      (ngModelChange)="setOffset($event)"
     >
       @for (offset of SCRAPING_OFFSETS; track offset) {
         <option [ngValue]="offset">{{ offsetLabel(offset) }}</option>
@@ -35,12 +36,18 @@ import { XpTrackerStore } from './xp-tracker-store';
   imports: [FormsModule, InfoTooltip],
 })
 export class TrackingOffset {
-  readonly xpTrackerStore = inject(XpTrackerStore);
+  private readonly analyticsService = inject(AnalyticsService);
+  private readonly xpTrackerStore = inject(XpTrackerStore);
 
   readonly SCRAPING_OFFSETS: number[] = Array.from({ length: 24 }, (_, i) => i - 12); // -12 to 11
   readonly scrapingOffset: Signal<number> = this.xpTrackerStore.scrapingOffset;
   /** The UTC hour the shown hiscores were tracked at, e.g. "21:00 UTC" for −03:00. */
   readonly trackedAt: Signal<string> = computed(() => `${pad((this.scrapingOffset() + 24) % 24)}:00 UTC`);
+
+  setOffset(offset: number): void {
+    this.xpTrackerStore.setScrapingOffset(offset);
+    this.analyticsService.trackOption('tracking_offset', offset);
+  }
 
   /** E.g. "+02:00 UTC", "−03:00 UTC" (a true minus) or "00:00 UTC". */
   offsetLabel(offset: number): string {

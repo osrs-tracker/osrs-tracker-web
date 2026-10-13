@@ -99,13 +99,14 @@ export class LoadError {
   readonly retry = output<void>();
 
   constructor() {
-    afterNextRender(() => this.analyticsService.trackEvent('load-error', { source: this.source() }));
+    afterNextRender(() => this.analyticsService.trackEvent('load_error', { source: this.source() }));
   }
 
   onRetry(event: Event): void {
     // The compact variant sits inside links (player cards), so a retry mustn't also navigate
     event.preventDefault();
     event.stopPropagation();
+    this.analyticsService.trackEvent('retry', { source: this.source() });
     this.retry.emit();
   }
 }

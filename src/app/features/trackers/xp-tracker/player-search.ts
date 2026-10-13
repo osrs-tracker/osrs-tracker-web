@@ -1,6 +1,7 @@
-import { Component, WritableSignal, signal } from '@angular/core';
+import { Component, WritableSignal, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { AnalyticsService } from '@app/common/analytics/analytics-service';
 
 /** Player name search that opens the player's page; `[leading]` content (e.g. a mode switch) goes before the input. */
 @Component({
@@ -23,6 +24,7 @@ import { RouterLink } from '@angular/router';
         type="submit"
         class="button--primary search-box-button"
         [routerLink]="usernameQuery() ? ['/trackers/xp', usernameQuery()] : '.'"
+        (click)="trackSearch()"
       >
         <svg
           class="size-4.5"
@@ -43,5 +45,13 @@ import { RouterLink } from '@angular/router';
   imports: [FormsModule, RouterLink],
 })
 export class PlayerSearch {
+  private readonly analyticsService = inject(AnalyticsService);
+
   readonly usernameQuery: WritableSignal<string> = signal('');
+
+  /** The Search button, which Enter in the input clicks too */
+  trackSearch(): void {
+    const username = this.usernameQuery().trim().toLowerCase();
+    if (username) this.analyticsService.trackEvent('search', { search_term: username, search_type: 'player' });
+  }
 }

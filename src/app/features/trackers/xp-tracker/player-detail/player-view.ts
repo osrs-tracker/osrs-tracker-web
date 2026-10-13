@@ -1,5 +1,6 @@
-import { Service, signal, WritableSignal } from '@angular/core';
+import { inject, Service, signal, WritableSignal } from '@angular/core';
 import { SkillEnum } from '@osrs-tracker/hiscores';
+import { AnalyticsService } from '@app/common/analytics/analytics-service';
 
 export type TopTab = 'skills' | 'bosses' | 'raids';
 export type BottomTab = 'clues' | 'minigames';
@@ -15,6 +16,8 @@ export type Period = 7 | 30 | 60;
  */
 @Service({ autoProvided: false })
 export class PlayerView {
+  private readonly analyticsService = inject(AnalyticsService);
+
   readonly top: WritableSignal<TopTab> = signal('skills');
   readonly bottom: WritableSignal<BottomTab> = signal('clues');
   readonly chart: WritableSignal<ChartView> = signal('skills');
@@ -27,18 +30,26 @@ export class PlayerView {
   /** The charted minigame, one at a time; until one is picked, the chart shows the first with gains */
   readonly minigame: WritableSignal<string | undefined> = signal(undefined);
 
+  setPeriod(period: Period): void {
+    this.period.set(period);
+    this.analyticsService.trackOption('chart_period', period);
+  }
+
   showTop(tab: TopTab): void {
+    this.analyticsService.trackOption('hiscores_tab', tab);
     this.top.set(tab);
     this.showChart(tab);
   }
 
   showBottom(tab: BottomTab): void {
+    this.analyticsService.trackOption('hiscores_tab', tab);
     this.bottom.set(tab);
     this.showChart(tab);
   }
 
   /** Overall is exclusive; deselecting the last skill goes back to Overall */
   toggleSkill(skill: string): void {
+    this.analyticsService.trackOption('chart_skill', skill);
     if (skill === SkillEnum.Overall) return this.setSkills(new Set());
     this.setSkills(toggled(new Set([...this.skills()].filter(name => name !== SkillEnum.Overall)), skill));
   }
@@ -57,6 +68,7 @@ export class PlayerView {
 
   /** An activity with gains: toggles its series when its category is charted, or charts its category */
   pickActivity(view: ActivityView, activity: string): void {
+    this.analyticsService.trackOption('chart_activity', activity);
     if (view === 'minigames') {
       this.minigame.set(activity);
       this.chart.set(view);
