@@ -2,6 +2,7 @@ import { isPlatformBrowser, Location } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
+  DOCUMENT,
   DestroyRef,
   OnInit,
   PLATFORM_ID,
@@ -28,6 +29,7 @@ import { localIcons } from '@app/common/icon/local-icons.generated';
 import { LOCAL_ICONS } from '@app/common/icon/local-icons-token';
 import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
 import { TimeAgoPipe } from '@app/common/format/time-ago-pipe';
+import { OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { isHumanVisitor } from '@app/core/platform/human-visitor';
@@ -82,6 +84,8 @@ export default class PlayerDetail implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
+  private readonly osrsProxyRepo = inject(OsrsProxyRepo);
+  private readonly document = inject(DOCUMENT);
   private readonly analyticsService = inject(AnalyticsService);
   private readonly xpTrackerStore = inject(XpTrackerStore);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -240,6 +244,7 @@ export default class PlayerDetail implements OnInit {
   ngOnInit(): void {
     if (!this.player()) return;
     if (this.isBrowser) this.xpTrackerStore.pushRecentPlayer(this.player()!.username);
+    else this.preloadLiveHiscores();
     if (this.isHumanVisitor) this.trackPlayer();
   }
 
@@ -274,6 +279,20 @@ export default class PlayerDetail implements OnInit {
   reloadToday(): void {
     this.history.reloadToday();
     this.analyticsService.trackEvent('retry', { source: 'player-stale' });
+  }
+
+  /**
+   * During SSR: the browser starts the live hiscores request while it reads the page, instead of once the app has loaded,
+   * and the app's request then gets that response. The server itself still never calls Jagex (`docs/decisions.md`).
+   */
+  private preloadLiveHiscores(): void {
+    const link = this.document.createElement('link');
+    link.setAttribute('rel', 'preload');
+    link.setAttribute('as', 'fetch');
+    // like the app's request (no credentials), or the browser doesn't use it and fetches again
+    link.setAttribute('crossorigin', '');
+    link.setAttribute('href', this.osrsProxyRepo.hiscoreTableUrl(this.username, 'hiscore_oldschool'));
+    this.document.head.appendChild(link);
   }
 
   /** Starts tracking the player (or refreshes them when stale) and shows the player it returns. */

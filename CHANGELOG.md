@@ -54,6 +54,8 @@
 - Player pages respond sooner after they load, especially on phones: the charts are drawn just after the page comes
   alive instead of during it, the skills, bosses and raids card starts up a moment later, and on phones the clues and
   minigames card and the day log only start up once you scroll to them. Item pages benefit from the chart change too.
+  Today's gains come in sooner as well: your browser asks the hiscores for them while it reads the page, instead of once
+  the page has started up.
 
 ### Behind the scenes
 
