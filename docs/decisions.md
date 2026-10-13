@@ -2,6 +2,20 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## The nav is Home, Trackers and Game, with menus (2026-10-13)
+
+- **Context:** the nav had three plain links (Home, XP Tracker, Price Tracker). The October roadmap adds pages a plain
+  link can't hold: high-alch and margin tables, price alerts, the news archive, the catch-up and the players online
+  page.
+- **Decision:** three tabs, Home | Trackers ⌄ | Game ⌄ (design option E). Three, so phones keep today's row of three
+  equal tabs; a menu opens as a full-width sheet there. Trackers holds both trackers stacked, Game the site-wide game
+  pages; each feature adds its own row when it ships, so the menus never link to a page that doesn't exist. The menus
+  are disclosures (a button and a panel of links), not ARIA menus, and their links stay in the server HTML while closed,
+  so crawlers still find every tracker page from the nav. No favourites or other page data in the Trackers menu: they'd
+  repeat the pages and need a cap. Game's Players online card is the exception, loaded when the menu opens. No global
+  search and no "Menu" button.
+- **Revisit:** if a menu outgrows a phone screen, or a fourth top-level section is needed.
+
 ## Compared days go in the URL without navigating (2026-10-13)
 
 - **Context:** the player page's Compare view (`player-detail/compare/compare-days.ts`, in the day log's place behind a
