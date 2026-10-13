@@ -394,8 +394,10 @@ export class CompareDays {
   });
 
   constructor() {
+    // Shown again after Days took the picks out of the URL: put them back, once the days are known (before that, the
+    // picks would be written as missing)
     effect(() => {
-      if (this.shown()) untracked(() => this.writeUrl());
+      if (this.shown() && this.history.hasValue()) untracked(() => this.writeUrl());
     });
 
     // Opened from a link with picked days: show the card once it has them
