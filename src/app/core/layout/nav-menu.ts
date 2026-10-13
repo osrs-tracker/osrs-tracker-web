@@ -64,7 +64,7 @@ export class NavMenus {
  * full-width sheet under the nav on phones. Escape, a click outside, focus leaving it and following a link close it.
  * From `sm` up a mouse also opens it on hover and closes it on leaving the tab and panel, after short delays: the open
  * one skips a pass over the nav (not when another menu is open, so moving along the tabs switches at once), the close
- * one crosses the gap between tab and panel. A click on a menu opened by hover keeps it open.
+ * one crosses the gap between tab and panel. A mouse click on a menu opened by hover keeps it open.
  * The links are in the page while it's closed (hidden), so the server render still links every page for crawlers.
  */
 @Component({
@@ -78,7 +78,7 @@ export class NavMenus {
       [attr.aria-controls]="menuId()"
       [attr.aria-current]="current() ? 'true' : null"
       [attr.data-marked]="marked() ? '' : null"
-      (click)="toggle()"
+      (click)="toggle($event)"
     >
       {{ label() }}
       <svg
@@ -132,7 +132,7 @@ export class NavMenu {
   readonly isOpen: Signal<boolean> = computed(() => this.navMenus.open() === this.menuId());
   protected readonly marked: Signal<boolean> = computed(() => (this.navMenus.open() ? this.isOpen() : this.current()));
 
-  /** Whether hover opened it, so leaving closes it; a click keeps it open */
+  /** Whether hover opened it, so leaving closes it; a mouse click keeps it open */
   private openedByHover = false;
   private hoverTimer?: ReturnType<typeof setTimeout>;
 
@@ -140,9 +140,10 @@ export class NavMenu {
     inject(DestroyRef).onDestroy(() => clearTimeout(this.hoverTimer));
   }
 
-  protected toggle(): void {
+  protected toggle(event: MouseEvent): void {
     clearTimeout(this.hoverTimer);
-    if (this.isOpen() && this.openedByHover) {
+    // A keyboard press (no clicks counted) still closes it
+    if (this.isOpen() && this.openedByHover && event.detail > 0) {
       this.openedByHover = false;
       return;
     }
