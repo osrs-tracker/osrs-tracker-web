@@ -49,9 +49,10 @@ export class PlayerView {
 
   /** Overall is exclusive; deselecting the last skill goes back to Overall */
   toggleSkill(skill: string): void {
-    this.analyticsService.trackOption('chart_skill', skill);
-    if (skill === SkillEnum.Overall) return this.setSkills(new Set());
-    this.setSkills(toggled(new Set([...this.skills()].filter(name => name !== SkillEnum.Overall)), skill));
+    if (skill === SkillEnum.Overall) this.setSkills(new Set());
+    else this.setSkills(toggled(new Set([...this.skills()].filter(name => name !== SkillEnum.Overall)), skill));
+
+    if (this.skills().has(skill)) this.analyticsService.trackOption('chart_skill', skill);
   }
 
   /** Compares these skills; none goes back to Overall */
@@ -68,7 +69,6 @@ export class PlayerView {
 
   /** An activity with gains: toggles its series when its category is charted, or charts its category */
   pickActivity(view: ActivityView, activity: string): void {
-    this.analyticsService.trackOption('chart_activity', activity);
     if (view === 'minigames') {
       this.minigame.set(activity);
       this.chart.set(view);
@@ -77,6 +77,8 @@ export class PlayerView {
     } else {
       this.showChart(view);
     }
+
+    if (!this.hidden().has(activity)) this.analyticsService.trackOption('chart_activity', activity);
   }
 
   private showChart(view: ChartView): void {

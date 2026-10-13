@@ -216,7 +216,7 @@ export default class PlayerDetail implements OnInit {
   }
 
   search(username: string): void {
-    this.analyticsService.trackEvent('search', { search_term: username.toLowerCase(), search_type: 'player' });
+    this.analyticsService.trackSearch('player', username);
     void this.router.navigate(['/trackers/xp', username]);
   }
 

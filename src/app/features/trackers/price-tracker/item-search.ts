@@ -288,11 +288,7 @@ export class ItemSearch {
         next: items => {
           this.results.set(items ?? []);
           this.searchedQuery.set(query);
-          this.analyticsService.trackEvent('search', {
-            search_term: query.trim().toLowerCase(),
-            search_type: 'item',
-            results: this.results().length,
-          });
+          this.analyticsService.trackSearch('item', query, this.results().length);
         },
         error: () => {
           this.results.set([]);

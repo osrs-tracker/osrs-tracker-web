@@ -51,7 +51,6 @@ export class PlayerSearch {
 
   /** The Search button, which Enter in the input clicks too */
   trackSearch(): void {
-    const username = this.usernameQuery().trim().toLowerCase();
-    if (username) this.analyticsService.trackEvent('search', { search_term: username, search_type: 'player' });
+    if (this.usernameQuery().trim()) this.analyticsService.trackSearch('player', this.usernameQuery());
   }
 }
