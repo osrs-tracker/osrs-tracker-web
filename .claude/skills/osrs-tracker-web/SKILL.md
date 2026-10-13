@@ -47,8 +47,10 @@ a worktree).
   import the trackers), none of them imports `src/server` (only the root `app.config.server.ts` does), and `HttpClient`
   is only used in `common/api/` (and specs).
 - **DI**: `inject()` only; root services use `@Service()`, not `@Injectable({ providedIn: 'root' })`.
-- **State**: signals, with explicitly typed public fields (`readonly foo: Signal<Bar> = computed(...)`). localStorage
-  goes through a per-feature `@ngrx/signals` store (`XpTrackerStore`, `PriceTrackerStore`), never from components.
+- **State**: signals, with explicitly typed public fields (`readonly foo: Signal<Bar> = computed(...)`). Every store
+  (state shared between components, or kept in localStorage) is an `@ngrx/signals` `signalStore` (`XpTrackerStore`,
+  `PriceTrackerStore`, `LastPlayedStore`), never a plain service; its private members start with `_`. localStorage goes
+  through one, never from components.
 - **Async data**: prefer `httpResource` / `rxResource`; if you subscribe, reset loading state in `finalize`.
 - **Failures**: every failable load shows its failure. `value()` throws in the error state, so check `error()` (or
   `hasValue()`) first and render `<load-error source="…" (retry)="resource.reload()" />`: `compact` when it replaces a
