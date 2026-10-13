@@ -4,14 +4,16 @@ Choices that look like accidents without their context: what was decided, why, a
 
 ## Compared days go in the URL without navigating (2026-10-13)
 
-- **Context:** the player page's Compare days card (`player-detail/compare/compare-days.ts`) lets a visitor pick two
-  days, or one, and a comparison is worth sharing. A router navigation for each pick would scroll to the top
-  (`scrollPositionRestoration`), and `ParamAwareReuseStrategy` only recreates the page when path params change.
+- **Context:** the player page's Compare view (`player-detail/compare/compare-days.ts`, in the day log's place behind a
+  Days/Compare switch) lets a visitor pick two days, or one, and a comparison is worth sharing. A router navigation for
+  each pick would scroll to the top (`scrollPositionRestoration`), and `ParamAwareReuseStrategy` only recreates the page
+  when path params change.
 - **Decision:** the picks are query params (`?day=2026-10-12&vs=2026-09-12`, `vs=none` for one day) written with
   `Location.replaceState`, so the router never sees them: no scroll, no new history entry, no resolver run. The card
-  reads them once from the route snapshot; a link with `day` loads the card at once and scrolls to it. Days are keyed by
-  the check's UTC date; a day with no check at the visitor's tracking offset falls back to the newest or oldest. The
-  whole history is one browser-only request (`size=91`, about 40 KB compressed), not in the transfer state.
+  reads them once from `Location.path()`; a link with `day` opens Compare and scrolls to it. Back to Days takes them out
+  of the URL (a reload shows the days); Compare shown again puts them back. Days are keyed by the check's UTC date; a
+  day with no check at the visitor's tracking offset falls back to the newest or oldest. The whole history is one
+  browser-only request (`size=91`, about 40 KB compressed), not in the transfer state.
 - **Revisit:** if the picks need back-button support, or a second feature puts state in the player page's URL.
 
 ## Pull requests merge through a merge queue (2026-10-13)

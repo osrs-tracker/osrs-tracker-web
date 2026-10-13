@@ -19,9 +19,9 @@ import {
 import { rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { SkillEnum } from '@osrs-tracker/hiscores';
 import { HiscoreEntry } from '@osrs-tracker/models';
 import { differenceInCalendarDays, format } from 'date-fns';
-import { Card } from '@app/common/ui/cards/card';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
@@ -49,66 +49,133 @@ interface DayOption {
   entry: HiscoreEntry;
 }
 
+/** What two days changed: Overall, and the skills and activities that gained, biggest first */
+interface Changes {
+  overall: CompareRow;
+  skills: CompareRow[];
+  activities: CompareRow[];
+}
+
 /**
- * Compares the player's stats on two days of their history, or shows them on one: levels, XP, scores and ranks on the
- * newer day, and what changed since the older one. Only days with a stored check can be picked, so a gap in the history
- * is skipped.
+ * Compares the player's stats on two days of their history, or shows them on one. Shown in the day log's place (the
+ * page's Days/Compare switch), it looks like a day card: the two days picked in its header with the XP and levels
+ * gained between them, then what each skill and activity gained. "Show all stats" opens a table of every skill or
+ * activity with its level or score, XP and rank, and what changed; one day shows that table at once.
  *
- * The picks are in the URL (`?day=2026-10-12&vs=2026-09-12`, `vs=none` for one day), so a comparison can be shared;
- * they're written with `Location.replaceState`, which doesn't navigate: a navigation would scroll to the top and count
- * as a page view. Opened from such a link, the card scrolls into view once loaded.
+ * Only days with a stored check can be picked, so a gap in the history is skipped. The picks are in the URL
+ * (`?day=2026-10-12&vs=2026-09-12`, `vs=none` for one day), so a comparison can be shared; they're written with
+ * `Location.replaceState`, which doesn't navigate: a navigation would scroll to the top and count as a page view.
+ * Opened from such a link, the card scrolls into view once loaded.
  *
  * The whole history is one request (about 40 KB compressed), made in the browser only: the first paint doesn't need it.
  */
 @Component({
   selector: 'compare-days',
   template: `
-    <article card [subtitle]="'From the daily checks at ' + trackedAt()">
-      <h2 title>Compare days</h2>
-      <segmented actions label="Compare" [options]="tabs" [value]="tab()" (valueChange)="setTab($event)" />
-
-      @if (history.error()) {
-        <load-error source="player-compare" message="Couldn't load the history." (retry)="history.reload()" />
-      } @else {
-        <div class="flex flex-wrap gap-x-6 gap-y-3 pb-4 text-sm text-muted">
-          <label class="flex items-center gap-2">
-            Day
-            <select
-              class="h-8 pl-2 pr-8 py-0 rounded-xl border-line bg-card font-bold text-strong tabular-nums cursor-pointer focus:border-accent focus:ring-accent disabled:cursor-default"
-              [disabled]="!options().length"
-              [ngModel]="day()?.key"
-              (ngModelChange)="pick({ day: $event })"
-            >
-              @for (option of options(); track option.key) {
+    <article class="rounded-2xl bg-card">
+      <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 min-h-14 px-5 py-3 border-b border-line">
+        <div class="flex flex-wrap items-center gap-2">
+          <select
+            class="h-8 pl-2 pr-8 py-0 rounded-xl border-line bg-card font-bold text-strong tabular-nums cursor-pointer focus:border-accent focus:ring-accent disabled:cursor-default"
+            aria-label="Day"
+            [disabled]="!options().length"
+            [ngModel]="day()?.key"
+            (ngModelChange)="pick({ day: $event })"
+          >
+            @for (option of options(); track option.key) {
+              <option [ngValue]="option.key">{{ option.label }}</option>
+            }
+          </select>
+          <span class="text-sm text-muted">compared with</span>
+          <select
+            class="h-8 pl-2 pr-8 py-0 rounded-xl border-line bg-card font-bold text-strong tabular-nums cursor-pointer focus:border-accent focus:ring-accent disabled:cursor-default"
+            aria-label="Compared with"
+            [disabled]="!options().length"
+            [ngModel]="vs()?.key ?? NO_DAY"
+            (ngModelChange)="pick({ vs: $event })"
+          >
+            <option [ngValue]="NO_DAY">No other day</option>
+            @for (option of options(); track option.key) {
+              @if (option.key !== day()?.key) {
                 <option [ngValue]="option.key">{{ option.label }}</option>
               }
-            </select>
-          </label>
-          <label class="flex items-center gap-2">
-            Compared with
-            <select
-              class="h-8 pl-2 pr-8 py-0 rounded-xl border-line bg-card font-bold text-strong tabular-nums cursor-pointer focus:border-accent focus:ring-accent disabled:cursor-default"
-              [disabled]="!options().length"
-              [ngModel]="vs()?.key ?? NO_DAY"
-              (ngModelChange)="pick({ vs: $event })"
-            >
-              <option [ngValue]="NO_DAY">No other day</option>
-              @for (option of options(); track option.key) {
-                @if (option.key !== day()?.key) {
-                  <option [ngValue]="option.key">{{ option.label }}</option>
-                }
-              }
-            </select>
-          </label>
+            }
+          </select>
         </div>
+        @if (changes(); as changes) {
+          @let levels = changes.overall.to - changes.overall.from!;
+          <!-- the totals, as on a day card -->
+          <div class="flex items-center gap-3.5">
+            @if (levels > 0) {
+              <span class="text-sm font-bold text-accent tabular-nums"
+                >+{{ levels }} {{ levels === 1 ? 'level' : 'levels' }}</span
+              >
+            }
+            <span class="flex items-center gap-1.5 font-bold text-strong tabular-nums">
+              <img class="h-4.5 w-auto" icon [name]="SkillEnum.Overall" [skill]="true" />{{
+                signed(changes.overall.gained!)
+              }}
+              <span class="sr-only">XP</span>
+            </span>
+          </div>
+        }
+      </div>
 
-        @if (rows(); as rows) {
-          @let comparing = !!older();
-          <p class="pb-3 text-lg/6 font-bold text-strong">{{ heading() }}</p>
+      @if (history.error()) {
+        <load-error
+          class="block px-5 py-4"
+          source="player-compare"
+          message="Couldn't load the history."
+          (retry)="history.reload()"
+        />
+      } @else if (newer()) {
+        @let diff = changes();
+        @if (diff && !allStats()) {
+          @if (diff.skills.length) {
+            <ul class="grid grid-cols-log gap-x-6 gap-y-2 px-5 py-4">
+              @for (row of diff.skills; track row.name) {
+                <li class="flex items-center gap-2.5 min-h-6" [attr.title]="cellTitle(row, true)">
+                  <span class="flex items-center justify-center size-6 shrink-0">
+                    <img class="max-h-6 w-auto" icon [name]="row.name" [skill]="true" />
+                  </span>
+                  <span class="truncate">{{ row.name }}</span>
+                  <span class="mr-auto text-sm font-bold text-accent tabular-nums">
+                    @if (row.to > row.from!) {
+                      +{{ row.to - row.from!
+                      }}<span class="sr-only"> {{ row.to - row.from! === 1 ? 'level' : 'levels' }}</span>
+                    }
+                  </span>
+                  <span class="font-bold text-strong tabular-nums">{{ signed(row.gained!) }}</span>
+                </li>
+              }
+            </ul>
+          }
+          @if (diff.activities.length) {
+            <!-- its own rows under a full-width line, as on a day card: scores and kill counts, not XP -->
+            <ul class="grid grid-cols-log gap-x-6 gap-y-2 px-5 py-4 border-row" [class.border-t]="diff.skills.length">
+              @for (row of diff.activities; track row.name) {
+                <li class="flex items-center gap-2.5 min-h-6" [attr.title]="cellTitle(row, false)">
+                  <span class="flex items-center justify-center size-6 shrink-0">
+                    <img class="max-h-6 max-w-6" icon [name]="row.name" [activity]="true" />
+                  </span>
+                  <span class="mr-auto truncate">{{ row.name }}</span>
+                  <span class="font-bold text-strong tabular-nums">+{{ row.gained | number }}</span>
+                </li>
+              }
+            </ul>
+          }
+          @if (!diff.skills.length && !diff.activities.length) {
+            <p class="px-5 py-4 text-base text-muted">Nothing was gained between these days.</p>
+          }
+        } @else {
+          @let comparing = !!diff;
+          <div class="px-5 pt-4 pb-2">
+            <segmented label="Stats" [options]="tabs" [value]="tab()" (valueChange)="setTab($event)" />
+          </div>
           <table class="w-full text-sm">
             <thead>
               <tr class="text-left text-muted">
-                <th class="py-2 pr-1.5 sm:pr-3 font-normal" scope="col">
+                <th class="py-2 pl-5 pr-1.5 sm:pr-3 font-normal" scope="col">
                   {{ tab() === 'skills' ? 'Skill' : 'Activity' }}
                 </th>
                 <th class="py-2 px-1.5 sm:px-3 font-normal text-right" scope="col">
@@ -127,7 +194,7 @@ interface DayOption {
                   <th class="py-2 px-1.5 sm:px-3 font-normal text-right" scope="col">Gained</th>
                 }
                 <th
-                  class="py-2 pl-1.5 sm:pl-3 font-normal text-right"
+                  class="py-2 pl-1.5 sm:pl-3 pr-5 font-normal text-right"
                   [class]="comparing ? 'max-sm:hidden' : ''"
                   scope="col"
                 >
@@ -136,10 +203,10 @@ interface DayOption {
               </tr>
             </thead>
             <tbody class="tabular-nums">
-              @for (row of rows; track row.name) {
+              @for (row of rows(); track row.name) {
                 @let changed = !!row.gained;
                 <tr class="border-t border-row">
-                  <td class="max-w-0 w-full py-2 pr-1.5 sm:pr-3">
+                  <td class="max-w-0 w-full py-2 pl-5 pr-1.5 sm:pr-3">
                     <span class="flex items-center gap-2 sm:gap-2.5 min-w-0">
                       <span class="flex items-center justify-center size-6 shrink-0">
                         <img
@@ -188,7 +255,7 @@ interface DayOption {
                     </td>
                   }
                   <td
-                    class="py-2 pl-1.5 sm:pl-3 text-right whitespace-nowrap"
+                    class="py-2 pl-1.5 sm:pl-3 pr-5 text-right whitespace-nowrap"
                     [class]="comparing ? 'max-sm:hidden' : ''"
                   >
                     @if (row.rank === null) {
@@ -198,7 +265,7 @@ interface DayOption {
                         <span
                           class="max-sm:hidden pr-1.5 text-xs font-bold"
                           [class]="row.rankChange > 0 ? 'text-up' : 'text-down'"
-                          [attr.title]="rankChangeTitle(row)"
+                          [attr.title]="rankChangeTitle(row.rankChange)"
                           >{{ row.rankChange > 0 ? '▲' : '▼' }}{{ short(row.rankChange) }}</span
                         >
                       }
@@ -209,26 +276,36 @@ interface DayOption {
                 </tr>
               } @empty {
                 <tr class="border-t border-row">
-                  <td class="py-3 text-muted" colspan="5">Not ranked in any activity on these days.</td>
+                  <td class="py-3 px-5 text-muted" colspan="5">Not ranked in any activity on these days.</td>
                 </tr>
               }
             </tbody>
           </table>
-        } @else if (history.hasValue()) {
-          <p class="text-base text-muted">No days are stored at {{ trackedAt() }} yet.</p>
-        } @else {
-          <div class="flex flex-col gap-3" aria-hidden="true">
-            <skeleton class="h-5 w-64" />
-            @for (row of [0, 1, 2, 3, 4, 5, 6, 7]; track row) {
-              <skeleton class="h-6 w-full" />
-            }
-          </div>
         }
+
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-2 mt-1 px-5 py-3 border-t border-line">
+          @if (diff) {
+            <button type="button" class="link text-sm font-bold" (click)="toggleAllStats()">
+              {{ allStats() ? 'Show only what changed' : 'Show all stats' }}
+            </button>
+          } @else {
+            <span class="text-sm text-muted">Pick a second day to see what changed.</span>
+          }
+        </div>
+      } @else if (history.hasValue()) {
+        <p class="px-5 py-4 text-base text-muted">No days are stored at this check time yet.</p>
+      } @else {
+        <div class="grid grid-cols-log gap-x-6 gap-y-2 px-5 py-4" aria-hidden="true">
+          @for (row of [0, 1, 2, 3, 4, 5]; track row) {
+            <skeleton class="h-6 w-full" />
+          }
+        </div>
       }
     </article>
   `,
-  host: { class: 'block scroll-mt-4 sm:scroll-mt-24' },
-  imports: [Card, DecimalPipe, FormsModule, Icon, LoadError, Segmented, Skeleton],
+  // the page's Days/Compare switch sits above it: a shared link scrolls to show both
+  host: { class: 'block scroll-mt-28 sm:scroll-mt-40' },
+  imports: [DecimalPipe, FormsModule, Icon, LoadError, Segmented, Skeleton],
 })
 export class CompareDays {
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
@@ -240,18 +317,18 @@ export class CompareDays {
 
   readonly username: InputSignal<string> = input.required();
   readonly offset: InputSignal<number> = input.required();
-  /** The UTC hour the visitor's offset is checked at, e.g. "02:00 UTC" */
-  readonly trackedAt: InputSignal<string> = input.required();
+  /** Hidden on the page's Days view, which takes the picks out of the URL; shown again, it puts them back */
+  readonly shown: InputSignal<boolean> = input.required();
 
   readonly tabs: SegmentedOption<CompareTab>[] = TABS;
   readonly NO_DAY: string = NO_DAY;
+  readonly SkillEnum: typeof SkillEnum = SkillEnum;
 
   readonly tab: WritableSignal<CompareTab> = signal('skills');
+  /** The full table instead of only what changed */
+  readonly allStats: WritableSignal<boolean> = signal(false);
   /** The days picked by key; `undefined` takes the default: the newest day, compared with the oldest */
-  private readonly picked: WritableSignal<{ day?: string; vs?: string }> = signal({
-    day: this.route.snapshot.queryParamMap.get('day') ?? undefined,
-    vs: this.route.snapshot.queryParamMap.get('vs') ?? undefined,
-  });
+  private readonly picked: WritableSignal<{ day?: string; vs?: string }> = signal(this.pickedInUrl());
 
   readonly history: ResourceRef<HiscoreEntry[] | undefined> = rxResource({
     params: () => (this.isBrowser ? { username: this.username(), offset: this.offset() } : undefined),
@@ -294,29 +371,33 @@ export class CompareDays {
     return day && vs ? (vs.date < day.date ? day : vs) : day;
   });
 
-  readonly rows: Signal<CompareRow[] | undefined> = computed(() => {
+  /** What changed between two days; `undefined` for one day */
+  readonly changes: Signal<Changes | undefined> = computed(() => {
+    const [newer, older] = [this.newer(), this.older()];
+    if (!newer || !older) return undefined;
+    const [overall, ...skills] = skillRows(newer, older);
+    const gainedFirst = (a: CompareRow, b: CompareRow): number => b.gained! - a.gained!;
+    return {
+      overall,
+      skills: skills.filter(row => row.gained! > 0).sort(gainedFirst),
+      activities: activityRows(newer, older)
+        .filter(row => row.gained! > 0)
+        .sort(gainedFirst),
+    };
+  });
+
+  /** The full table's rows, for the open tab */
+  readonly rows: Signal<CompareRow[]> = computed(() => {
     const newer = this.newer();
-    if (!newer) return undefined;
+    if (!newer) return [];
     return this.tab() === 'skills' ? skillRows(newer, this.older()) : activityRows(newer, this.older());
   });
 
-  /** What changed overall, "+11.55M XP and 6 levels in 59 days", or "Total level 2,316 on Mon 6 Oct" for one day */
-  readonly heading: Signal<string> = computed(() => {
-    const newer = this.newer();
-    if (!newer) return '';
-    const older = this.older();
-    const [overall] = skillRows(newer, older);
-    if (!older) return `Total level ${overall.to.toLocaleString('en-US')} on ${format(newer.date, 'EEE d MMM')}`;
-
-    const days = differenceInCalendarDays(newer.date, older.date);
-    const span = `in ${days} ${days === 1 ? 'day' : 'days'}`;
-    const levels = overall.to - overall.from!;
-    if (!overall.gained) return `No XP gained ${span}`;
-    const levelText = levels > 0 ? ` and ${levels} ${levels === 1 ? 'level' : 'levels'}` : '';
-    return `${this.signed(overall.gained)} XP${levelText} ${span}`;
-  });
-
   constructor() {
+    effect(() => {
+      if (this.shown()) untracked(() => this.writeUrl());
+    });
+
     // Opened from a link with picked days: show the card once it has them
     if (this.picked().day) {
       const host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -339,6 +420,11 @@ export class CompareDays {
     this.analyticsService.trackOption('compare_tab', tab);
   }
 
+  toggleAllStats(): void {
+    this.allStats.update(all => !all);
+    this.analyticsService.trackOption('compare_view', this.allStats() ? 'all' : 'changes');
+  }
+
   /** Picks a day or the day to compare with, and puts both in the URL */
   pick(change: { day?: string; vs?: string }): void {
     const [day, vs] = [this.day()?.key, this.vs()?.key ?? NO_DAY];
@@ -346,6 +432,16 @@ export class CompareDays {
     this.picked.set(change.day === vs ? { day: vs, vs: day } : { day, vs, ...change });
     if (this.day()?.key === day && (this.vs()?.key ?? NO_DAY) === vs) return;
 
+    this.writeUrl();
+    const [newer, older] = [this.newer(), this.older()];
+    this.analyticsService.trackEvent('compare_days', {
+      days: newer && older ? differenceInCalendarDays(newer.date, older.date) : 0,
+    });
+  }
+
+  /** Puts the days picked in the URL, once there are picks */
+  writeUrl(): void {
+    if (!this.picked().day) return;
     const url = this.router.createUrlTree([], {
       relativeTo: this.route,
       queryParams: { day: this.day()?.key, vs: this.vs()?.key ?? NO_DAY },
@@ -353,11 +449,6 @@ export class CompareDays {
     });
     // with the router's state, so Back to this page still restores its scroll position
     this.location.replaceState(this.router.serializeUrl(url), '', this.location.getState());
-
-    const [newer, older] = [this.newer(), this.older()];
-    this.analyticsService.trackEvent('compare_days', {
-      days: newer && older ? differenceInCalendarDays(newer.date, older.date) : 0,
-    });
   }
 
   /** "+1.2M", or with `full` "+1,204,330" */
@@ -376,9 +467,23 @@ export class CompareDays {
     return formatNumberLegible(value);
   }
 
-  rankChangeTitle(row: CompareRow): string {
-    const change = row.rankChange!;
+  rankChangeTitle(change: number): string {
     return `${Math.abs(change).toLocaleString('en-US')} places ${change > 0 ? 'up' : 'down'}`;
+  }
+
+  /** A cell's tooltip: "Slayer 90 → 92, +2,840,112 XP, rank 90,306 (71,000 places up)" */
+  cellTitle(row: CompareRow, skill: boolean): string {
+    const value = row.from === row.to ? row.to.toLocaleString('en-US') : `${row.from} → ${row.to}`;
+    const gained = skill ? `, ${this.signed(row.gained!, true)} XP` : '';
+    const rank = row.rank === null ? '' : `, rank ${row.rank.toLocaleString('en-US')}`;
+    const change = row.rankChange ? ` (${this.rankChangeTitle(row.rankChange)})` : '';
+    return `${row.name} ${value}${gained}${rank}${change}`;
+  }
+
+  /** The days picked in the URL as the browser has it: the router never sees them */
+  private pickedInUrl(): { day?: string; vs?: string } {
+    const params = this.router.parseUrl(this.location.path()).queryParamMap;
+    return { day: params.get('day') ?? undefined, vs: params.get('vs') ?? undefined };
   }
 }
 
