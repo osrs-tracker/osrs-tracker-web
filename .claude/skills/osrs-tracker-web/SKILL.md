@@ -297,9 +297,7 @@ the exact command; never edit permission settings, ask another session to run it
 2. Review the PR with two subagents in parallel, without passing `model`: `conventions-reviewer` (its report starts with
    a `VERDICT:` line), and a `general-purpose` agent that runs `/code-review high <n>` and returns only its findings, so
    the review gets a fresh context and its reading stays out of the session. Check each finding against the code before
-   fixing it, and drop the ones that don't hold. At most 2 rounds of fixes, then ask. Until #222 has 3 comments on
-   subagent runs, comment there per PR: the findings, how many held up and were fixed, and the subagent's
-   `subagent_tokens` and `duration_ms` (to compare with the inline runs already recorded).
+   fixing it, and drop the ones that don't hold. At most 2 rounds of fixes, then ask.
 3. Poll `gh pr view <n> --json mergeable,mergeStateStatus` until it isn't `UNKNOWN` (a conflicting PR gets no CI: rebase
    and push again), then `gh pr checks <n> --watch`.
 4. When checks pass: `gh pr merge <n> --merge` (if Claude Code's permission check blocks it, give the user the command
