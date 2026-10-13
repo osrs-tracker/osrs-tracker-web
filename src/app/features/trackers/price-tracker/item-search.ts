@@ -278,7 +278,11 @@ export class ItemSearch {
 
   searchItems(): void {
     const query = this.query();
-    if (!query) return;
+    // An empty search clears the last one, and with it a failure that would show again on typing
+    if (!query) {
+      this.submitted.set(undefined);
+      return;
+    }
 
     this.navigated.set(false);
     this.expanded.set(true);

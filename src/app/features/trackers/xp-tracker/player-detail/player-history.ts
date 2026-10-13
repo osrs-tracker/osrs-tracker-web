@@ -162,7 +162,8 @@ export function playerHistory(params: {
     loadingMore,
     loadMoreFailed,
     loadMore,
-    retryLoadMore: () => more.retry(),
+    // the size that failed, from the entries loaded now
+    retryLoadMore: () => loadMore(more.failed()?.size),
     reloadToday: () => todayResource.reload(),
     reloadPreviousPeriod: () => previousPeriodStart.reload(),
     reloadFirstPage: () => firstPage.reload(),

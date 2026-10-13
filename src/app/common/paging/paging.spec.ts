@@ -10,6 +10,11 @@ describe('paging', () => {
   /** One response per request, answered by the test */
   let responses: Map<number, Subject<string>>;
   let pages: Paging<number, string>;
+  /** Answers like HTTP: the page, then complete */
+  const answer = (request: number, page: string): void => {
+    responses.get(request)!.next(page);
+    responses.get(request)!.complete();
+  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({ providers: [provideZonelessChangeDetection()] });
@@ -30,23 +35,23 @@ describe('paging', () => {
   it('adds the pages in the order they load', () => {
     pages.load(1);
     expect(pages.loading()).toBe(true);
-    responses.get(1)!.next('page 1');
+    answer(1, 'page 1');
     pages.load(2);
-    responses.get(2)!.next('page 2');
+    answer(2, 'page 2');
 
     expect(pages.pages()).toEqual(['page 1', 'page 2']);
     expect(pages.loading()).toBe(false);
   });
 
-  it('keeps the failed request for a retry, and clears it once that loads', () => {
+  it('keeps the failed request until the next load', () => {
     pages.load(1);
     responses.get(1)!.error(new Error('down'));
     expect(pages.failed()).toBe(1);
     expect(pages.loading()).toBe(false);
 
-    pages.retry();
+    pages.load(1);
     expect(pages.failed()).toBeUndefined();
-    responses.get(1)!.next('page 1');
+    answer(1, 'page 1');
     expect(pages.pages()).toEqual(['page 1']);
   });
 
@@ -55,17 +60,17 @@ describe('paging', () => {
     pages.load(2);
 
     expect(responses.get(1)!.observed).toBe(false);
-    responses.get(2)!.next('page 2');
+    answer(2, 'page 2');
     expect(pages.pages()).toEqual(['page 2']);
   });
 
   it('starts over with another list, ignoring a page that arrives for the old one', () => {
     pages.load(1);
-    responses.get(1)!.next('a 1');
+    answer(1, 'a 1');
     pages.load(2);
 
     list.set('b');
-    responses.get(2)!.next('a 2');
+    answer(2, 'a 2');
 
     expect(pages.pages()).toEqual([]);
     expect(pages.loading()).toBe(false);
