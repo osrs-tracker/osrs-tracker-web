@@ -12,14 +12,28 @@
     <link rel="manifest" href="manifest.webmanifest" />
     <!-- End PWA -->
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PSQN8ELKNJ"></script>
+    <!-- Google tag (gtag.js): loaded only once the visitor allows its cookies (ConsentService); until then events wait
+         in dataLayer. The ID and storage key are config.gaMeasurementId and StorageKey.AnalyticsConsent -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() {
         dataLayer.push(arguments);
       }
       gtag('js', new Date());
+
+      const analyticsAllowed = localStorage.getItem('analytics-consent') === 'granted';
+      gtag('consent', 'default', {
+        analytics_storage: analyticsAllowed ? 'granted' : 'denied',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+      });
+      if (analyticsAllowed) {
+        const tag = document.createElement('script');
+        tag.async = true;
+        tag.src = 'https://www.googletagmanager.com/gtag/js?id=G-PSQN8ELKNJ';
+        document.head.appendChild(tag);
+      }
 
       gtag('config', 'G-PSQN8ELKNJ', {
         send_page_view: false,
