@@ -17,11 +17,14 @@ export function itemDetailMeta(route: ActivatedRouteSnapshot): PageMeta | undefi
 }
 
 /**
- * "Abyssal whip - OSRS Grand Exchange price": the words people search for, without the site name, which search results
- * and link previews show on their own (as the landing pages' titles do)
+ * "Abyssal whip - OSRS price, high alch and buy limit": the item's name first, as most searches name only the item, then
+ * the facts the page has for it. Without the site name, which search results and link previews show on their own (as
+ * the landing pages' titles do).
  */
 export function itemTitle(item: Item): string {
-  return `${item.name} - OSRS Grand Exchange price`;
+  const facts = ['price', item.highalch ? 'high alch' : '', item.limit ? 'buy limit' : ''].filter(Boolean);
+  const listed = facts.length > 1 ? `${facts.slice(0, -1).join(', ')} and ${facts.at(-1)}` : facts[0];
+  return `${item.name} - OSRS ${listed}`;
 }
 
 /**
@@ -62,22 +65,26 @@ function itemImage(item: Item): PageImage {
 }
 
 /**
- * "Track Abyssal whip prices with OSRS Tracker: updated live, with charts of how they've moved over time · Buy limit 70
- * · High alch 72,000 gp". Search results show no line breaks, so a `·` separates the facts. Leaves out what the item
- * lacks, and the facts that don't fit 160 characters, last first.
- * Not whether it's members only: nearly every visitor is a member or doesn't care.
+ * "A weapon from the abyss. Buy limit 70 · High alch 72,000 gp · Live Grand Exchange prices and price history.": the
+ * examine text first, as most searches name only the item, then its facts and what the page tracks. Search results show
+ * no line breaks, so a `·` separates them. Leaves out what the item lacks, and what doesn't fit 160 characters: the facts
+ * last first, or the examine text if even that alone is too long. Not whether it's members only: nearly every visitor is
+ * a member or doesn't care.
  */
 export function itemDescription(item: Item): string {
   const facts = [
     item.limit ? `Buy limit ${formatWhole(item.limit)}` : '',
     item.highalch ? `High alch ${formatWhole(item.highalch)} gp` : '',
   ].filter(Boolean);
-  const describe = (shown: string[]) =>
-    [
-      `Track ${item.name} prices with OSRS Tracker: updated live, with charts of how they've moved over time`,
-      ...shown,
-    ].join(' · ');
+  const examine = /[.!?]$/.test(item.examine) ? item.examine : `${item.examine}.`;
+  const describe = (start: string) => {
+    const shown = [...facts];
+    const join = () =>
+      [start, [...shown, 'Live Grand Exchange prices and price history.'].join(' · ')].filter(Boolean).join(' ');
+    while (shown.length && join().length > MAX_DESCRIPTION_LENGTH) shown.pop();
+    return join();
+  };
 
-  while (facts.length && describe(facts).length > MAX_DESCRIPTION_LENGTH) facts.pop();
-  return describe(facts);
+  const description = describe(examine);
+  return description.length <= MAX_DESCRIPTION_LENGTH ? description : describe('');
 }
