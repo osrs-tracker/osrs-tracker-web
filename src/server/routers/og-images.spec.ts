@@ -9,12 +9,15 @@ import {
   type GetIcon,
   type GetItem,
   type GetPlayer,
+  type GetPlayerCounts,
   type RenderItemCard,
   type RenderPlayerCard,
+  type RenderPlayersOnlineCard,
 } from './og-images';
 
 const item = (id: number) => ({ id, name: `Item ${id}`, icon: `Item ${id}.png` }) as Item;
 const player = (username: string) => ({ username }) as Player;
+const counts = (length: number) => Array.from({ length }, (_, i) => ({ total: 100 + i, members: 90 + i, f2p: 10 }));
 const PNG = new Uint8Array([137, 80, 78, 71]);
 const ICON = new Uint8Array([1, 2, 3]);
 
@@ -24,6 +27,8 @@ describe('createOgImageRouter', () => {
   const render = vi.fn<RenderItemCard>();
   const getPlayer = vi.fn<GetPlayer>();
   const renderPlayer = vi.fn<RenderPlayerCard>();
+  const getPlayerCounts = vi.fn<GetPlayerCounts>();
+  const renderPlayersOnline = vi.fn<RenderPlayersOnlineCard>();
   const logs = collectLogs();
   // Each test gets a router of its own, so none sees the images another cached
   let router: express.Router;
@@ -42,8 +47,19 @@ describe('createOgImageRouter', () => {
     render.mockReset().mockResolvedValue(PNG);
     getPlayer.mockReset().mockImplementation(async name => (name === 'nobody' ? undefined : player(name)));
     renderPlayer.mockReset().mockResolvedValue(PNG);
+    getPlayerCounts.mockReset().mockResolvedValue(counts(3));
+    renderPlayersOnline.mockReset().mockResolvedValue(PNG);
     logs.lines.splice(0);
-    router = createOgImageRouter({ logger: logs.logger, getItem, getIcon, render, getPlayer, renderPlayer });
+    router = createOgImageRouter({
+      logger: logs.logger,
+      getItem,
+      getIcon,
+      render,
+      getPlayer,
+      renderPlayer,
+      getPlayerCounts,
+      renderPlayersOnline,
+    });
   });
 
   afterEach(() => {
@@ -183,6 +199,36 @@ describe('createOgImageRouter', () => {
 
     expect(res.status).toBe(404);
     expect(res.headers.get('cache-control')).toBe('public, max-age=300');
+    expect(logs.lines).toContainEqual(expect.objectContaining({ type: 'og-image', level: 'warn' }));
+  });
+
+  it('serves the players online image for 10 minutes, then draws it again', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+
+    const res = await get('/og/players-online.png?v=1');
+    expect(res.status).toBe(200);
+    expect(res.headers.get('content-type')).toBe('image/png');
+    expect(res.headers.get('cache-control')).toBe('public, max-age=600');
+    expect(renderPlayersOnline).toHaveBeenCalledExactlyOnceWith(counts(3));
+
+    vi.advanceTimersByTime(599_000);
+    await get('/og/players-online.png');
+    expect(renderPlayersOnline).toHaveBeenCalledOnce();
+
+    vi.advanceTimersByTime(1000);
+    await get('/og/players-online.png');
+    expect(renderPlayersOnline).toHaveBeenCalledTimes(2);
+  });
+
+  it('answers a short-lived 404 for the players online image when the API fails or has too few counts', async () => {
+    getPlayerCounts.mockRejectedValueOnce(new Error('API down')).mockResolvedValueOnce(counts(1));
+
+    for (let i = 0; i < 2; i++) {
+      const res = await get('/og/players-online.png');
+      expect(res.status).toBe(404);
+      expect(res.headers.get('cache-control')).toBe('public, max-age=300');
+    }
+    expect(renderPlayersOnline).not.toHaveBeenCalled();
     expect(logs.lines).toContainEqual(expect.objectContaining({ type: 'og-image', level: 'warn' }));
   });
 

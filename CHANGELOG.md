@@ -7,7 +7,10 @@
   country's worlds, with the flags from the game's World Select. Below it, a chart shows the count over the last day,
   week, month, year or all time, with the busiest moment of each range. Hovering the chart shows the count at that
   moment, per country and split by members. The count comes from the game's world list every 10 minutes, so it starts on
-  13 October 2026 and the longer ranges fill in from there.
+  13 October 2026 and the longer ranges fill in from there. A shared link to the page shows a card with the count right
+  now, a line of the last 24 hours, the split between members and free-to-play, and the day's peak and low, and its
+  title in search results, "OSRS player count: How many people are playing right now", uses the words people search for
+  it with.
 - The navigation has two menus, Trackers and Game, in place of the XP Tracker and Price Tracker links, so the pages on
   their way have a place in it. Trackers leads to the player lookup, the item search and the A–Z item list. Game shows
   the players online now with a line of the last 24 hours, and opens the Players online page; hovering it lights it up

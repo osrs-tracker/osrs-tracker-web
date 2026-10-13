@@ -19,6 +19,7 @@ const PAGE_ROUTES: [RegExp, string][] = [
   // Drawn by the server (routers/og-images.ts), not static files: their own label, a 404 included
   [/^\/og\/item\/\d+\.png$/, '/og/item/:id.png'],
   [/^\/og\/player\/[^/]+\.png$/, '/og/player/:username.png'],
+  [/^\/og\/players-online\.png$/, '/og/players-online.png'],
 ];
 
 /**
