@@ -23,7 +23,7 @@ const settle = async (): Promise<void> => {
 
 describe('PlayerCountStore', () => {
   let httpTesting: HttpTestingController;
-  let store: PlayerCountStore;
+  let store: InstanceType<typeof PlayerCountStore>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({

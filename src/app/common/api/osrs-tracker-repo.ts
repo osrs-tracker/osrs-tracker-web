@@ -152,13 +152,14 @@ export class OsrsTrackerRepo {
   // Player counts
   //
 
-  // The browser's refreshes revalidate with the API (a 304 when unchanged) instead of using the browser cache's copy
-  // (`max-age=60` on the live count, 300 on the rest), so they see the newest count
+  // The browser-only requests, refreshed every minute, revalidate with the API (a 304 when unchanged) instead of using
+  // the browser cache's copy (`max-age=60` live, 300 history). Not `/latest`: SSR renders it, and the transfer cache
+  // leaves out a request with `cache: 'no-cache'`, so the browser would fetch it again on hydration
 
   /** The newest stored sample of the players online, taken every 10 minutes */
   getLatestPlayerCount(): Observable<PlayerCount> {
     return this.httpClient
-      .get<PlayerCount>('/player-counts/latest', { cache: 'no-cache' })
+      .get<PlayerCount>('/player-counts/latest')
       .pipe(map(playerCount => ({ ...playerCount, date: new Date(playerCount.date) })));
   }
 
