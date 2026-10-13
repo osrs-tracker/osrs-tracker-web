@@ -23,7 +23,6 @@
 
       gtag('config', 'G-PSQN8ELKNJ', {
         send_page_view: false,
-        anonymize_ip: true,
         cookie_flags: 'SameSite=None;Secure',
         ...(location.hostname === 'localhost' ? { debug_mode: true } : {}),
         ...(localStorage.getItem('traffic_type') ? { traffic_type: localStorage.getItem('traffic_type') } : {}),
@@ -44,11 +43,7 @@
         .querySelector('meta[name="theme-color"]')
         .setAttribute('content', darkModeEnabled ? '#0f172a' : '#f1f5f9');
 
-      gtag('event', 'load_theme', {
-        event_category: 'theming',
-        event_label: 'load_theme',
-        value: darkModeEnabled ? 'dark' : 'light',
-      });
+      gtag('event', 'load_theme', { theme: darkModeEnabled ? 'dark' : 'light' });
     </script>
     <!-- End Load Theme -->
 

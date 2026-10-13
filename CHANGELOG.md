@@ -9,6 +9,8 @@
 - An item's daily volume covers the last week instead of two weeks. Item prices and charts now come from version 2 of
   the OSRS Wiki's prices API, as the Wiki asks, which serves the price history from its cache instead of its database.
   The monthly check of the GE tax rules uses version 2 too.
+- Google Analytics events name what they record (the theme, the item, the player) instead of using the old Universal
+  Analytics category and label, and the tag no longer sets an IP masking option that Google Analytics 4 ignores.
 
 ## 2026/10/12
 

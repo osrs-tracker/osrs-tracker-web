@@ -99,7 +99,7 @@ export class LoadError {
   readonly retry = output<void>();
 
   constructor() {
-    afterNextRender(() => this.analyticsService.trackEvent('load-error', 'errors', this.source(), undefined));
+    afterNextRender(() => this.analyticsService.trackEvent('load-error', { source: this.source() }));
   }
 
   onRetry(event: Event): void {
