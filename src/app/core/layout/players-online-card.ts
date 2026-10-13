@@ -29,11 +29,12 @@ const HEIGHT = 64;
   selector: 'players-online-card',
   template: `
     <a
-      class="flex flex-col gap-1.5 m-0.5 p-3 rounded-xl bg-inner border border-line hover:border-border text-sm text-muted"
+      class="group flex flex-col gap-1.5 m-0.5 p-3 rounded-xl bg-inner border border-line hover:bg-row hover:border-border text-sm text-muted transition-colors"
       routerLink="/players-online"
     >
       <span class="flex items-baseline justify-between gap-2">
-        <span class="font-bold">Players online</span><span>Last 24 hours</span>
+        <span class="font-bold group-hover:text-accent transition-colors">Players online</span
+        ><span>Last 24 hours</span>
       </span>
       @if (history.error()) {
         <load-error
