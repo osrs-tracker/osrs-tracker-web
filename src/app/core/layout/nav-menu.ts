@@ -1,5 +1,6 @@
 import {
   Component,
+  DestroyRef,
   ElementRef,
   Injectable,
   InputSignal,
@@ -61,6 +62,9 @@ export class NavMenus {
 /**
  * A nav tab that opens a menu of links (a disclosure, not an ARIA `menu`): under the nav's right edge on desktop, a
  * full-width sheet under the nav on phones. Escape, a click outside, focus leaving it and following a link close it.
+ * From `sm` up a mouse also opens it on hover and closes it on leaving the tab and panel, after short delays: the open
+ * one skips a pass over the nav (not when another menu is open, so moving along the tabs switches at once), the close
+ * one crosses the gap between tab and panel. A mouse click on a menu opened by hover keeps it open.
  * The links are in the page while it's closed (hidden), so the server render still links every page for crawlers.
  */
 @Component({
@@ -74,7 +78,7 @@ export class NavMenus {
       [attr.aria-controls]="menuId()"
       [attr.aria-current]="current() ? 'true' : null"
       [attr.data-marked]="marked() ? '' : null"
-      (click)="toggle()"
+      (click)="toggle($event)"
     >
       {{ label() }}
       <svg
@@ -108,6 +112,8 @@ export class NavMenus {
     '(document:keydown.escape)': 'closeOnEscape()',
     '(window:scroll)': 'closeOnPhoneScroll()',
     '(focusout)': 'closeOnFocusOut($event)',
+    '(pointerenter)': 'openOnHover($event)',
+    '(pointerleave)': 'closeOnHoverEnd($event)',
   },
 })
 export class NavMenu {
@@ -126,8 +132,49 @@ export class NavMenu {
   readonly isOpen: Signal<boolean> = computed(() => this.navMenus.open() === this.menuId());
   protected readonly marked: Signal<boolean> = computed(() => (this.navMenus.open() ? this.isOpen() : this.current()));
 
-  protected toggle(): void {
+  /** Whether hover opened it, so leaving closes it; a mouse click keeps it open */
+  private openedByHover = false;
+  private hoverTimer?: ReturnType<typeof setTimeout>;
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => clearTimeout(this.hoverTimer));
+  }
+
+  protected toggle(event: MouseEvent): void {
+    clearTimeout(this.hoverTimer);
+    // A keyboard press (no clicks counted) still closes it
+    if (this.isOpen() && this.openedByHover && event.detail > 0) {
+      this.openedByHover = false;
+      return;
+    }
+    this.openedByHover = false;
     this.navMenus.open.set(this.isOpen() ? null : this.menuId());
+  }
+
+  protected openOnHover(event: PointerEvent): void {
+    if (!this.hovers(event)) return;
+    clearTimeout(this.hoverTimer);
+    if (this.isOpen()) return;
+    const open = (): void => {
+      this.openedByHover = true;
+      this.navMenus.open.set(this.menuId());
+    };
+    if (this.navMenus.open()) open();
+    else this.hoverTimer = setTimeout(open, 100);
+  }
+
+  protected closeOnHoverEnd(event: PointerEvent): void {
+    if (!this.hovers(event)) return;
+    clearTimeout(this.hoverTimer);
+    if (this.isOpen() && this.openedByHover) {
+      // Only if it's still this menu: moving on to the next tab opens that one
+      this.hoverTimer = setTimeout(() => this.isOpen() && this.navMenus.close(), 300);
+    }
+  }
+
+  /** A mouse on the desktop layout: touch sends pointer events on a tap too, and the phone sheet opens on taps only */
+  private hovers(event: PointerEvent): boolean {
+    return event.pointerType === 'mouse' && !!this.window?.matchMedia('(width >= 40rem)').matches;
   }
 
   protected closeOnLink(event: Event): void {
