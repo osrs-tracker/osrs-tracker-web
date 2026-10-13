@@ -3,7 +3,8 @@
 ### Privacy
 
 - Google Analytics only runs if you allow it. A banner asks once, with two equal buttons, Allow and Don't allow, and
-  Cookies at the bottom of every page changes the choice later. Until you allow it, nothing is sent to Google.
+  Cookies at the bottom of every page changes the choice later. Until you allow it, nothing is sent to Google. The
+  banner shows together with the page instead of a moment after it, and never flashes up once you've chosen.
 - The privacy policy and terms are rewritten: shorter, naming who runs the site, what each kind of data is used for, how
   long it's kept and which other services your browser contacts. The site's security policy no longer allows connections
   to Jagex's image server, which the site doesn't use (news images come through OSRS Tracker's own API).

@@ -15,9 +15,16 @@ Choices that look like accidents without their context: what was decided, why, a
   the `_ga` cookies; `AnalyticsService` pushes nothing once the choice is `denied`. gtag batches hits, so a scroll hit
   recorded just before Don't allow can still go out a few seconds after it: data collected under consent, which
   withdrawing it doesn't undo (Article 7(3) GDPR), and gtag has no way to drop it. Events from before a choice wait in
-  `dataLayer`. The banner (`core/layout/consent-banner.ts`) renders only in the browser after hydration, fixed over the
-  page (no layout shift), not as a modal, and with two identical buttons, as regulators count a highlighted Accept
-  beside a faint Reject as steering. Cookies in the footer reopens it.
+  `dataLayer`. The banner (`core/layout/consent-banner.ts`) is fixed over the page (no layout shift), not a modal, and
+  has two identical buttons, as regulators count a highlighted Accept beside a faint Reject as steering. Cookies in the
+  footer reopens it.
+- **The banner is in every page's server HTML:** rendered only after hydration, it painted about a second after the page
+  and became the page's largest contentful paint (LCP 3.5 s instead of 2.5 s in PageSpeed Insights). The choice is in
+  this device's storage and the page cache serves everyone the same HTML, so the server always renders it, and
+  `index.html` hides it before the first paint with a `<style>` of its own when a choice is stored (a rule in
+  `styles.css` would be dropped from the build's critical CSS, as no element matches it at build time).
+  `ConsentService.init()` then removes the banner, and `reopen()` removes that style. `data-nosnippet` keeps its text
+  out of search results.
 - **Revisit:** if analytics moves to a cookieless tool (no banner needed), or the rules or the DPA's guidance change.
 
 ## The Wiki prices API is called through v2, as its guidelines ask (2026/10/13)

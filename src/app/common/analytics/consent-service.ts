@@ -11,6 +11,8 @@ export type AnalyticsConsent = 'granted' | 'denied';
 const TAG_URL = 'https://www.googletagmanager.com/gtag/js?id=' + config.gaMeasurementId;
 /** Google's opt-out flag: while it's set on `window`, the tag sends nothing */
 const DISABLE_KEY = 'ga-disable-' + config.gaMeasurementId;
+/** Added by `index.html` before the first paint when a choice is stored: hides the server-rendered banner */
+const CHOSEN_STYLE_ID = 'consent-chosen';
 
 /**
  * The visitor's choice about Google Analytics' cookies. Until they allow them, the tag (gtag.js) isn't loaded, so
@@ -25,11 +27,15 @@ export class ConsentService {
   private readonly storageService = inject(StorageService);
 
   readonly #choice = signal<AnalyticsConsent | null>(null);
-  readonly #bannerOpen = signal(false);
+  /**
+   * Open until `init()` reads the choice: the server renders the banner in every page (the choice is in this device's
+   * storage, and the page cache serves everyone the same HTML), so it paints with the page instead of after hydration
+   */
+  readonly #bannerOpen = signal(true);
   readonly choice: Signal<AnalyticsConsent | null> = this.#choice.asReadonly();
   readonly bannerOpen: Signal<boolean> = this.#bannerOpen.asReadonly();
 
-  /** Browser only, after hydration: the server can't know the choice, so it never renders the banner */
+  /** Browser only, after hydration; until then `index.html` hides the banner from visitors who chose before */
   init(): void {
     const stored = this.storageService.getItem(StorageKey.AnalyticsConsent);
     const choice = stored === 'granted' || stored === 'denied' ? stored : null;
@@ -39,6 +45,7 @@ export class ConsentService {
 
   /** The footer's Cookies button: shows the banner again, with the current choice */
   reopen(): void {
+    this.document.getElementById(CHOSEN_STYLE_ID)?.remove();
     this.#bannerOpen.set(true);
   }
 

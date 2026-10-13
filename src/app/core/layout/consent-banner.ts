@@ -15,6 +15,7 @@ import { ConsentService } from '@app/common/analytics/consent-service';
       class="flex flex-col gap-4 p-5 rounded-2xl border border-line bg-card shadow-float outline-none"
       aria-labelledby="consent-heading"
       tabindex="-1"
+      data-nosnippet
     >
       <div class="flex items-center gap-3">
         <span

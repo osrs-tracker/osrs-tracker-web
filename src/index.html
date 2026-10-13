@@ -22,7 +22,17 @@
       }
       gtag('js', new Date());
 
-      const analyticsAllowed = localStorage.getItem('analytics-consent') === 'granted';
+      const analyticsConsent = localStorage.getItem('analytics-consent');
+      const analyticsAllowed = analyticsConsent === 'granted';
+      // The server renders the consent banner in every page: hide it before the first paint from visitors who chose
+      // before, until ConsentService removes it. A style element of its own, as the build's critical CSS would drop a
+      // rule in styles.css that no element matches at build time
+      if (analyticsConsent === 'granted' || analyticsConsent === 'denied') {
+        const style = document.createElement('style');
+        style.id = 'consent-chosen';
+        style.textContent = 'consent-banner { display: none; }';
+        document.head.appendChild(style);
+      }
       gtag('consent', 'default', {
         analytics_storage: analyticsAllowed ? 'granted' : 'denied',
         ad_storage: 'denied',
