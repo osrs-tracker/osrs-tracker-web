@@ -104,15 +104,17 @@
         (retry)="history.retry()"
       ></article>
 
-      <!-- Clues or Minigames: on phones after the chart -->
-      <article
-        activities-card
-        class="order-3"
-        [username]="player.username"
-        [hiscore]="history.current()"
-        [gains]="activityGains()"
-        [minigame]="chartedMinigame()"
-      ></article>
+      <!-- Clues or Minigames: on phones after the chart, so it hydrates when scrolled to, like the day log -->
+      @defer (on immediate; hydrate on viewport) {
+        <article
+          activities-card
+          class="order-3"
+          [username]="player.username"
+          [hiscore]="history.current()"
+          [gains]="activityGains()"
+          [minigame]="chartedMinigame()"
+        ></article>
+      }
     </aside>
 
     @if (history.firstPageFailed()) {
@@ -134,34 +136,40 @@
         [emptyText]="emptyChartText()"
       />
 
-      <section class="order-4 md:col-start-2 md:row-start-2 min-w-0 flex flex-col gap-6" aria-label="Day log">
-        <player-logs
-          [diffs]="diffs()"
-          [loading]="!history.loaded()"
-          [todayLoading]="history.todayLoading()"
-          [todaySince]="history.todayFailed() ? undefined : trackedAt()"
-          [notice]="logNotice()"
-        />
+      <!--
+        Below the fold on phones: it stays server HTML until scrolled to, which keeps it out of the page's hydration task
+        (#247). Client-side navigation renders it at once.
+      -->
+      @defer (on immediate; hydrate on viewport) {
+        <section class="order-4 md:col-start-2 md:row-start-2 min-w-0 flex flex-col gap-6" aria-label="Day log">
+          <player-logs
+            [diffs]="diffs()"
+            [loading]="!history.loaded()"
+            [todayLoading]="history.todayLoading()"
+            [todaySince]="history.todayFailed() ? undefined : trackedAt()"
+            [notice]="logNotice()"
+          />
 
-        @if (history.hasMore()) {
-          @if (history.loadMoreFailed()) {
-            <load-error
-              source="player-history-more"
-              message="Couldn't load more days."
-              (retry)="history.retryLoadMore()"
-            />
-          } @else {
-            <button
-              type="button"
-              class="button--default button--rounded self-center px-12 bg-card disabled:opacity-60"
-              [disabled]="history.loadingMore()"
-              (click)="loadMoreDays()"
-            >
-              {{ history.loadingMore() ? 'Loading…' : 'Load more days' }}
-            </button>
+          @if (history.hasMore()) {
+            @if (history.loadMoreFailed()) {
+              <load-error
+                source="player-history-more"
+                message="Couldn't load more days."
+                (retry)="history.retryLoadMore()"
+              />
+            } @else {
+              <button
+                type="button"
+                class="button--default button--rounded self-center px-12 bg-card disabled:opacity-60"
+                [disabled]="history.loadingMore()"
+                (click)="loadMoreDays()"
+              >
+                {{ history.loadingMore() ? 'Loading…' : 'Load more days' }}
+              </button>
+            }
           }
-        }
-      </section>
+        </section>
+      }
     }
   </main>
 } @else {
