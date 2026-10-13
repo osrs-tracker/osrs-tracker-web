@@ -25,7 +25,7 @@ export class ThemeService {
 
     this.storageService.setItem(StorageKey.DarkMode, JSON.stringify(this.darkMode()));
 
-    this.analyticsService.trackEvent('toggle_dark_mode', 'theming', 'dark_mode', this.darkMode());
+    this.analyticsService.trackEvent('toggle_dark_mode', { theme: this.darkMode() ? 'dark' : 'light' });
 
     document.documentElement.classList.toggle('dark', this.darkMode());
     // The page ground (slate-900 / slate-100), as index.html sets it on load

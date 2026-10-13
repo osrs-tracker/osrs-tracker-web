@@ -44,7 +44,7 @@ export default class ErrorPage {
     }
 
     // Reported like a <load-error>, so all failures users see are counted the same way
-    afterNextRender(() => this.analyticsService.trackEvent('load-error', 'errors', 'page', undefined));
+    afterNextRender(() => this.analyticsService.trackEvent('load-error', { source: 'page' }));
   }
 
   /** Loads the failed page again: the address bar still shows its URL (see `resolverErrorHandler`). */

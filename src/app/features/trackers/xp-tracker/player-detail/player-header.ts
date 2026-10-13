@@ -123,12 +123,10 @@ export class PlayerHeader {
   toggleFavorite(): void {
     this.xpTrackerStore.toggleFavoritePlayer(this.playerDetail().username);
 
-    this.analyticsService.trackEvent(
-      'toggle_favorite_player',
-      'xp_tracker',
-      this.playerDetail().username,
-      this.isFavorite(),
-    );
+    this.analyticsService.trackEvent('toggle_favorite_player', {
+      username: this.playerDetail().username,
+      favorite: this.isFavorite(),
+    });
   }
 
   private hiscoreType(player: Player): string {

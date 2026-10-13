@@ -21,12 +21,9 @@ export class AnalyticsService {
     });
   }
 
-  trackEvent(action: string, category: string, label: unknown, value: unknown) {
-    this.gtag?.('event', action, {
-      event_category: category,
-      event_label: label,
-      value,
-    });
+  /** GA4 reports show a parameter only once it's registered as a custom dimension (Admin → Custom definitions). */
+  trackEvent(name: string, params: Record<string, string | number | boolean>) {
+    this.gtag?.('event', name, params);
   }
 
   trackException(description: string, fatal = false, error?: Error) {

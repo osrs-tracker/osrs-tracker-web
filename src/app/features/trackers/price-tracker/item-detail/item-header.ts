@@ -164,9 +164,9 @@ export class ItemHeader {
   readonly isFavorite: Signal<boolean> = computed(() => this.priceTrackerStore.isFavoriteItem(this.item().id));
 
   toggleFavorite(): void {
-    this.analyticsService.trackEvent('toggle_favorite_item', 'price_tracker', this.item().id, this.isFavorite());
-
     const { id, name, icon } = this.item();
     this.priceTrackerStore.toggleFavoriteItem({ id, name, icon });
+
+    this.analyticsService.trackEvent('toggle_favorite_item', { item_id: id, favorite: this.isFavorite() });
   }
 }
