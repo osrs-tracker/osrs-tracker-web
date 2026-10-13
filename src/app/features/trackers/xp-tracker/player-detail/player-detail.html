@@ -93,16 +93,25 @@
 
   <main class="max-w-page mx-auto px-4 sm:px-6 pt-6 pb-18 grid items-start gap-6 md:grid-player-tablet lg:grid-player">
     <aside class="contents md:flex md:flex-col md:gap-6 md:col-start-1 md:row-start-1 md:row-span-2 min-w-0">
-      <!-- Skills, Bosses or Raids: beside the chart, so on phones it comes first -->
-      <article
-        skills-card
-        class="order-1"
-        [hiscore]="history.current()"
-        [skillGains]="skillGains()"
-        [activityGains]="activityGains()"
-        [failed]="hiscoresFailed()"
-        (retry)="history.retry()"
-      ></article>
+      <!--
+        Skills, Bosses or Raids: beside the chart, so on phones it comes first. It hydrates when the browser is idle, a
+        task after the page's hydration (#247). Not `hydrate on interaction` or `when` the live hiscores are in: while
+        the hiscores request hangs, neither fired. On client-side navigation the placeholder, the Skills tab's height,
+        keeps the chart from moving while the card's chunk loads.
+      -->
+      @defer (on immediate; hydrate on idle) {
+        <article
+          skills-card
+          class="order-1"
+          [hiscore]="history.current()"
+          [skillGains]="skillGains()"
+          [activityGains]="activityGains()"
+          [failed]="hiscoresFailed()"
+          (retry)="history.retry()"
+        ></article>
+      } @placeholder {
+        <article class="order-1 h-115.5 rounded-2xl bg-card" aria-busy="true"></article>
+      }
 
       <!-- Clues or Minigames: on phones after the chart, so it hydrates when scrolled to, like the day log -->
       @defer (on immediate; hydrate on viewport) {

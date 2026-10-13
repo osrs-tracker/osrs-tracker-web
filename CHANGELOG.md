@@ -25,8 +25,8 @@
 - Player pages have a 90D period, as OSRS Tracker now keeps 90 days of stats instead of 60. The history fills up from
   today: until 12 November, 90D shows the gains since the oldest day kept.
 - Player pages respond sooner after they load, especially on phones: the charts are drawn just after the page comes
-  alive instead of during it, and on phones the clues and minigames card and the day log only start up once you scroll
-  to them. Item pages benefit from the chart change too.
+  alive instead of during it, the skills, bosses and raids card starts up a moment later, and on phones the clues and
+  minigames card and the day log only start up once you scroll to them. Item pages benefit from the chart change too.
 
 ### Behind the scenes
 
