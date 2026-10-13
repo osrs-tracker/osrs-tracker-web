@@ -67,7 +67,11 @@ import { ConsentService } from '@app/common/analytics/consent-service';
       </div>
     </section>
   `,
-  host: { class: 'fixed z-50 bottom-4 inset-x-4 sm:bottom-6 sm:left-6 sm:right-auto sm:w-100' },
+  host: {
+    'class': 'fixed z-50 bottom-4 inset-x-4 sm:bottom-6 sm:left-6 sm:right-auto sm:w-100',
+    // In every page's HTML, so search results never quote it
+    'data-nosnippet': '',
+  },
   imports: [RouterLink],
 })
 export class ConsentBanner {

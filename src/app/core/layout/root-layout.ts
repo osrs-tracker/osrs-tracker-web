@@ -32,7 +32,7 @@ export default class RootLayout {
   ];
 
   constructor() {
-    // After hydration: the banner depends on this device's choice, which the server can't know
+    // After hydration: whether the banner stays depends on this device's choice, which the server can't know
     afterNextRender(() => this.consentService.init());
   }
 }

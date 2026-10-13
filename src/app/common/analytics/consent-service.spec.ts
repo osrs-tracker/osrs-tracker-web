@@ -24,6 +24,7 @@ describe('ConsentService', () => {
     document.querySelectorAll(TAG).forEach(tag => tag.remove());
     document.cookie = '_ga=; Max-Age=0; path=/';
     delete (window as unknown as Record<string, unknown>)['ga-disable-G-PSQN8ELKNJ'];
+    document.getElementById('consent-chosen')?.remove();
   });
 
   it('opens the banner when nothing was chosen yet', () => {
@@ -39,6 +40,17 @@ describe('ConsentService', () => {
 
     expect(service.choice()).toBe('denied');
     expect(service.bannerOpen()).toBe(false);
+  });
+
+  it('shows the banner again when reopened, although index.html hid it before the first paint', () => {
+    localStorage.setItem('analytics-consent', 'granted');
+    document.head.appendChild(Object.assign(document.createElement('style'), { id: 'consent-chosen' }));
+    service.init();
+
+    service.reopen();
+
+    expect(service.bannerOpen()).toBe(true);
+    expect(document.getElementById('consent-chosen')).toBeNull();
   });
 
   it('loads the tag once, only when allowed', () => {
