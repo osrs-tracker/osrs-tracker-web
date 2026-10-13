@@ -34,7 +34,7 @@
           class="block max-w-110 rounded-2xl bg-card"
           source="player-count-live"
           message="The current player count didn't load."
-          (retry)="live.reload()"
+          (retry)="retry()"
         />
       } @else if (count(); as count) {
         <div class="flex flex-col gap-2">

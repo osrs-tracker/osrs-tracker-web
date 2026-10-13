@@ -5,6 +5,7 @@ import {
   inject,
   input,
   InputSignal,
+  linkedSignal,
   PLATFORM_ID,
   ResourceRef,
   Signal,
@@ -16,11 +17,11 @@ import { format, isToday, isYesterday } from 'date-fns';
 import { map } from 'rxjs';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { OsrsTrackerRepo, PlayerCountPoint, PlayerCountRange } from '@app/common/api/osrs-tracker-repo';
+import { PlayerCountStore } from '@app/common/player-count/player-count-store';
 import { Card } from '@app/common/ui/cards/card';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
-import { everyMinute } from './every-minute';
 import { lineName, PlayerCountChart, PlayerCountSeries } from './player-count-chart';
 
 const HOUR = 3_600_000;
@@ -61,7 +62,7 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
         }
       </p>
 
-      @if (history.error()) {
+      @if (failed()) {
         <load-error
           class="block h-56 sm:h-70"
           source="player-count-history"
@@ -145,16 +146,26 @@ export class PlayerCountHistory {
         ),
   });
 
-  // A refresh keeps the drawn chart until its points arrive: only a first load, a new range or a retry shows skeletons
-  readonly loading: Signal<boolean> = computed(
-    () => !this.isBrowser || (this.history.isLoading() && !this.history.hasValue()),
-  );
+  /** The range's points; a refresh keeps the drawn ones until new ones arrive, and keeps them when it fails */
+  private readonly points: Signal<PlayerCountPoint[] | undefined> = linkedSignal<
+    { range: PlayerCountRange; points: PlayerCountPoint[] | undefined },
+    PlayerCountPoint[] | undefined
+  >({
+    source: () => ({ range: this.range(), points: this.history.hasValue() ? this.history.value() : undefined }),
+    computation: (next, previous) =>
+      next.points ?? (previous?.source.range === next.range ? previous.value : undefined),
+  });
 
-  readonly series: Signal<PlayerCountSeries | undefined> = computed(() =>
-    this.history.hasValue()
-      ? { range: this.range(), points: this.history.value()!, locationOrder: this.locationOrder() }
-      : undefined,
-  );
+  /** Skeletons on a first load, a new range or a retry, never on a refresh */
+  readonly loading: Signal<boolean> = computed(() => !this.isBrowser || (this.history.isLoading() && !this.points()));
+
+  /** An error only when there's nothing to draw: a failed refresh keeps the chart, and the next one tries again */
+  readonly failed: Signal<boolean> = computed(() => !!this.history.error() && !this.points());
+
+  readonly series: Signal<PlayerCountSeries | undefined> = computed(() => {
+    const points = this.points();
+    return points ? { range: this.range(), points, locationOrder: this.locationOrder() } : undefined;
+  });
 
   /** A daily range on the first day of counting: one point, so no line */
   readonly singleDay: Signal<boolean> = computed(() => this.series()?.points.length === 1);
@@ -203,7 +214,7 @@ export class PlayerCountHistory {
   });
 
   constructor() {
-    everyMinute(() => this.history.reload());
+    inject(PlayerCountStore).watch(() => this.history.reload());
   }
 
   selectRange(range: PlayerCountRange): void {

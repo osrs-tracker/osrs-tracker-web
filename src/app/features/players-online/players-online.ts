@@ -1,28 +1,16 @@
-import { DecimalPipe, isPlatformBrowser } from '@angular/common';
-import {
-  afterNextRender,
-  Component,
-  computed,
-  inject,
-  PLATFORM_ID,
-  ResourceRef,
-  Signal,
-  signal,
-  WritableSignal,
-} from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { DecimalPipe } from '@angular/common';
+import { afterNextRender, Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
 import { PlayerCount } from '@osrs-tracker/models';
 import { format } from 'date-fns';
-import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
+import { PlayerCountStore } from '@app/common/player-count/player-count-store';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
-import { everyMinute } from './every-minute';
 import { PlayerCountHistory } from './player-count-history';
 import { formatShare, LocationCount, locationCounts } from './world-locations';
 
 /**
- * The players online: the count, its members and free-to-play split and its world locations, rendered on the server
- * from the stored sample and live in the browser, and the history below, drawn in the browser.
+ * The players online: the count (`PlayerCountStore`: the stored sample on the server, live in the browser), its
+ * members and free-to-play split and its world locations, and the history below, drawn in the browser.
  */
 @Component({
   selector: 'players-online',
@@ -30,27 +18,12 @@ import { formatShare, LocationCount, locationCounts } from './world-locations';
   imports: [DecimalPipe, LoadError, PlayerCountHistory, Skeleton],
 })
 export default class PlayersOnline {
-  private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
-  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly hydrated: WritableSignal<boolean> = signal(false);
 
-  /** The newest stored sample (sampled every 10 minutes): rendered on the server, so its render never waits on Jagex */
-  private readonly stored: ResourceRef<PlayerCount | undefined> = rxResource({
-    stream: () => this.osrsTrackerRepo.getLatestPlayerCount(),
-  });
+  private readonly playerCountStore = inject(PlayerCountStore);
 
-  /** The live count, from right after hydration (browser only), replacing the stored sample */
-  readonly live: ResourceRef<PlayerCount | undefined> = rxResource({
-    params: () => this.hydrated() || undefined,
-    stream: () => this.osrsTrackerRepo.getLivePlayerCount(),
-  });
-
-  readonly count: Signal<PlayerCount | undefined> = computed(() =>
-    this.live.hasValue() ? this.live.value() : this.stored.hasValue() ? this.stored.value() : undefined,
-  );
-
-  /** Only the live count can fail: during SSR a failed stored sample renders as loading, until the live count loads */
-  readonly failed: Signal<boolean> = computed(() => !!this.live.error());
+  readonly count: Signal<PlayerCount | undefined> = this.playerCountStore.count;
+  readonly failed: Signal<boolean> = this.playerCountStore.failed;
 
   readonly locations: Signal<(LocationCount & { share: string; percent: number })[]> = computed(() => {
     const count = this.count();
@@ -90,6 +63,10 @@ export default class PlayersOnline {
 
   constructor() {
     afterNextRender(() => this.hydrated.set(true));
-    everyMinute(() => this.live.reload());
+    this.playerCountStore.watch();
+  }
+
+  retry(): void {
+    this.playerCountStore.refresh();
   }
 }
