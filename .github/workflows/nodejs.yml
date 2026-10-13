@@ -9,6 +9,9 @@ on:
     paths-ignore: ['osrs-tracker-web.yaml', 'public/sitemap*.xml']
   pull_request:
     branches: ['main']
+  # The merge queue tests each PR on top of main and the PRs queued ahead of it; the required checks must report here
+  # too, or the queue never merges. Takes no paths filter, so they always do.
+  merge_group:
 
 jobs:
   # Build and test only run when something they depend on changed since the previous push, so commits like a deploy
@@ -29,17 +32,17 @@ jobs:
         name: Check for source or dependency changes
         env:
           # A new push to a PR compares with the previous push, not the base branch, so a digest commit doesn't rerun
-          # them for the PR's earlier source changes
+          # them for the PR's earlier source changes. A merge queue run compares with the main commit it's built on.
           BEFORE:
-            ${{ (github.event_name == 'push' || github.event.action == 'synchronize') && github.event.before ||
-            github.event.pull_request.base.sha }}
-          AFTER: ${{ github.event.pull_request.head.sha || github.sha }}
+            ${{ github.event.merge_group.base_sha || (github.event_name == 'push' || github.event.action ==
+            'synchronize') && github.event.before || github.event.pull_request.base.sha }}
+          AFTER: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha || github.sha }}
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
         run: |
           # Deploy commits get no CI run (paths-ignore above), so they have no results to compare with. Step back past
-          # them to the last commit that went through CI, or the next push would rebuild even for docs.
-          if [ "$GITHUB_EVENT_NAME" = push ] && [ -n "$BEFORE" ]; then
+          # them to the last commit that went through CI, or the next push (or queued PR) would rebuild even for docs.
+          if { [ "$GITHUB_EVENT_NAME" = push ] || [ "$GITHUB_EVENT_NAME" = merge_group ]; } && [ -n "$BEFORE" ]; then
             for _ in 1 2 3 4 5; do
               only=$(git diff --name-only "$BEFORE^" "$BEFORE" 2>/dev/null) || break
               printf '%s\n' "$only" | grep -q -v -E '^(osrs-tracker-web\.yaml|public/sitemap[^/]*\.xml)$' && break
