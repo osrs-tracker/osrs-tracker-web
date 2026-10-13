@@ -54,7 +54,10 @@ export interface SegmentedOption<T> {
           variant() === 'slate'
             ? 'h-10 px-3.5 max-sm:flex-1 md:max-xl:flex-1 rounded-xl text-base ' +
               (option.value === value() ? 'bg-line text-strong' : 'text-muted hover:text-strong')
-            : 'h-8 px-3 rounded-full text-sm ' + (option.value === value() ? 'bg-accent text-on-accent' : 'text-strong')
+            : 'h-8 px-3 rounded-full text-sm ' +
+              (option.value === value()
+                ? 'bg-accent text-on-accent'
+                : 'text-strong hover:bg-row aria-disabled:hover:bg-transparent')
         "
         [attr.aria-checked]="option.value === value()"
         [attr.title]="option.title ?? null"

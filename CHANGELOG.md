@@ -80,6 +80,8 @@
   the page has started up. With a tracking time other than 00:00 UTC picked, a player page no longer asks for the player
   again before it starts up, so its history loads one request sooner. The chart no longer waits for what the stat tiles
   compare with the period before.
+- The switches that pick a period or a view (7D, 30D, 90D and the like) light up the option under the pointer, like the
+  site's other buttons, so it's clear which one a click picks.
 
 ### Behind the scenes
 
