@@ -6,8 +6,9 @@ Choices that look like accidents without their context: what was decided, why, a
 
 - **Context:** on iPhones, Brave (a WKWebView) put the nav under the Dynamic Island after every refresh, and the page
   couldn't scroll up until it had scrolled down. Safari was fine. With `viewport-fit=cover` the page pads itself by
-  `env(safe-area-inset-*)` and WebKit stops adding the safe area to the scroll view's insets; on reload the web view
-  switches between the two and keeps the wrong top inset until the next scroll.
+  `env(safe-area-inset-*)` and WebKit stops adding the safe area to the scroll view's insets. The likely cause (not
+  confirmed in Brave's code): on reload the web view switches between the two and keeps the wrong top inset until the
+  next scroll.
 - **Decision:** the viewport meta has no `viewport-fit`, so the browser keeps the page inside the safe area, and there
   are no `env(safe-area-inset-*)` paddings. The nav and footer use the page background, which browsers paint into the
   areas around the safe area, so nothing looks different.
