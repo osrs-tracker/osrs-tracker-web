@@ -216,7 +216,7 @@ export default class PlayerDetail implements OnInit {
   });
   readonly statTiles: Signal<StatTileView[] | undefined> = computed(() => {
     const overall = this.overall();
-    if (!overall || !this.history.periodLoaded()) return undefined;
+    if (!overall || !this.history.comparedLoaded()) return undefined;
     return statTilesFor(overall, this.summary(), this.playerView.period(), this.history.previousPeriodFailed());
   });
 

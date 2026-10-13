@@ -55,11 +55,13 @@ export interface PlayerHistory {
   /** `entries` and, when older, the check the period before starts from, so the stat tiles can compare the two */
   readonly comparedEntries: Signal<HiscoreEntry[]>;
   readonly hasMore: Signal<boolean>;
-  /**
-   * The period's history and the check the period before starts from are in (or there's no more, or it failed), so the
-   * chart and tiles are drawn once, complete
-   */
+  /** The period's history is in (or there's no more, or it failed), so the chart is drawn once, complete */
   readonly periodLoaded: Signal<boolean>;
+  /**
+   * `periodLoaded`, and the check the period before starts from is in (or failed), so the stat tiles are drawn once,
+   * with their comparison. Only the tiles wait for it: it's the slowest request when the API is slow.
+   */
+  readonly comparedLoaded: Signal<boolean>;
   /** The live hiscores; until they load (or when they fail) the newest tracked entry */
   readonly current: Signal<HiscoreEntry | undefined>;
   /** When the daily check last stored the player's stats (a failed check stores nothing): the newest entry's date */
@@ -139,6 +141,7 @@ export function playerHistory(params: {
   });
   /** The entries the period needs: its days and the check they start from, as far as the history goes */
   const periodSize = computed(() => Math.min(period() + 1, PERIOD_SIZE));
+  const periodLoaded = computed(() => loaded() && (entries().length >= periodSize() || !hasMore() || loadMoreFailed()));
 
   function loadMore(size: number = MORE_SIZE): void {
     const { run } = paging();
@@ -184,12 +187,10 @@ export function playerHistory(params: {
       return start && oldest && start.date < oldest.date ? [...entries(), start] : entries();
     }),
     hasMore,
-    periodLoaded: computed(
-      () =>
-        loaded() &&
-        // not while it reloads after failing: the tiles stay, showing the failure until it's in
-        previousPeriodStart.status() !== 'loading' &&
-        (entries().length >= periodSize() || !hasMore() || loadMoreFailed()),
+    periodLoaded,
+    comparedLoaded: computed(
+      // not while it reloads after failing ('reloading'): the tiles stay, showing the failure until it's in
+      () => periodLoaded() && previousPeriodStart.status() !== 'loading',
     ),
     current: computed(() => today() ?? entries()[0]),
     lastCheckedAt: computed(() => entries()[0]?.date),
