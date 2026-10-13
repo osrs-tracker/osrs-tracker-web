@@ -81,6 +81,18 @@ jobs:
       - run: npm run lint
       - run: npm run prettier:ci
 
+  # Local links and #anchors in the Markdown, on every push as docs-only pushes skip build and test. `--offline` leaves
+  # out external URLs, so other sites can't make it flaky.
+  links:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: lycheeverse/lychee-action@v2
+        with:
+          args: --offline --include-fragments --no-progress './**/*.md'
+          fail: true
+
   build:
     needs: changes
     # `!cancelled()` runs it when `changes` itself fails, so a broken check can't skip the build

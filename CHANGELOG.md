@@ -1,4 +1,4 @@
-## 2026/10/13
+## 2026-10-13
 
 ### Privacy
 
@@ -34,8 +34,10 @@
 - Requests the site's server makes, to the OSRS Wiki and to OSRS Tracker's own API, name the site's GitHub repository
   (`github:osrs-tracker/osrs-tracker-web`) as their user agent, so whoever receives them knows where to report a
   problem.
+- This changelog dates its days as 2026-10-13 instead of 2026/10/13, the international standard, and every change is
+  checked for broken links in the project's documentation.
 
-## 2026/10/12
+## 2026-10-12
 
 ### Item pages
 
@@ -63,7 +65,7 @@
 - Claude Code gets a `verify` skill that runs the build, lint, formatting and tests, which Claude Code runs before each
   commit of a code change, and the lint check before a push now only starts for commands that run git.
 
-## 2026/10/11
+## 2026-10-11
 
 ### Look and feel
 
@@ -93,7 +95,7 @@
   shows, then the buy limit and high alch value, each after a dot. It no longer says whether it's a members or
   free-to-play item.
 
-## 2026/10/10
+## 2026-10-10
 
 ### Look and feel
 
@@ -179,7 +181,7 @@
   instead of asking the API for the same item or player up to three times and relying on those requests being merged.
   Nothing looks different.
 
-## 2026/10/09
+## 2026-10-09
 
 ### Price pages
 
@@ -240,7 +242,7 @@
   with every update. Right after an update, the first visitors get ready-made pages instead of waiting for them to be
   built, and a rare cause of failed page loads is fixed.
 
-## 2026/10/08
+## 2026-10-08
 
 ### Player pages
 
@@ -292,7 +294,7 @@
   the main one, however the publish is written.
 - Removed three old comparison icons that nothing on the site used anymore.
 
-## 2026/10/07
+## 2026-10-07
 
 ### The new look
 
@@ -385,7 +387,7 @@
   for the installed version, and the guide has notes on code navigation and on which data loads only in the browser:
   lookups and player tracking (for people, not crawlers) and large price lists.
 
-## 2026/10/05
+## 2026-10-05
 
 - Player pages show a chart above the logs. Skills: the XP gained per skill over the loaded days, in RuneLite's skill
   colours, with the top 6 shown and the rest toggled from the legend. Other: daily bosses, raids, clues or minigames
@@ -399,7 +401,7 @@
 - Updated the SOLIX font to version 2.21, now loaded as a single variable font: one smaller download covers every
   weight.
 
-## 2026/10/04
+## 2026-10-04
 
 ### Error handling
 
@@ -452,7 +454,7 @@
 - Automated tests for the page cache, page pre-rendering, request handling, monitoring, page errors and removing players
   that no longer exist.
 
-## 2026/10/03
+## 2026-10-03
 
 ### Player pages
 
@@ -487,7 +489,7 @@
 - Removed unused dependencies, and unused development tools that pulled in packages with known security issues.
 - Documented the new pull request workflow and the release flow for developers.
 
-## 2026/10/02
+## 2026-10-02
 
 ### Fixes
 
@@ -497,7 +499,7 @@
 - Unknown pages, items and players return a proper 404 status.
 - Searching for items or players with special characters in their name works.
 - Loading spinners no longer get stuck when a request fails (player pages and the home page news followed on
-  2026/10/04).
+  2026-10-04).
 - The favorite player toggle is reported correctly in analytics.
 
 ### Other changes
@@ -507,145 +509,145 @@
 - Expanded the README with features, how the project fits together, and how to run it locally.
 - Updated the developer documentation for working across the OSRS Tracker projects.
 
-## 2026/09/26
+## 2026-09-26
 
 - Updated the hiscores package to fix a `hiscoreDiff` bug.
 
-## 2026/09/23
+## 2026-09-23
 
 - Updated the XP Tracker to use structured hiscore data.
 - Added skill and activity icons to player details and XP Tracker logs.
 
-## 2026/07/29
+## 2026-07-29
 
 - Added support for the new `Mad Angel` hiscore category.
 
-## 2026/07/26
+## 2026-07-26
 
 - Updated to Angular 22.
 - Fixed players who changed their name not being removed from the XP Tracker.
 - Fixed using the back button from the 404 page not working correctly in the XP Tracker.
 
-## 2026/06/30
+## 2026-06-30
 
 - Added support for the new `Maggot King` hiscore category.
 
-## 2026/05/11
+## 2026-05-11
 
 - Fixed an issue where the 404 page would flash before loading the correct page.
 
-## 2026/05/06
+## 2026-05-06
 
 - dependency updates
 
-## 2026/02/25
+## 2026-02-25
 
 - Added support for the new `Brutus` hiscore category.
 
-## 2026/02/24
+## 2026-02-24
 
 - Updated to Angular 21.
 - Updated all dependencies to their latest versions.
 
-## 2025/11/19
+## 2025-11-19
 
 - Added support for the new `Sailing` hiscore category.
 
-## 2025/11/18
+## 2025-11-18
 
 - Prepped the skills component for the upcoming Sailing skill addition.
 - Added skill progress bars to display progress to next level for each skill.
 
-## 2025/11/05
+## 2025-11-05
 
 - Added support for the new `Shellbane Gryphon` hiscore category (Sailing pre-release).
 
-## 2025/10/15
+## 2025-10-15
 
 - Make XP Tracker compatible with Grid Master changes.
 
-## 2025/09/24
+## 2025-09-24
 
 - Added a button to the XP Tracker to open the player's hiscore page on the official OSRS website.
 
-## 2025/07/23
+## 2025-07-23
 
 - Added support for the new `Doom of Mokhaiotl` hiscore category.
 
-## 2025/06/14
+## 2025-06-14
 
 - Updated to Angular 20.
 - Updated all dependencies to their latest versions.
 - increased displayed global/favorite item count in the main Price Tracker and XP Tracker to `6`.
 
-## 2025/05/14
+## 2025-05-14
 
 - Add support for the `Yama` hiscore category.
 
-## 2025/05/04
+## 2025-05-04
 
 - Fix feature image/text order on home page.
 - Add fallback from item image to item icon if the item image is not available.
 
-## 2025/04/29
+## 2025-04-29
 
 - Made it possible to use `Enter` to submit the search form in the XP Tracker.
 - Disabled form autocomplete in the Price Tracker and XP Tracker.
 
-## 2025/04/27
+## 2025-04-27
 
 - SSR will not send a 404 response when the page is not found, instead of a soft 404 page with a 200 response.
 - SSR will now dismiss queryParams when checking for cached pages.
 
-## 2025/04/24
+## 2025-04-24
 
 - Improved Xp Tracker SSR page loading speed by deferring the OSRS Hiscore calls to the client side.
 - Made spinner more understandable to search engines.
 - TailwindCSS v4 migration.
 - Changed to the new News API endpoints.
 
-## 2025/04/19
+## 2025-04-19
 
 - Use new API to prevent AWS Lamda cold starts.
 
-## 2025/04/15
+## 2025-04-15
 
 - Fixed a bug where when the SSR fails the error could not be caught and the page would not load.
 - Added a fallback to non-SSR if the SSR fails (index.csr.html).
 - Moved health check and metrics to a separate port (9090).
 - Updated Dockerfile and Kubernetes configuration to reflect the new metrics port.
 
-## 2025/04/14
+## 2025-04-14
 
 - Refactored the `server.ts` file to a fully fleshed out `express` server folder structure.
 - Created `utils/page-cache.ts`, `utils/auto-generator.ts` and `server-config.ts` for automatically pre-rendering pages
   and caching them.
 
-## 2025/04/13
+## 2025-04-13
 
 - Migrated to Angular SSR
 - Temporarily disabled Angular Service Worker to prevent CSP and caching issues.
 - Minor changes in logic to allow for SSR.
 
-## 2025/04/05
+## 2025-04-05
 
 - Added new section to Price Tracker: `Global recent lookups`.
 - Added new section to XP Tracker: `Global recent lookups`.
 
-## 2025/02/05
+## 2025-02-05
 
 - Add support for the new `The Royal Titans` hiscore category.
 
-## 2025/01/29
+## 2025-01-29
 
 - Add support for the new `Collection Log` hiscore category.
 - Updated copyright to 2025.
 
-## 2025/01/05
+## 2025-01-05
 
 - Fix `eslint` not linting any files anymore.
 
-## 2024/12/30
+## 2024-12-30
 
 - Deferred `price-chart` and `volume-chart` loading to improve page load time, plus minor chart style changes.
 - Renamed xp-tracker search field from `username` to `player name` to prevent password manager code injection.
@@ -653,122 +655,122 @@
 - Replaced bad `/changelog` route with `/about/changelog`.
 - Used `div` instead of `p` for `page-header` content to be semantically correct.
 
-## 2024/12/28
+## 2024-12-28
 
 - minor config changes.
 
-## 2024/12/14
+## 2024-12-14
 
 - fix minor styling issues
 - update @angular-eslint to a non alpha version
 
-## 2024/11/29
+## 2024-11-29
 
 - Updated to Angular 19
 - Executed all new possible Angular migrations
 - Updated all dependencies to their latest versions
 
-## 2024/09/25
+## 2024-09-25
 
 - Varlamore Part 2 support
 
-## 2024/09/14
+## 2024-09-14
 
 - update dependencies
 
-## 2024/08/28
+## 2024-08-28
 
 - Arraxor support
 
-## 2024/05/23
+## 2024-05-23
 
 - Updated to Angular 18
 - Updated all dependencies to their latest versions
 - Use zoneless change detection, removed zone.js
 - Use new signal input/output/... notation
 
-## 2024/04/06
+## 2024-04-06
 
 - Add missing colliseum glory icon
 
-## 2024/03/20
+## 2024-03-20
 
 - Varlamore p1 support
 
-## 2024/02/28
+## 2024-02-28
 
 - Added xp tooltips to the skills overview in xp tracker
 
-## 2024/02/27
+## 2024-02-27
 
 - updated dependencies
 - fixed issue where tooltip arrows would be misaligned a bit.
 
-## 2024/02/25
+## 2024-02-25
 
 - remove players that are missing from the hiscores from the xp tracker (name change, banned, etc)
 
-## 2024/02/07
+## 2024-02-07
 
 - skill overview in xp tracker
 
-## 2024/01/24
+## 2024-01-24
 
 - Fix scurrius being added breaking hiscores
 
-## 2023/12/16
+## 2023-12-16
 
 - Add "Load more data" button to the XP Tracker if you want to see older data. By default only max `60` days of data is
   stored.
 
-## 2023/12/15
+## 2023-12-15
 
 - Show which skills have leveled up in the XP Tracker.
 - Add optional localStorage setting `traffic_type` that will be used to determine the traffic type for the Google
   Analytics tracker.
 - updated `@angular` to `v17.0.7` and other dependencies as well.
 
-## 2023/11/12
+## 2023-11-12
 
 - Update @angular to `v17.0.4`.
   - Refactored all `NgIf` and `NgFor` instances to the new control flow.
 - Updated all other dependencies to their latest versions. No breaking changes.
 
-## 2023/09/11
+## 2023-09-11
 
 - Fix problem with hiscore when parsing DT2 bosses.
 
-## 2023/08/30
+## 2023-08-30
 
 - Added short description of features on home page.
 - Made button styling not specific to button elements. This way it can be used for links as well.
 - Made Wiki link on item page an `<a>` element instead of a `<button>` element. This way crawlers can follow the link.
 
-## 2023/08/29
+## 2023-08-29
 
 - **It's now possible to select a custom XP scraping offset in the XP Tracker!**
 - Improved SOLIX custom font styling.
 
-## 2023/08/28
+## 2023-08-28
 
 - Use SOLIX custom font for OSRS Tracker.
 - Clamped OSRS news articles to 1 line for title, and 3 lines for body.
 
-## 2023/08/25
+## 2023-08-25
 
 - Sitemap index now uses the time the file was last modified as `lastmod`.
 
-## 2023/08/24
+## 2023-08-24
 
 - Updated changelogs for previous days because I forgot to do so.
 - Added titles to the X/twitter and github svgs.
 
-## 2023/08/19
+## 2023-08-19
 
 - Updated all dependencies to their latest versions. No breaking changes.
 - Moved hiscore parsing to the `@osrs-tracker/hiscores` package.
 
-## 2023/08/16
+## 2023-08-16
 
 - Added skeleton loaders instead of local storage cache
 - Added a link to the GitHub repo and twitter account in the upper right of the header.
