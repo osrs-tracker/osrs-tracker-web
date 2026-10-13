@@ -36,6 +36,18 @@ export default [
         loadComponent: () => import('./features/players-online/players-online'),
       },
       {
+        path: 'news',
+        title: 'OSRS news: Every Old School RuneScape news post',
+        data: {
+          meta: {
+            description:
+              'Every Old School RuneScape news post, newest first, by category, with what changed since you last played.',
+            canonicalPath: '/news',
+          } satisfies PageMeta,
+        },
+        loadComponent: () => import('./features/news/news'),
+      },
+      {
         path: 'about',
         pathMatch: 'prefix',
         loadChildren: () => import('./features/about/about.routes'),

@@ -13,6 +13,17 @@
   the players online now with a line of the last 24 hours, and opens the Players online page. On phones the three tabs
   stay in one row and a menu opens across the screen.
 
+### News
+
+- A news archive, [OSRS news](https://osrs-tracker.freekmencke.com/news), lists every Old School RuneScape news post,
+  newest first and by month, each with its artwork, Jagex's teaser, category and date, and opens the post on Jagex's
+  site. Pick a category to see only those posts, and "Show older posts" pages back to the very first ones. Home's "All
+  news" now opens it instead of Jagex's archive. Artwork and teasers for posts from before October 2026 are still being
+  added; until then those posts show a placeholder.
+- Back after a break? "Since you last played" on the news page shows only the posts after a day you pick, so you can
+  catch up on what changed. The day is in the link, so it can be shared, and this device remembers it: from then on the
+  Game menu has a link straight to the news since that day, above "Latest news".
+
 ### Privacy
 
 - Google Analytics only runs if you allow it. A banner asks once, with two equal buttons, Allow and Don't allow, and

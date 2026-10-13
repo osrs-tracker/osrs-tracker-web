@@ -1,0 +1,69 @@
+import { provideZonelessChangeDetection } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { provideRouter, Router } from '@angular/router';
+import { of } from 'rxjs';
+import { afterEach, describe, expect, it } from 'vitest';
+import { NewsArchivePage, NewsPost, OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
+import News from './news';
+
+const post = (day: string): NewsPost => ({
+  title: `Post of ${day}`,
+  pubDate: new Date(`${day}T00:00:00Z`),
+  category: 'Game Updates',
+  link: `https://secure.runescape.com/m=news/${day}`,
+});
+
+// Guards where the catch-up stops paging: at the day picked, or at the oldest stored post
+describe('News', () => {
+  async function render(url: string, pages: Record<string, NewsArchivePage>): Promise<News> {
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        provideRouter([{ path: 'news', component: News }]),
+        {
+          provide: OsrsTrackerRepo,
+          useValue: { getNewsArchive: (_: number, { before = '' } = {}) => of(pages[before]) },
+        },
+      ],
+    });
+    await TestBed.inject(Router).navigateByUrl(url);
+    const fixture = TestBed.createComponent(News);
+    await fixture.whenStable();
+    return fixture.componentInstance;
+  }
+
+  const titles = (news: News): string[] => news.months().flatMap(month => month.posts.map(p => p.title));
+
+  afterEach(() => localStorage.clear());
+
+  it('shows only the posts after the day picked, and stops paging once a page reaches it', async () => {
+    const news = await render('/news?since=2026-09-01', {
+      '': { posts: [post('2026-10-02'), post('2026-09-15')], next: 'b' },
+      'b': { posts: [post('2026-09-05'), post('2026-09-01')], next: 'c' },
+    });
+
+    expect(news.hasOlder()).toBe(true);
+    news.showOlder();
+
+    expect(titles(news)).toEqual(['Post of 2026-10-02', 'Post of 2026-09-15', 'Post of 2026-09-05']);
+    expect(news.reachedSince()).toBe(true);
+    expect(news.hasOlder()).toBe(false);
+    expect(news.historyStart()).toBeNull();
+  });
+
+  it('says where the history starts when the day picked is before the oldest post', async () => {
+    const news = await render('/news?since=2010-01-01', {
+      '': { posts: [post('2026-10-02'), post('2013-02-22')], next: null },
+    });
+
+    expect(titles(news)).toHaveLength(2);
+    expect(news.historyStart()).toEqual(new Date('2013-02-22T00:00:00Z'));
+  });
+
+  it('ignores a day that does not exist', async () => {
+    const news = await render('/news?since=2026-02-31', { '': { posts: [post('2026-10-02')], next: null } });
+
+    expect(news.since()).toBeNull();
+    expect(titles(news)).toEqual(['Post of 2026-10-02']);
+  });
+});

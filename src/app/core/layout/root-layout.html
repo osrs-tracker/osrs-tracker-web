@@ -65,7 +65,46 @@
         </li>
         <li class="flex">
           <nav-menu class="grow" label="Game" menuId="menu-game" [current]="section() === 'game'">
-            <players-online-card [active]="navMenus.open() === 'menu-game'" />
+            <!-- Only once this device remembers a day: until then it would open the same page as Latest news -->
+            @if (lastPlayed(); as lastPlayed) {
+              <a
+                nav-menu-row
+                [label]="'Since ' + (lastPlayed.date | date: 'd MMMM y' : 'UTC')"
+                sub="The news posts after the day you picked"
+                routerLink="/news"
+                [queryParams]="{ since: lastPlayed.day }"
+              >
+                <svg
+                  class="size-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 7v5l3 2" />
+                </svg>
+              </a>
+            }
+            <a nav-menu-row label="Latest news" sub="Every post, or catch up since you last played" routerLink="/news">
+              <svg
+                class="size-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M4 22h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"
+                />
+                <path d="M16 14h-6M14 18h-4M10 6h6v4h-6z" />
+              </svg>
+            </a>
+            <players-online-card class="block mt-1.5" [active]="navMenus.open() === 'menu-game'" />
           </nav-menu>
         </li>
       </ul>
