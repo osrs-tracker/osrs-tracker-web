@@ -16,14 +16,16 @@ import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { filter, map } from 'rxjs';
 
 /**
- * A top-level nav tab, link or menu button: on phones one of three equal tabs, underlined when current.
- * `current:` matches the link's `aria-current="page"` and the menu button's `aria-current="true"`.
+ * A top-level nav tab, link or menu button. From `sm` up the current one is accented (`current:` matches the link's
+ * `aria-current="page"` and the menu button's `aria-current="true"`). On phones, one of three equal tabs: the marked one
+ * (`data-marked`) is accented and underlined, which is the open menu's tab while one is open, so the underline sits
+ * over the sheet, and the current one otherwise.
  */
 export const NAV_TAB =
   'relative flex grow items-center justify-center gap-1 max-sm:min-h-11 whitespace-nowrap max-xs:text-sm font-bold ' +
-  'sm:hover:text-accent-hover current:text-accent max-sm:current:after:absolute max-sm:current:after:inset-x-0 ' +
-  'max-sm:current:after:-bottom-1.5 max-sm:current:after:h-0.5 max-sm:current:after:rounded-xs ' +
-  'max-sm:current:after:bg-accent';
+  'sm:hover:text-accent-hover sm:current:text-accent max-sm:data-marked:text-accent ' +
+  'max-sm:data-marked:after:absolute max-sm:data-marked:after:inset-x-0 max-sm:data-marked:after:-bottom-1.5 ' +
+  'max-sm:data-marked:after:h-0.5 max-sm:data-marked:after:rounded-xs max-sm:data-marked:after:bg-accent';
 
 /** Which nav menu is open (one at a time), and the current URL for the tabs. Provided by the root layout. */
 @Injectable()
@@ -70,13 +72,14 @@ export class NavMenus {
       [attr.aria-expanded]="isOpen()"
       [attr.aria-controls]="menuId()"
       [attr.aria-current]="current() ? 'true' : null"
+      [attr.data-marked]="marked() ? '' : null"
       (click)="toggle()"
     >
       {{ label() }}
       <svg
         class="size-4 transition-transform motion-reduce:transition-none"
         [class.rotate-180]="isOpen()"
-        [class.text-muted]="!current()"
+        [class.text-muted]="!current() && !marked()"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -118,6 +121,7 @@ export class NavMenu {
 
   protected readonly tabClass = NAV_TAB;
   readonly isOpen: Signal<boolean> = computed(() => this.navMenus.open() === this.menuId());
+  protected readonly marked: Signal<boolean> = computed(() => (this.navMenus.open() ? this.isOpen() : this.current()));
 
   protected toggle(): void {
     this.navMenus.open.set(this.isOpen() ? null : this.menuId());

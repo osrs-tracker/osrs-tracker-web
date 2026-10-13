@@ -41,6 +41,11 @@ export default class RootLayout {
     return null;
   });
 
+  /** Home's tab is underlined on phones on Home, unless a menu is open (its tab is underlined then) */
+  readonly homeMarked: Signal<boolean> = computed(
+    () => !this.navMenus.open() && this.navMenus.url().split(/[?#]/)[0] === '/',
+  );
+
   constructor() {
     // After hydration: whether the banner stays depends on this device's choice, which the server can't know
     afterNextRender(() => this.consentService.init());

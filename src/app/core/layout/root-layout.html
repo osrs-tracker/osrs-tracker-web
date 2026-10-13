@@ -23,6 +23,7 @@
         <li class="flex">
           <a
             [class]="navTab"
+            [attr.data-marked]="homeMarked() ? '' : null"
             routerLink="/"
             routerLinkActive
             ariaCurrentWhenActive="page"
