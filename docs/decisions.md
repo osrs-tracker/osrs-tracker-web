@@ -2,6 +2,18 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## Pull requests merge through a merge queue (2026-10-13)
+
+- **Context:** `main` requires `build`, `lint`, `test` and `links` with strict checks. Parallel sessions merged 40 PRs
+  in four days, and every merge, plus the digest commit `CD` pushes after it, turned the other open PRs `BEHIND`: each
+  had to rebase, push and wait for CI again.
+- **Decision:** a merge queue on `main` (merge method merge, to keep the history style). CI runs on `merge_group` too,
+  and its `changes` job compares a queue run with the commit it's built on, so docs-only PRs still skip build and test.
+  The digest commit and doc-only pushes still go straight to `main` (deploy key, admin bypass); `CD` deploys only from
+  pushes to `main`, never from queue runs.
+- **Revisit:** if the queue stalls on digest commits landing while a group is in flight, or the repo stops being an
+  organization's public repo (no merge queue).
+
 ## Google Analytics loads only after consent, from a banner with equal buttons (2026-10-13)
 
 - **Context:** Belgian and EU rules treat analytics cookies as not strictly necessary, so they need prior, active

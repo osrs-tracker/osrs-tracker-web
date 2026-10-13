@@ -39,6 +39,9 @@
   problem.
 - This changelog dates its days as 2026-10-13 instead of 2026/10/13, the international standard, and every change is
   checked for broken links in the project's documentation.
+- Changes go through GitHub's merge queue, which tests each one on top of the latest version and the changes queued
+  ahead of it before merging. Ready changes no longer wait to be updated and retested by hand after every other merge,
+  so they go live sooner.
 
 ## 2026-10-12
 
