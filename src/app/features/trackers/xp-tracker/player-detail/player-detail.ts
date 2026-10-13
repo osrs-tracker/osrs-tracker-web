@@ -33,6 +33,7 @@ import { isNotFound, resolverErrorHandler } from '@app/core/routing/resolver-err
 import { MINIGAME_ROWS, UNCHARTED_MINIGAMES } from './activity-categories';
 import { XpTrackerStore } from '../xp-tracker-store';
 import { ActivitiesCard } from './hiscores/activities-card';
+import { ModeRanks } from './hiscores/mode-ranks';
 import { SkillsCard } from './hiscores/skills-card';
 import { PlayerChart } from './charts/player-chart';
 import { PlayerHeader, TrackingState } from './player-header';
@@ -60,6 +61,7 @@ import { PlayerView } from './player-view';
   ],
   providers: [
     PlayerView,
+    ModeRanks,
     // every skill and activity icon is shown here, so they come with this chunk instead of ~100 separate requests
     { provide: LOCAL_ICONS, useValue: localIcons },
   ],
@@ -190,6 +192,8 @@ export default class PlayerDetail implements OnInit {
   });
 
   constructor() {
+    inject(ModeRanks).connect({ username: this.username, player: this.playerDetail, hiscore: this.history.current });
+
     // Only during SSR: the page is a 404 when there's no such player
     effect(() => {
       if (this.responseInit && !this.playerDetail()) this.responseInit.status = 404;

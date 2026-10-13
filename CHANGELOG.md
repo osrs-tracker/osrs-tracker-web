@@ -15,6 +15,11 @@
 
 ### Players and items
 
+- A player's hiscores tooltips show their rank among their own kind of account as well as among all accounts: ironmen,
+  hardcores and ultimates among their mode (a hardcore who died, or an ultimate who dropped the status, among ironmen,
+  as that rank still moves), level-3 skillers among skillers and 1 Defence pures among pures. Skill tooltips show the
+  rank too, which only bosses, raids and clues did before. Those ranks load when you first open a tooltip, so a page
+  view asks Jagex for nothing more unless you look.
 - Shared player links show a large preview card in Discord, Reddit and chat apps instead of the small OSRS Tracker icon:
   the player's account type, name, combat level, total level and XP, and every skill level as in the game's stats tab,
   with 99s in gold. The card says which day the stats are from, as apps keep a preview for weeks.
