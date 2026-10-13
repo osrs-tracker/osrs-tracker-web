@@ -303,18 +303,20 @@ the exact command; never edit permission settings, ask another session to run it
 3. Poll `gh pr view <n> --json mergeable,mergeStateStatus` until it isn't `UNKNOWN` (a conflicting PR gets no CI: rebase
    and push again), then `gh pr checks <n> --watch`.
 4. When checks pass: `gh pr merge <n> --merge` (if Claude Code's permission check blocks it, give the user the command
-   and wait, don't retry or work around it). `main` has a merge queue, so this queues the PR (or turns on auto-merge
-   until its checks pass): the queue tests it on top of `main` and the PRs queued ahead of it, and merges it when that
-   run passes, which deploys. Wait for the merge, not only the checks, with
-   `.claude/skills/osrs-tracker-web/wait-merge.sh <n>` as a background command: it exits once the PR is merged, closed
-   or out of the queue, and prints its state.
+   and wait, don't retry or work around it; its "merge strategy for main is set by the merge queue" note is expected).
+   `main` has a merge queue, so this queues the PR (or turns on auto-merge until its checks pass): the queue tests it on
+   top of `main` and the PRs queued ahead of it, and merges it when that run passes, which deploys. Wait for the merge,
+   not only the checks, with `.claude/skills/osrs-tracker-web/wait-merge.sh <n>` as a background command: it exits once
+   the PR is merged, closed or out of the queue, and prints its state (on a branch older than the script,
+   `git show origin/main:.claude/skills/osrs-tracker-web/wait-merge.sh | bash -s <n>`).
 5. `MERGED`: `git fetch --prune origin`, `git switch --detach origin/main` (in a worktree, `main` is checked out
    elsewhere) and `git branch -d <branch>`. Done: the deploy runs on its own (see Deploy). `OPEN`: the queue removed it
    (a failed queue run, or a conflict with a PR ahead of it); fix it, push and `gh pr merge` again.
 
 Other merges and digest commits don't hold up an open PR: the queue tests it on top of the latest `main`, so there's no
 rebase after every merge. Rebase (`git rebase origin/main`, push with `--force-with-lease --force-if-includes`) only
-when it's `DIRTY` (a conflict) or the queue removed it.
+when it's `DIRTY` (a conflict) or the queue removed it. PRs queued together merge in one push, so `main` gets one CI run
+and one deploy for them.
 
 ## Commit and push
 
