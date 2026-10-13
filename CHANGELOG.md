@@ -103,6 +103,8 @@
 - The item search and the light and dark theme now rely on what the site already ships (Angular's resources and NgRx
   Signals) instead of code of their own, and the news archive and a player's history share one way of loading more
   pages, so there's less code to maintain.
+- The site's server no longer renders the Players online page every minute ahead of time, as it did whether anyone
+  visited or not; it renders the page when someone opens it, like the tracker pages.
 
 ## 2026-10-12
 
