@@ -1,0 +1,134 @@
+<header class="block bg-deep dot-grid border-b border-line">
+  <div class="max-w-page mx-auto flex flex-col md:flex-row md:items-center gap-8 xl:gap-10 px-4 sm:px-6 py-12">
+    <div class="flex-1 min-w-0 flex flex-col gap-6">
+      <div class="flex items-center gap-4">
+        <span
+          class="flex items-center justify-center size-14 shrink-0 rounded-2xl bg-card border border-line text-accent"
+          aria-hidden="true"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="size-7"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+          </svg>
+        </span>
+        <h1 class="text-4xl/none md:text-5xl/none font-bold text-strong">
+          Players <span class="text-accent">online</span>
+        </h1>
+      </div>
+
+      <p class="max-w-140 text-lg text-muted">
+        How many people are playing Old School RuneScape right now, and how that changes through the day, the week and
+        the year.
+      </p>
+
+      @if (latestFailed()) {
+        <load-error
+          class="block max-w-110 rounded-2xl bg-card"
+          source="player-count-latest"
+          message="The current player count didn't load."
+          (retry)="latest.reload()"
+        />
+      } @else if (latest.hasValue() && latest.value(); as count) {
+        <div class="flex flex-col gap-2">
+          <span class="flex items-center gap-2.5 font-bold">
+            <span class="size-2.5 shrink-0 rounded-full bg-accent animate-live" aria-hidden="true"></span>Online now
+          </span>
+          <span class="text-5xl/none md:text-7xl/none font-bold text-strong tabular-nums">{{
+            count.total | number
+          }}</span>
+          <span class="text-sm text-muted"
+            >On {{ count.worlds | number }} worlds{{ countedAt() ? ', counted at ' + countedAt() : '' }}</span
+          >
+        </div>
+
+        <div class="flex flex-col gap-2.5 max-w-110">
+          <div class="flex justify-between gap-4">
+            @for (part of split(); track part.label; let last = $last) {
+              <span class="flex flex-col" [class.items-end]="last">
+                <span class="flex items-center gap-2 text-sm text-muted">
+                  <span class="size-2.5 rounded-xs" [class]="part.color"></span>{{ part.label }}
+                </span>
+                <span class="text-2xl font-bold text-strong tabular-nums"
+                  >{{ part.players | number }}
+                  <span class="text-base font-normal text-muted">{{ part.share }}</span></span
+                >
+              </span>
+            }
+          </div>
+          <div class="flex gap-0.5 h-2" aria-hidden="true">
+            <span class="rounded-l-full bg-accent" [style.width.%]="membersPercent()"></span>
+            <span class="flex-1 rounded-r-full bg-muted"></span>
+          </div>
+        </div>
+      } @else {
+        <div class="flex flex-col gap-2" aria-busy="true">
+          <skeleton class="h-6 w-28" tone="ground" />
+          <skeleton class="h-12 md:h-18 w-60 md:w-90" tone="ground" />
+          <skeleton class="h-5 w-48" tone="ground" />
+        </div>
+      }
+    </div>
+
+    <section
+      class="md:w-80 xl:w-105 shrink-0 rounded-3xl bg-card border border-line shadow-float overflow-hidden"
+      aria-labelledby="locations-heading"
+    >
+      <div class="px-5 py-4 border-b border-line">
+        <h2 id="locations-heading" class="text-lg font-bold text-strong">By world location</h2>
+        <p class="text-sm text-muted">Players on each country's worlds</p>
+      </div>
+      @if (latestFailed()) {
+        <p class="px-5 py-8 text-center text-sm text-muted">Shown once the count loads.</p>
+      } @else {
+        <ul class="py-1.5">
+          @for (location of locations(); track location.key) {
+            <li class="flex flex-col gap-1.5 px-5 md:max-xl:px-4 py-2">
+              <span class="flex items-center gap-3 text-sm">
+                @if (location.flag) {
+                  <img class="w-7.5 h-3.75 shrink-0 pixelated ring-1 ring-line" [src]="location.flag" alt="" />
+                } @else {
+                  <span class="w-7.5 shrink-0"></span>
+                }
+                <span class="flex-auto min-w-0 truncate">{{ location.name }}</span>
+                <span class="font-bold text-strong tabular-nums">{{ location.players | number }}</span>
+                <span class="min-w-8.5 text-right text-muted tabular-nums">{{ location.share }}</span>
+              </span>
+              <span class="block h-1 rounded-full bg-inner" aria-hidden="true">
+                <span
+                  class="block h-1 min-w-0.5 rounded-full bg-accent-hover"
+                  [style.width.%]="location.percent"
+                ></span>
+              </span>
+            </li>
+          } @empty {
+            @for (row of skeletonRows; track $index) {
+              <li class="flex flex-col gap-1.5 px-5 md:max-xl:px-4 py-2" aria-hidden="true">
+                <span class="flex items-center gap-3">
+                  <skeleton class="w-7.5 h-3.75 rounded-none" />
+                  <skeleton class="h-4 w-28" />
+                </span>
+                <skeleton class="h-1 w-full rounded-full" />
+              </li>
+            }
+          }
+        </ul>
+      }
+    </section>
+  </div>
+</header>
+
+<div class="max-w-page mx-auto flex flex-col gap-4 px-4 sm:px-6 pt-10 pb-18">
+  <player-count-history [locationOrder]="locationOrder()" />
+  <p class="max-w-180 text-sm text-muted">
+    Counted every 10 minutes from the world list the game shows in World Select. Players still in the lobby aren't on a
+    world yet, so the total runs a little below the one on oldschool.runescape.com.
+  </p>
+</div>

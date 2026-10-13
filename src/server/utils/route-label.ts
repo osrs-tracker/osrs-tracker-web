@@ -10,6 +10,7 @@ const PAGE_ROUTES: [RegExp, string][] = [
   [/^\/trackers\/price\/[^/]+$/, '/trackers/price/:id'],
   [/^\/trackers\/xp$/, '/trackers/xp'],
   [/^\/trackers\/xp\/[^/]+$/, '/trackers/xp/:username'],
+  [/^\/players-online$/, '/players-online'],
   [/^\/about\/(changelog|privacy|terms)$/, '/about/$1'],
   [/^\/error$/, '/error'],
   // Built by the server (routers/sitemaps.ts), not static files: their own label, a 503 included

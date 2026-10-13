@@ -2,8 +2,8 @@ import { formatNumber } from '@angular/common';
 import { Component } from '@angular/core';
 import { Chart, ChartOptions, Point, TimeScaleOptions } from 'chart.js';
 import { fromUnixTime } from 'date-fns';
-import { BaseChart } from '../../../charts/base-chart';
-import { token, withAlpha } from '../../../charts/chart-setup';
+import { BaseChart } from '@app/common/charts/base-chart';
+import { token, withAlpha } from '@app/common/charts/chart-setup';
 import { formatNumberLegible } from '@app/common/format/number-format';
 import { AveragePricesAtTime } from '@app/common/api/osrs-prices-repo';
 

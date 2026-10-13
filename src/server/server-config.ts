@@ -40,6 +40,11 @@ export const serverConfig = {
       interval: 300000, // 5 minute
     },
     {
+      // A new player count every 10 minutes
+      path: '/players-online',
+      interval: 300000, // 5 minute
+    },
+    {
       path: '/about/changelog',
       interval: 3600000, // 60 minutes
     },

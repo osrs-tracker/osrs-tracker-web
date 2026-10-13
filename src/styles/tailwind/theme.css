@@ -55,6 +55,19 @@
       visibility: visible;
     }
   }
+
+  /* A live dot's slow ring (Players online): an accent shadow that grows and fades */
+  --animate-live: live 2.4s ease-out infinite;
+
+  @keyframes live {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in oklch, var(--accent) 55%, transparent);
+    }
+    70%,
+    100% {
+      box-shadow: 0 0 0 8px color-mix(in oklch, var(--accent) 0%, transparent);
+    }
+  }
 }
 
 /*

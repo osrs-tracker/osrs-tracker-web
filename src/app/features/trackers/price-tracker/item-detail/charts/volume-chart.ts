@@ -1,8 +1,8 @@
 import { formatNumber } from '@angular/common';
 import { Component } from '@angular/core';
 import { Chart, ChartOptions, Point } from 'chart.js';
-import { BaseChart } from '../../../charts/base-chart';
-import { token } from '../../../charts/chart-setup';
+import { BaseChart } from '@app/common/charts/base-chart';
+import { token } from '@app/common/charts/chart-setup';
 import { DailyVolume, formatUtcDay } from '../item-prices';
 
 /**

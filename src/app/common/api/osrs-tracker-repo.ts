@@ -1,9 +1,24 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Service, inject } from '@angular/core';
-import { HiscoreEntry, Item, Player } from '@osrs-tracker/models';
+import { HiscoreEntry, Item, Player, PlayerCount } from '@osrs-tracker/models';
 import { Observable, map } from 'rxjs';
 import { LOADING_INDICATOR } from '@app/core/interceptors/loading-indicator-interceptor';
 import { config } from '@config/config';
+
+/** How far back the player count history goes, and its step: 10-minute samples (24h, 7d), hourly (30d), daily (1y, all) */
+export type PlayerCountRange = '24h' | '7d' | '30d' | '1y' | 'all';
+
+/** A sample of the player count history, or the averages over the UTC hour or day starting at `date` */
+export interface PlayerCountPoint {
+  date: Date;
+  total: number;
+  members: number;
+  f2p: number;
+  /** Players per raw location code; in an hour or a day, the average per code */
+  byLocation: Record<string, number>;
+  /** Daily points only: the highest count sampled that day */
+  peak?: number;
+}
 
 export class OsrsNewsItem {
   constructor(
@@ -110,6 +125,24 @@ export class OsrsTrackerRepo {
 
   getRecentItemLookups(): Observable<Item[]> {
     return this.httpClient.get<Item[]>('/items', { params: { limit: config.maxStoredItems } });
+  }
+
+  //
+  // Player counts
+  //
+
+  /** The newest sample of the players online, taken every 10 minutes */
+  getLatestPlayerCount(): Observable<PlayerCount> {
+    return this.httpClient
+      .get<PlayerCount>('/player-counts/latest')
+      .pipe(map(playerCount => ({ ...playerCount, date: new Date(playerCount.date) })));
+  }
+
+  /** The players online over `range`, oldest first */
+  getPlayerCountHistory(range: PlayerCountRange): Observable<PlayerCountPoint[]> {
+    return this.httpClient
+      .get<PlayerCountPoint[]>('/player-counts', { params: { range } })
+      .pipe(map(points => points.map(point => ({ ...point, date: new Date(point.date) }))));
   }
 
   //
