@@ -5,7 +5,8 @@
 - Google Analytics only runs if you allow it. A banner asks once, with two equal buttons, Allow and Don't allow, and
   Cookies at the bottom of every page changes the choice later. Until you allow it, nothing is sent to Google.
 - The privacy policy and terms are rewritten: shorter, naming who runs the site, what each kind of data is used for, how
-  long it's kept and which other services your browser contacts.
+  long it's kept and which other services your browser contacts. The site's security policy no longer allows connections
+  to Jagex's image server, which the site doesn't use (news images come through OSRS Tracker's own API).
 - Google Analytics events name what they record (the theme, the item, the player) instead of using the old Universal
   Analytics category and label, and the tag no longer sets an IP masking option that Google Analytics 4 ignores. It also
   records searches (and players that aren't found), the periods, tabs and options picked on player and item pages,
