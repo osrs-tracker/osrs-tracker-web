@@ -25,7 +25,7 @@ holds the Angular conventions, SSR rules, deploy and release steps. Keep detail 
 ## Hard rules
 
 - Every change to the app, its dependencies or tooling gets a user-facing `CHANGELOG.md` entry under today's
-  `## YYYY/MM/DD` (Europe/Amsterdam date); doc-only changes don't. Dependabot PRs don't either: after merging one whose
+  `## YYYY-MM-DD` (Europe/Amsterdam date); doc-only changes don't. Dependabot PRs don't either: after merging one whose
   bump changes behaviour (a new feature used, a fix that matters, a breaking change handled), commit a "Dependency
   updates" line under that day's "Behind the scenes" straight to `main`, describing the effect for users; bumps that
   change nothing get no entry. Parallel PRs all add that heading: when merging one after another, rebase and fold the
