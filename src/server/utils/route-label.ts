@@ -14,8 +14,9 @@ const PAGE_ROUTES: [RegExp, string][] = [
   [/^\/error$/, '/error'],
   // Built by the server (routers/sitemaps.ts), not static files: their own label, a 503 included
   [/^\/sitemap-(items|players)\.xml$/, '/sitemap-$1.xml'],
-  // Drawn by the server (routers/og-images.ts), not a static file: its own label, a 404 included
+  // Drawn by the server (routers/og-images.ts), not static files: their own label, a 404 included
   [/^\/og\/item\/\d+\.png$/, '/og/item/:id.png'],
+  [/^\/og\/player\/[^/]+\.png$/, '/og/player/:username.png'],
 ];
 
 /**

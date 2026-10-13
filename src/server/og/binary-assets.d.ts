@@ -4,6 +4,16 @@ declare module '*.ttf' {
   export default bytes;
 }
 
+declare module '*.png' {
+  const bytes: Uint8Array;
+  export default bytes;
+}
+
+declare module '*.gif' {
+  const bytes: Uint8Array;
+  export default bytes;
+}
+
 declare module '*.wasm' {
   const bytes: Uint8Array;
   export default bytes;

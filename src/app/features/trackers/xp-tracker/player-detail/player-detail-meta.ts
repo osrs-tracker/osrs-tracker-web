@@ -1,7 +1,7 @@
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
-import { ICON_IMAGE, PageMeta } from '@app/common/seo/page-meta-strategy';
+import { ICON_IMAGE, PageImage, PageMeta } from '@app/common/seo/page-meta-strategy';
 import { breadcrumbList, webPage } from '@app/common/seo/structured-data';
 
 /** "11 Aug 2026", in UTC like the rest of the player page */
@@ -26,7 +26,9 @@ export function playerTitle(player: Player): string {
 
 /**
  * The canonical is the API's name (lower case, spaces), as the app's own player links use it:
- * `/trackers/xp/the%20fraking` for `the_fraking`, `THE-FRAKING` and the rest. A compact card, like item pages.
+ * `/trackers/xp/the%20fraking` for `the_fraking`, `THE-FRAKING` and the rest. The image is the player's preview card,
+ * which the server draws (`src/server/routers/og-images.ts`), for a stored player only: it doesn't draw the live preview
+ * of one the API doesn't store, who keeps the app icon as a compact card.
  * The structured data describes the player as a `Thing`, like an item: `ProfilePage` and `Person` are meant for
  * people's profiles, not game accounts.
  */
@@ -38,8 +40,9 @@ export function playerPageMeta(player: Player): PageMeta {
     title: playerTitle(player),
     description,
     canonicalPath,
-    image: ICON_IMAGE,
-    card: 'summary',
+    ...(isStored(player)
+      ? { image: playerImage(player, name), card: 'summary_large_image' }
+      : { image: ICON_IMAGE, card: 'summary' }),
     jsonLd: [
       breadcrumbList([
         { name: 'XP Tracker', path: '/trackers/xp' },
@@ -53,6 +56,19 @@ export function playerPageMeta(player: Player): PageMeta {
       }),
     ],
   };
+}
+
+/** The API's live preview of a player it doesn't store has no tracked offsets, active or paused */
+function isStored(player: Player): boolean {
+  return !!(player.scrapingOffsets?.length || player.pausedScrapingOffsets?.length);
+}
+
+/**
+ * The player's link preview card: who they are and their latest stats, dated. `?v=` busts the caches of shared links
+ * when the card's design changes.
+ */
+function playerImage(player: Player, name: string): PageImage {
+  return { url: `/og/player/${encodeURIComponent(player.username)}.png?v=1`, width: 1200, height: 630, alt: name };
 }
 
 /**
