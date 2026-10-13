@@ -104,7 +104,7 @@ const BAND = 'color-mix(in oklch, var(--accent) 12%, transparent)';
 
     @if (open()) {
       <div
-        class="absolute z-10 top-full left-0 mt-2 w-76 p-3 rounded-2xl border border-line bg-card shadow-float font-normal"
+        class="absolute z-10 top-full left-0 mt-2 w-76 max-xs:w-69 p-3 rounded-2xl border border-line bg-card shadow-float font-normal"
         role="dialog"
         [attr.aria-label]="label()"
         (keydown)="onKeydown($event)"
@@ -112,9 +112,9 @@ const BAND = 'color-mix(in oklch, var(--accent) 12%, transparent)';
         <div class="flex items-center justify-between pb-2">
           <button
             type="button"
-            class="flex items-center justify-center size-8 rounded-full text-strong hover:bg-row disabled:text-muted disabled:opacity-40 disabled:hover:bg-transparent disabled:cursor-default"
+            class="flex items-center justify-center size-8 rounded-full text-strong hover:bg-row aria-disabled:text-muted aria-disabled:opacity-40 aria-disabled:hover:bg-transparent aria-disabled:cursor-default"
             aria-label="Previous month"
-            [disabled]="!previousMonth()"
+            [attr.aria-disabled]="!previousMonth()"
             (click)="showMonth(previousMonth())"
           >
             <svg
@@ -133,9 +133,9 @@ const BAND = 'color-mix(in oklch, var(--accent) 12%, transparent)';
           <span class="font-bold text-strong" aria-live="polite">{{ monthTitle() }}</span>
           <button
             type="button"
-            class="flex items-center justify-center size-8 rounded-full text-strong hover:bg-row disabled:text-muted disabled:opacity-40 disabled:hover:bg-transparent disabled:cursor-default"
+            class="flex items-center justify-center size-8 rounded-full text-strong hover:bg-row aria-disabled:text-muted aria-disabled:opacity-40 aria-disabled:hover:bg-transparent aria-disabled:cursor-default"
             aria-label="Next month"
-            [disabled]="!nextMonth()"
+            [attr.aria-disabled]="!nextMonth()"
             (click)="showMonth(nextMonth())"
           >
             <svg
@@ -188,7 +188,7 @@ const BAND = 'color-mix(in oklch, var(--accent) 12%, transparent)';
                       <button
                         ngGridCellWidget
                         type="button"
-                        class="relative flex items-center justify-center size-10 rounded-full tabular-nums focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-strong"
+                        class="relative flex items-center justify-center size-10 max-xs:size-9 rounded-full tabular-nums focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-strong"
                         [class]="
                           isValue
                             ? 'bg-accent text-on-accent font-bold'
@@ -211,8 +211,11 @@ const BAND = 'color-mix(in oklch, var(--accent) 12%, transparent)';
                         }
                       </button>
                     } @else if (cell.date) {
-                      <!-- no check that day: nothing to compare -->
-                      <span class="flex items-center justify-center size-10 text-muted opacity-60 tabular-nums">
+                      <!-- no check that day, or the other picker's day with nothing to swap it with -->
+                      <span
+                        class="flex items-center justify-center size-10 max-xs:size-9 rounded-full text-muted opacity-60 tabular-nums"
+                        [class]="cell.key === other() ? 'ring-2 ring-inset ring-accent' : ''"
+                      >
                         {{ cell.date }}
                       </span>
                     }
@@ -224,8 +227,8 @@ const BAND = 'color-mix(in oklch, var(--accent) 12%, transparent)';
         }
 
         <div class="flex items-center justify-between gap-3 mt-2 pt-2.5 border-t border-line">
-          <span class="flex items-center gap-2 text-xs text-muted whitespace-nowrap">
-            <span class="flex items-center gap-0.5" aria-hidden="true">
+          <span class="flex items-center gap-2 text-xs text-muted">
+            <span class="flex shrink-0 items-center gap-0.5" aria-hidden="true">
               @for (heat of [1, 2, 3, 4]; track heat) {
                 <span class="h-0.75 w-2.5 rounded-full" [style.background]="heatColor(heat, false)"></span>
               }
@@ -328,7 +331,9 @@ export class DayPicker {
               : undefined;
       const bandEdge =
         band === BAND ? `${weekStart ? 'rounded-l-full' : ''} ${weekEnd ? 'rounded-r-full' : ''}` : undefined;
-      cells.push({ date, key, day: this.byKey().get(key), band, bandEdge });
+      // the other picker's day swaps the two when picked, so with none picked here there's nothing to swap
+      const day = key === this.other() && !this.value() ? undefined : this.byKey().get(key);
+      cells.push({ date, key, day, band, bandEdge });
     }
     while (cells.length % 7) cells.push({});
     return Array.from({ length: cells.length / 7 }, (_, week) => cells.slice(week * 7, week * 7 + 7));
@@ -365,7 +370,8 @@ export class DayPicker {
   }
 
   dayLabel(day: PickerDay, other: boolean): string {
-    const gained = day.gained === undefined ? '' : `, ${day.gained ? `+${formatNumberLegible(day.gained)}` : 'no'} XP`;
+    const gained =
+      day.gained === undefined ? '' : `, ${day.gained > 0 ? `+${formatNumberLegible(day.gained)}` : 'no'} XP`;
     return `${day.label}${gained}${other ? ', the other day picked' : ''}`;
   }
 

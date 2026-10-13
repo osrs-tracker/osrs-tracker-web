@@ -20,7 +20,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SkillEnum } from '@osrs-tracker/hiscores';
 import { HiscoreEntry, skillProgress } from '@osrs-tracker/models';
-import { differenceInCalendarDays, format } from 'date-fns';
+import { differenceInCalendarDays } from 'date-fns';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
@@ -38,6 +38,14 @@ const TABS: SegmentedOption<CompareTab>[] = [
   { value: 'skills', label: 'Skills' },
   { value: 'activities', label: 'Activities' },
 ];
+
+/** "Tue 13 Oct": in UTC, like the day keys, so a label matches its date in the calendar */
+const DAY_LABEL = new Intl.DateTimeFormat('en-GB', {
+  weekday: 'short',
+  day: 'numeric',
+  month: 'short',
+  timeZone: 'UTC',
+});
 
 /** The `vs` query value for no second day */
 const NO_DAY = 'none';
@@ -333,7 +341,7 @@ export class CompareDays {
     const most = Math.max(0, ...gains.map(gained => gained ?? 0));
     return entries.map((entry, i) => ({
       key: dayKey(entry.date),
-      label: format(entry.date, 'EEE d MMM'),
+      label: DAY_LABEL.format(entry.date),
       gained: gains[i],
       // square-rooted, so a quieter day still shows next to the busiest
       heat: gains[i]! > 0 ? Math.ceil(Math.sqrt(gains[i]! / most) * 4) : 0,
