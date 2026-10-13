@@ -43,7 +43,6 @@ export function securityMiddleware(): RequestHandler {
           'https://*.google-analytics.com',
           'https://*.freekmencke.com',
           'https://raw.githubusercontent.com',
-          'https://cdn.runescape.com',
           'https://oldschool.runescape.wiki',
           'https://prices.runescape.wiki',
         ],

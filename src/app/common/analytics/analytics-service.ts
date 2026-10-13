@@ -2,11 +2,13 @@ import { inject, Service } from '@angular/core';
 import { NavigationEnd, Router, TitleStrategy } from '@angular/router';
 import { filter } from 'rxjs';
 import type { Metric } from 'web-vitals';
+import { ConsentService } from './consent-service';
 import { GTAG_TOKEN } from './gtag-token';
 
 @Service()
 export class AnalyticsService {
   private readonly gtag = inject(GTAG_TOKEN);
+  private readonly consentService = inject(ConsentService);
   private readonly router = inject(Router);
   private readonly titleStrategy = inject(TitleStrategy);
 
@@ -14,7 +16,7 @@ export class AnalyticsService {
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
       const routerState = this.router.routerState.snapshot;
 
-      this.gtag?.('event', 'page_view', {
+      this.send('page_view', {
         page_path: routerState.url,
         page_title: this.titleStrategy.buildTitle(routerState),
         page_location: location.href,
@@ -53,7 +55,7 @@ export class AnalyticsService {
    * names snake_case and values to a small set, except `search_term`.
    */
   trackEvent(name: string, params: Record<string, string | number | boolean> = {}) {
-    this.gtag?.('event', name, params);
+    this.send(name, params);
   }
 
   /** `search_term` lowercased, as player and item names don't depend on case */
@@ -74,9 +76,18 @@ export class AnalyticsService {
     // eslint-disable-next-line no-console
     console.error(error ?? description);
 
-    this.gtag?.('event', 'exception', {
+    this.send('exception', {
       description,
       fatal,
     });
+  }
+
+  /**
+   * Nothing is pushed once the visitor declined: if they allowed it earlier on this page, the tag still runs, and an
+   * event pushed after the click (web-vitals reports LCP in an idle callback after it) would still reach Google
+   */
+  private send(name: string, params: Gtag.CustomParams) {
+    if (this.consentService.choice() === 'denied') return;
+    this.gtag?.('event', name, params);
   }
 }

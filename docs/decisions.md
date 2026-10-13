@@ -2,6 +2,24 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## Google Analytics loads only after consent, from a banner with equal buttons (2026/10/13)
+
+- **Context:** Belgian and EU rules treat analytics cookies as not strictly necessary, so they need prior, active
+  consent; "by using the site you agree" doesn't count, and the Belgian DPA fined a small site for it (Jubel.be, 2019).
+  GA4 without cookies reports nothing for a site this size: Google only models cookieless pings from 1,000 consenting
+  users a day up. A self-hosted cookieless tool (Umami) was the alternative; GA4 with a banner was chosen to keep its
+  reports.
+- **Decision:** gtag.js isn't loaded until the visitor allows it (not consent mode's "advanced" setup, which sends
+  cookieless pings to Google before any choice). `index.html` loads it on page load when `analytics-consent` is
+  `granted`; `ConsentService` loads it on Allow, and on Don't allow sets Google's `ga-disable-<id>` opt-out and deletes
+  the `_ga` cookies; `AnalyticsService` pushes nothing once the choice is `denied`. gtag batches hits, so a scroll hit
+  recorded just before Don't allow can still go out a few seconds after it: data collected under consent, which
+  withdrawing it doesn't undo (Article 7(3) GDPR), and gtag has no way to drop it. Events from before a choice wait in
+  `dataLayer`. The banner (`core/layout/consent-banner.ts`) renders only in the browser after hydration, fixed over the
+  page (no layout shift), not as a modal, and with two identical buttons, as regulators count a highlighted Accept
+  beside a faint Reject as steering. Cookies in the footer reopens it.
+- **Revisit:** if analytics moves to a cookieless tool (no banner needed), or the rules or the DPA's guidance change.
+
 ## The Wiki prices API is called through v2, as its guidelines ask (2026/10/13)
 
 - **Context:** a Wiki prices API developer pointed out on Reddit that per-item time series are hard for them to cache,

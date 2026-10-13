@@ -1,5 +1,7 @@
 export const enum StorageKey {
   DarkMode = 'dark-mode',
+  /** `granted` or `denied`; `index.html` reads it too, to load Google Analytics on page load */
+  AnalyticsConsent = 'analytics-consent',
 
   XpTrackerRecentPlayers = 'xp-tracker-recent-players',
   XpTrackerFavoritePlayers = 'xp-tracker-favorite-players',

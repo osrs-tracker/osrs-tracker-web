@@ -67,6 +67,10 @@
       <div class="flex flex-wrap gap-x-5 gap-y-1.5 text-accent">
         <a class="hover:text-accent-hover" routerLink="/about/changelog">Changelog</a>
         <a class="hover:text-accent-hover" routerLink="/about/privacy">Privacy</a>
+        <!-- Opens the consent banner again, to change the choice -->
+        <button type="button" class="hover:text-accent-hover cursor-pointer" (click)="consentService.reopen()">
+          Cookies
+        </button>
         <a class="hover:text-accent-hover" routerLink="/about/terms">Terms</a>
         <a
           class="hover:text-accent-hover"
@@ -81,3 +85,7 @@
     <div class="sa-b"><!-- spacing for safe-area-inset --></div>
   </footer>
 </div>
+
+@if (consentService.bannerOpen()) {
+  <consent-banner />
+}

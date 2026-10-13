@@ -1,18 +1,31 @@
 ## 2026/10/13
 
-- Shared player links show a large preview card in Discord, Reddit and chat apps instead of the small OSRS Tracker icon:
-  the player's account type, name, combat level, total level and XP, and every skill level as in the game's stats tab,
-  with 99s in gold. The card says which day the stats are from, as apps keep a preview for weeks.
-- Requests the site's server makes, to the OSRS Wiki and to OSRS Tracker's own API, name the site's GitHub repository
-  (`github:osrs-tracker/osrs-tracker-web`) as their user agent, so whoever receives them knows where to report a
-  problem.
-- An item's daily volume covers the last week instead of two weeks. Item prices and charts now come from version 2 of
-  the OSRS Wiki's prices API, as the Wiki asks, which serves the price history from its cache instead of its database.
-  The monthly check of the GE tax rules uses version 2 too.
+### Privacy
+
+- Google Analytics only runs if you allow it. A banner asks once, with two equal buttons, Allow and Don't allow, and
+  Cookies at the bottom of every page changes the choice later. Until you allow it, nothing is sent to Google.
+- The privacy policy and terms are rewritten: shorter, naming who runs the site, what each kind of data is used for, how
+  long it's kept and which other services your browser contacts. The site's security policy no longer allows connections
+  to Jagex's image server, which the site doesn't use (news images come through OSRS Tracker's own API).
 - Google Analytics events name what they record (the theme, the item, the player) instead of using the old Universal
   Analytics category and label, and the tag no longer sets an IP masking option that Google Analytics 4 ignores. It also
   records searches (and players that aren't found), the periods, tabs and options picked on player and item pages,
-  retries after an error, and how fast pages load on real visits (Core Web Vitals). The privacy policy says so.
+  retries after an error, and how fast pages load on real visits (Core Web Vitals).
+
+### Players and items
+
+- Shared player links show a large preview card in Discord, Reddit and chat apps instead of the small OSRS Tracker icon:
+  the player's account type, name, combat level, total level and XP, and every skill level as in the game's stats tab,
+  with 99s in gold. The card says which day the stats are from, as apps keep a preview for weeks.
+- An item's daily volume covers the last week instead of two weeks. Item prices and charts now come from version 2 of
+  the OSRS Wiki's prices API, as the Wiki asks, which serves the price history from its cache instead of its database.
+  The monthly check of the GE tax rules uses version 2 too.
+
+### Behind the scenes
+
+- Requests the site's server makes, to the OSRS Wiki and to OSRS Tracker's own API, name the site's GitHub repository
+  (`github:osrs-tracker/osrs-tracker-web`) as their user agent, so whoever receives them knows where to report a
+  problem.
 
 ## 2026/10/12
 
