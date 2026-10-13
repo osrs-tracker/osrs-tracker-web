@@ -214,7 +214,8 @@ agent.
 
 - Read `docs/decisions.md` every review and never flag what it explains.
 - Rules that span files, checked against the whole diff: a new or renamed route and `src/server/utils/route-label.ts`;
-  changed icons and `local-icons.generated.ts`; a user-visible change and `CHANGELOG.md`.
+  changed icons and `local-icons.generated.ts`; a change that needs an entry under CLAUDE.md's changelog rule and
+  `CHANGELOG.md`.
 - **breaks** here also covers: blocks scripts under the CSP, refetches on hydration. A typical **check**: the API's
   `Cache-Control` for a new SSR request (name the endpoint and the header to verify).
 
@@ -317,10 +318,11 @@ When merging several, wait for one's digest commit before rebasing the next.
   the image deploys too.
 - `chore(deploy)` is reserved for the `CD` workflow's digest commits.
 - Deploys start from `main` only, so production never runs unmerged code.
-- `CHANGELOG.md` entries cover deps and tooling too (not Dependabot PRs), newest date first. It's shown on
-  `/about/changelog`, so write for users. Busy days get `###` subtitles (user-facing first, "Behind the scenes" last).
-  Extend existing entries over near-duplicates; don't repeat the subtitle in entries. When adding an entry, reread the
-  whole day: add subtitles once it's busy, and merge entries about the same feature.
+- `CHANGELOG.md` format (which changes need an entry: `CLAUDE.md`): newest date first. It's shown on `/about/changelog`,
+  so write for users, and say why, not only what. Busy days get `###` subtitles (user-facing first, "Behind the scenes"
+  last). Extend existing entries over near-duplicates; don't repeat the subtitle in entries. When adding an entry,
+  reread the whole day: add subtitles once it's busy, and merge entries about the same feature. No `# Changelog` title
+  or preamble: the page renders the whole file under its own title (`features/about/changelog/changelog.ts`).
 - GPG "Inappropriate ioctl for device": ask the user to run `echo test | gpg --clearsign > /dev/null`, then commit
   within ~10 min.
 - If `gh pr edit` fails on a Projects (classic) error, use
