@@ -16,11 +16,11 @@ import { finalize, map } from 'rxjs';
 import { OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 
-/** 8 entries: the last week and the check it starts from. 30D and 60D load up to 61. */
+/** 8 entries: the last week and the check it starts from. Longer periods load up to 91. */
 const DEFAULT_SIZE = 8;
 const MORE_SIZE = 7;
-/** The history is kept for about 60 days, so 60 days and today is all there is (and 30D's previous period starts there) */
-const PERIOD_SIZE = 61;
+/** The history is kept for about 90 days, so 90 days and today is all there is */
+const PERIOD_SIZE = 91;
 
 interface Page {
   entries: HiscoreEntry[];
@@ -115,7 +115,7 @@ export function playerHistory(params: {
     stream: ({ params }) => osrsTrackerRepo.getPlayerHiscores(params.username, params.offset, DEFAULT_SIZE, 0),
   });
   // One entry instead of the period before's days: the page only needs its start, to compare the periods' XP. The
-  // history ends at PERIOD_SIZE, so 60D has none.
+  // history ends at PERIOD_SIZE, so 60D and 90D have none (60D's period before would only be half covered).
   const previousPeriodStart = rxResource({
     params: () => {
       const skip = period() * 2;

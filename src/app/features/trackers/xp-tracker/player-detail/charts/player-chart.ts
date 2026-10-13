@@ -165,7 +165,7 @@ interface ChartHeading {
 export class PlayerChart {
   readonly playerView = inject(PlayerView);
 
-  readonly periods: SegmentedOption<Period>[] = ([7, 30, 60] as const).map(days => ({
+  readonly periods: SegmentedOption<Period>[] = ([7, 30, 60, 90] as const).map(days => ({
     value: days,
     label: `${days}D`,
     title: `Last ${days} days`,

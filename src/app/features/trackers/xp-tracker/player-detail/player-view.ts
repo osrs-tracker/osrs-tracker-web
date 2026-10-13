@@ -8,7 +8,7 @@ export type BottomTab = 'clues' | 'minigames';
 export type ChartView = TopTab | BottomTab;
 export type ActivityView = Exclude<ChartView, 'skills'>;
 /** Days the chart and the stat tiles cover */
-export type Period = 7 | 30 | 60;
+export type Period = 7 | 30 | 60 | 90;
 
 /**
  * What the player page shows: the tab of each hiscores card and what the chart follows, the last chartable pick (a tab,
