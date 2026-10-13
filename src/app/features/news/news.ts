@@ -172,7 +172,9 @@ export default class News {
   pickDay(day: string | null): void {
     const since = parseDay(day);
     this.since.set(since);
+    // Clearing the day forgets it too, or the Game menu would keep offering it
     if (since) this.lastPlayedStore.setLastPlayed(since);
+    else this.lastPlayedStore.clearLastPlayed();
     this.updateQuery();
   }
 

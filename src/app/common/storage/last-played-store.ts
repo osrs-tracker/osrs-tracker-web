@@ -39,6 +39,11 @@ export const LastPlayedStore = signalStore(
         storageService.setItem(StorageKey.NewsLastPlayed, day);
         patchState(store, { lastPlayed: day });
       },
+
+      clearLastPlayed(): void {
+        storageService.removeItem(StorageKey.NewsLastPlayed);
+        patchState(store, { lastPlayed: null });
+      },
     };
   }),
   withHooks({
