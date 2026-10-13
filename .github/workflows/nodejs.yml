@@ -32,11 +32,12 @@ jobs:
         name: Check for source or dependency changes
         env:
           # A new push to a PR compares with the previous push, not the base branch, so a digest commit doesn't rerun
-          # them for the PR's earlier source changes. A merge queue run compares with the main commit it's built on.
+          # them for the PR's earlier source changes. A merge queue run compares with the commit it's built on: main, or the
+          # group queued ahead, whose build and test may not have finished, so it then runs everything.
           BEFORE:
             ${{ github.event.merge_group.base_sha || (github.event_name == 'push' || github.event.action ==
             'synchronize') && github.event.before || github.event.pull_request.base.sha }}
-          AFTER: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha || github.sha }}
+          AFTER: ${{ github.event.pull_request.head.sha || github.sha }}
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
         run: |
@@ -84,7 +85,7 @@ jobs:
       - run: npm run lint
       - run: npm run prettier:ci
 
-  # Local links and #anchors in the Markdown, on every push as docs-only pushes skip build and test. `--hidden` takes in
+  # Local links and #anchors in the Markdown, on every run as docs-only changes skip build and test. `--hidden` takes in
   # `.claude/` and `.github/`; `--offline` leaves out external URLs, so other sites can't make it flaky.
   links:
     runs-on: ubuntu-latest
