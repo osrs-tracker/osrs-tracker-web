@@ -1,7 +1,7 @@
 @theme {
   --font-sans: 'SOLIX';
 
-  /* Phones under 390px, where "Price Tracker" needs 14px text to fit its nav tab */
+  /* Phones under 390px, where the nav tabs (a menu tab with its chevron) get 14px text */
   --breakpoint-xs: 24.375rem;
 
   /* The page width: nav, footer and page content (24px gutters, 16px on phones) */
@@ -93,6 +93,7 @@
   --color-down-pill: var(--down-pill);
   --color-amber: var(--amber);
   --color-orange: var(--orange);
+  --color-scrim: var(--scrim);
 
   /* Floating layers only (dropdowns, tooltips, popovers); cards are flat */
   --shadow-float: 0 24px 60px var(--float-shadow);

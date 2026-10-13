@@ -1,8 +1,9 @@
 <div class="min-h-screen flex flex-col sa-t sa-l sa-r">
   <!-- Sticky from sm up only: on phones the two-row nav would take too much of the screen -->
   <nav class="relative sm:sticky top-0 z-9999 text-strong bg-ground border-b border-line">
+    <!-- Relative: the menus hang from its right edge (desktop) or span it (phones) -->
     <div
-      class="max-w-page mx-auto flex flex-wrap items-center gap-x-4 gap-y-1 px-4 pt-3 pb-1.5 sm:gap-6 sm:px-6 sm:py-4"
+      class="relative max-w-page mx-auto flex flex-wrap items-center gap-x-4 gap-y-1 px-4 pt-3 pb-1.5 sm:gap-6 sm:px-6 sm:py-4"
     >
       <!-- The wordmark, as on the favicon: a big "OSRS" over a small "TRACKER" of the same width. Hover fills a tile
            like the theme button's, padded evenly around the letters (pb-1 as TRACKER's line box leaves more below it);
@@ -17,20 +18,56 @@
 
       <div class="grow"></div>
 
-      <!-- On phones the links wrap to a second row of three equal-width tabs, edge to edge -->
-      <ul class="max-sm:order-3 max-sm:basis-full max-sm:grow max-sm:-mx-4 grid grid-cols-3 sm:flex sm:gap-5 font-bold">
-        @for (route of routes; track route.path) {
-          <li class="flex">
+      <!-- On phones the tabs wrap to a second row of three equal-width tabs, edge to edge -->
+      <ul class="max-sm:order-3 max-sm:basis-full max-sm:grow max-sm:-mx-4 grid grid-cols-3 sm:flex sm:gap-6">
+        <li class="flex">
+          <a
+            [class]="navTab"
+            [attr.data-marked]="homeMarked() ? '' : null"
+            routerLink="/"
+            routerLinkActive
+            ariaCurrentWhenActive="page"
+            [routerLinkActiveOptions]="{ exact: true }"
+            >Home</a
+          >
+        </li>
+        <li class="flex">
+          <nav-menu class="grow" label="Trackers" menuId="menu-trackers" [current]="section() === 'trackers'">
+            <p class="px-2.5 pt-2.5 sm:pt-1.5 pb-1.5 text-sm font-bold text-muted">XP Tracker</p>
             <a
-              class="relative flex grow items-center justify-center max-sm:min-h-11 whitespace-nowrap max-xs:text-sm hover:text-accent-hover current:text-accent max-sm:current:after:absolute max-sm:current:after:inset-x-0 max-sm:current:after:-bottom-1.5 max-sm:current:after:h-0.5 max-sm:current:after:rounded-xs max-sm:current:after:bg-accent"
-              [routerLink]="route.path"
-              routerLinkActive
-              ariaCurrentWhenActive="page"
-              [routerLinkActiveOptions]="{ exact: route.path === '/' }"
-              >{{ route.name }}</a
+              nav-menu-row
+              label="Look up a player"
+              sub="Levels, XP gains, boss kills and goals"
+              routerLink="/trackers/xp"
             >
-          </li>
-        }
+              <img icon class="size-5.5" name="overall" [skill]="true" alt="" />
+            </a>
+            <div class="h-px -mx-1.5 sm:-mx-2 mt-2 mb-1 bg-line"></div>
+            <p class="px-2.5 pt-1.5 pb-1.5 text-sm font-bold text-muted">Price Tracker</p>
+            <a
+              nav-menu-row
+              label="Search items"
+              sub="Prices and charts for every tradeable item"
+              routerLink="/trackers/price"
+            >
+              <img icon name="coin stack" alt="" />
+            </a>
+            <div class="h-px mx-2.5 my-1.5 bg-line"></div>
+            <a
+              nav-menu-row
+              label="Browse all items"
+              sub="Every item, by its first letter"
+              routerLink="/trackers/price/browse/a"
+            >
+              <span class="text-xs font-bold">A–Z</span>
+            </a>
+          </nav-menu>
+        </li>
+        <li class="flex">
+          <nav-menu class="grow" label="Game" menuId="menu-game" [current]="section() === 'game'">
+            <players-online-card [active]="navMenus.open() === 'menu-game'" />
+          </nav-menu>
+        </li>
       </ul>
 
       <dark-mode />
@@ -48,6 +85,16 @@
       </div>
     }
   </nav>
+
+  @if (navMenus.open()) {
+    <!-- Behind an open menu on phones; a tap on it closes the menu -->
+    <!-- cursor-pointer: iOS Safari only sends a click on a plain element that has one -->
+    <div
+      class="sm:hidden fixed inset-0 z-9998 bg-scrim cursor-pointer"
+      aria-hidden="true"
+      (click)="navMenus.close()"
+    ></div>
+  }
 
   <main class="relative">
     <!-- content -->

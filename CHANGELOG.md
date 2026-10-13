@@ -1,6 +1,6 @@
 ## 2026-10-13
 
-### Players online
+### Players online and the navigation
 
 - A new page, [Players online](https://osrs-tracker.freekmencke.com/players-online), shows how many people are playing
   Old School RuneScape right now: the count, the split between members and free-to-play, and the players on each
@@ -8,6 +8,10 @@
   week, month, year or all time, with the busiest moment of each range. Hovering the chart shows the count at that
   moment, per country and split by members. The count comes from the game's world list every 10 minutes, so it starts on
   13 October 2026 and the longer ranges fill in from there.
+- The navigation has two menus, Trackers and Game, in place of the XP Tracker and Price Tracker links, so the pages on
+  their way have a place in it. Trackers leads to the player lookup, the item search and the A–Z item list. Game shows
+  the players online now with a line of the last 24 hours, and opens the Players online page. On phones the three tabs
+  stay in one row and a menu opens across the screen.
 
 ### Privacy
 
