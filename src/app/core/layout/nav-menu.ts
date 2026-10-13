@@ -14,6 +14,7 @@ import {
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { filter, map } from 'rxjs';
+import { WINDOW } from '@app/core/platform/window-token';
 
 /**
  * A top-level nav tab, link or menu button. From `sm` up the current one is accented (`current:` matches the link's
@@ -105,12 +106,14 @@ export class NavMenus {
     'class': 'flex',
     '(document:click)': 'closeOnOutsideClick($event)',
     '(document:keydown.escape)': 'closeOnEscape()',
+    '(window:scroll)': 'closeOnPhoneScroll()',
     '(focusout)': 'closeOnFocusOut($event)',
   },
 })
 export class NavMenu {
   private readonly navMenus = inject(NavMenus);
   private readonly elementRef: ElementRef<HTMLElement> = inject(ElementRef);
+  private readonly window = inject(WINDOW);
   private readonly tab: Signal<ElementRef<HTMLButtonElement>> = viewChild.required('tab');
 
   readonly label: InputSignal<string> = input.required();
@@ -140,6 +143,11 @@ export class NavMenu {
     if (!this.isOpen()) return;
     this.navMenus.close();
     this.tab().nativeElement.focus();
+  }
+
+  /** The nav scrolls away on phones (it's only sticky from `sm` up), so the sheet would leave the scrim behind */
+  protected closeOnPhoneScroll(): void {
+    if (this.isOpen() && this.window?.matchMedia('(width < 40rem)').matches) this.navMenus.close();
   }
 
   protected closeOnFocusOut(event: FocusEvent): void {

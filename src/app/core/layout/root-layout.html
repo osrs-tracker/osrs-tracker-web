@@ -87,8 +87,13 @@
   </nav>
 
   @if (navMenus.open()) {
-    <!-- Behind an open menu on phones; a click on it closes the menu (as does any click outside it) -->
-    <div class="sm:hidden fixed inset-0 z-9998 bg-scrim" aria-hidden="true"></div>
+    <!-- Behind an open menu on phones; a tap on it closes the menu -->
+    <!-- cursor-pointer: iOS Safari only sends a click on a plain element that has one -->
+    <div
+      class="sm:hidden fixed inset-0 z-9998 bg-scrim cursor-pointer"
+      aria-hidden="true"
+      (click)="navMenus.close()"
+    ></div>
   }
 
   <main class="relative">
