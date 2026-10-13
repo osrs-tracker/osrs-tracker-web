@@ -31,6 +31,7 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   private chart?: Chart<TType, Point[]>;
+  private initFrame?: number;
   private readonly canvas: Signal<ElementRef<HTMLCanvasElement>> = viewChild.required('chart');
 
   readonly data: InputSignal<TData> = input.required();
@@ -46,10 +47,13 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
   protected abstract setData(chart: Chart<TType, Point[]>, data: TData): void;
 
   ngOnInit(): void {
-    if (this.isBrowser) this.initChart();
+    // In the next frame, a task of its own: creating and drawing a chart is slow, and inside the hydration tick it made
+    // that task longer (`afterNextRender` would still run in it)
+    if (this.isBrowser) this.initFrame = requestAnimationFrame(() => this.initChart());
   }
 
   ngOnDestroy(): void {
+    if (this.initFrame !== undefined) cancelAnimationFrame(this.initFrame);
     this.chart?.destroy();
   }
 
