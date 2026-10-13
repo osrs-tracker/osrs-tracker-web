@@ -3,6 +3,7 @@ import { Service, inject } from '@angular/core';
 import { HiscoreEntry, Item, Player, PlayerCount } from '@osrs-tracker/models';
 import { Observable, map } from 'rxjs';
 import { LOADING_INDICATOR } from '@app/core/interceptors/loading-indicator-interceptor';
+import { SSR_TIMEOUT } from '@app/core/interceptors/ssr-timeout-interceptor';
 import { config } from '@config/config';
 
 /** How far back the player count history goes, and its step: 10-minute samples (24h, 7d), hourly (30d), daily (1y, all) */
@@ -152,8 +153,8 @@ export class OsrsTrackerRepo {
   // Player counts
   //
 
-  // The browser-only requests, refreshed every minute, revalidate with the API (a 304 when unchanged) instead of using
-  // the browser cache's copy (`max-age=60` live, 300 history). Not `/latest`: SSR renders it, and the transfer cache
+  // Requests refreshed every minute revalidate with the API (a 304 when unchanged) instead of using the browser cache's
+  // copy (`max-age=60` live, 300 history). Not the ones SSR renders (`/latest`, the first `/live`): the transfer cache
   // leaves out a request with `cache: 'no-cache'`, so the browser would fetch it again on hydration
 
   /** The newest stored sample of the players online, taken every 10 minutes */
@@ -163,10 +164,16 @@ export class OsrsTrackerRepo {
       .pipe(map(playerCount => ({ ...playerCount, date: new Date(playerCount.date) })));
   }
 
-  /** The players online right now, from Jagex's world list (the API keeps it for up to a minute). Browser only. */
-  getLivePlayerCount(): Observable<PlayerCount> {
+  /**
+   * The players online right now, from Jagex's world list (the API keeps it for up to a minute). `refresh` revalidates
+   * with the API. Fails after the SSR timeout during a render, as the API may be waiting on Jagex.
+   */
+  getLivePlayerCount(refresh: boolean): Observable<PlayerCount> {
     return this.httpClient
-      .get<PlayerCount>('/player-counts/live', { cache: 'no-cache' })
+      .get<PlayerCount>('/player-counts/live', {
+        context: new HttpContext().set(SSR_TIMEOUT, true),
+        cache: refresh ? 'no-cache' : 'default',
+      })
       .pipe(map(playerCount => ({ ...playerCount, date: new Date(playerCount.date) })));
   }
 

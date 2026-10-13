@@ -40,7 +40,8 @@ describe('AutoGenerator', () => {
 
   it('re-renders pages on their interval', async () => {
     await initialize();
-    handle.mockResolvedValue(new Response('updated'));
+    // A new one per render: a body reads once, and pages with a shorter interval re-render first
+    handle.mockImplementation(async () => new Response('updated'));
 
     await vi.advanceTimersByTimeAsync(home.interval);
 

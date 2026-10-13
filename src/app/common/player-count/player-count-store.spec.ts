@@ -62,4 +62,24 @@ describe('PlayerCountStore', () => {
     expect(store.count()).toBeUndefined();
     expect(store.failed()).toBe(true);
   });
+
+  it('loads the live count so the transfer cache can carry it, and revalidates on refreshes', async () => {
+    store.refresh();
+    TestBed.tick();
+    httpTesting.expectOne('/player-counts/latest').flush(count(100, '2026-10-13T20:00:00Z'));
+    // The transfer cache leaves out `no-cache` requests: the browser would fetch the server's count again on hydration
+    const first = httpTesting.expectOne('/player-counts/live');
+    expect(first.request.cache).toBe('default');
+    first.flush(count(120, '2026-10-13T20:05:00Z'));
+    await settle();
+
+    store.refresh();
+    TestBed.tick();
+    httpTesting.expectOne('/player-counts/latest').flush(count(100, '2026-10-13T20:00:00Z'));
+    const refresh = httpTesting.expectOne('/player-counts/live');
+    expect(refresh.request.cache).toBe('no-cache');
+    refresh.flush(count(130, '2026-10-13T20:06:00Z'));
+    await settle();
+    expect(store.count()?.total).toBe(130);
+  });
 });
