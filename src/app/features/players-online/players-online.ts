@@ -21,8 +21,8 @@ import { PlayerCountHistory } from './player-count-history';
 import { formatShare, LocationCount, locationCounts } from './world-locations';
 
 /**
- * The players online: the latest count, its members and free-to-play split and its world locations, rendered on the
- * server, and the history below, drawn in the browser.
+ * The players online: the count, its members and free-to-play split and its world locations, rendered on the server
+ * from the stored sample and live in the browser, and the history below, drawn in the browser.
  */
 @Component({
   selector: 'players-online',
@@ -34,16 +34,28 @@ export default class PlayersOnline {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly hydrated: WritableSignal<boolean> = signal(false);
 
-  readonly latest: ResourceRef<PlayerCount | undefined> = rxResource({
+  /** The newest stored sample (sampled every 10 minutes): rendered on the server, so its render never waits on Jagex */
+  private readonly stored: ResourceRef<PlayerCount | undefined> = rxResource({
     stream: () => this.osrsTrackerRepo.getLatestPlayerCount(),
   });
 
-  /** During SSR a failed load renders as loading, as the browser fetches it again after hydration */
-  readonly latestFailed: Signal<boolean> = computed(() => this.isBrowser && !!this.latest.error());
+  /** The live count, from right after hydration (browser only), replacing the stored sample */
+  readonly live: ResourceRef<PlayerCount | undefined> = rxResource({
+    params: () => this.hydrated() || undefined,
+    stream: () => this.osrsTrackerRepo.getLivePlayerCount(),
+  });
+
+  readonly count: Signal<PlayerCount | undefined> = computed(() =>
+    this.live.hasValue() ? this.live.value() : this.stored.hasValue() ? this.stored.value() : undefined,
+  );
+
+  /** Only the live count can fail: during SSR a failed stored sample renders as loading, until the live count loads */
+  readonly failed: Signal<boolean> = computed(() => !!this.live.error());
 
   readonly locations: Signal<(LocationCount & { share: string; percent: number })[]> = computed(() => {
-    if (!this.latest.hasValue() || !this.latest.value()) return [];
-    const { byLocation, total } = this.latest.value()!;
+    const count = this.count();
+    if (!count) return [];
+    const { byLocation, total } = count;
     return locationCounts(byLocation).map(location => ({
       ...location,
       share: formatShare(location.players, total),
@@ -54,7 +66,7 @@ export default class PlayersOnline {
   readonly locationOrder: Signal<string[]> = computed(() => this.locations().map(location => location.key));
 
   readonly split: Signal<{ label: string; players: number; share: string; color: string }[]> = computed(() => {
-    const count = this.latest.hasValue() ? this.latest.value() : undefined;
+    const count = this.count();
     if (!count) return [];
     const players = count.members + count.f2p;
     return [
@@ -64,21 +76,20 @@ export default class PlayersOnline {
   });
 
   readonly membersPercent: Signal<number> = computed(() => {
-    const count = this.latest.hasValue() ? this.latest.value() : undefined;
+    const count = this.count();
     return count && count.members + count.f2p ? (count.members / (count.members + count.f2p)) * 100 : 0;
   });
 
-  /** The sample's time in the viewer's time zone, so only set in the browser, after hydration */
-  readonly countedAt: Signal<string | undefined> = computed(() =>
-    this.hydrated() && this.latest.hasValue() && this.latest.value()
-      ? format(this.latest.value()!.date, 'HH:mm')
-      : undefined,
-  );
+  /** The count's time in the viewer's time zone, so only set in the browser, after hydration */
+  readonly countedAt: Signal<string | undefined> = computed(() => {
+    const count = this.count();
+    return this.hydrated() && count ? format(count.date, 'HH:mm') : undefined;
+  });
 
   readonly skeletonRows: number[] = Array.from({ length: 8 }, (_, i) => i);
 
   constructor() {
     afterNextRender(() => this.hydrated.set(true));
-    everyMinute(() => this.latest.reload());
+    everyMinute(() => this.live.reload());
   }
 }

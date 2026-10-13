@@ -14,10 +14,10 @@
   playing right now", uses the words people search for it with.
 - The navigation has two menus, Trackers and Game, in place of the XP Tracker and Price Tracker links, so the pages on
   their way have a place in it. Trackers leads to the player lookup, the item search and the A–Z item list. Game shows
-  the players online now with a line of the last 24 hours, below a divider that sets it apart from the news links, and
-  opens the Players online page; hovering it lights it up like the other menu rows and turns its title green, so it
-  reads as a link. On phones the three tabs stay in one row and a menu opens across the screen. The item search's coins
-  in the Trackers menu, smaller than the other icons at first, are now as large as the player lookup's.
+  the live count of players online with a line of the last 24 hours, below a divider that sets it apart from the news
+  links, and opens the Players online page; hovering it lights it up like the other menu rows and turns its title green,
+  so it reads as a link. On phones the three tabs stay in one row and a menu opens across the screen. The item search's
+  coins in the Trackers menu, smaller than the other icons at first, are now as large as the player lookup's.
 
 ### News
 

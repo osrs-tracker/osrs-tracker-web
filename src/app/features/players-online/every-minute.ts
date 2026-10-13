@@ -1,4 +1,6 @@
 import { afterNextRender, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter, interval } from 'rxjs';
 import { WINDOW } from '@app/core/platform/window-token';
 
 const MINUTE = 60_000;
@@ -8,9 +10,12 @@ export function everyMinute(refresh: () => void): void {
   const window = inject(WINDOW);
   const destroyRef = inject(DestroyRef);
 
-  afterNextRender(() => {
-    if (!window) return;
-    const id = window.setInterval(() => !window.document.hidden && refresh(), MINUTE);
-    destroyRef.onDestroy(() => window.clearInterval(id));
-  });
+  afterNextRender(() =>
+    interval(MINUTE)
+      .pipe(
+        filter(() => !window?.document.hidden),
+        takeUntilDestroyed(destroyRef),
+      )
+      .subscribe(refresh),
+  );
 }

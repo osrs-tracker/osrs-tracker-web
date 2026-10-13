@@ -40,7 +40,7 @@ export const serverConfig = {
       interval: 300000, // 5 minute
     },
     {
-      // A new player count every 10 minutes
+      // A new stored player count every 10 minutes; the browser fetches the live one after hydration
       path: '/players-online',
       interval: 300000, // 5 minute
     },

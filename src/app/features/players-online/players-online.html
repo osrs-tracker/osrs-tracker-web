@@ -29,14 +29,14 @@
         the year.
       </p>
 
-      @if (latestFailed()) {
+      @if (failed()) {
         <load-error
           class="block max-w-110 rounded-2xl bg-card"
-          source="player-count-latest"
+          source="player-count-live"
           message="The current player count didn't load."
-          (retry)="latest.reload()"
+          (retry)="live.reload()"
         />
-      } @else if (latest.hasValue() && latest.value(); as count) {
+      } @else if (count(); as count) {
         <div class="flex flex-col gap-2">
           <span class="flex items-center gap-2.5 font-bold">
             <span class="size-2.5 shrink-0 rounded-full bg-accent animate-live" aria-hidden="true"></span>Online now
@@ -85,7 +85,7 @@
         <h2 id="locations-heading" class="text-lg font-bold text-strong">By world location</h2>
         <p class="text-sm text-muted">Players on each country's worlds</p>
       </div>
-      @if (latestFailed()) {
+      @if (failed()) {
         <p class="px-5 py-8 text-center text-sm text-muted">Shown once the count loads.</p>
       } @else {
         <ul class="py-1.5">
@@ -128,7 +128,8 @@
 <div class="max-w-page mx-auto flex flex-col gap-4 px-4 sm:px-6 pt-10 pb-18">
   <player-count-history [locationOrder]="locationOrder()" />
   <p class="max-w-180 text-sm text-muted">
-    Counted every 10 minutes from the world list the game shows in World Select. Players still in the lobby aren't on a
-    world yet, so the total runs a little below the one on oldschool.runescape.com.
+    The count at the top is live, from the world list the game shows in World Select, and the history counts it every 10
+    minutes. Players still in the lobby aren't on a world yet, so the total runs a little below the one on
+    oldschool.runescape.com.
   </p>
 </div>
