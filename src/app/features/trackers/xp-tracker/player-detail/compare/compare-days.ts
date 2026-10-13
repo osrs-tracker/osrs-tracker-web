@@ -39,13 +39,8 @@ const TABS: SegmentedOption<CompareTab>[] = [
   { value: 'activities', label: 'Activities' },
 ];
 
-/** "Tue 13 Oct": in UTC, like the day keys, so a label matches its date in the calendar */
-const DAY_LABEL = new Intl.DateTimeFormat('en-GB', {
-  weekday: 'short',
-  day: 'numeric',
-  month: 'short',
-  timeZone: 'UTC',
-});
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 /** The `vs` query value for no second day */
 const NO_DAY = 'none';
@@ -341,7 +336,7 @@ export class CompareDays {
     const most = Math.max(0, ...gains.map(gained => gained ?? 0));
     return entries.map((entry, i) => ({
       key: dayKey(entry.date),
-      label: DAY_LABEL.format(entry.date),
+      label: dayLabel(entry.date),
       gained: gains[i],
       // square-rooted, so a quieter day still shows next to the busiest
       heat: gains[i]! > 0 ? Math.ceil(Math.sqrt(gains[i]! / most) * 4) : 0,
@@ -495,6 +490,14 @@ export class CompareDays {
     const params = this.router.parseUrl(this.location.path()).queryParamMap;
     return { day: params.get('day') ?? undefined, vs: params.get('vs') ?? undefined };
   }
+}
+
+/**
+ * "Tue 13 Oct": in UTC, like the day keys, so a label matches its date in the calendar. Spelled out rather than
+ * `Intl`'s en-GB, which writes September "Sept" where the rest of the page (date-fns) writes "Sep".
+ */
+function dayLabel(date: Date): string {
+  return `${WEEKDAYS[date.getUTCDay()]} ${date.getUTCDate()} ${MONTHS[date.getUTCMonth()]}`;
 }
 
 /** The check's UTC date, e.g. "2026-10-13": each offset checks once a day at a fixed UTC hour */
