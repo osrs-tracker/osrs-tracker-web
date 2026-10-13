@@ -6,7 +6,7 @@ import { playerDetailMeta } from './player-detail/player-detail-meta';
 
 export default [
   {
-    title: 'OSRS XP Tracker: daily gains, boss kills and clues',
+    title: 'OSRS XP Tracker: Daily gains, boss kills and clues',
     path: '',
     pathMatch: 'full',
     data: {

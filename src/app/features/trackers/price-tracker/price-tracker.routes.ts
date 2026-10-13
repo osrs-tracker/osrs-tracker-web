@@ -8,7 +8,7 @@ import { browseMeta } from './browse/browse-meta';
 
 export default [
   {
-    title: 'OSRS Price Tracker: live Grand Exchange prices',
+    title: 'OSRS Price Tracker: Live Grand Exchange prices',
     path: '',
     pathMatch: 'full',
     data: {

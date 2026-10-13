@@ -62,7 +62,8 @@ a worktree).
   `SSR_TIMEOUT` on third-party calls (see Third-party calls in SSR). `encodeURIComponent` path segments; query values go
   in `params`.
 - **Routing**: lazy routes with default-exported components and a `title` (`'<Page> - OSRS Tracker'`, or one naming the
-  search term on landing pages); resolvers end with `catchError(resolverErrorHandler(<original url>))`.
+  search term on landing pages, `'OSRS XP Tracker: Daily gains, …'`, with a capital after the colon: Google may show it
+  flipped, as `'Daily gains, … - OSRS Tracker'`); resolvers end with `catchError(resolverErrorHandler(<original url>))`.
   `ParamAwareReuseStrategy` recreates components on param change. Adding or renaming a route means updating
   `src/server/utils/route-label.ts` (its spec fails CI otherwise).
 - **Page meta**: `PageMetaStrategy` (`common/seo/`) sets the title, description, canonical and social tags once per
