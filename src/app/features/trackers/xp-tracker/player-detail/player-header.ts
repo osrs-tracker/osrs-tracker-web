@@ -56,13 +56,21 @@ export type TrackingState = 'tracked' | 'started' | 'untracked';
       <p class="text-base text-muted">
         @switch (trackingState()) {
           @case ('tracked') {
-            History since {{ player.trackedSince | date: 'd MMM' }}
+            <!-- trackedSince is unknown for a moment on another offset than the resolver's -->
+            @if (player.trackedSince; as trackedSince) {
+              History since {{ trackedSince | date: 'd MMM' }}
+            } @else {
+              Checked daily at {{ trackedAt() }}
+            }
             @if (stale() && lastCheckedAt(); as lastCheckedAt) {
               · Last checked {{ lastCheckedAt | timeAgo }}
             }
           }
           @case ('started') {
-            Tracking started {{ player.trackedSince | timeAgo }} · Checked daily at {{ trackedAt() }}
+            @if (player.trackedSince; as trackedSince) {
+              Tracking started {{ trackedSince | timeAgo }} ·
+            }
+            Checked daily at {{ trackedAt() }}
           }
           @case ('untracked') {
             Not tracked at {{ trackedAt() }} yet

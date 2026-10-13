@@ -176,7 +176,8 @@ export default class PlayerDetail implements OnInit {
     switch (this.trackingState()) {
       case 'started':
         return {
-          date: new Date(this.playerDetail()?.trackedSince ?? Date.now()),
+          // the one entry is the start, until the lookup returns trackedSince for another offset than the resolver's
+          date: new Date(this.playerDetail()?.trackedSince ?? this.history.entries()[0]?.date ?? Date.now()),
           label: 'Tracking started',
           text: 'First entry saved. Each daily check adds a day here.',
         };
