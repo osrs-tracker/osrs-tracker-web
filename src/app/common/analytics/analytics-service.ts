@@ -1,6 +1,7 @@
 import { inject, Service } from '@angular/core';
 import { NavigationEnd, Router, TitleStrategy } from '@angular/router';
 import { filter } from 'rxjs';
+import type { Metric } from 'web-vitals';
 import { GTAG_TOKEN } from './gtag-token';
 
 @Service()
@@ -21,9 +22,52 @@ export class AnalyticsService {
     });
   }
 
-  /** GA4 reports show a parameter only once it's registered as a custom dimension (Admin → Custom definitions). */
-  trackEvent(name: string, params: Record<string, string | number | boolean>) {
+  /**
+   * Sends the visit's Core Web Vitals as `web_vitals` events: LCP once it's final, CLS and INP when the page is hidden.
+   * They cover the page the visit landed on, not the pages the app navigates to after it.
+   */
+  setupWebVitals() {
+    if (!this.gtag) return;
+
+    void import('web-vitals')
+      .then(({ onCLS, onINP, onLCP }) => {
+        const send = ({ name, value, rating }: Metric) =>
+          this.trackEvent('web_vitals', {
+            metric_name: name,
+            // CLS is a score (0.1 is good), LCP and INP are milliseconds
+            metric_value: name === 'CLS' ? Math.round(value * 1000) / 1000 : Math.round(value),
+            metric_rating: rating,
+          });
+
+        onCLS(send);
+        onINP(send);
+        onLCP(send);
+      })
+      .catch(() => {
+        // Not worth an error report or a stale chunk reload: the page works without it
+      });
+  }
+
+  /**
+   * GA4 reports show a parameter only once it's registered as a custom dimension (Admin → Custom definitions). Keep
+   * names snake_case and values to a small set, except `search_term`.
+   */
+  trackEvent(name: string, params: Record<string, string | number | boolean> = {}) {
     this.gtag?.('event', name, params);
+  }
+
+  /** `search_term` lowercased, as player and item names don't depend on case */
+  trackSearch(type: 'player' | 'item', term: string, results?: number) {
+    this.trackEvent('search', {
+      search_term: term.trim().toLowerCase(),
+      search_type: type,
+      ...(results !== undefined ? { results } : {}),
+    });
+  }
+
+  /** A choice in a control (a period, a tab, a mode): one event for every control, so it takes two custom dimensions. */
+  trackOption(control: string, option: string | number) {
+    this.trackEvent('select_option', { control, option: String(option) });
   }
 
   trackException(description: string, fatal = false, error?: Error) {

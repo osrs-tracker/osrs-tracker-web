@@ -26,6 +26,7 @@ import { StatusPanel } from '@app/common/ui/page/status-panel';
 import { TimeAgoPipe } from '@app/common/format/time-ago-pipe';
 import { AveragePricesAtTime, LatestPrices, Lookback, OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
+import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { isHumanVisitor } from '@app/core/platform/human-visitor';
 import { PriceTrackerStore } from '../price-tracker-store';
 import { browseLetterOf, startingWith } from '../browse/browse-letters';
@@ -86,6 +87,7 @@ interface ItemStat {
   ],
 })
 export default class ItemDetail implements OnInit {
+  private readonly analyticsService = inject(AnalyticsService);
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
   private readonly priceTrackerStore = inject(PriceTrackerStore);
@@ -260,6 +262,11 @@ export default class ItemDetail implements OnInit {
 
     // fire and forget: a lookup that isn't recorded only leaves the item out of the recent lookups
     if (this.isHumanVisitor) this.osrsTrackerRepo.recordItemLookup(id).subscribe({ error: () => undefined });
+  }
+
+  selectRange(range: PriceRange): void {
+    this.range.set(range);
+    this.analyticsService.trackOption('item_range', range);
   }
 
   searchItem(query: string): void {

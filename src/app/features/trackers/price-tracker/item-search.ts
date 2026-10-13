@@ -28,6 +28,7 @@ import { Icon } from '@app/common/icon/icon';
 import { formatNumberLegible } from '@app/common/format/number-format';
 import { OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
+import { AnalyticsService } from '@app/common/analytics/analytics-service';
 
 /** Keys the combobox passes on to the listbox to move the active option */
 const NAVIGATION_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageUp', 'PageDown']);
@@ -151,6 +152,7 @@ const NAVIGATION_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageUp'
   imports: [Combobox, ComboboxPopup, ComboboxWidget, Listbox, Option, RouterLink, Icon, LoadError, Skeleton],
 })
 export class ItemSearch {
+  private readonly analyticsService = inject(AnalyticsService);
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
   private readonly router = inject(Router);
@@ -286,6 +288,7 @@ export class ItemSearch {
         next: items => {
           this.results.set(items ?? []);
           this.searchedQuery.set(query);
+          this.analyticsService.trackSearch('item', query, this.results().length);
         },
         error: () => {
           this.results.set([]);

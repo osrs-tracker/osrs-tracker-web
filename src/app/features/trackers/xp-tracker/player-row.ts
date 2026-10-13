@@ -166,6 +166,6 @@ export class PlayerRow implements OnInit {
       this.xpTrackerStore.toggleFavoritePlayer(username);
     }
 
-    this.analyticsService.trackEvent('remove-missing-player', { username });
+    this.analyticsService.trackEvent('remove_missing_player', { username });
   }
 }

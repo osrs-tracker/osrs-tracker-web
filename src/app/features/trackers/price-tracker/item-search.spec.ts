@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
 import { delay, of } from 'rxjs';
+import { GTAG_TOKEN } from '@app/common/analytics/gtag-token';
 import { OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -30,6 +31,7 @@ describe('ItemSearch', () => {
         provideZonelessChangeDetection(),
         provideRouter([]),
         { provide: OsrsTrackerRepo, useValue: { searchItems } },
+        { provide: GTAG_TOKEN, useValue: null },
         { provide: OsrsPricesRepo, useValue: { getLatestPrices: () => of({ low: 1_000, high: 1_100 }) } },
       ],
     });

@@ -82,7 +82,7 @@ interface ChartHeading {
           label="Period"
           [options]="periods"
           [value]="playerView.period()"
-          (valueChange)="playerView.period.set($event)"
+          (valueChange)="playerView.setPeriod($event)"
         />
       }
     </div>

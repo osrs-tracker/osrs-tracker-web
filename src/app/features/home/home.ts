@@ -20,6 +20,7 @@ import { LoadError } from '@app/common/ui/loading/load-error';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { Icon } from '@app/common/icon/icon';
 import { OsrsNewsItem, OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
+import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { ItemRow } from '@app/features/trackers/price-tracker/item-row';
 import { ItemSearch } from '@app/features/trackers/price-tracker/item-search';
 import { PriceTrackerStore, RecentItem } from '@app/features/trackers/price-tracker/price-tracker-store';
@@ -54,6 +55,7 @@ type SearchMode = 'player' | 'item';
   ],
 })
 export default class Home {
+  private readonly analyticsService = inject(AnalyticsService);
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly document = inject(DOCUMENT);
   private readonly elementRef = inject(ElementRef);
@@ -93,6 +95,7 @@ export default class Home {
   setSearchMode(mode: SearchMode): void {
     const hadFocus = !!this.document.activeElement?.closest('segmented');
     this.searchMode.set(mode);
+    this.analyticsService.trackOption('home_search', mode);
 
     if (hadFocus) {
       afterNextRender(() => this.elementRef.nativeElement.querySelector('segmented [aria-checked="true"]')?.focus(), {

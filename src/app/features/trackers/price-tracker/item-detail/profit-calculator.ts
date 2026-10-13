@@ -17,6 +17,7 @@ import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
 import { LatestPrices, OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
+import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { breakEvenSellPrice, geTax, isGeTaxExempt } from './ge-tax';
 import { formatWhole } from './item-prices';
 
@@ -49,7 +50,7 @@ interface ResultRow {
   template: `
     <div class="flex flex-wrap items-center justify-between gap-2 min-h-14 px-5 py-1.5 border-b border-line">
       <h2 class="text-xl/6 font-bold text-strong">Profit calculator</h2>
-      <segmented label="Calculation" [options]="modeOptions()" [(value)]="mode" />
+      <segmented label="Calculation" [options]="modeOptions()" [value]="mode()" (valueChange)="selectMode($event)" />
     </div>
 
     @if (loading()) {
@@ -164,6 +165,7 @@ interface ResultRow {
   imports: [InfoTooltip, LoadError, Segmented, Skeleton],
 })
 export class ProfitCalculator {
+  private readonly analyticsService = inject(AnalyticsService);
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
 
   readonly item: InputSignal<Item> = input.required();
@@ -300,7 +302,13 @@ export class ProfitCalculator {
     input.setSelectionRange(position, position);
   }
 
+  selectMode(mode: Mode): void {
+    this.mode.set(mode);
+    this.analyticsService.trackOption('calculator_mode', mode);
+  }
+
   useLatestPrices(): void {
+    this.analyticsService.trackEvent('use_latest_prices');
     if (this.mode() === 'flip') {
       this.buyAt.set(this.latestPrices()?.low ?? 0);
       this.sellAt.set(this.latestPrices()?.high ?? 0);

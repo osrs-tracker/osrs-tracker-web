@@ -44,7 +44,7 @@
         <button
           type="button"
           class="h-9 px-4 rounded-full border border-border text-sm font-bold text-strong hover:bg-row"
-          (click)="history.reloadToday()"
+          (click)="reloadToday()"
         >
           Try again
         </button>
@@ -155,7 +155,7 @@
               type="button"
               class="button--default button--rounded self-center px-12 bg-card disabled:opacity-60"
               [disabled]="history.loadingMore()"
-              (click)="history.loadMore()"
+              (click)="loadMoreDays()"
             >
               {{ history.loadingMore() ? 'Loading…' : 'Load more days' }}
             </button>

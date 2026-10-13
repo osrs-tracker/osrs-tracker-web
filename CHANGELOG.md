@@ -12,7 +12,9 @@
   the OSRS Wiki's prices API, as the Wiki asks, which serves the price history from its cache instead of its database.
   The monthly check of the GE tax rules uses version 2 too.
 - Google Analytics events name what they record (the theme, the item, the player) instead of using the old Universal
-  Analytics category and label, and the tag no longer sets an IP masking option that Google Analytics 4 ignores.
+  Analytics category and label, and the tag no longer sets an IP masking option that Google Analytics 4 ignores. It also
+  records searches (and players that aren't found), the periods, tabs and options picked on player and item pages,
+  retries after an error, and how fast pages load on real visits (Core Web Vitals). The privacy policy says so.
 
 ## 2026/10/12
 
