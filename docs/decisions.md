@@ -2,6 +2,19 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## No `viewport-fit=cover` (2026/10/13)
+
+- **Context:** on iPhones, Brave (a WKWebView) put the nav under the Dynamic Island after every refresh, and the page
+  couldn't scroll up until it had scrolled down. Safari was fine. With `viewport-fit=cover` the page pads itself by
+  `env(safe-area-inset-*)` and WebKit stops adding the safe area to the scroll view's insets. The likely cause (not
+  confirmed in Brave's code): on reload the web view switches between the two and keeps the wrong top inset until the
+  next scroll.
+- **Decision:** the viewport meta has no `viewport-fit`, so the browser keeps the page inside the safe area, and there
+  are no `env(safe-area-inset-*)` paddings. The nav and footer use the page background, which browsers paint into the
+  areas around the safe area, so nothing looks different.
+- **Revisit:** if something should draw edge to edge on iPhones (a full-bleed hero, a translucent status bar in the Home
+  Screen app); then check a refresh in Brave on an iPhone.
+
 ## The Wiki prices API is called through v2, as its guidelines ask (2026/10/13)
 
 - **Context:** a Wiki prices API developer pointed out on Reddit that per-item time series are hard for them to cache,
