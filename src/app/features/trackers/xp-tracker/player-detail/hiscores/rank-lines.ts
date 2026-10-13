@@ -22,7 +22,7 @@ interface RankLine {
   imports: [DecimalPipe, LoadError, Skeleton],
   template: `
     @for (line of lines(); track line.label) {
-      <div class="flex items-center justify-between gap-4 h-5">
+      <div class="flex items-center justify-between gap-4">
         <span>{{ line.label }}:</span>
         @if (line.failed) {
           <load-error inline source="player-mode-ranks" message="Couldn't load" (retry)="line.reload?.()" />
@@ -34,7 +34,7 @@ interface RankLine {
       </div>
     }
   `,
-  host: { class: 'block mt-1.5 pt-1.5 border-t border-line' },
+  host: { class: 'block mt-2 pt-2 border-t border-line' },
 })
 export class RankLines implements OnInit {
   private readonly modeRanks = inject(ModeRanks);
