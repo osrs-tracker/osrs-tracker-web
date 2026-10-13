@@ -57,6 +57,8 @@
   ahead of it before merging. Ready changes no longer wait to be updated and retested by hand after every other merge,
   so they go live sooner.
 - The chart code moved to the shared code, so pages outside the trackers can draw charts too.
+- The site's server no longer logs an error on every page it renders: the Google Analytics page view, which needs the
+  browser's address, only runs in the browser.
 
 ## 2026-10-12
 

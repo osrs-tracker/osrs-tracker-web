@@ -13,6 +13,8 @@ export class AnalyticsService {
   private readonly titleStrategy = inject(TitleStrategy);
 
   setupPageAnalytics() {
+    if (!this.gtag) return;
+
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
       const routerState = this.router.routerState.snapshot;
 
