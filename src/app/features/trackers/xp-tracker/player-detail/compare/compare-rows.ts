@@ -31,7 +31,7 @@ export function skillRows(to: HiscoreEntry, from?: HiscoreEntry): CompareRow[] {
     return {
       ...row,
       from: before.level,
-      gained: Math.max(0, xp - before.xp),
+      gained: xp - before.xp,
       rankChange: rankChange(then?.rank, now?.rank),
     };
   });

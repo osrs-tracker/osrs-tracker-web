@@ -92,7 +92,7 @@ interface DayOption {
               [ngModel]="vs()?.key ?? NO_DAY"
               (ngModelChange)="pick({ vs: $event })"
             >
-              <option [ngValue]="NO_DAY">Nothing</option>
+              <option [ngValue]="NO_DAY">No other day</option>
               @for (option of options(); track option.key) {
                 @if (option.key !== day()?.key) {
                   <option [ngValue]="option.key">{{ option.label }}</option>
@@ -104,7 +104,7 @@ interface DayOption {
 
         @if (rows(); as rows) {
           @let comparing = !!older();
-          <p class="pb-3 text-base/6 text-strong">{{ heading() }}</p>
+          <p class="pb-3 text-lg/6 font-bold text-strong">{{ heading() }}</p>
           <table class="w-full text-sm">
             <thead>
               <tr class="text-left text-muted">
@@ -150,8 +150,10 @@ interface DayOption {
                           [activity]="tab() === 'activities'"
                         />
                       </span>
+                      <!-- in a comparison, what didn't change steps back -->
                       <span
-                        class="truncate text-strong"
+                        class="truncate"
+                        [class]="comparing && !changed ? 'text-muted' : 'text-strong'"
                         [class.font-bold]="$first && tab() === 'skills'"
                         [attr.title]="row.name"
                         >{{ row.name }}</span
@@ -212,6 +214,8 @@ interface DayOption {
               }
             </tbody>
           </table>
+        } @else if (history.hasValue()) {
+          <p class="text-base text-muted">No days are stored at {{ trackedAt() }} yet.</p>
         } @else {
           <div class="flex flex-col gap-3" aria-hidden="true">
             <skeleton class="h-5 w-64" />
@@ -268,12 +272,15 @@ export class CompareDays {
     const days = this.options();
     return days.find(day => day.key === this.picked().day) ?? days[0];
   });
-  /** The day compared with: the picked one, or the oldest; none when `vs=none` or it's the same day */
+  /**
+   * The day compared with: the picked one, or the oldest; none when `vs=none`, or when the history has one day. A picked
+   * day that turns out to be the day (its own pick fell back to the newest) falls back to the oldest too.
+   */
   readonly vs: Signal<DayOption | undefined> = computed(() => {
     const days = this.options();
     const { vs } = this.picked();
     if (vs === NO_DAY) return undefined;
-    const found = days.find(day => day.key === vs) ?? days.at(-1);
+    const found = days.find(day => day.key === vs && day !== this.day()) ?? days.at(-1);
     return found === this.day() ? undefined : found;
   });
 
@@ -293,14 +300,20 @@ export class CompareDays {
     return this.tab() === 'skills' ? skillRows(newer, this.older()) : activityRows(newer, this.older());
   });
 
-  /** "Mon 15 Sep to Mon 13 Oct, 28 days", or "On Mon 13 Oct" */
+  /** What changed overall, "+11.55M XP and 6 levels in 59 days", or "Total level 2,316 on Mon 6 Oct" for one day */
   readonly heading: Signal<string> = computed(() => {
     const newer = this.newer();
-    const older = this.older();
     if (!newer) return '';
-    if (!older) return `On ${format(newer.date, 'EEE d MMM')}`;
+    const older = this.older();
+    const [overall] = skillRows(newer, older);
+    if (!older) return `Total level ${overall.to.toLocaleString('en-US')} on ${format(newer.date, 'EEE d MMM')}`;
+
     const days = differenceInCalendarDays(newer.date, older.date);
-    return `${format(older.date, 'EEE d MMM')} to ${format(newer.date, 'EEE d MMM')}, ${days} ${days === 1 ? 'day' : 'days'}`;
+    const span = `in ${days} ${days === 1 ? 'day' : 'days'}`;
+    const levels = overall.to - overall.from!;
+    if (!overall.gained) return `No XP gained ${span}`;
+    const levelText = levels > 0 ? ` and ${levels} ${levels === 1 ? 'level' : 'levels'}` : '';
+    return `${this.signed(overall.gained)} XP${levelText} ${span}`;
   });
 
   constructor() {
@@ -331,13 +344,15 @@ export class CompareDays {
     const [day, vs] = [this.day()?.key, this.vs()?.key ?? NO_DAY];
     // picking the day compared with as the day swaps the two
     this.picked.set(change.day === vs ? { day: vs, vs: day } : { day, vs, ...change });
+    if (this.day()?.key === day && (this.vs()?.key ?? NO_DAY) === vs) return;
 
     const url = this.router.createUrlTree([], {
       relativeTo: this.route,
       queryParams: { day: this.day()?.key, vs: this.vs()?.key ?? NO_DAY },
       queryParamsHandling: 'merge',
     });
-    this.location.replaceState(this.router.serializeUrl(url));
+    // with the router's state, so Back to this page still restores its scroll position
+    this.location.replaceState(this.router.serializeUrl(url), '', this.location.getState());
 
     const [newer, older] = [this.newer(), this.older()];
     this.analyticsService.trackEvent('compare_days', {

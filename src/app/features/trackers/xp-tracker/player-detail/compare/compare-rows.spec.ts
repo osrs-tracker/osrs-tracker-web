@@ -42,6 +42,11 @@ describe('skillRows', () => {
     });
   });
 
+  it('shows XP that went down as a negative gain, as activities do', () => {
+    const dropped = entry({ [SkillEnum.Attack]: { level: 90, xp: 5_300_000, rank: 210_000 } });
+    expect(skillRows(dropped, older).find(row => row.name === SkillEnum.Attack)?.gained).toBe(-46_332);
+  });
+
   it('shows one day without the comparison', () => {
     expect(skillRows(newer)[0]).toEqual({ name: SkillEnum.Overall, to: 1510, xp: 41_000_000, rank: 118_500 });
   });

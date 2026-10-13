@@ -151,14 +151,15 @@
           @defer (on viewport; when compareLinked) {
             <compare-days [username]="player.username" [offset]="scrapingOffset()" [trackedAt]="trackedAt()" />
           } @placeholder {
-            <div class="h-40 rounded-2xl bg-card" aria-hidden="true"></div>
+            <!-- about the loaded card's height (the Skills tab), so the day log doesn't jump down when it loads -->
+            <div class="h-314 rounded-2xl bg-card" aria-hidden="true"></div>
           }
         }
 
         <!--
-        Below the fold on phones: it stays server HTML until scrolled to, which keeps it out of the page's hydration task
-        (#247). Client-side navigation renders it at once.
-      -->
+          Below the fold on phones: it stays server HTML until scrolled to, which keeps it out of the page's hydration task
+          (#247). Client-side navigation renders it at once.
+        -->
         @defer (on immediate; hydrate on viewport) {
           <section class="min-w-0 flex flex-col gap-6" aria-label="Day log">
             <player-logs
