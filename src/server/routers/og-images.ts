@@ -3,6 +3,7 @@ import type { Logger } from '@osrs-tracker/logger';
 import type { Item, Player } from '@osrs-tracker/models';
 import express from 'express';
 import { allowCrossOriginEmbedding } from '../middleware/security';
+import type { PlayerCountSample } from '../og/players-online-card';
 import { serverConfig } from '../server-config';
 import type { WebLogType } from '../utils/log';
 
@@ -14,6 +15,9 @@ export type RenderItemCard = (item: Item, iconPng: Uint8Array | undefined) => Pr
 /** The stored player with their latest hiscores, or `undefined` when the API doesn't store them. Throws otherwise. */
 export type GetPlayer = (username: string) => Promise<Player | undefined>;
 export type RenderPlayerCard = (player: Player) => Promise<Uint8Array>;
+/** The players online over the last 24 hours, oldest first. Throws when it failed to load. */
+export type GetPlayerCounts = () => Promise<PlayerCountSample[]>;
+export type RenderPlayersOnlineCard = (samples: PlayerCountSample[]) => Promise<Uint8Array>;
 
 const API_TIMEOUT_MS = 5000;
 const MAX_CACHED = 200;
@@ -21,6 +25,8 @@ const SHORT_CACHE = 'public, max-age=300';
 const LONG_CACHE = 'public, max-age=604800, immutable';
 // Stats change daily: an hour old at most, in memory and in caches that listen
 const PLAYER_CACHE_SECONDS = 3600;
+// A new count every 10 minutes
+const PLAYERS_ONLINE_CACHE_SECONDS = 600;
 // Jagex's names, once `_` and `-` are spaces: 1 to 12 letters, digits and spaces
 const USERNAME = /^[a-z0-9 ]{1,12}$/;
 
@@ -62,11 +68,23 @@ const fetchPlayer: GetPlayer = async username => {
   return (await response.json()) as Player;
 };
 
+/** The last 24 hours of player counts */
+const fetchPlayerCounts: GetPlayerCounts = async () => {
+  const response = await fetch(`${apiBaseUrl()}/player-counts?range=24h`, {
+    headers: { 'User-Agent': config.userAgent },
+    signal: AbortSignal.timeout(API_TIMEOUT_MS),
+  });
+  if (!response.ok) throw new Error(`GET /player-counts answered ${response.status}`);
+  return (await response.json()) as PlayerCountSample[];
+};
+
 /** Loads the renderers on first use, so their large chunk isn't read at startup */
 const renderItemLazily: RenderItemCard = async (item, iconPng) =>
   (await import('../og/item-card')).renderItemCard(item, iconPng);
 const renderPlayerLazily: RenderPlayerCard = async player =>
   (await import('../og/player-card')).renderPlayerCard(player, player.hiscoreEntries?.[0]);
+const renderPlayersOnlineLazily: RenderPlayersOnlineCard = async samples =>
+  (await import('../og/players-online-card')).renderPlayersOnlineCard(samples);
 
 /** `keep: false` serves the image without caching it (an item card drawn without its icon) */
 type Card = { kind: 'image'; png: Uint8Array; keep: boolean } | { kind: 'not-found' };
@@ -108,8 +126,11 @@ function cardCache<K>(load: (key: K) => Promise<Card>, maxAgeMs?: number) {
  * The link preview images, drawn by `renderItemCard` and `renderPlayerCard`:
  * - `GET /og/item/:id.png`, kept a week. An icon that failed to load gives a card without it that isn't kept.
  * - `GET /og/player/:username.png`, a stored player, kept an hour as their stats change daily.
+ * - `GET /og/players-online.png`, the players online page's, kept 10 minutes as the count changes that often; its footer
+ *   dates the count, as chat apps keep a preview for weeks.
  *
- * An unknown item or player, or an API failure, answers a short-lived 404.
+ * An unknown item or player, or an API failure (or fewer than two counts to draw a line through), answers a
+ * short-lived 404.
  */
 export function createOgImageRouter({
   logger,
@@ -118,6 +139,8 @@ export function createOgImageRouter({
   render = renderItemLazily,
   getPlayer = fetchPlayer,
   renderPlayer = renderPlayerLazily,
+  getPlayerCounts = fetchPlayerCounts,
+  renderPlayersOnline = renderPlayersOnlineLazily,
 }: {
   logger: Logger;
   getItem?: GetItem;
@@ -125,6 +148,8 @@ export function createOgImageRouter({
   render?: RenderItemCard;
   getPlayer?: GetPlayer;
   renderPlayer?: RenderPlayerCard;
+  getPlayerCounts?: GetPlayerCounts;
+  renderPlayersOnline?: RenderPlayersOnlineCard;
 }) {
   const log = logger.child({ type: 'og-image' satisfies WebLogType });
 
@@ -160,6 +185,19 @@ export function createOgImageRouter({
     return { kind: 'image', png: await renderPlayer(player), keep: true };
   }, PLAYER_CACHE_SECONDS * 1000);
 
+  // One image, so one key
+  const playersOnlineCard = cardCache<'players-online'>(async () => {
+    let samples: PlayerCountSample[];
+    try {
+      samples = await getPlayerCounts();
+    } catch (error) {
+      log.warn({ error }, 'Loading the player counts for their image failed');
+      return { kind: 'not-found' };
+    }
+    if (samples.length < 2) return { kind: 'not-found' };
+    return { kind: 'image', png: await renderPlayersOnline(samples), keep: true };
+  }, PLAYERS_ONLINE_CACHE_SECONDS * 1000);
+
   function send(res: express.Response, card: Card, cacheControl: string) {
     if (card.kind === 'not-found') {
       res.status(404).set('Cache-Control', SHORT_CACHE).type('text/plain').send('Not found');
@@ -181,6 +219,9 @@ export function createOgImageRouter({
     const username = req.params[0].toLowerCase().replaceAll(/[_-]/g, ' ').trim();
     const card: Card = USERNAME.test(username) ? await playerCard(username) : { kind: 'not-found' };
     send(res, card, `public, max-age=${PLAYER_CACHE_SECONDS}`);
+  });
+  router.get('/og/players-online.png', async (_req, res) => {
+    send(res, await playersOnlineCard('players-online'), `public, max-age=${PLAYERS_ONLINE_CACHE_SECONDS}`);
   });
   return router;
 }

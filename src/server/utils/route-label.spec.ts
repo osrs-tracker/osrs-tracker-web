@@ -65,5 +65,6 @@ describe('routeLabel', () => {
     expect(label('/og/item/4151.png?v=1')).toBe('/og/item/:id.png');
     expect(label('/og/item/abc.png', 404)).toBe('#unmatched');
     expect(label('/og/player/the%20fraking.png?v=1')).toBe('/og/player/:username.png');
+    expect(label('/og/players-online.png?v=1')).toBe('/og/players-online.png');
   });
 });

@@ -25,12 +25,19 @@ export default [
       },
       {
         path: 'players-online',
-        title: 'Players online - OSRS Tracker',
+        title: 'OSRS player count: How many people are playing right now',
         data: {
           meta: {
             description:
               'How many people are playing Old School RuneScape right now, per world location, and the player count over the last day, week, month and year.',
             canonicalPath: '/players-online',
+            // Drawn by the server from the latest count; `?v=` busts shared links' caches when the design changes
+            image: {
+              url: '/og/players-online.png?v=1',
+              width: 1200,
+              height: 630,
+              alt: 'Old School RuneScape players online now and over the last 24 hours',
+            },
           } satisfies PageMeta,
         },
         loadComponent: () => import('./features/players-online/players-online'),
