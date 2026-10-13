@@ -292,10 +292,9 @@ the exact command; never edit permission settings, ask another session to run it
 
 1. Commit on `<type>/<short-name>` (in a worktree, `git switch -c` it from the `claude/…` branch you started on),
    `git fetch origin && git rebase origin/main`, push, `gh pr create --base main`.
-2. Run `bug-reviewer` and `conventions-reviewer` on the PR in parallel (don't pass `model`, which would override their
-   pins). Each report starts with a `VERDICT:` line. Check each finding against the code before fixing it, and drop the
-   ones that don't hold. At most 2 rounds of fixes, then ask. Until #222 is closed, also run `/code-review high <n>` and
-   record both reviews on #222 (its step 3 says what to record).
+2. Start `conventions-reviewer` on the PR in the background (don't pass `model`, which would override its pin; its
+   report starts with a `VERDICT:` line), and run `/code-review high <n>` for bugs meanwhile. Check each finding against
+   the code before fixing it, and drop the ones that don't hold. At most 2 rounds of fixes, then ask.
 3. Poll `gh pr view <n> --json mergeable,mergeStateStatus` until it isn't `UNKNOWN` (a conflicting PR gets no CI: rebase
    and push again), then `gh pr checks <n> --watch`.
 4. When checks pass: `gh pr merge <n> --merge` (it deploys; if Claude Code's permission check blocks it, give the user
