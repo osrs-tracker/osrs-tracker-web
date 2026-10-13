@@ -112,10 +112,15 @@ describe('playerHistory', () => {
   // The first page holds a week, so the week before's comparison comes from its one starting check
   it('adds the check the week before starts from to the compared entries, once', async () => {
     page(0, 0, 8).flush(entries(8, 0));
+    await settle();
+
+    // the chart doesn't wait for it, the tiles do
+    expect(history.periodLoaded()).toBe(true);
+    expect(history.comparedLoaded()).toBe(false);
     previousWeekStart(0).flush(entries(15, 0).slice(14));
     await settle();
 
-    expect(history.periodLoaded()).toBe(true);
+    expect(history.comparedLoaded()).toBe(true);
     expect(history.entries()).toHaveLength(8);
     expect(history.comparedEntries().map(entry => entry.date.getUTCDate())).toEqual([10, 9, 8, 7, 6, 5, 4, 3, 26]);
 
@@ -142,7 +147,7 @@ describe('playerHistory', () => {
 
     history.reloadPreviousPeriod();
     TestBed.tick();
-    expect(history.periodLoaded()).toBe(true);
+    expect(history.comparedLoaded()).toBe(true);
     previousWeekStart(0).flush(entries(15, 0).slice(14));
     await settle();
 
