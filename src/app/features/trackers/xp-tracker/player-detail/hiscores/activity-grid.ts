@@ -14,6 +14,7 @@ import { CHART_CATEGORIES } from '../charts/chart-categories';
 import { chartColors } from '../colors/chart-colors';
 import { ActivityView, PlayerView } from '../player-view';
 import { pickedCellBackground, pickedCellRing } from './picked-cell';
+import { RankLines } from './rank-lines';
 
 const GRID_LABELS: Record<ActivityView, string> = {
   bosses: 'Bosses',
@@ -117,19 +118,12 @@ interface ActivityCell {
                 <ng-template #tooltipTemplate>
                   <div class="font-bold text-strong">{{ cell.name }}</div>
                   <div class="flex justify-between gap-4">
-                    <div>
-                      <div>{{ scoreLabel() }}:</div>
-                      @if (view() !== 'minigames') {
-                        <div>Rank:</div>
-                      }
-                    </div>
-                    <div class="text-right tabular-nums">
-                      <div>{{ cell.activity ? (cell.activity.score | number) : '–' }}</div>
-                      @if (view() !== 'minigames') {
-                        <div>{{ cell.activity?.rank != null ? (cell.activity?.rank | number) : 'Unranked' }}</div>
-                      }
-                    </div>
+                    <div>{{ scoreLabel() }}:</div>
+                    <div class="tabular-nums">{{ cell.activity ? (cell.activity.score | number) : '–' }}</div>
                   </div>
+                  @if (view() !== 'minigames') {
+                    <rank-lines kind="activities" [name]="cell.name" [rank]="cell.activity?.rank" />
+                  }
                   @if (cell.charted) {
                     <div class="pt-1 text-muted">+{{ cell.gain | number }} in these days</div>
                   } @else if (cell.why) {
@@ -144,7 +138,7 @@ interface ActivityCell {
       <ng-content />
     </div>
   `,
-  imports: [DecimalPipe, Grid, GridCell, GridCellWidget, GridRow, Icon, Skeleton, Tooltip],
+  imports: [DecimalPipe, Grid, GridCell, GridCellWidget, GridRow, Icon, RankLines, Skeleton, Tooltip],
 })
 export class ActivityGrid {
   readonly playerView = inject(PlayerView);

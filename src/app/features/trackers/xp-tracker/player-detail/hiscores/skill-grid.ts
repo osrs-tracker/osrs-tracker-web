@@ -11,6 +11,7 @@ import { ThemeService } from '@app/common/theme/theme-service';
 import { ChartSkill, SKILL_COLORS } from '../colors/skill-colors';
 import { PlayerView } from '../player-view';
 import { pickedCellBackground, pickedCellRing } from './picked-cell';
+import { RankLines } from './rank-lines';
 
 // The in-game skill grid, read row by row; the total level follows across the full width
 const SKILL_LAYOUT: SkillEnum[] = [
@@ -31,6 +32,8 @@ interface SkillCell {
   level: number;
   /** XP shown and used for progress; an untrained skill has none */
   xp: number;
+  /** On the main table; `null` or `undefined` unranked */
+  rank?: number | null;
   /** Below 99 only */
   progress?: number;
   /** XP gained in the charted days */
@@ -123,6 +126,7 @@ const OVERALL_COLOR = 'var(--accent)';
                   }
                 </div>
               </div>
+              <rank-lines kind="skills" [name]="cell.name" [rank]="cell.rank" />
               @if (cell.progress !== undefined) {
                 <div class="pt-1 text-muted">{{ cell.progress | number: '1.0-0' }}% to level {{ cell.level + 1 }}</div>
               }
@@ -157,7 +161,7 @@ const OVERALL_COLOR = 'var(--accent)';
       </div>
     </div>
   `,
-  imports: [DecimalPipe, Grid, GridCell, GridCellWidget, GridRow, Icon, Skeleton, Tooltip],
+  imports: [DecimalPipe, Grid, GridCell, GridCellWidget, GridRow, Icon, RankLines, Skeleton, Tooltip],
 })
 export class SkillGrid {
   readonly playerView = inject(PlayerView);
@@ -185,6 +189,7 @@ export class SkillGrid {
         loaded,
         level,
         xp,
+        rank: hiscore?.skills[name]?.rank,
         progress: loaded ? (percentToNextLevel ?? undefined) : undefined,
         gain,
         charted: loaded && gain > 0,
