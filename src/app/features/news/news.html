@@ -31,7 +31,9 @@
 <div class="max-w-page mx-auto flex flex-col gap-8 px-4 sm:px-6 pt-8 pb-18">
   <!-- Category and "Since you last played" share one pill shape: side by side, stacked full width on phones. Below
        1024px the categories are a dropdown, as they don't fit on one line -->
-  <div class="grid grid-cols-1 sm:flex flex-wrap items-center justify-start lg:justify-between gap-x-4 gap-y-3">
+  <div
+    class="relative grid grid-cols-1 sm:flex flex-wrap items-center justify-start lg:justify-between gap-x-4 gap-y-3"
+  >
     <segmented
       class="max-lg:hidden"
       label="Category"
@@ -51,48 +53,29 @@
       }
     </select>
 
-    <!-- The date input lies over the label, so a tap opens the browser's own picker on phones too -->
+    <!-- The calendar lines up with the pill's right edge from 640px, and with the toolbar's left edge on phones -->
     <span
-      class="flex items-center h-11 sm:h-10 rounded-full text-sm font-bold has-focus-visible:outline-2 has-focus-visible:outline-accent"
+      class="flex items-center h-11 sm:h-10 rounded-full text-sm"
       [class]="since() ? 'pr-1.5 bg-accent/16 text-accent' : 'border border-line text-strong hover:bg-row'"
     >
-      <span class="relative flex items-center max-sm:justify-center max-sm:flex-1 gap-2 h-full px-4">
-        <svg
-          class="size-4 shrink-0 text-accent"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <circle cx="12" cy="12" r="9" />
-          <path d="M12 7v5l3 2" />
-        </svg>
-        <span class="whitespace-nowrap" aria-hidden="true">
-          @if (sinceDate(); as sinceDate) {
-            Since {{ sinceDate | date: 'd MMMM y' : 'UTC' }}
-          } @else {
-            Since you last played
-          }
-        </span>
-        <input
-          class="absolute inset-0 size-full p-0 border-0 opacity-0 cursor-pointer"
-          type="date"
-          aria-label="Since you last played: pick the day to show the news posts after"
-          [max]="today"
-          [value]="pickerDay()"
-          (click)="openPicker($event)"
-          (change)="pickDay($any($event.target).value)"
-        />
-      </span>
+      <day-picker
+        class="flex max-sm:flex-1 h-full"
+        label="News since"
+        placeholder="Since you last played"
+        prefix="Since "
+        variant="inline"
+        align="end"
+        [range]="pickerRange"
+        [value]="since() ?? undefined"
+        [openAt]="lastPlayed() ?? undefined"
+        (picked)="pickDay($event)"
+      />
       @if (since()) {
         <button
           type="button"
           class="flex items-center justify-center size-7 shrink-0 rounded-full hover:bg-accent/20"
           aria-label="Show every post again"
-          (click)="pickDay('')"
+          (click)="pickDay(null)"
         >
           <svg
             class="size-3.5"

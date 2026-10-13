@@ -20,9 +20,10 @@
   site. Pick a category to see only those posts, and "Show older posts" pages back to the very first ones. Home's "All
   news" now opens it instead of Jagex's archive. Artwork and teasers for posts from before October 2026 are still being
   added; until then those posts show a placeholder.
-- Back after a break? "Since you last played" on the news page shows only the posts after a day you pick, so you can
-  catch up on what changed. The day is in the link, so it can be shared, and this device remembers it: from then on the
-  Game menu has a link straight to the news since that day, above "Latest news".
+- Back after a break? "Since you last played" on the news page shows only the posts after a day you pick on a calendar,
+  so you can catch up on what changed; a year dropdown in the calendar jumps straight back to the year you stopped. The
+  day is in the link, so it can be shared, and this device remembers it: from then on the Game menu has a link straight
+  to the news since that day, above "Latest news".
 
 ### Privacy
 
@@ -61,10 +62,11 @@
   the day log, shows in its place what each skill and activity gained between the two days, biggest first, with the XP
   and levels gained in total; "Show all stats" lists every level, XP, score and rank, and how many places each rank
   moved. The two days are picked on a calendar, where a bar under each date shows how much XP was gained by that check,
-  so the busy days are easy to find, and the days between the two picks are shaded. Days are named by the check's UTC
-  date, so a picked day's name matches its date in the calendar wherever you are. Only days with a stored check can be
-  picked, so a day the check missed is skipped. The days picked are in the link, so a comparison can be shared, and the
-  history loads only once Compare is opened.
+  so the busy days are easy to find, and the days between the two picks are shaded; when the history spans more than a
+  year, a year dropdown jumps between years. Days are named by the check's UTC date, so a picked day's name matches its
+  date in the calendar wherever you are. Only days with a stored check can be picked, so a day the check missed is
+  skipped. The days picked are in the link, so a comparison can be shared, and the history loads only once Compare is
+  opened.
 - Player pages respond sooner after they load, especially on phones: the charts are drawn just after the page comes
   alive instead of during it, the skills, bosses and raids card starts up a moment later, and on phones the clues and
   minigames card and the day log only start up once you scroll to them. Item pages benefit from the chart change too.

@@ -16,6 +16,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { NewsArchivePage, NewsPost, OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { LastPlayedStore, parseDay } from '@app/common/storage/last-played-store';
+import { DayPicker } from '@app/common/ui/controls/day-picker';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
@@ -51,7 +52,7 @@ interface NewsMonth {
 @Component({
   selector: 'news',
   templateUrl: './news.html',
-  imports: [DatePipe, LoadError, Segmented, Skeleton],
+  imports: [DatePipe, DayPicker, LoadError, Segmented, Skeleton],
 })
 export default class News {
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
@@ -63,7 +64,11 @@ export default class News {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   readonly categories = NEWS_CATEGORIES;
-  readonly today: string = new Date().toISOString().slice(0, 10);
+  /** Any day from before the first Old School post up to today */
+  readonly pickerRange: { from: string; to: string } = {
+    from: '2013-01-01',
+    to: new Date().toISOString().slice(0, 10),
+  };
 
   private readonly queryParams = toSignal(this.route.queryParamMap, { requireSync: true });
 
@@ -80,8 +85,8 @@ export default class News {
     return since ? new Date(`${since}T00:00:00Z`) : null;
   });
 
-  /** The picker opens on the day in the link, else the one remembered on this device */
-  readonly pickerDay: Signal<string> = computed(() => this.since() ?? this.lastPlayedStore.lastPlayed() ?? '');
+  /** With no day in the link, the calendar opens on the one remembered on this device */
+  readonly lastPlayed: Signal<string | null> = this.lastPlayedStore.lastPlayed;
 
   readonly firstPage: ResourceRef<NewsArchivePage | undefined> = rxResource({
     params: () => ({ category: this.category() }),
@@ -161,20 +166,11 @@ export default class News {
     this.replaceQuery();
   }
 
-  pickDay(day: string): void {
+  pickDay(day: string | null): void {
     const since = parseDay(day);
     this.since.set(since);
     if (since) this.lastPlayedStore.setLastPlayed(since);
     this.replaceQuery();
-  }
-
-  /** Opens the browser's date picker where it can be opened from a click (desktop browsers), else the input's own */
-  openPicker(event: Event): void {
-    try {
-      (event.target as HTMLInputElement).showPicker();
-    } catch {
-      // Already open, or not supported: the click opens it there
-    }
   }
 
   showOlder(): void {
