@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { ThemeService } from '@app/common/theme/theme-service';
+import { ThemeStore } from '@app/common/theme/theme-store';
 
 @Component({
   selector: 'dark-mode',
@@ -8,11 +8,11 @@ import { ThemeService } from '@app/common/theme/theme-service';
     <button
       type="button"
       class="flex items-center justify-center size-11 rounded-full border border-line text-strong hover:bg-row transition-colors"
-      (click)="themeService.toggleDarkMode()"
+      (click)="themeStore.toggleDarkMode()"
       aria-label="Dark mode"
-      [attr.aria-pressed]="themeService.darkMode()"
+      [attr.aria-pressed]="themeStore.darkMode()"
     >
-      @if (!themeService.darkMode()) {
+      @if (!themeStore.darkMode()) {
         <svg
           class="size-4.5"
           viewBox="0 0 24 24"
@@ -46,5 +46,5 @@ import { ThemeService } from '@app/common/theme/theme-service';
   `,
 })
 export class DarkMode {
-  readonly themeService = inject(ThemeService);
+  readonly themeStore = inject(ThemeStore);
 }

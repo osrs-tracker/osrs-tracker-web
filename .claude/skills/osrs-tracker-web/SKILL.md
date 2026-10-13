@@ -37,9 +37,9 @@ a worktree).
 
 - **Names** (the 2025 style guide, the CLI's default): a file is named after its main identifier. Components and
   directives have no suffix (`home.ts` with `class Home`, its template `home.html`). Other classes keep theirs and the
-  file joins it with a hyphen (`ThemeService` in `theme-service.ts`, `TimeAgoPipe` in `time-ago-pipe.ts`, also `-repo`,
-  `-store`, `-resolver`, `-interceptor`); generate a service with the suffix in its name
-  (`ng g s common/theme/theme-service`). Only the CLI's own names keep a dot: `main.server.ts`, `app.config*.ts`,
+  file joins it with a hyphen (`StorageService` in `storage-service.ts`, `TimeAgoPipe` in `time-ago-pipe.ts`, also
+  `-repo`, `-store`, `-resolver`, `-interceptor`); generate a service with the suffix in its name
+  (`ng g s common/storage/storage-service`). Only the CLI's own names keep a dot: `main.server.ts`, `app.config*.ts`,
   `*.routes.ts`.
 - **Imports**: relative within a feature or a folder of `common/` or `core/` (and from the root `app.*` files into their
   subfolders); `@app/…`, `@config/…` or `@server/…` otherwise. Lint enforces the layers (`import-x/no-restricted-paths`
@@ -49,21 +49,20 @@ a worktree).
 - **DI**: `inject()` only; root services use `@Service()`, not `@Injectable({ providedIn: 'root' })`.
 - **State**: signals, with explicitly typed public fields (`readonly foo: Signal<Bar> = computed(...)`). Every store
   (state shared between components, or kept in localStorage) is an `@ngrx/signals` `signalStore` (`XpTrackerStore`,
-  `PriceTrackerStore`, `LastPlayedStore`), never a plain service; its private members start with `_`. localStorage goes
-  through one, never from components.
-- **Libraries first**: before writing a helper, use what's installed. RxJS operators (`switchMap`/`exhaustMap` drop a
-  stale response, not a run token or a manual `unsubscribe`), `@ngrx/signals` (`rxMethod`, `signalStoreFeature`,
-  `withValueOnError` from `@ngrx/signals/resource`), Angular's `formatDate(…, 'UTC')` for UTC dates (date-fns' `format`
-  is local time only), date-fns for local dates, `Intl` for numbers. Hand-write only what they can't do, and say why in
-  a comment.
+  `PriceTrackerStore`, `LastPlayedStore`, `ThemeStore`), never a plain service; its private members start with `_`.
+  localStorage goes through one, never from components.
+- **Libraries first**: before writing a helper, use what's installed. RxJS operators (`switchMap`/`exhaustMap` cancel a
+  request a newer one replaces, not a manual `unsubscribe`), `@ngrx/signals` (`rxMethod`, `signalStoreFeature`),
+  Angular's `formatDate(…, 'UTC')` for UTC dates (date-fns' `format` is local time only), date-fns for local dates,
+  `Intl` for numbers. Hand-write only what they can't do, and say why in a comment.
 - **Async data**: prefer `httpResource` / `rxResource`, also for a request a user action starts (a signal of the
-  submitted input as `params`, `reload()` to repeat it). If you subscribe, reset loading state in `finalize`.
+  submitted input as `params`, `reload()` to repeat it). Pages after a list's first one ("Show older posts") load
+  through `paging()` (`common/paging/`). If you subscribe, reset loading state in `finalize`.
 - **Failures**: every failable load shows its failure. `value()` throws in the error state, so check `error()` (or
-  `hasValue()`) first; for a fallback value, wrap the resource in `extendResource(…, withValueOnError(fallback))`
-  instead of `hasValue() ? value() : fallback`. Render `<load-error source="…" (retry)="resource.reload()" />`:
-  `compact` when it replaces a single value in a row or widget, `inline` (amber text, a short message) when it replaces
-  a line under a value, the default when it replaces a list or section, `panel` for a panel. Never
-  `catchError(() => of(empty))` or an `error` callback that only empties the data.
+  `hasValue()`) first and render `<load-error source="…" (retry)="resource.reload()" />`: `compact` when it replaces a
+  single value in a row or widget, `inline` (amber text, a short message) when it replaces a line under a value, the
+  default when it replaces a list or section, `panel` for a panel. Never `catchError(() => of(empty))` or an `error`
+  callback that only empties the data.
 - **Keyboard patterns**: use `@angular/aria` (headless) for toolbars, listboxes, comboboxes and grids instead of
   hand-written arrow-key handling; style its state with `aria-*:` variants (`aria-disabled:`, `aria-checked:`).
   `segmented` shows the pattern and its SSR caveat (`docs/decisions.md`).

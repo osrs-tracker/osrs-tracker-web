@@ -17,7 +17,7 @@ import {
 } from '@angular/core';
 import { Chart, ChartOptions, Point } from 'chart.js';
 import { merge } from 'chart.js/helpers';
-import { ThemeService } from '@app/common/theme/theme-service';
+import { ThemeStore } from '@app/common/theme/theme-store';
 import './chart-setup';
 
 /**
@@ -27,7 +27,7 @@ import './chart-setup';
 @Directive()
 export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements OnInit, OnDestroy {
   private readonly injector = inject(Injector);
-  private readonly themeService = inject(ThemeService);
+  private readonly themeStore = inject(ThemeStore);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   private chart?: Chart<TType, Point[]>;
@@ -36,7 +36,7 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
 
   readonly data: InputSignal<TData> = input.required();
 
-  protected readonly darkMode: Signal<boolean> = this.themeService.darkMode;
+  protected readonly darkMode: Signal<boolean> = this.themeStore.darkMode;
 
   protected abstract readonly type: TType;
 
@@ -78,7 +78,7 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
     runInInjectionContext(this.injector, () => {
       effect(() => this.updateChart(this.chart!, this.data()));
       // Redraw on a theme change: the colours come from the theme's tokens (chart-setup.ts)
-      effect(() => (this.themeService.darkMode(), this.chart!.update('none')));
+      effect(() => (this.themeStore.darkMode(), this.chart!.update('none')));
     });
   }
 

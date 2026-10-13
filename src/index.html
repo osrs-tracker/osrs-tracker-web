@@ -63,7 +63,7 @@
         darkModeSetting !== null ? darkModeSetting === 'true' : matchMedia('(prefers-color-scheme: dark)').matches;
 
       document.documentElement.classList.toggle('dark', darkModeEnabled);
-      // The page ground (slate-900 / slate-100), as ThemeService sets it on toggle
+      // The page ground (slate-900 / slate-100), as ThemeStore sets it on toggle
       document
         .querySelector('meta[name="theme-color"]')
         .setAttribute('content', darkModeEnabled ? '#0f172a' : '#f1f5f9');

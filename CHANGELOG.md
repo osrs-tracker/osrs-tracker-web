@@ -100,6 +100,9 @@
 - The chart code moved to the shared code, so pages outside the trackers can draw charts too.
 - The site's server no longer logs an error on every page it renders: the Google Analytics page view, which needs the
   browser's address, only runs in the browser.
+- The item search and the light and dark theme now rely on what the site already ships (Angular's resources and NgRx
+  Signals) instead of code of their own, and the news archive and a player's history share one way of loading more
+  pages, so there's less code to maintain.
 
 ## 2026-10-12
 

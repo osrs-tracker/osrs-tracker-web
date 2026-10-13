@@ -8,7 +8,7 @@ import { Tooltip } from '@app/common/ui/tooltip/tooltip';
 import { Icon } from '@app/common/icon/icon';
 import { setGridTabStop } from '@app/common/ui/controls/aria-tab-stop';
 import { formatNumberShort } from '@app/common/format/number-format';
-import { ThemeService } from '@app/common/theme/theme-service';
+import { ThemeStore } from '@app/common/theme/theme-store';
 import { UNCHARTED_MINIGAMES } from '../activity-categories';
 import { CHART_CATEGORIES } from '../charts/chart-categories';
 import { chartColors } from '../colors/chart-colors';
@@ -142,7 +142,7 @@ interface ActivityCell {
 })
 export class ActivityGrid {
   readonly playerView = inject(PlayerView);
-  private readonly darkMode = inject(ThemeService).darkMode;
+  private readonly darkMode = inject(ThemeStore).darkMode;
 
   readonly view: InputSignal<ActivityView> = input.required();
   /** Activity names in grid order; `null` is an empty cell */

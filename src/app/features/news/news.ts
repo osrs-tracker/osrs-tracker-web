@@ -2,19 +2,17 @@ import { DatePipe, formatDate, isPlatformBrowser } from '@angular/common';
 import {
   Component,
   computed,
-  DestroyRef,
   inject,
   linkedSignal,
   PLATFORM_ID,
   ResourceRef,
   Signal,
-  signal,
   WritableSignal,
 } from '@angular/core';
-import { rxResource, takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { finalize, Subscription } from 'rxjs';
 import { NewsArchivePage, newsImageUrl, NewsPost, OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
+import { paging } from '@app/common/paging/paging';
 import { LastPlayedStore, parseDay } from '@app/common/storage/last-played-store';
 import { DayPicker } from '@app/common/ui/controls/day-picker';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
@@ -58,7 +56,6 @@ export default class News {
   private readonly lastPlayedStore = inject(LastPlayedStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly destroyRef = inject(DestroyRef);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   readonly categories = NEWS_CATEGORIES;
@@ -99,27 +96,22 @@ export default class News {
   /** During SSR a failed load renders as loading, as the browser fetches it again after hydration */
   readonly firstPageFailed: Signal<boolean> = computed(() => this.isBrowser && !!this.firstPage.error());
 
-  /** The pages after the first, reset with the category */
-  private readonly olderPosts: WritableSignal<NewsPost[]> = linkedSignal({
-    source: this.category,
-    computation: () => [],
+  /** The pages after the first, which start over with the category */
+  private readonly older = paging({
+    reset: this.category,
+    fetch: ({ before, category }: { before: string; category: string }) =>
+      this.osrsTrackerRepo.getNewsArchive(PAGE_SIZE, { before, category: category || undefined }),
   });
-  /** The cursor after the older pages; `undefined` until one has loaded */
-  private readonly olderNext: WritableSignal<string | null | undefined> = linkedSignal({
-    source: this.category,
-    computation: () => undefined,
-  });
-  readonly loadingOlder: WritableSignal<boolean> = signal(false);
-  private olderRequest?: Subscription;
-  readonly olderFailed: WritableSignal<boolean> = signal(false);
+  readonly loadingOlder: Signal<boolean> = this.older.loading;
+  readonly olderFailed: Signal<boolean> = computed(() => !!this.older.failed());
+  private readonly olderPosts: Signal<NewsPost[]> = computed(() => this.older.pages().flatMap(page => page.posts));
 
   private readonly posts: Signal<NewsPost[]> = computed(() =>
     this.firstPage.hasValue() && this.firstPage.value() ? [...this.firstPage.value()!.posts, ...this.olderPosts()] : [],
   );
   private readonly next: Signal<string | null> = computed(() => {
-    const olderNext = this.olderNext();
-    if (olderNext !== undefined) return olderNext;
-    return this.firstPage.hasValue() ? (this.firstPage.value()?.next ?? null) : null;
+    const lastPage = this.older.pages().at(-1) ?? (this.firstPage.hasValue() ? this.firstPage.value() : undefined);
+    return lastPage?.next ?? null;
   });
 
   /** With a day picked: whether the loaded posts reach back to it, so every post since is shown */
@@ -163,9 +155,7 @@ export default class News {
   readonly skeletonRows: number[] = Array.from({ length: 8 }, (_, i) => i);
 
   pickCategory(category: string): void {
-    this.olderRequest?.unsubscribe();
     this.category.set(category);
-    this.olderFailed.set(false);
     this.updateQuery();
   }
 
@@ -182,25 +172,7 @@ export default class News {
     const before = this.next();
     if (!before || this.loadingOlder()) return;
 
-    const category = this.category();
-    this.loadingOlder.set(true);
-    this.olderFailed.set(false);
-
-    this.olderRequest = this.osrsTrackerRepo
-      .getNewsArchive(PAGE_SIZE, { before, category: category || undefined })
-      .pipe(
-        finalize(() => this.loadingOlder.set(false)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: page => {
-          // A page for a list that changed in the meantime (another category, a link from the menu)
-          if (before !== this.next()) return;
-          this.olderPosts.update(posts => [...posts, ...page.posts]);
-          this.olderNext.set(page.next);
-        },
-        error: () => this.olderFailed.set(true),
-      });
+    this.older.load({ before, category: this.category() });
   }
 
   /** Puts the filters in the link, replacing the history entry and keeping the scroll position */
