@@ -2,7 +2,6 @@ import { Combobox, ComboboxPopup, ComboboxWidget } from '@angular/aria/combobox'
 import { Listbox, Option } from '@angular/aria/listbox';
 import {
   Component,
-  DestroyRef,
   ElementRef,
   InputSignal,
   ResourceRef,
@@ -18,10 +17,10 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
-import { Subscription, finalize, forkJoin, map, of } from 'rxjs';
+import { forkJoin, map, of, tap } from 'rxjs';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Icon } from '@app/common/icon/icon';
@@ -157,17 +156,29 @@ export class ItemSearch {
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
   private readonly router = inject(Router);
   private readonly elementRef: ElementRef<HTMLElement> = inject(ElementRef);
-  private readonly destroyRef = inject(DestroyRef);
 
   /** E.g. the name searched for on an item page that wasn't found */
   readonly initialQuery: InputSignal<string> = input('');
 
   readonly query: WritableSignal<string> = signal('');
-  readonly loading: WritableSignal<boolean> = signal(false);
-  readonly results: WritableSignal<Item[]> = signal([]);
-  readonly error: WritableSignal<boolean> = signal(false);
+  /** The query each search was started with; a new object per search, so searching the same query again refetches */
+  private readonly submitted: WritableSignal<{ query: string } | undefined> = signal(undefined);
+  /** A new search cancels the one before, so a slow earlier response can't overwrite a newer one */
+  readonly search: ResourceRef<Item[] | undefined> = rxResource({
+    params: () => this.submitted(),
+    stream: ({ params: { query } }) =>
+      this.osrsTrackerRepo.searchItems(query).pipe(
+        map(items => items ?? []),
+        tap(items => this.analyticsService.trackSearch('item', query, items.length)),
+      ),
+  });
+  readonly loading: Signal<boolean> = this.search.isLoading;
+  readonly error: Signal<boolean> = computed(() => !!this.search.error());
+  readonly results: Signal<Item[]> = computed(() => (this.search.hasValue() ? (this.search.value() ?? []) : []));
   /** The query of the last finished search, for the "No items match" message. */
-  readonly searchedQuery: WritableSignal<string | null> = signal(null);
+  readonly searchedQuery: Signal<string | null> = computed(() =>
+    this.search.hasValue() ? (this.submitted()?.query ?? null) : null,
+  );
 
   /** The combobox's state: a search opens it; Escape, focus or a press leaving the search, or clearing it close it. */
   readonly expanded: WritableSignal<boolean> = signal(false);
@@ -199,7 +210,6 @@ export class ItemSearch {
   );
 
   private readonly listbox: Signal<Listbox<number> | undefined> = viewChild(Listbox);
-  private searchSubscription?: Subscription;
 
   constructor() {
     // Browser only: the page is cached without its query string, so the server never sees it
@@ -267,33 +277,15 @@ export class ItemSearch {
   }
 
   searchItems(): void {
-    this.error.set(false);
-    if (!this.query()) return;
+    const query = this.query();
+    // An empty search clears the last one, and with it a failure that would show again on typing
+    if (!query) {
+      this.submitted.set(undefined);
+      return;
+    }
 
-    // Cancel the previous search (before setting loading, as this runs its finalize), so a slow earlier response can't
-    // overwrite a newer one
-    this.searchSubscription?.unsubscribe();
-    this.loading.set(true);
     this.navigated.set(false);
     this.expanded.set(true);
-
-    const query = this.query();
-    this.searchSubscription = this.osrsTrackerRepo
-      .searchItems(query)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        finalize(() => this.loading.set(false)),
-      )
-      .subscribe({
-        next: items => {
-          this.results.set(items ?? []);
-          this.searchedQuery.set(query);
-          this.analyticsService.trackSearch('item', query, this.results().length);
-        },
-        error: () => {
-          this.results.set([]);
-          this.error.set(true);
-        },
-      });
+    this.submitted.set({ query });
   }
 }

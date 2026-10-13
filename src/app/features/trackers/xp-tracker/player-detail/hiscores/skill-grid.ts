@@ -7,7 +7,7 @@ import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Tooltip } from '@app/common/ui/tooltip/tooltip';
 import { Icon } from '@app/common/icon/icon';
 import { setGridTabStop } from '@app/common/ui/controls/aria-tab-stop';
-import { ThemeService } from '@app/common/theme/theme-service';
+import { ThemeStore } from '@app/common/theme/theme-store';
 import { ChartSkill, SKILL_COLORS } from '../colors/skill-colors';
 import { PlayerView } from '../player-view';
 import { pickedCellBackground, pickedCellRing } from './picked-cell';
@@ -165,7 +165,7 @@ const OVERALL_COLOR = 'var(--accent)';
 })
 export class SkillGrid {
   readonly playerView = inject(PlayerView);
-  private readonly darkMode = inject(ThemeService).darkMode;
+  private readonly darkMode = inject(ThemeStore).darkMode;
 
   readonly SkillEnum: typeof SkillEnum = SkillEnum;
   readonly OVERALL_COLOR: string = OVERALL_COLOR;

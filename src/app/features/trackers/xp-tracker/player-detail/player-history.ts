@@ -1,20 +1,11 @@
 import { isPlatformBrowser } from '@angular/common';
-import {
-  DestroyRef,
-  PLATFORM_ID,
-  Signal,
-  WritableSignal,
-  computed,
-  effect,
-  inject,
-  linkedSignal,
-  untracked,
-} from '@angular/core';
-import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { PLATFORM_ID, Signal, computed, effect, inject, untracked } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { HiscoreEntry } from '@osrs-tracker/models';
-import { finalize, map } from 'rxjs';
+import { map } from 'rxjs';
 import { OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
+import { paging } from '@app/common/paging/paging';
 
 /** 8 entries: the last week and the check it starts from. Longer periods load up to 91. */
 const DEFAULT_SIZE = 8;
@@ -22,20 +13,10 @@ const MORE_SIZE = 7;
 /** The history is kept for about 90 days, so 90 days and today is all there is */
 export const PERIOD_SIZE = 91;
 
-interface Page {
-  entries: HiscoreEntry[];
+interface PageRequest {
+  offset: number;
   size: number;
-}
-
-/** The pages loaded after the first, for one offset's history */
-interface Paging {
-  /** New when the history starts over, so a response for an earlier one can tell it doesn't belong */
-  run: object;
-  /** With the size each asked for: a shorter page is the end of the history */
-  pages: Page[];
-  loading: boolean;
-  /** The size the failed load asked for, so a retry loads as much (a longer period asks for more than a week) */
-  failedSize?: number;
+  skip: number;
 }
 
 /** The history as the page reads it; the resources stay inside, as their `value()` throws in the error state */
@@ -94,19 +75,20 @@ export function playerHistory(params: {
   period: Signal<number>;
 }): PlayerHistory {
   const { username, offset, enabled, period } = params;
-  const destroyRef = inject(DestroyRef);
   const osrsProxyRepo = inject(OsrsProxyRepo);
   const osrsTrackerRepo = inject(OsrsTrackerRepo);
   const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  // Like the first page, the pages after it belong to one offset, so another offset starts over
-  const paging: WritableSignal<Paging> = linkedSignal({
-    source: offset,
-    computation: (): Paging => ({ run: {}, pages: [], loading: false }),
+  // Like the first page, the pages after it belong to one offset, so another offset starts over. Each page keeps the
+  // size it asked for: a shorter page is the end of the history.
+  const more = paging({
+    reset: offset,
+    fetch: ({ offset, size, skip }: PageRequest) =>
+      osrsTrackerRepo.getPlayerHiscores(username, offset, size, skip).pipe(map(entries => ({ entries, size }))),
   });
-  const morePages = computed(() => paging().pages);
-  const loadingMore = computed(() => paging().loading);
-  const loadMoreFailed = computed(() => paging().failedSize !== undefined);
+  const morePages = more.pages;
+  const loadingMore = more.loading;
+  const loadMoreFailed = computed(() => !!more.failed());
 
   const todayResource = rxResource({
     params: () => (isBrowser && enabled() ? { username, offset: offset() } : undefined),
@@ -144,24 +126,7 @@ export function playerHistory(params: {
   const periodLoaded = computed(() => loaded() && (entries().length >= periodSize() || !hasMore() || loadMoreFailed()));
 
   function loadMore(size: number = MORE_SIZE): void {
-    const { run } = paging();
-    // a response for a history that has since started over (another offset) doesn't belong to this one
-    const update = (change: Partial<Paging> | ((paging: Paging) => Partial<Paging>)): void => {
-      if (paging().run !== run) return;
-      paging.update(current => ({ ...current, ...(typeof change === 'function' ? change(current) : change) }));
-    };
-    update({ loading: true, failedSize: undefined });
-
-    osrsTrackerRepo
-      .getPlayerHiscores(username, offset(), size, entries().length)
-      .pipe(
-        takeUntilDestroyed(destroyRef),
-        finalize(() => update({ loading: false })),
-      )
-      .subscribe({
-        next: page => update(current => ({ pages: [...current.pages, { entries: page, size }] })),
-        error: () => update({ failedSize: size }),
-      });
+    more.load({ offset: offset(), size, skip: entries().length });
   }
 
   // A longer period loads the history it needs
@@ -197,7 +162,8 @@ export function playerHistory(params: {
     loadingMore,
     loadMoreFailed,
     loadMore,
-    retryLoadMore: () => loadMore(paging().failedSize),
+    // the size that failed, from the entries loaded now
+    retryLoadMore: () => loadMore(more.failed()?.size),
     reloadToday: () => todayResource.reload(),
     reloadPreviousPeriod: () => previousPeriodStart.reload(),
     reloadFirstPage: () => firstPage.reload(),
