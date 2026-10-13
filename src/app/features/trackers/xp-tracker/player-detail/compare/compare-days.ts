@@ -17,10 +17,9 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreEntry } from '@osrs-tracker/models';
+import { HiscoreEntry, skillProgress } from '@osrs-tracker/models';
 import { differenceInCalendarDays, format } from 'date-fns';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { LoadError } from '@app/common/ui/loading/load-error';
@@ -31,6 +30,7 @@ import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { PERIOD_SIZE } from '../player-history';
 import { activityRows, CompareRow, skillRows } from './compare-rows';
+import { DayPicker, PickerDay } from './day-picker';
 
 type CompareTab = 'skills' | 'activities';
 
@@ -43,9 +43,7 @@ const TABS: SegmentedOption<CompareTab>[] = [
 const NO_DAY = 'none';
 
 /** A stored check that can be picked */
-interface DayOption {
-  key: string;
-  label: string;
+interface DayOption extends PickerDay {
   entry: HiscoreEntry;
 }
 
@@ -74,33 +72,23 @@ interface Changes {
   template: `
     <article class="rounded-2xl bg-card">
       <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 min-h-14 px-5 py-3 border-b border-line">
-        <div class="flex flex-wrap items-center gap-2">
-          <select
-            class="h-8 pl-2 pr-8 py-0 rounded-xl border-line bg-card font-bold text-strong tabular-nums cursor-pointer focus:border-accent focus:ring-accent disabled:cursor-default"
-            aria-label="Day"
-            [disabled]="!options().length"
-            [ngModel]="day()?.key"
-            (ngModelChange)="pick({ day: $event })"
-          >
-            @for (option of options(); track option.key) {
-              <option [ngValue]="option.key">{{ option.label }}</option>
-            }
-          </select>
+        <div class="relative flex flex-wrap items-center gap-2">
+          <day-picker
+            label="Day"
+            [days]="options()"
+            [value]="day()?.key"
+            [other]="vs()?.key"
+            (picked)="pick({ day: $event! })"
+          />
           <span class="text-sm text-muted">compared with</span>
-          <select
-            class="h-8 pl-2 pr-8 py-0 rounded-xl border-line bg-card font-bold text-strong tabular-nums cursor-pointer focus:border-accent focus:ring-accent disabled:cursor-default"
-            aria-label="Compared with"
-            [disabled]="!options().length"
-            [ngModel]="vs()?.key ?? NO_DAY"
-            (ngModelChange)="pick({ vs: $event })"
-          >
-            <option [ngValue]="NO_DAY">No other day</option>
-            @for (option of options(); track option.key) {
-              @if (option.key !== day()?.key) {
-                <option [ngValue]="option.key">{{ option.label }}</option>
-              }
-            }
-          </select>
+          <day-picker
+            label="Compared with"
+            noneLabel="No other day"
+            [days]="options()"
+            [value]="vs()?.key"
+            [other]="day()?.key"
+            (picked)="pick({ vs: $event ?? NO_DAY })"
+          />
         </div>
         @if (changes(); as changes) {
           @let levels = changes.overall.to - changes.overall.from!;
@@ -305,7 +293,7 @@ interface Changes {
   `,
   // the page's Days/Compare switch sits above it: a shared link scrolls to show both
   host: { class: 'block scroll-mt-28 sm:scroll-mt-40' },
-  imports: [DecimalPipe, FormsModule, Icon, LoadError, Segmented, Skeleton],
+  imports: [DayPicker, DecimalPipe, Icon, LoadError, Segmented, Skeleton],
 })
 export class CompareDays {
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
@@ -335,14 +323,23 @@ export class CompareDays {
     stream: ({ params }) => this.osrsTrackerRepo.getPlayerHiscores(params.username, params.offset, PERIOD_SIZE, 0),
   });
 
-  /** The stored checks, newest first */
-  readonly options: Signal<DayOption[]> = computed(() =>
-    (this.history.hasValue() ? this.history.value() : []).map(entry => ({
+  /** The stored checks, newest first, with the XP each gained since the one before (its strength in the calendar) */
+  readonly options: Signal<DayOption[]> = computed(() => {
+    const entries = this.history.hasValue() ? this.history.value() : [];
+    const overallXp = (entry: HiscoreEntry): number => skillProgress(entry.skills[SkillEnum.Overall]).xp;
+    const gains = entries.map((entry, i) =>
+      i + 1 < entries.length ? overallXp(entry) - overallXp(entries[i + 1]) : undefined,
+    );
+    const most = Math.max(0, ...gains.map(gained => gained ?? 0));
+    return entries.map((entry, i) => ({
       key: dayKey(entry.date),
       label: format(entry.date, 'EEE d MMM'),
+      gained: gains[i],
+      // square-rooted, so a quieter day still shows next to the busiest
+      heat: gains[i]! > 0 ? Math.ceil(Math.sqrt(gains[i]! / most) * 4) : 0,
       entry,
-    })),
-  );
+    }));
+  });
 
   /** The picked day, or the newest; a day missing from the history (another offset, or since removed) falls back too */
   readonly day: Signal<DayOption | undefined> = computed(() => {
@@ -430,8 +427,11 @@ export class CompareDays {
   /** Picks a day or the day to compare with, and puts both in the URL */
   pick(change: { day?: string; vs?: string }): void {
     const [day, vs] = [this.day()?.key, this.vs()?.key ?? NO_DAY];
-    // picking the day compared with as the day swaps the two
-    this.picked.set(change.day === vs ? { day: vs, vs: day } : { day, vs, ...change });
+    // picking the other picker's day swaps the two (the calendars show it ringed); with no second day, a day can't be
+    // compared with itself
+    const swap = change.day === vs || change.vs === day;
+    if (swap && vs === NO_DAY) return;
+    this.picked.set(swap ? { day: vs, vs: day } : { day, vs, ...change });
     if (this.day()?.key === day && (this.vs()?.key ?? NO_DAY) === vs) return;
 
     this.writeUrl();
