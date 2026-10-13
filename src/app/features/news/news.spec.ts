@@ -6,9 +6,10 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { NewsArchivePage, NewsPost, OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import News from './news';
 
-const post = (day: string): NewsPost => ({
+/** A post on `day`, at midnight UTC as the backfilled ones, or at `time` as the feed's */
+const post = (day: string, time = '00:00'): NewsPost => ({
   title: `Post of ${day}`,
-  pubDate: new Date(`${day}T00:00:00Z`),
+  pubDate: new Date(`${day}T${time}:00Z`),
   category: 'Game Updates',
   link: `https://secure.runescape.com/m=news/${day}`,
 });
@@ -39,7 +40,8 @@ describe('News', () => {
   it('shows only the posts after the day picked, and stops paging once a page reaches it', async () => {
     const news = await render('/news?since=2026-09-01', {
       '': { posts: [post('2026-10-02'), post('2026-09-15')], next: 'b' },
-      'b': { posts: [post('2026-09-05'), post('2026-09-01')], next: 'c' },
+      // The day picked itself isn't after it, also for a post later that day
+      'b': { posts: [post('2026-09-05'), post('2026-09-01', '10:00')], next: 'c' },
     });
 
     expect(news.hasOlder()).toBe(true);

@@ -34,6 +34,11 @@ export class OsrsNewsItem {
   ) {}
 }
 
+/** A news post's image (a `cdn.runescape.com` URL) through the API, as WebP */
+export function newsImageUrl(url: string): string {
+  return `${config.apiBaseUrl}/news/image?url=${encodeURIComponent(url)}`;
+}
+
 /** A stored news post; the older ones may have no `description` or `enclosure` (they're being backfilled) */
 export interface NewsPost {
   title: string;

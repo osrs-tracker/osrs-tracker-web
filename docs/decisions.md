@@ -297,11 +297,12 @@ Choices that look like accidents without their context: what was decided, why, a
   `[tooltip]` opens on keyboard focus (`:focus-visible` only, so a click doesn't) and closes on Escape, as arrowing
   through the grid is how keyboard users read XP and ranks; hover and focus each keep it open, so leaving one doesn't
   close it while the other remains.
-- **Compare calendar** (`compare/day-picker.ts`) is a grid too, but renders only in the browser after a click, so it
-  needs no `_pattern` call: opening it focuses the picked day, which makes it the Tab stop. Each month with a check is
-  its own grid, the others hidden, so a month change doesn't leave a grid without a Tab stop. Days without a check are
-  hard-disabled (`[softDisabled]="false"`), as a date with nothing to compare has nothing to read, so the arrows skip
-  them; the month buttons use `aria-disabled`, so focus stays on them at the first or last month.
+- **Day picker calendar** (`common/ui/controls/day-picker.ts`, Compare and the news catch-up) is a grid too, but renders
+  only in the browser after a click, so it needs no `_pattern` call: opening it focuses the picked day, which makes it
+  the Tab stop. Only the shown month is rendered, as its own grid, recreated on a month change (tracked by month): a new
+  grid makes its first day the Tab stop, and the news range spans over a decade of months, too many to keep hidden. Days
+  without a check are hard-disabled (`[softDisabled]="false"`), as a date with nothing to compare has nothing to read,
+  so the arrows skip them; the month buttons use `aria-disabled`, so focus stays on them at the first or last month.
 - **Revisit:** when `@angular/aria` gets a radio group or an API for the initial active item; drop `aria-tab-stop.ts`
   then.
 

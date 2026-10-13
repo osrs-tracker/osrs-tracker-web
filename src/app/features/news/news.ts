@@ -1,4 +1,4 @@
-import { DatePipe, formatDate, isPlatformBrowser, Location } from '@angular/common';
+import { DatePipe, formatDate, isPlatformBrowser } from '@angular/common';
 import {
   Component,
   computed,
@@ -13,14 +13,13 @@ import {
 } from '@angular/core';
 import { rxResource, takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { finalize } from 'rxjs';
-import { NewsArchivePage, NewsPost, OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
+import { finalize, Subscription } from 'rxjs';
+import { NewsArchivePage, newsImageUrl, NewsPost, OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { LastPlayedStore, parseDay } from '@app/common/storage/last-played-store';
 import { DayPicker } from '@app/common/ui/controls/day-picker';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
-import { config } from '@config/config';
 
 /** Posts per page: the first one is rendered on the server, "Show older posts" loads the next */
 const PAGE_SIZE = 30;
@@ -59,7 +58,6 @@ export default class News {
   private readonly lastPlayedStore = inject(LastPlayedStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly location = inject(Location);
   private readonly destroyRef = inject(DestroyRef);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
@@ -84,6 +82,11 @@ export default class News {
     const since = this.since();
     return since ? new Date(`${since}T00:00:00Z`) : null;
   });
+  /** The end of the picked day: the posts "after the day" start here (feed posts carry a time, not only a day) */
+  private readonly sinceEnd: Signal<Date | null> = computed(() => {
+    const sinceDate = this.sinceDate();
+    return sinceDate ? new Date(sinceDate.getTime() + 24 * 60 * 60 * 1000) : null;
+  });
 
   /** With no day in the link, the calendar opens on the one remembered on this device */
   readonly lastPlayed: Signal<string | null> = this.lastPlayedStore.lastPlayed;
@@ -107,6 +110,7 @@ export default class News {
     computation: () => undefined,
   });
   readonly loadingOlder: WritableSignal<boolean> = signal(false);
+  private olderRequest?: Subscription;
   readonly olderFailed: WritableSignal<boolean> = signal(false);
 
   private readonly posts: Signal<NewsPost[]> = computed(() =>
@@ -120,9 +124,9 @@ export default class News {
 
   /** With a day picked: whether the loaded posts reach back to it, so every post since is shown */
   readonly reachedSince: Signal<boolean> = computed(() => {
-    const sinceDate = this.sinceDate();
+    const sinceEnd = this.sinceEnd();
     const oldest = this.posts().at(-1);
-    return !!sinceDate && !!oldest && oldest.pubDate <= sinceDate;
+    return !!sinceEnd && !!oldest && oldest.pubDate < sinceEnd;
   });
 
   readonly hasOlder: Signal<boolean> = computed(() => !this.reachedSince() && this.next() !== null);
@@ -135,16 +139,14 @@ export default class News {
   );
 
   readonly months: Signal<NewsMonth[]> = computed(() => {
-    const sinceDate = this.sinceDate();
+    const sinceEnd = this.sinceEnd();
     const months: NewsMonth[] = [];
 
     for (const post of this.posts()) {
-      if (sinceDate && post.pubDate <= sinceDate) break;
+      if (sinceEnd && post.pubDate < sinceEnd) break;
 
       const key = `${post.pubDate.getUTCFullYear()}-${post.pubDate.getUTCMonth()}`;
-      const image = post.enclosure
-        ? `${config.apiBaseUrl}/news/image?url=${encodeURIComponent(post.enclosure.url)}`
-        : undefined;
+      const image = post.enclosure ? newsImageUrl(post.enclosure.url) : undefined;
       if (months.at(-1)?.key !== key) {
         months.push({ key, label: formatDate(post.pubDate, 'MMMM y', 'en-US', 'UTC'), posts: [] });
       }
@@ -161,16 +163,17 @@ export default class News {
   readonly skeletonRows: number[] = Array.from({ length: 8 }, (_, i) => i);
 
   pickCategory(category: string): void {
+    this.olderRequest?.unsubscribe();
     this.category.set(category);
     this.olderFailed.set(false);
-    this.replaceQuery();
+    this.updateQuery();
   }
 
   pickDay(day: string | null): void {
     const since = parseDay(day);
     this.since.set(since);
     if (since) this.lastPlayedStore.setLastPlayed(since);
-    this.replaceQuery();
+    this.updateQuery();
   }
 
   showOlder(): void {
@@ -181,7 +184,7 @@ export default class News {
     this.loadingOlder.set(true);
     this.olderFailed.set(false);
 
-    this.osrsTrackerRepo
+    this.olderRequest = this.osrsTrackerRepo
       .getNewsArchive(PAGE_SIZE, { before, category: category || undefined })
       .pipe(
         finalize(() => this.loadingOlder.set(false)),
@@ -189,8 +192,8 @@ export default class News {
       )
       .subscribe({
         next: page => {
-          // A page for a category picked away from in the meantime
-          if (category !== this.category()) return;
+          // A page for a list that changed in the meantime (another category, a link from the menu)
+          if (before !== this.next()) return;
           this.olderPosts.update(posts => [...posts, ...page.posts]);
           this.olderNext.set(page.next);
         },
@@ -198,12 +201,14 @@ export default class News {
       });
   }
 
-  private replaceQuery(): void {
-    const url = this.router.createUrlTree([], {
+  /** Puts the filters in the link, replacing the history entry and keeping the scroll position */
+  private updateQuery(): void {
+    void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { category: this.category() || null, since: this.since() },
       queryParamsHandling: 'merge',
+      replaceUrl: true,
+      scroll: 'manual',
     });
-    this.location.replaceState(this.router.serializeUrl(url));
   }
 }

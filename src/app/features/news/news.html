@@ -111,7 +111,7 @@
               >
                 @if (post.image; as image) {
                   <img
-                    class="w-26 sm:w-32 lg:w-44 aspect-video shrink-0 rounded-lg lg:rounded-xl object-cover bg-deep"
+                    class="w-26 sm:w-32 lg:w-44 aspect-video shrink-0 rounded-xl object-cover bg-deep"
                     [src]="image"
                     alt=""
                     width="176"
@@ -121,7 +121,7 @@
                   />
                 } @else {
                   <span
-                    class="flex items-center justify-center w-26 sm:w-32 lg:w-44 aspect-video shrink-0 rounded-lg lg:rounded-xl border border-line bg-deep text-muted"
+                    class="flex items-center justify-center w-26 sm:w-32 lg:w-44 aspect-video shrink-0 rounded-xl border border-line bg-deep text-muted"
                     aria-hidden="true"
                   >
                     <svg
@@ -213,7 +213,7 @@
       <ul class="rounded-2xl bg-card overflow-hidden">
         @for (row of skeletonRows; track row) {
           <li class="flex items-center gap-3 sm:gap-4 lg:gap-5 p-3 not-first:border-t border-line">
-            <skeleton class="w-26 sm:w-32 lg:w-44 aspect-video shrink-0 rounded-lg lg:rounded-xl" />
+            <skeleton class="w-26 sm:w-32 lg:w-44 aspect-video shrink-0 rounded-xl" />
             <span class="flex flex-col gap-2.5 flex-1">
               <skeleton class="h-5 w-3/5" />
               <skeleton class="h-4 w-1/3" />

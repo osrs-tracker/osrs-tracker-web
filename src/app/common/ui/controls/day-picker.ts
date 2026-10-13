@@ -145,7 +145,7 @@ const BAND = 'color-mix(in oklch, var(--accent) 12%, transparent)';
             <span class="flex items-center gap-1.5 font-bold text-strong">
               <span aria-live="polite">{{ monthName() }}</span>
               <select
-                class="h-8 py-0 pl-2 pr-7 rounded-lg border-line bg-card text-sm font-bold text-strong cursor-pointer hover:bg-row focus:border-accent focus:ring-accent"
+                class="h-8 py-0 pl-2 pr-7 rounded-xl border-line bg-card text-sm font-bold text-strong cursor-pointer hover:bg-row focus:border-accent focus:ring-accent"
                 aria-label="Year"
                 (change)="showYear($any($event.target).value)"
               >
