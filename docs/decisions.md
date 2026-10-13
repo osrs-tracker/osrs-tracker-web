@@ -112,7 +112,8 @@ Choices that look like accidents without their context: what was decided, why, a
   `mark` and `mkmk` for combining accents, which item names don't use: `é` is a glyph of its own) and their legacy
   `kern` table, and `SOLIX-SemiBold-Tabular.ttf`, the SemiBold with the digits mapped to their `.tf` glyphs in every
   `cmap` subtable, for the tiles' values. Outside `public/`, so they aren't served. Redo them when the site's SOLIX is
-  bumped, and bump the cards' `?v=` (`item-detail-meta.ts`, `player-detail-meta.ts`).
+  bumped, and bump the cards' `?v=` (`item-detail-meta.ts`, `player-detail-meta.ts`, the players online route in
+  `app.routes.ts`).
 - **Tests load them as files:** with a `binary` loader, Angular's external-packages plugin resolves every bare import
   itself, and the browser-platform test build can't resolve `node:fs`, so every server spec failed to bundle. `ng test`
   builds with `development,test`; the `test` configuration switches both to the `file` loader, which leaves package

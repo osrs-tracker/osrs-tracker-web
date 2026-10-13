@@ -126,7 +126,8 @@ function cardCache<K>(load: (key: K) => Promise<Card>, maxAgeMs?: number) {
  * The link preview images, drawn by `renderItemCard` and `renderPlayerCard`:
  * - `GET /og/item/:id.png`, kept a week. An icon that failed to load gives a card without it that isn't kept.
  * - `GET /og/player/:username.png`, a stored player, kept an hour as their stats change daily.
- * - `GET /og/players-online.png`, the players online page's, kept 10 minutes as the count changes that often.
+ * - `GET /og/players-online.png`, the players online page's, kept 10 minutes as the count changes that often; its footer
+ *   dates the count, as chat apps keep a preview for weeks.
  *
  * An unknown item or player, or an API failure (or fewer than two counts to draw a line through), answers a
  * short-lived 404.
