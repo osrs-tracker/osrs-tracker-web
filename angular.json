@@ -30,7 +30,7 @@
             "browser": "src/main.ts",
             "server": "src/main.server.ts",
             "ssr": { "entry": "src/server/server.ts" },
-            "loader": { ".ttf": "binary", ".wasm": "binary" }
+            "loader": { ".ttf": "binary", ".wasm": "binary", ".png": "binary", ".gif": "binary" }
           },
           "configurations": {
             "production": {
@@ -55,7 +55,7 @@
               "namedChunks": true
             },
             "test": {
-              "loader": { ".ttf": "file", ".wasm": "file" }
+              "loader": { ".ttf": "file", ".wasm": "file", ".png": "file", ".gif": "file" }
             }
           },
           "defaultConfiguration": "production"

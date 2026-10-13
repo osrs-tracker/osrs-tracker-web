@@ -43,8 +43,8 @@ export const DEFAULT_IMAGE: PageImage = {
 };
 
 /**
- * The app icon, square, for `summary` cards on player pages: a thumbnail stays readable, where the wide default image
- * shrinks to a sliver.
+ * The app icon, square, for `summary` cards on the pages of players the API doesn't store, who have no preview card: a
+ * thumbnail stays readable, where the wide default image shrinks to a sliver.
  */
 export const ICON_IMAGE: PageImage = {
   url: '/assets/pwa/icon-512x512.png',

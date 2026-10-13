@@ -1,5 +1,11 @@
 ## 2026/10/13
 
+- Shared player links show a large preview card in Discord, Reddit and chat apps instead of the small OSRS Tracker icon:
+  the player's account type, name, combat level, total level and XP, and every skill level as in the game's stats tab,
+  with 99s in gold. The card says which day the stats are from, as apps keep a preview for weeks.
+- Requests the site's server makes, to the OSRS Wiki and to OSRS Tracker's own API, name the site's GitHub repository
+  (`github:osrs-tracker/osrs-tracker-web`) as their user agent, so whoever receives them knows where to report a
+  problem.
 - An item's daily volume covers the last week instead of two weeks. Item prices and charts now come from version 2 of
   the OSRS Wiki's prices API, as the Wiki asks, which serves the price history from its cache instead of its database.
   The monthly check of the GE tax rules uses version 2 too.

@@ -13,7 +13,7 @@ Choices that look like accidents without their context: what was decided, why, a
 - **Decision:** every Wiki prices call uses `/api/v2/osrs` (`pricesBaseUrl` in `src/config/config.ts`). The item page's
   ranges map to lookbacks: 1D `24h` (5-minute steps), 1W `7d` (hourly), 1M `30d` (6-hourly), 1Y `1y` (daily). The time
   series stay browser only and load on demand: one on page load, one more per range clicked, never on a timer. Server
-  requests send `OSRS Tracker SSR - https://osrs-tracker.freekmencke.com`.
+  requests send `github:osrs-tracker/osrs-tracker-web` (`config.userAgent`).
 - **Revisit:** if the Wiki changes a lookback's step (it doesn't guarantee it), or the site's traffic grows enough that
   the API should fetch and cache the series for every visitor.
 
@@ -30,6 +30,15 @@ Choices that look like accidents without their context: what was decided, why, a
   first image request. Images live a week in browsers and preview caches, the last 200 in memory; `?v=` in the page
   meta's URL busts them when the design changes. Rendering in the API (it has `sharp`) was dropped: two repos for one
   feature, and the same font problem.
+- **Player cards (2026/10/13):** `/og/player/:username.png` (`og/player-card.ts`) draws the player's latest hiscores at
+  the default offset: account type, name, combat level, total level and XP, and the in-game skill grid with 99s in gold
+  (gold only on the card: on the page a 99 already shows as an empty progress bar, and gold bars there drew too much
+  attention). No progress bars on the card: at chat size they shrink to 2px, and progress is what goes stale first. The
+  footer dates the stats, as previews are kept for weeks. Stats change daily, so an image lives an hour, in memory and
+  in `Cache-Control`, not a week. The API is asked with `skipRefresh`, so an image URL never makes it call the hiscores:
+  a player it doesn't store answers 404, and their page (the API's live preview) keeps the square app icon. Without
+  hiscores at the default offset the card shows only who they are. The skill and account icons are the site's own
+  (`public/assets/icons`), bundled like the fonts; satori and resvg draw their GIFs as they are.
 - **satori stays on 0.32:** 0.33 depends on `harfbuzzjs`, whose Emscripten loader reads `hb.wasm` from `__dirname` at
   runtime and fails inside the bundle. Check that before accepting a bump.
 - **Fonts:** `satori` reads TTF, OTF or WOFF, not WOFF2 or variable fonts, and 0.32 draws kerning without laying it out
@@ -38,7 +47,7 @@ Choices that look like accidents without their context: what was decided, why, a
   `mark` and `mkmk` for combining accents, which item names don't use: `é` is a glyph of its own) and their legacy
   `kern` table, and `SOLIX-SemiBold-Tabular.ttf`, the SemiBold with the digits mapped to their `.tf` glyphs in every
   `cmap` subtable, for the tiles' values. Outside `public/`, so they aren't served. Redo them when the site's SOLIX is
-  bumped, and bump the card's `?v=` (`item-detail-meta.ts`).
+  bumped, and bump the cards' `?v=` (`item-detail-meta.ts`, `player-detail-meta.ts`).
 - **Tests load them as files:** with a `binary` loader, Angular's external-packages plugin resolves every bare import
   itself, and the browser-platform test build can't resolve `node:fs`, so every server spec failed to bundle. `ng test`
   builds with `development,test`; the `test` configuration switches both to the `file` loader, which leaves package

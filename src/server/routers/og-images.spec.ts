@@ -1,12 +1,20 @@
 // @vitest-environment node
-import type { Item } from '@osrs-tracker/models';
+import type { Item, Player } from '@osrs-tracker/models';
 import express from 'express';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { collectLogs } from '../testing/log-lines';
 import { serve } from '../testing/serve';
-import { createOgImageRouter, type GetIcon, type GetItem, type RenderItemCard } from './og-images';
+import {
+  createOgImageRouter,
+  type GetIcon,
+  type GetItem,
+  type GetPlayer,
+  type RenderItemCard,
+  type RenderPlayerCard,
+} from './og-images';
 
 const item = (id: number) => ({ id, name: `Item ${id}`, icon: `Item ${id}.png` }) as Item;
+const player = (username: string) => ({ username }) as Player;
 const PNG = new Uint8Array([137, 80, 78, 71]);
 const ICON = new Uint8Array([1, 2, 3]);
 
@@ -14,6 +22,8 @@ describe('createOgImageRouter', () => {
   const getItem = vi.fn<GetItem>();
   const getIcon = vi.fn<GetIcon>();
   const render = vi.fn<RenderItemCard>();
+  const getPlayer = vi.fn<GetPlayer>();
+  const renderPlayer = vi.fn<RenderPlayerCard>();
   const logs = collectLogs();
   // Each test gets a router of its own, so none sees the images another cached
   let router: express.Router;
@@ -30,8 +40,14 @@ describe('createOgImageRouter', () => {
     getItem.mockReset().mockImplementation(async id => (id === 404404 ? undefined : item(id)));
     getIcon.mockReset().mockResolvedValue(ICON);
     render.mockReset().mockResolvedValue(PNG);
+    getPlayer.mockReset().mockImplementation(async name => (name === 'nobody' ? undefined : player(name)));
+    renderPlayer.mockReset().mockResolvedValue(PNG);
     logs.lines.splice(0);
-    router = createOgImageRouter({ logger: logs.logger, getItem, getIcon, render });
+    router = createOgImageRouter({ logger: logs.logger, getItem, getIcon, render, getPlayer, renderPlayer });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('serves a known item as a long-lived PNG, ignoring the version query', async () => {
@@ -124,5 +140,62 @@ describe('createOgImageRouter', () => {
     expect((await get('/og/item/4151.png')).status).toBe(500);
     expect((await get('/og/item/4151.png')).status).toBe(200);
     expect(render).toHaveBeenCalledTimes(2);
+  });
+
+  it('serves a stored player as a PNG for an hour, ignoring the version query', async () => {
+    const res = await get('/og/player/the%20fraking.png?v=1');
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get('content-type')).toBe('image/png');
+    expect(res.headers.get('cache-control')).toBe('public, max-age=3600');
+    expect(res.headers.get('cross-origin-resource-policy')).toBe('cross-origin');
+    expect(new Uint8Array(await res.arrayBuffer())).toEqual(PNG);
+    expect(renderPlayer).toHaveBeenCalledExactlyOnceWith(player('the fraking'));
+  });
+
+  it('draws one image per player however the name is spelled', async () => {
+    for (const path of ['/og/player/The_Fraking.png', '/og/player/the%20fraking.png', '/og/player/THE-FRAKING.png']) {
+      expect((await get(path)).status).toBe(200);
+    }
+    expect(getPlayer).toHaveBeenCalledExactlyOnceWith('the fraking');
+    expect(renderPlayer).toHaveBeenCalledOnce();
+  });
+
+  it('answers a short-lived 404 for a player the API does not store, and for a name Jagex does not allow', async () => {
+    for (const path of [
+      '/og/player/nobody.png',
+      '/og/player/thirteen%20chrs.png',
+      '/og/player/a.b.png',
+      '/og/player/___.png',
+    ]) {
+      const res = await get(path);
+      expect(res.status).toBe(404);
+      expect(res.headers.get('cache-control')).toBe('public, max-age=300');
+    }
+    expect(getPlayer).toHaveBeenCalledExactlyOnceWith('nobody');
+    expect(renderPlayer).not.toHaveBeenCalled();
+  });
+
+  it('answers a short-lived 404 and logs a warning when the API fails for a player', async () => {
+    getPlayer.mockRejectedValue(new Error('API down'));
+
+    const res = await get('/og/player/the%20fraking.png');
+
+    expect(res.status).toBe(404);
+    expect(res.headers.get('cache-control')).toBe('public, max-age=300');
+    expect(logs.lines).toContainEqual(expect.objectContaining({ type: 'og-image', level: 'warn' }));
+  });
+
+  it("draws a player's image again once it is an hour old", async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+
+    await get('/og/player/the%20fraking.png');
+    vi.advanceTimersByTime(3599_000);
+    await get('/og/player/the%20fraking.png');
+    expect(renderPlayer).toHaveBeenCalledOnce();
+
+    vi.advanceTimersByTime(1000);
+    await get('/og/player/the%20fraking.png');
+    expect(renderPlayer).toHaveBeenCalledTimes(2);
   });
 });

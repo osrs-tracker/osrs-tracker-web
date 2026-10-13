@@ -1,6 +1,6 @@
 import { config } from '@config/config';
 import type { Logger } from '@osrs-tracker/logger';
-import type { Item } from '@osrs-tracker/models';
+import type { Item, Player } from '@osrs-tracker/models';
 import express from 'express';
 import { allowCrossOriginEmbedding } from '../middleware/security';
 import { serverConfig } from '../server-config';
@@ -11,15 +11,25 @@ export type GetItem = (id: number) => Promise<Item | undefined>;
 /** The item's Wiki icon as PNG bytes. Throws when it failed to load. */
 export type GetIcon = (item: Item) => Promise<Uint8Array>;
 export type RenderItemCard = (item: Item, iconPng: Uint8Array | undefined) => Promise<Uint8Array>;
+/** The stored player with their latest hiscores, or `undefined` when the API doesn't store them. Throws otherwise. */
+export type GetPlayer = (username: string) => Promise<Player | undefined>;
+export type RenderPlayerCard = (player: Player) => Promise<Uint8Array>;
 
 const API_TIMEOUT_MS = 5000;
 const MAX_CACHED = 200;
 const SHORT_CACHE = 'public, max-age=300';
 const LONG_CACHE = 'public, max-age=604800, immutable';
+// Stats change daily: an hour old at most, in memory and in caches that listen
+const PLAYER_CACHE_SECONDS = 3600;
+// Jagex's names, once `_` and `-` are spaces: 1 to 12 letters, digits and spaces
+const USERNAME = /^[a-z0-9 ]{1,12}$/;
+
+const apiBaseUrl = () => serverConfig.API_INTERNAL_URL ?? config.apiBaseUrl;
 
 /** The API's item, in the cluster through `API_INTERNAL_URL` like SSR, else the public URL */
 const fetchItem: GetItem = async id => {
-  const response = await fetch(`${serverConfig.API_INTERNAL_URL ?? config.apiBaseUrl}/items/${id}`, {
+  const response = await fetch(`${apiBaseUrl()}/items/${id}`, {
+    headers: { 'User-Agent': config.userAgent },
     signal: AbortSignal.timeout(API_TIMEOUT_MS),
   });
   if (response.status === 404) return undefined;
@@ -27,43 +37,98 @@ const fetchItem: GetItem = async id => {
   return (await response.json()) as Item;
 };
 
-/** The Wiki's icon, with the user agent SSR sends it */
+/** The Wiki's icon */
 const fetchIcon: GetIcon = async item => {
   const response = await fetch(`${config.wikiBaseUrl}/images/${item.icon.replaceAll(/\s/g, '_')}`, {
-    headers: { 'User-Agent': 'OSRS Tracker SSR - https://osrs-tracker.freekmencke.com' },
+    headers: { 'User-Agent': config.userAgent },
     signal: AbortSignal.timeout(serverConfig.ssrRequestTimeout),
   });
   if (!response.ok) throw new Error(`Icon answered ${response.status}`);
   return new Uint8Array(await response.arrayBuffer());
 };
 
-/** Loads the renderer on first use, so its large chunk isn't read at startup */
-const renderLazily: RenderItemCard = async (item, iconPng) =>
-  (await import('../og/item-card')).renderItemCard(item, iconPng);
+/**
+ * The stored player with their newest hiscores at the default offset. `skipRefresh` keeps it read-only: a player the API
+ * doesn't store answers 404 instead of a live preview, so an image URL never makes the API call the hiscores.
+ */
+const fetchPlayer: GetPlayer = async username => {
+  const params = new URLSearchParams({ scrapingOffset: '0', includeLatestHiscoreEntry: 'true', skipRefresh: 'true' });
+  const response = await fetch(`${apiBaseUrl()}/players/${encodeURIComponent(username)}?${params}`, {
+    headers: { 'User-Agent': config.userAgent },
+    signal: AbortSignal.timeout(API_TIMEOUT_MS),
+  });
+  if (response.status === 404) return undefined;
+  if (!response.ok) throw new Error(`GET /players/${username} answered ${response.status}`);
+  return (await response.json()) as Player;
+};
 
-type Card = { kind: 'ok' | 'no-icon'; png: Uint8Array } | { kind: 'not-found' };
+/** Loads the renderers on first use, so their large chunk isn't read at startup */
+const renderItemLazily: RenderItemCard = async (item, iconPng) =>
+  (await import('../og/item-card')).renderItemCard(item, iconPng);
+const renderPlayerLazily: RenderPlayerCard = async player =>
+  (await import('../og/player-card')).renderPlayerCard(player, player.hiscoreEntries?.[0]);
+
+/** `keep: false` serves the image without caching it (an item card drawn without its icon) */
+type Card = { kind: 'image'; png: Uint8Array; keep: boolean } | { kind: 'not-found' };
 
 /**
- * `GET /og/item/:id.png`: the item page's link preview image, drawn by `renderItemCard`. Finished images are kept in
- * memory (the 200 most recently used) and requests for the same id share one load and render. An unknown item or an
- * API failure answers a short-lived 404; an icon that failed to load gives a card without it that isn't kept.
+ * The finished images (the most recently used `MAX_CACHED`, each for `maxAgeMs` if given), and the loads in progress,
+ * so requests for the same key share one load and render
+ */
+function cardCache<K>(load: (key: K) => Promise<Card>, maxAgeMs?: number) {
+  const cache = new Map<K, { png: Uint8Array; at: number }>();
+  const loading = new Map<K, Promise<Card>>();
+
+  async function loadAndKeep(key: K): Promise<Card> {
+    const card = await load(key);
+    if (card.kind === 'image' && card.keep) {
+      cache.set(key, { png: card.png, at: Date.now() });
+      if (cache.size > MAX_CACHED) cache.delete(cache.keys().next().value!);
+    }
+    return card;
+  }
+
+  return async (key: K): Promise<Card> => {
+    const cached = cache.get(key);
+    cache.delete(key);
+    if (cached && (maxAgeMs === undefined || Date.now() - cached.at < maxAgeMs)) {
+      cache.set(key, cached); // Most recently used last
+      return { kind: 'image', png: cached.png, keep: true };
+    }
+    let pending = loading.get(key);
+    if (!pending) {
+      pending = loadAndKeep(key).finally(() => loading.delete(key));
+      loading.set(key, pending);
+    }
+    return pending;
+  };
+}
+
+/**
+ * The link preview images, drawn by `renderItemCard` and `renderPlayerCard`:
+ * - `GET /og/item/:id.png`, kept a week. An icon that failed to load gives a card without it that isn't kept.
+ * - `GET /og/player/:username.png`, a stored player, kept an hour as their stats change daily.
+ *
+ * An unknown item or player, or an API failure, answers a short-lived 404.
  */
 export function createOgImageRouter({
   logger,
   getItem = fetchItem,
   getIcon = fetchIcon,
-  render = renderLazily,
+  render = renderItemLazily,
+  getPlayer = fetchPlayer,
+  renderPlayer = renderPlayerLazily,
 }: {
   logger: Logger;
   getItem?: GetItem;
   getIcon?: GetIcon;
   render?: RenderItemCard;
+  getPlayer?: GetPlayer;
+  renderPlayer?: RenderPlayerCard;
 }) {
   const log = logger.child({ type: 'og-image' satisfies WebLogType });
-  const cache = new Map<number, Uint8Array>();
-  const loading = new Map<number, Promise<Card>>();
 
-  async function load(id: number): Promise<Card> {
+  const itemCard = cardCache<number>(async id => {
     let item: Item | undefined;
     try {
       item = await getItem(id);
@@ -80,41 +145,42 @@ export function createOgImageRouter({
       log.warn({ error, id }, 'Loading the item icon failed, drawing the card without it');
     }
     const png = await render(item, icon); // A throw rejects: Express' error handler answers 500
-    if (!icon) return { kind: 'no-icon', png };
+    return { kind: 'image', png, keep: !!icon };
+  });
 
-    cache.set(id, png);
-    if (cache.size > MAX_CACHED) cache.delete(cache.keys().next().value!);
-    return { kind: 'ok', png };
-  }
-
-  const router = express.Router();
-  router.get(/^\/og\/item\/(\d+)\.png$/, async (req, res) => {
-    const id = Number(req.params[0]);
-
-    let card: Card;
-    const cached = cache.get(id);
-    if (cached) {
-      cache.delete(id);
-      cache.set(id, cached); // Most recently used last
-      card = { kind: 'ok', png: cached };
-    } else {
-      let pending = loading.get(id);
-      if (!pending) {
-        pending = load(id).finally(() => loading.delete(id));
-        loading.set(id, pending);
-      }
-      card = await pending;
+  const playerCard = cardCache<string>(async username => {
+    let player: Player | undefined;
+    try {
+      player = await getPlayer(username);
+    } catch (error) {
+      log.warn({ error, username }, 'Loading the player for their image failed');
+      return { kind: 'not-found' };
     }
+    if (!player) return { kind: 'not-found' };
+    return { kind: 'image', png: await renderPlayer(player), keep: true };
+  }, PLAYER_CACHE_SECONDS * 1000);
 
+  function send(res: express.Response, card: Card, cacheControl: string) {
     if (card.kind === 'not-found') {
       res.status(404).set('Cache-Control', SHORT_CACHE).type('text/plain').send('Not found');
       return;
     }
     allowCrossOriginEmbedding(res);
     res
-      .set('Cache-Control', card.kind === 'ok' ? LONG_CACHE : SHORT_CACHE)
+      .set('Cache-Control', card.keep ? cacheControl : SHORT_CACHE)
       .type('image/png')
       .send(Buffer.from(card.png));
+  }
+
+  const router = express.Router();
+  router.get(/^\/og\/item\/(\d+)\.png$/, async (req, res) => {
+    send(res, await itemCard(Number(req.params[0])), LONG_CACHE);
+  });
+  router.get(/^\/og\/player\/([^/]+)\.png$/, async (req, res) => {
+    // One image per player however the name is spelled, as Jagex matches names
+    const username = req.params[0].toLowerCase().replaceAll(/[_-]/g, ' ').trim();
+    const card: Card = USERNAME.test(username) ? await playerCard(username) : { kind: 'not-found' };
+    send(res, card, `public, max-age=${PLAYER_CACHE_SECONDS}`);
   });
   return router;
 }

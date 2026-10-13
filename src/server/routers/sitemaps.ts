@@ -96,6 +96,7 @@ export function cachedSitemap(build: () => Promise<string>, ttl: number, onError
 /** The API's JSON, in the cluster through `API_INTERNAL_URL` like SSR, else the public URL */
 const fetchApiJson: GetJson = async path => {
   const response = await fetch(`${serverConfig.API_INTERNAL_URL ?? config.apiBaseUrl}${path}`, {
+    headers: { 'User-Agent': config.userAgent },
     signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
   });
   if (!response.ok) throw new Error(`GET ${path} answered ${response.status}`);
