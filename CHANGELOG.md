@@ -8,7 +8,8 @@
   week, month, year or all time, with the busiest moment of each range. Hovering the chart shows the count at that
   moment, per country and split by members. The count at the top is live, read from the game's world list, and the
   chart's history is counted from it every 10 minutes, so it starts on 13 October 2026 and the longer ranges fill in
-  from there. Left open, the page updates the count and the chart every minute, so it never needs a reload. A shared
+  from there. The page arrives with the live count already in it, so the number doesn't jump a moment after it loads or
+  on a reload. Left open, the page updates the count and the chart every minute, so it never needs a reload. A shared
   link to the page shows a card with the count right now, a line of the last 24 hours, the split between members and
   free-to-play, and the day's peak and low, and its title in search results, "OSRS player count: How many people are
   playing right now", uses the words people search for it with.

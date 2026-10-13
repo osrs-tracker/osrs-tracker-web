@@ -3,7 +3,7 @@ import { afterNextRender, computed, DestroyRef, inject, PLATFORM_ID } from '@ang
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { patchState, signalStore, withComputed, withMethods, withProps, withState } from '@ngrx/signals';
 import { PlayerCount } from '@osrs-tracker/models';
-import { defer, filter, fromEvent, interval, map, merge, of, share } from 'rxjs';
+import { defer, filter, fromEvent, interval, map, merge, share } from 'rxjs';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { WINDOW } from '@app/core/platform/window-token';
 
@@ -11,8 +11,10 @@ const MINUTE = 60_000;
 
 /**
  * The players online count that the Players online page and the Game menu's card share, so they always show the same
- * number: the live count from Jagex's world list when it loads, else the newest stored sample. The server renders only
- * the stored sample, so a render never waits on Jagex.
+ * number: the live count from Jagex's world list when it loads, else the newest stored sample. The server renders the
+ * live count too, so the number doesn't change on hydration: the transfer cache hands the browser the server's count.
+ * The API keeps the live count for a minute, so renders poll Jagex at most once a minute, and the SSR timeout keeps a
+ * slow poll from holding up a render (it then shows the stored sample, and the browser fetches the live one).
  */
 export const PlayerCountStore = signalStore(
   { providedIn: 'root' },
@@ -22,25 +24,27 @@ export const PlayerCountStore = signalStore(
     const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
     return {
+      _isBrowser: isBrowser,
       _stored: rxResource({
         params: () => _storedRequested() || undefined,
         stream: () => osrsTrackerRepo.getLatestPlayerCount(),
       }),
       _live: rxResource({
-        params: () => (isBrowser && _liveRequested()) || undefined,
-        stream: () => osrsTrackerRepo.getLivePlayerCount(),
+        params: () => _liveRequested() || undefined,
+        // The first load uses the transfer cache; the refreshes after it revalidate
+        stream: ({ previous }) => osrsTrackerRepo.getLivePlayerCount(previous.status !== 'idle'),
       }),
     };
   }),
-  withComputed(({ _stored, _live }) => {
+  withComputed(({ _stored, _live, _isBrowser }) => {
     const count = computed<PlayerCount | undefined>(() =>
       _live.hasValue() ? _live.value() : _stored.hasValue() ? _stored.value() : undefined,
     );
 
     return {
       count,
-      /** Neither count loaded. Never during SSR: a failed stored sample renders as loading, as the browser loads both */
-      failed: computed<boolean>(() => !count() && !!_live.error()),
+      /** Neither count loaded. Never during SSR: a failed count renders as loading, as the browser loads both again */
+      failed: computed<boolean>(() => _isBrowser && !count() && !!_live.error()),
     };
   }),
   withMethods(store => ({
@@ -57,15 +61,15 @@ export const PlayerCountStore = signalStore(
 
     return {
       /**
-       * Refreshes right away when the first `watch`er renders, then every minute while the tab is visible, and on
-       * coming back to the tab after a missed minute; stops when the last `watch`er is destroyed. Browser only.
+       * Refreshes every minute while the tab is visible, and on coming back to the tab after a missed minute; stops
+       * when the last `watch`er is destroyed. Browser only.
        */
       _refreshes: defer(() => {
         const document = window!.document;
         let missed = false;
         const minutes = interval(MINUTE).pipe(map(() => true));
         const shown = fromEvent(document, 'visibilitychange').pipe(map(() => false));
-        return merge(of(true), minutes, shown).pipe(
+        return merge(minutes, shown).pipe(
           filter(minute => {
             if (document.hidden) {
               missed ||= minute;
@@ -84,12 +88,15 @@ export const PlayerCountStore = signalStore(
   }),
   withMethods(store => ({
     /**
-     * For a component that shows the count while it's on screen: loads the stored sample (also during SSR), then
-     * refreshes as `_refreshes` describes until the component is destroyed. `onRefresh` runs with each refresh.
+     * For a component that shows the count while it's on screen: loads both counts (also during SSR; on hydration they
+     * come from the transfer cache), or refreshes them if they loaded earlier (the Game menu's card), then refreshes
+     * as `_refreshes` describes until the component is destroyed. `onRefresh` runs with each of those refreshes.
      */
     watch(onRefresh?: () => void): void {
       const destroyRef = inject(DestroyRef);
-      patchState(store, { _storedRequested: true });
+      // Not while they load: a second watcher in the same render would fetch them twice
+      if (store._liveRequested() && !store._live.isLoading()) store.refresh();
+      else patchState(store, { _storedRequested: true, _liveRequested: true });
       afterNextRender(() => store._refreshes.pipe(takeUntilDestroyed(destroyRef)).subscribe(() => onRefresh?.()));
     },
   })),

@@ -9,7 +9,7 @@ import { PlayerCountHistory } from './player-count-history';
 import { formatShare, LocationCount, locationCounts } from './world-locations';
 
 /**
- * The players online: the count (`PlayerCountStore`: the stored sample on the server, live in the browser), its
+ * The players online: the count (`PlayerCountStore`: live, rendered on the server and refreshed in the browser), its
  * members and free-to-play split and its world locations, and the history below, drawn in the browser.
  */
 @Component({

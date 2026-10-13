@@ -40,9 +40,9 @@ export const serverConfig = {
       interval: 300000, // 5 minute
     },
     {
-      // A new stored player count every 10 minutes; the browser fetches the live one after hydration
+      // Renders the live player count, which the API keeps for a minute, and the browser refreshes a minute after loading
       path: '/players-online',
-      interval: 300000, // 5 minute
+      interval: 60000, // 1 minute
     },
     {
       path: '/about/changelog',
