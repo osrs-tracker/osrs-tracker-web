@@ -28,9 +28,9 @@ import { Icon } from '@app/common/icon/icon';
 import { formatNumberLegible, formatNumberShort } from '@app/common/format/number-format';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
+import { DayPicker, PickerDay } from '@app/common/ui/controls/day-picker';
 import { PERIOD_SIZE } from '../player-history';
 import { activityRows, CompareRow, skillRows } from './compare-rows';
-import { DayPicker, PickerDay } from './day-picker';
 
 type CompareTab = 'skills' | 'activities';
 
@@ -78,6 +78,7 @@ interface Changes {
         <div class="relative flex flex-wrap items-center gap-2">
           <day-picker
             label="Day"
+            legend="XP since last check"
             [days]="options()"
             [value]="day()?.key"
             [other]="vs()?.key"
@@ -87,6 +88,7 @@ interface Changes {
           <day-picker
             label="Compared with"
             noneLabel="No other day"
+            legend="XP since last check"
             [days]="options()"
             [value]="vs()?.key"
             [other]="day()?.key"

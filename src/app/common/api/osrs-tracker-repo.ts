@@ -34,6 +34,27 @@ export class OsrsNewsItem {
   ) {}
 }
 
+/** A news post's image (a `cdn.runescape.com` URL) through the API, as WebP */
+export function newsImageUrl(url: string): string {
+  return `${config.apiBaseUrl}/news/image?url=${encodeURIComponent(url)}`;
+}
+
+/** A stored news post; the older ones may have no `description` or `enclosure` (they're being backfilled) */
+export interface NewsPost {
+  title: string;
+  pubDate: Date;
+  category: string;
+  link: string;
+  description?: string;
+  enclosure?: { url: string; type: string };
+}
+
+/** A page of the news archive; `next` is the cursor for the older posts, `null` on the last page */
+export interface NewsArchivePage {
+  posts: NewsPost[];
+  next: string | null;
+}
+
 @Service()
 export class OsrsTrackerRepo {
   private readonly httpClient = inject(HttpClient);
@@ -151,5 +172,21 @@ export class OsrsTrackerRepo {
 
   getNews(): Observable<OsrsNewsItem[]> {
     return this.httpClient.get<OsrsNewsItem[]>('/news');
+  }
+
+  /**
+   * Every stored post, newest first, `limit` (at most 50) at a time: the first page without `before`, then the older
+   * ones with the previous page's `next`. `category` is a name as Jagex uses it (`Event`, not `Events`).
+   */
+  getNewsArchive(limit: number, options?: { before?: string; category?: string }): Observable<NewsArchivePage> {
+    return this.httpClient
+      .get<NewsArchivePage>('/news/archive', {
+        params: {
+          limit,
+          ...(options?.before ? { before: options.before } : {}),
+          ...(options?.category ? { category: options.category } : {}),
+        },
+      })
+      .pipe(map(page => ({ ...page, posts: page.posts.map(post => ({ ...post, pubDate: new Date(post.pubDate) })) })));
   }
 }
