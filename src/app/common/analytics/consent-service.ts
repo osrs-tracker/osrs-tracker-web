@@ -9,6 +9,8 @@ import { GTAG_TOKEN } from './gtag-token';
 export type AnalyticsConsent = 'granted' | 'denied';
 
 const TAG_URL = 'https://www.googletagmanager.com/gtag/js?id=' + config.gaMeasurementId;
+/** Google's opt-out flag: while it's set on `window`, the tag sends nothing */
+const DISABLE_KEY = 'ga-disable-' + config.gaMeasurementId;
 
 /**
  * The visitor's choice about Google Analytics' cookies. Until they allow them, the tag (gtag.js) isn't loaded, so
@@ -18,7 +20,7 @@ const TAG_URL = 'https://www.googletagmanager.com/gtag/js?id=' + config.gaMeasur
 @Service()
 export class ConsentService {
   private readonly document = inject(DOCUMENT);
-  private readonly window = inject(WINDOW);
+  private readonly window = inject(WINDOW) as (Window & Record<string, unknown>) | null;
   private readonly gtag = inject(GTAG_TOKEN);
   private readonly storageService = inject(StorageService);
 
@@ -42,7 +44,7 @@ export class ConsentService {
 
   allow(): void {
     this.choose('granted');
-    if (this.window) delete (this.window as unknown as Record<string, unknown>)[this.disableKey];
+    if (this.window) delete this.window[DISABLE_KEY];
     this.gtag?.('consent', 'update', { analytics_storage: 'granted' });
     if (!this.document.querySelector(`script[src="${TAG_URL}"]`)) {
       const tag = this.document.createElement('script');
@@ -55,13 +57,9 @@ export class ConsentService {
   /** Also when the tag already runs (allowed earlier): Google's opt-out flag stops it sending, and its cookies go */
   deny(): void {
     this.choose('denied');
-    if (this.window) (this.window as unknown as Record<string, unknown>)[this.disableKey] = true;
+    if (this.window) this.window[DISABLE_KEY] = true;
     this.gtag?.('consent', 'update', { analytics_storage: 'denied' });
     this.deleteAnalyticsCookies();
-  }
-
-  private get disableKey(): string {
-    return 'ga-disable-' + config.gaMeasurementId;
   }
 
   private choose(choice: AnalyticsConsent): void {

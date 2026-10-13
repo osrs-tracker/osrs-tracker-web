@@ -1,4 +1,5 @@
-import { Component, ElementRef, afterNextRender, inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, DestroyRef, ElementRef, afterNextRender, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ConsentService } from '@app/common/analytics/consent-service';
 
@@ -75,9 +76,12 @@ export class ConsentBanner {
   constructor() {
     const elementRef: ElementRef<HTMLElement> = inject(ElementRef);
 
-    // Reopened from the footer: move focus to the banner, so keyboard and screen reader users land on it
-    afterNextRender(() => {
-      if (this.consentService.choice()) elementRef.nativeElement.querySelector('section')?.focus();
-    });
+    // Reopened from the footer: move focus to the banner, so keyboard and screen reader users land on it, and back to
+    // the Cookies button once a choice closes it
+    if (this.consentService.choice()) {
+      const opener = inject(DOCUMENT).activeElement as HTMLElement | null;
+      afterNextRender(() => elementRef.nativeElement.querySelector('section')?.focus());
+      inject(DestroyRef).onDestroy(() => opener?.focus());
+    }
   }
 }
