@@ -145,40 +145,51 @@
         [emptyText]="emptyChartText()"
       />
 
-      <!--
+      <div class="order-4 md:col-start-2 md:row-start-2 min-w-0 flex flex-col gap-6">
+        <!-- Loads the whole history when scrolled to, or at once when a shared link picked the days -->
+        @if (history.entries().length > 1) {
+          @defer (on viewport; when compareLinked) {
+            <compare-days [username]="player.username" [offset]="scrapingOffset()" [trackedAt]="trackedAt()" />
+          } @placeholder {
+            <div class="h-40 rounded-2xl bg-card" aria-hidden="true"></div>
+          }
+        }
+
+        <!--
         Below the fold on phones: it stays server HTML until scrolled to, which keeps it out of the page's hydration task
         (#247). Client-side navigation renders it at once.
       -->
-      @defer (on immediate; hydrate on viewport) {
-        <section class="order-4 md:col-start-2 md:row-start-2 min-w-0 flex flex-col gap-6" aria-label="Day log">
-          <player-logs
-            [diffs]="diffs()"
-            [loading]="!history.loaded()"
-            [todayLoading]="history.todayLoading()"
-            [todaySince]="history.todayFailed() ? undefined : trackedAt()"
-            [notice]="logNotice()"
-          />
+        @defer (on immediate; hydrate on viewport) {
+          <section class="min-w-0 flex flex-col gap-6" aria-label="Day log">
+            <player-logs
+              [diffs]="diffs()"
+              [loading]="!history.loaded()"
+              [todayLoading]="history.todayLoading()"
+              [todaySince]="history.todayFailed() ? undefined : trackedAt()"
+              [notice]="logNotice()"
+            />
 
-          @if (history.hasMore()) {
-            @if (history.loadMoreFailed()) {
-              <load-error
-                source="player-history-more"
-                message="Couldn't load more days."
-                (retry)="history.retryLoadMore()"
-              />
-            } @else {
-              <button
-                type="button"
-                class="button--default button--rounded self-center px-12 bg-card disabled:opacity-60"
-                [disabled]="history.loadingMore()"
-                (click)="loadMoreDays()"
-              >
-                {{ history.loadingMore() ? 'Loading…' : 'Load more days' }}
-              </button>
+            @if (history.hasMore()) {
+              @if (history.loadMoreFailed()) {
+                <load-error
+                  source="player-history-more"
+                  message="Couldn't load more days."
+                  (retry)="history.retryLoadMore()"
+                />
+              } @else {
+                <button
+                  type="button"
+                  class="button--default button--rounded self-center px-12 bg-card disabled:opacity-60"
+                  [disabled]="history.loadingMore()"
+                  (click)="loadMoreDays()"
+                >
+                  {{ history.loadingMore() ? 'Loading…' : 'Load more days' }}
+                </button>
+              }
             }
-          }
-        </section>
-      }
+          </section>
+        }
+      </div>
     }
   </main>
 } @else {

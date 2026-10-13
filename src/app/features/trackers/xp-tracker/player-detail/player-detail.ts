@@ -36,6 +36,7 @@ import { ActivitiesCard } from './hiscores/activities-card';
 import { ModeRanks } from './hiscores/mode-ranks';
 import { SkillsCard } from './hiscores/skills-card';
 import { PlayerChart } from './charts/player-chart';
+import { CompareDays } from './compare/compare-days';
 import { PlayerHeader, TrackingState } from './player-header';
 import { playerHistory, PlayerHistory } from './player-history';
 import { LogNotice, PlayerLogs } from './player-logs';
@@ -49,6 +50,7 @@ import { PlayerView } from './player-view';
   imports: [
     ActivitiesCard,
     CapitalizePipe,
+    CompareDays,
     LoadError,
     PlayerChart,
     PlayerHeader,
@@ -77,7 +79,10 @@ export default class PlayerDetail implements OnInit {
   private readonly responseInit = inject(RESPONSE_INIT, { optional: true });
   readonly playerView = inject(PlayerView);
 
-  readonly username: string = inject(ActivatedRoute).snapshot.params['username'];
+  private readonly route = inject(ActivatedRoute);
+  readonly username: string = this.route.snapshot.params['username'];
+  /** A shared link picked the days to compare, so the compare card loads at once */
+  readonly compareLinked: boolean = this.route.snapshot.queryParamMap.has('day');
   readonly #pageErrorHandler = resolverErrorHandler('/trackers/xp/' + this.username);
 
   /** `null` when there's no such player */
