@@ -94,6 +94,9 @@
     <loc>https://osrs-tracker.freekmencke.com/players-online</loc>
   </url>
   <url>
+    <loc>https://osrs-tracker.freekmencke.com/news</loc>
+  </url>
+  <url>
     <loc>https://osrs-tracker.freekmencke.com/about/changelog</loc>
     <lastmod>2026-10-13T21:03:50+02:00</lastmod>
   </url>
