@@ -57,7 +57,8 @@
   alive instead of during it, the skills, bosses and raids card starts up a moment later, and on phones the clues and
   minigames card and the day log only start up once you scroll to them. Item pages benefit from the chart change too.
   Today's gains come in sooner as well: your browser asks the hiscores for them while it reads the page, instead of once
-  the page has started up.
+  the page has started up. With a tracking time other than 00:00 UTC picked, a player page no longer asks for the player
+  again before it starts up, so its history loads one request sooner.
 
 ### Behind the scenes
 
