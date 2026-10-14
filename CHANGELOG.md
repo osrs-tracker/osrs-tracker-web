@@ -54,6 +54,10 @@
   to alch and keeping the cursor in place as separators appear while you type a price; the calendar for where its weeks
   start and how it tints the days between the two picked ones. The test of the "3 days ago" labels no longer fails for a
   few days after the clocks go forward in spring. They all work the same as before.
+- On a developer's computer, the automated tests could pass on an older copy of the code they test: since the update to
+  Vitest 5 on 4 October, its new cache kept the code from an earlier run when only that code had changed, not its test.
+  The cache is off until Angular's own fix for it is released, so a change that breaks something fails there too, not
+  only in the checks on GitHub, which always started without the cache.
 
 ## 2026-10-13
 
