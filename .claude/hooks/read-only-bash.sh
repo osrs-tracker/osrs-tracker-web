@@ -20,9 +20,9 @@ if [[ $cmd =~ (^|\ )-[A-Za-z]*[OQ] || $cmd =~ --(open-files-in-pager|query|filte
 fi
 
 git_re='^git( -C [^ ]+)? (diff|log|show|status|fetch|rev-parse|merge-base|ls-files|blame|grep)( |$)'
-gh_re='^gh pr (view|diff|checks)( |$)'
+gh_re='^gh (pr (view|diff|checks)|issue view)( |$)'
 grep_re='^grep( |$)'
 [[ $cmd =~ $git_re || $cmd =~ $gh_re || $cmd =~ $grep_re ]] && exit 0
 
-echo 'Read-only reviewer: allowed are git diff/log/show/status/fetch/rev-parse/merge-base/ls-files/blame/grep, gh pr view/diff/checks and grep.' >&2
+echo 'Read-only reviewer: allowed are git diff/log/show/status/fetch/rev-parse/merge-base/ls-files/blame/grep, gh pr view/diff/checks, gh issue view and grep.' >&2
 exit 2

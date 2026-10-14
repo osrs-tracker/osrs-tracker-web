@@ -69,6 +69,9 @@
   Vitest 5 on 4 October, its new cache kept the code from an earlier run when only that code had changed, not its test.
   The cache is off until Angular's own fix for it is released, so a change that breaks something fails there too, not
   only in the checks on GitHub, which always started without the cache.
+- The review agent that checks changes against the project's conventions can now read the GitHub issue a change is for,
+  so it can tell whether the change does what the issue asked. Its guard used to block that; it still lets the agent run
+  nothing that changes the code or GitHub.
 
 ## 2026-10-13
 
