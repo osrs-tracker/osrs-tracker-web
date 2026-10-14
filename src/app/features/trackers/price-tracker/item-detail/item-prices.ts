@@ -1,7 +1,121 @@
 import { getUnixTime } from 'date-fns';
+import { Item } from '@osrs-tracker/models';
 import { DAY, utcDayStart } from '../utc-day';
-import { AveragePricesAtTime } from '@app/common/api/osrs-prices-repo';
+import { geTax, isGeTaxExempt } from './ge-tax';
+import { AveragePricesAtTime, LatestPrices } from '@app/common/api/osrs-prices-repo';
 import { formatNumberLegible } from '@app/common/format/number-format';
+
+/** One of the item page's stat tiles */
+export interface ItemStat {
+  label: string;
+  value: string;
+  sub: string;
+  info: string;
+  tip?: string;
+  loading?: boolean;
+}
+
+/** What the item page's stat tiles are built from */
+export interface ItemStatsInput {
+  item: Item;
+  /** `undefined` while loading or after a failed load */
+  latest: LatestPrices | undefined;
+  latestLoading: boolean;
+  latestFailed: boolean;
+  /** The hourly time series, empty while loading or after a failed load */
+  hourly: AveragePricesAtTime[];
+  hourlyLoading: boolean;
+  hourlyFailed: boolean;
+  now: Date;
+  /** "2 minutes ago", as `TimeAgoPipe` writes it */
+  timeAgo: (time?: Date) => string | null;
+}
+
+/**
+ * The item page's stat tiles: instant buy, instant sell, the margin after GE tax, the daily volume, the buy limit and
+ * high alch.
+ */
+export function itemStats(input: ItemStatsInput): ItemStat[] {
+  const { latest } = input;
+  return [
+    priceStat(input, 'Instant buy', 'The price of the latest instant buy.', latest?.high, latest?.highTime),
+    priceStat(input, 'Instant sell', 'The price of the latest instant sell.', latest?.low, latest?.lowTime),
+    marginStat(input),
+    volumeStat(input),
+    buyLimitStat(input.item),
+    highAlchStat(input.item),
+  ];
+}
+
+function priceStat(
+  { latestLoading, latestFailed, timeAgo }: ItemStatsInput,
+  label: string,
+  info: string,
+  value?: number,
+  time?: Date,
+): ItemStat {
+  if (latestFailed) return { label, info, value: '–', sub: "Couldn't load the price" };
+  if (!value) return { label, info, value: '–', sub: 'No recent trades', loading: latestLoading };
+  const ago = timeAgo(time) ?? '';
+  // Shortened to fit the tile: "2 min ago"
+  const short = ago
+    .replace(/ seconds? /, ' sec ')
+    .replace(/ minutes? /, ' min ')
+    .replace(/ hours? /, ' hr ');
+  const { value: text, tip } = amount(value, 'gp');
+  const lastTrade = `Last trade was ${ago}.`;
+  return { label, info, value: text, sub: `Last trade ${short}`, tip: tip ? `${tip} ${lastTrade}` : lastTrade };
+}
+
+function marginStat({ item, latest, latestLoading, latestFailed }: ItemStatsInput): ItemStat {
+  const exempt = isGeTaxExempt(item.id);
+  const high = latest?.high;
+  const low = latest?.low;
+  return {
+    label: 'Margin after tax',
+    info: exempt
+      ? 'Instant buy minus instant sell. This item is exempt from GE tax.'
+      : 'Instant buy minus instant sell, minus the 2% GE tax on the sale.',
+    ...(high && low ? amount(high - low - geTax(item.id, high), 'gp') : { value: '–' }),
+    sub: latestFailed ? "Couldn't load the price" : exempt ? 'No tax on this item' : 'Buy − sell − 2% tax',
+    loading: latestLoading,
+  };
+}
+
+function volumeStat({ hourly, hourlyLoading, hourlyFailed, now }: ItemStatsInput): ItemStat {
+  return {
+    label: 'Daily volume',
+    info: 'The number of times the item has been traded within the last 24 hours.',
+    ...(hourlyFailed ? { value: '–' } : amount(last24HourVolume(hourly, now), 'traded')),
+    sub: hourlyFailed ? "Couldn't load the volume" : 'Last 24 hours',
+    loading: hourlyLoading,
+  };
+}
+
+function buyLimitStat(item: Item): ItemStat {
+  return {
+    label: 'Buy limit',
+    info: 'The amount of times the item can be bought every 4 hours.',
+    ...(item.limit ? amount(item.limit, 'items') : { value: '–' }),
+    sub: item.limit ? 'Every 4 hours' : 'Unknown',
+  };
+}
+
+function highAlchStat(item: Item): ItemStat {
+  return {
+    label: 'High alch',
+    info: 'Coins received from casting High Level Alchemy on the item.',
+    ...(item.highalch ? amount(item.highalch, 'gp') : { value: '–' }),
+    sub: item.highalch ? `Low alch ${formatWholeCompact(item.lowalch ?? 0)}` : "Can't be alched for coins",
+  };
+}
+
+/** A value shortened to fit ("786.71M"), with the exact amount on hover: "786,705,873 gp." */
+function amount(value: number, unit: string): Pick<ItemStat, 'value' | 'tip'> {
+  const short = formatWholeCompact(value);
+  const whole = formatWhole(value);
+  return { value: short, tip: short === whole ? undefined : `${whole} ${unit}.` };
+}
 
 export interface DailyVolume {
   /** The UTC day's start, in seconds */
@@ -35,7 +149,7 @@ export function dailyVolumes(hourly: AveragePricesAtTime[], now: Date, days: num
 }
 
 /** Items traded (bought and sold) in the last 24 hours, from the hourly time series */
-export function last24HourVolume(hourly: AveragePricesAtTime[], now: Date): number {
+function last24HourVolume(hourly: AveragePricesAtTime[], now: Date): number {
   const since = getUnixTime(now) - DAY;
   return hourly
     .filter(hour => hour.timestamp >= since)

@@ -31,16 +31,8 @@ import { isHumanVisitor } from '@app/core/platform/human-visitor';
 import { PriceTrackerStore } from '../price-tracker-store';
 import { browseLetterOf, startingWith } from '../browse/browse-letters';
 import { PriceChart } from './charts/price-chart';
-import { geTax, isGeTaxExempt } from './ge-tax';
 import { ItemHeader } from './item-header';
-import {
-  DailyVolume,
-  dailyVolumes,
-  formatWhole,
-  formatWholeCompact,
-  last24HourVolume,
-  yesterdayAverageSellPrice,
-} from './item-prices';
+import { DailyVolume, ItemStat, dailyVolumes, itemStats, yesterdayAverageSellPrice } from './item-prices';
 import { ItemVolume } from './item-volume';
 import { ProfitCalculator } from './profit-calculator';
 
@@ -59,15 +51,6 @@ const PRICE_RANGES: Record<PriceRange, { lookback: Lookback; seconds: number; ti
 
 /** As many days as the hourly series covers in full, today included: it ends with the last full hour, 168 hours back */
 const VOLUME_DAYS = 7;
-
-interface ItemStat {
-  label: string;
-  value: string;
-  sub: string;
-  info: string;
-  tip?: string;
-  loading?: boolean;
-}
 
 @Component({
   selector: 'item-detail',
@@ -185,70 +168,19 @@ export default class ItemDetail implements OnInit {
   );
   readonly volumes: Signal<DailyVolume[]> = computed(() => dailyVolumes(this.hourlySeries(), new Date(), VOLUME_DAYS));
 
-  readonly stats: Signal<ItemStat[]> = computed(() => {
-    const item = this.item()!;
-    const latest = this.latestPrices();
-    const latestLoading = this.latestLoading();
-    const latestFailed = this.latestFailed();
-    const exempt = isGeTaxExempt(item.id);
-    // A value shortened to fit ("786.71M"), with the exact amount on hover: "786,705,873 gp."
-    const amount = (value: number, unit: string): Pick<ItemStat, 'value' | 'tip'> => {
-      const short = formatWholeCompact(value);
-      const whole = formatWhole(value);
-      return { value: short, tip: short === whole ? undefined : `${whole} ${unit}.` };
-    };
-
-    const price = (label: string, info: string, value?: number, time?: Date): ItemStat => {
-      if (latestFailed) return { label, info, value: '–', sub: "Couldn't load the price" };
-      if (!value) return { label, info, value: '–', sub: 'No recent trades', loading: latestLoading };
-      const ago = this.timeAgo.transform(time) ?? '';
-      // Shortened to fit the tile: "2 min ago"
-      const short = ago
-        .replace(/ seconds? /, ' sec ')
-        .replace(/ minutes? /, ' min ')
-        .replace(/ hours? /, ' hr ');
-      const { value: text, tip } = amount(value, 'gp');
-      const lastTrade = `Last trade was ${ago}.`;
-      return { label, info, value: text, sub: `Last trade ${short}`, tip: tip ? `${tip} ${lastTrade}` : lastTrade };
-    };
-
-    const high = latest?.high;
-    const low = latest?.low;
-    const margin: ItemStat = {
-      label: 'Margin after tax',
-      info: exempt
-        ? 'Instant buy minus instant sell. This item is exempt from GE tax.'
-        : 'Instant buy minus instant sell, minus the 2% GE tax on the sale.',
-      ...(high && low ? amount(high - low - geTax(item.id, high), 'gp') : { value: '–' }),
-      sub: latestFailed ? "Couldn't load the price" : exempt ? 'No tax on this item' : 'Buy − sell − 2% tax',
-      loading: latestLoading,
-    };
-
-    return [
-      price('Instant buy', 'The price of the latest instant buy.', high, latest?.highTime),
-      price('Instant sell', 'The price of the latest instant sell.', low, latest?.lowTime),
-      margin,
-      {
-        label: 'Daily volume',
-        info: 'The number of times the item has been traded within the last 24 hours.',
-        ...(this.hourly.error() ? { value: '–' } : amount(last24HourVolume(this.hourlySeries(), new Date()), 'traded')),
-        sub: this.hourly.error() ? "Couldn't load the volume" : 'Last 24 hours',
-        loading: this.hourlyLoading(),
-      },
-      {
-        label: 'Buy limit',
-        info: 'The amount of times the item can be bought every 4 hours.',
-        ...(item.limit ? amount(item.limit, 'items') : { value: '–' }),
-        sub: item.limit ? 'Every 4 hours' : 'Unknown',
-      },
-      {
-        label: 'High alch',
-        info: 'Coins received from casting High Level Alchemy on the item.',
-        ...(item.highalch ? amount(item.highalch, 'gp') : { value: '–' }),
-        sub: item.highalch ? `Low alch ${formatWholeCompact(item.lowalch ?? 0)}` : "Can't be alched for coins",
-      },
-    ];
-  });
+  readonly stats: Signal<ItemStat[]> = computed(() =>
+    itemStats({
+      item: this.item()!,
+      latest: this.latestPrices(),
+      latestLoading: this.latestLoading(),
+      latestFailed: this.latestFailed(),
+      hourly: this.hourlySeries(),
+      hourlyLoading: this.hourlyLoading(),
+      hourlyFailed: !!this.hourly.error(),
+      now: new Date(),
+      timeAgo: time => this.timeAgo.transform(time),
+    }),
+  );
 
   ngOnInit(): void {
     const item = this.item();

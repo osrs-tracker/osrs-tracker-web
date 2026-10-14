@@ -7,6 +7,9 @@
   malicious. The outside tools that build and publish the site, and the one that checks the documentation's links, are
   pinned to an exact version, so what runs there only changes when they're updated on purpose, not whenever their makers
   publish (or someone else slips in) a new one.
+- The six numbers at the top of an item's page (instant buy and sell, the margin after tax, the daily volume, the buy
+  limit and high alch) now have automated tests, so a later change can't quietly break the margin you trade on, the GE
+  tax taken off it or how a failed or missing price shows. They look the same as before.
 
 ## 2026-10-13
 
