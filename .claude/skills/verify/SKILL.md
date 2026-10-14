@@ -22,7 +22,7 @@ and exits 1 when any failed:
 1. `npx ng lint`
 2. `npm run prettier:ci`
 3. `npx knip`: unused files, exports and dependencies. An export only its own file uses loses its `export`; a false
-   positive goes in `knip.json` with a comment saying why
+   positive goes in `knip.jsonc` with a comment saying why
 4. `npx ng test --watch=false` (Vitest doesn't type-check the specs, but `ng test` compiles them, so a type error fails
    it)
 5. `npx ng build --configuration production`: not `npm run build`, which regenerates sitemaps and icons and so changes
