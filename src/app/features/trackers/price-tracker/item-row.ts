@@ -7,7 +7,7 @@ import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Icon } from '@app/common/icon/icon';
 import { DAY, utcDayStart } from './utc-day';
-import { formatNumberLegible, formatSign } from '@app/common/format/number-format';
+import { formatNumberLegible, formatSign, formatWhole } from '@app/common/format/number-format';
 import { OsrsPricesRepo, TimeSpan } from '@app/common/api/osrs-prices-repo';
 import { RecentItem } from './price-tracker-store';
 
@@ -124,8 +124,8 @@ export class ItemRow {
     const { change, average } = this.data() ?? {};
     return change != null && average ? (Math.abs(change) / average) * 100 : null;
   });
-  // Not `formatWhole`: the change from the average has decimals, and the tooltip shows them ("+17.89 gp")
+  // whole gp, as in the game: the average has decimals
   readonly changeTitle: Signal<string> = computed(
-    () => `${this.sign()}${Math.abs(this.data()?.change ?? 0).toLocaleString('en-US')} gp vs yesterday's average`,
+    () => `${this.sign()}${formatWhole(Math.abs(this.data()?.change ?? 0))} gp vs yesterday's average`,
   );
 }
