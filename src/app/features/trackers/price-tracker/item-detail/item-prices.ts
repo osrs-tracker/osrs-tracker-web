@@ -149,7 +149,7 @@ export function dailyVolumes(hourly: AveragePricesAtTime[], now: Date, days: num
 }
 
 /** Items traded (bought and sold) in the last 24 hours, from the hourly time series */
-export function last24HourVolume(hourly: AveragePricesAtTime[], now: Date): number {
+function last24HourVolume(hourly: AveragePricesAtTime[], now: Date): number {
   const since = getUnixTime(now) - DAY;
   return hourly
     .filter(hour => hour.timestamp >= since)
