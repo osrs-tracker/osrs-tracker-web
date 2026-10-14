@@ -33,6 +33,12 @@
   can't disagree after a new account type or a relabel.
 - Two of Angular's checks on the page templates, which point out a check for a missing value where none can be missing,
   are back on. They were switched off during an upgrade in July and no page needs them off any more.
+- A player's page now has automated tests for what it decides on its own: whether the player is tracked, just started or
+  not tracked yet, when the stats shown are the last tracked ones because the hiscores aren't responding, what happens
+  when starting to track them fails, how the day log merges days without gains, and how the Compare view picks, swaps
+  and falls back on its two days. The page changes more often than any other, so this catches a change that quietly
+  breaks one of them. Reading and writing the compared days in the address bar is now done in one place instead of two.
+  It all works the same as before.
 
 ## 2026-10-13
 
