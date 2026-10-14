@@ -285,9 +285,10 @@ minutes), then smoke tests the web app only, not the API: `/` (200 with `x-cache
 - **Merging is the end of the job: don't wait for or watch the `CD` run.** It smoke tests on its own, and a failure
   shows as a failed `CD` run (titled after the change it deploys) and a failed `Flux / sync` status, and reaches
   Discord. Only when the user asks, follow it with `gh run list --workflow deploy.yml -L 3` and
-  `gh run watch <id> --exit-status` (auto mode may block both as a production deploy: then give the user the command, or
-  read `gh api repos/osrs-tracker/osrs-tracker-web/commits/<sha>/status`), then check changed pages in the browser and
-  read `kubectl -n osrs-tracker logs deploy/osrs-tracker-web --since=5m` (reading the cluster is fine).
+  `gh run watch <id> --exit-status` as a background command, like Release step 3's watch (auto mode may block both as a
+  production deploy: then give the user the command, or read
+  `gh api repos/osrs-tracker/osrs-tracker-web/commits/<sha>/status`), then check changed pages in the browser and read
+  `kubectl -n osrs-tracker logs deploy/osrs-tracker-web --since=5m` (reading the cluster is fine).
 - **Retry** a failed deploy (Docker Hub or Flux hiccup) by re-running the failed `CD` run; a later docs-only push won't
   redeploy.
 - **Never `kubectl apply` the manifest** or push an image by hand: Flux reverts anything that isn't on `main` within 10
@@ -311,7 +312,10 @@ the exact command; never edit permission settings, ask another session to run it
    the review gets a fresh context and its reading stays out of the session. Check each finding against the code before
    fixing it, and drop the ones that don't hold. At most 2 rounds of fixes, then ask.
 3. Poll `gh pr view <n> --json mergeable,mergeStateStatus` until it isn't `UNKNOWN` (a conflicting PR gets no CI: rebase
-   and push again), then `gh pr checks <n> --watch`.
+   and push again), then run `gh pr checks <n> --watch` as a background Bash command (`run_in_background`) and carry on:
+   it wakes the session once, when it exits. In the foreground it blocks the turn; Monitor, `/loop`, `sleep` or a
+   polling loop re-read the whole conversation on every wake-up. If it exits at once with "no checks reported", the
+   checks aren't registered yet: run it again.
 4. When checks pass: `gh pr merge <n> --merge` (if Claude Code's permission check blocks it, give the user the command
    and wait, don't retry or work around it). It merges right away, which deploys.
 5. `git fetch --prune origin`, `git switch --detach origin/main` (in a worktree, `main` is checked out elsewhere) and
@@ -326,7 +330,8 @@ PRs that pass alone but clash together fail there and deploy nothing: fix `main`
 ## Commit and push
 
 - Conventional commits. What counts as doc-only, and how to push it: `CLAUDE.md`. Admin bypasses `main`'s PR rule; after
-  a direct push, check its CI run (`gh run watch --exit-status`, or the commit's checks with
+  a direct push, check its CI run: its id from `gh run list --commit <sha> --workflow nodejs.yml`, then
+  `gh run watch <id> --exit-status` as a background command, like Release step 3's watch (or the commit's checks with
   `gh api repos/osrs-tracker/osrs-tracker-web/commits/<sha>/check-runs` if that's blocked). A direct push that changes
   the image deploys too.
 - `chore(deploy)` is reserved for the `CD` workflow's digest commits.
