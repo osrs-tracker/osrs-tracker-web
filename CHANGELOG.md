@@ -5,13 +5,21 @@
 - Hovering an item's change in the price lists shows the difference from yesterday's average in whole gp ("+18 gp"), as
   the game and the rest of the site write prices, instead of with the decimals left over from averaging ("+17.89 gp").
 
+### Link previews
+
+- The preview cards chat apps show for a shared item, player or players online link space their letters the way the site
+  does, with the font's own spacing for pairs like "Te" in "Tumeken's", instead of a copy of the font with that spacing
+  taken out. The library that draws the cards was 24 releases behind, held back by a bundling problem it has since
+  fixed.
+
 ### Behind the scenes
 
 - The automated checks that run on every change can only read the code: they install and run hundreds of third-party
   packages, so none of them can change the repository or approve a change if one of those packages turns out to be
   malicious. The outside tools that build and publish the site, and the one that checks the documentation's links, are
   pinned to an exact version, so what runs there only changes when they're updated on purpose, not whenever their makers
-  publish (or someone else slips in) a new one.
+  publish (or someone else slips in) a new one. Dependabot proposes each new version of them as a change of its own,
+  tested like any other, so the pins don't fall behind on fixes.
 - The scripts that decide whether a change needs a full build and test, and which version of the site to deploy, moved
   out of the workflow files into files of their own, and ShellCheck, which catches common shell mistakes, now checks
   them and the project's other shell scripts on every change. A slip there could let a broken change through untested or

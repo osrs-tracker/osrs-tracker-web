@@ -68,7 +68,7 @@ function isStored(player: Player): boolean {
  * when the card's design changes.
  */
 function playerImage(player: Player, name: string): PageImage {
-  return { url: `/og/player/${encodeURIComponent(player.username)}.png?v=1`, width: 1200, height: 630, alt: name };
+  return { url: `/og/player/${encodeURIComponent(player.username)}.png?v=2`, width: 1200, height: 630, alt: name };
 }
 
 /**

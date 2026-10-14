@@ -187,7 +187,9 @@ the angular.dev docs for the installed major version.
   declares (`python3 -m fontTools.varLib.instancer SOLIX-Variable.ttf wght=300:700 -o cut.ttf`; since 3.00 the release
   spans 100–900, and the full axis makes the preloaded file 62 KB instead of 38 KB), save it as WOFF2
   (`python3 -m fontTools.ttLib.woff2 compress cut.ttf -o public/assets/fonts/SOLIX-Variable.woff2`) and bump `?v=` in
-  `base.css` and `index.html`. The link preview card has its own copies of the font (`docs/decisions.md`).
+  `base.css` and `index.html`. The link preview cards use the release's `ttf/SOLIX-Regular.ttf` and
+  `ttf/SOLIX-SemiBold.ttf` as they are: copy them into `src/server/og/fonts/` and bump the cards' `?v=`
+  (`docs/decisions.md`).
 - **Missing assets**: `middleware/missing-asset.ts` answers paths ending in a build asset extension (`.js`, `.css`,
   `.woff2`…) with a 404 after `express.static`, before Angular, as some crawlers resolve the asset links against the
   page path. Angular routes can't end in one of those extensions; a server router that does (`/og/item/:id.png`,

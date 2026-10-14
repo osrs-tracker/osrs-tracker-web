@@ -200,9 +200,9 @@ function skillCell(hiscore: HiscoreEntry, skill: GridSkill, icon: Uint8Array): N
       ]),
       el(
         {
-          fontFamily: 'SOLIX Tabular',
           fontSize: 22,
           fontWeight: 600,
+          fontVariantNumeric: 'tabular-nums',
           lineHeight: 1,
           color: level >= MAX_LEVEL ? COLORS.gold : COLORS.text,
         },

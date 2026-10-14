@@ -2,7 +2,6 @@ import resvgWasm from '@resvg/resvg-wasm/index_bg.wasm';
 import { initWasm, Resvg } from '@resvg/resvg-wasm';
 import satori, { type Font } from 'satori';
 import regular from './fonts/SOLIX-Regular.ttf';
-import semiBoldTabular from './fonts/SOLIX-SemiBold-Tabular.ttf';
 import semiBold from './fonts/SOLIX-SemiBold.ttf';
 
 /** A satori element: plain `{ type, props }` objects, as there is no React */
@@ -36,12 +35,10 @@ export const COLORS = {
   text: '#ffffff',
 };
 
-// Static instances without kerning, which satori 0.32 draws but doesn't lay out, and a copy whose digits are its
-// tabular ones, as satori can't turn on OpenType features (`docs/decisions.md`)
+// The release's static instances, as satori can't read a variable font (`docs/decisions.md`)
 const fonts: Font[] = [
   { name: 'SOLIX', data: arrayBuffer(regular), weight: 400, style: 'normal' },
   { name: 'SOLIX', data: arrayBuffer(semiBold), weight: 600, style: 'normal' },
-  { name: 'SOLIX Tabular', data: arrayBuffer(semiBoldTabular), weight: 600, style: 'normal' },
 ];
 
 let wasmReady: Promise<void> | undefined;
@@ -135,14 +132,14 @@ export function tile(label: string, value: string, width: number): Node {
     },
     [
       el({ fontSize: 22, lineHeight: '28px', color: COLORS.muted }, label),
-      el({ fontFamily: 'SOLIX Tabular', fontSize: 34, lineHeight: '40px', fontWeight: 600 }, value),
+      el({ fontSize: 34, lineHeight: '40px', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }, value),
     ],
   );
 }
 
-/** A div; one without children gets none, as satori 0.32 asks an empty array for `display: flex` */
+/** A div, border-box like the site's CSS: satori, like browsers, defaults to content-box */
 export function el(style: Record<string, string | number>, children?: Child | Child[]): Node {
-  return { type: 'div', props: children === undefined ? { style } : { style, children } };
+  return { type: 'div', props: { style: { boxSizing: 'border-box', ...style }, children } };
 }
 
 /** An image of the given size from PNG or GIF bytes */
