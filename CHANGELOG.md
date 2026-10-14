@@ -14,6 +14,8 @@
 
 ### Behind the scenes
 
+- The project no longer ships settings for one code editor (VS Code). Formatting is checked the same way for everyone
+  before a change is pushed and on every change, whichever editor wrote it.
 - The automated checks that run on every change can only read the code: they install and run hundreds of third-party
   packages, so none of them can change the repository or approve a change if one of those packages turns out to be
   malicious. The outside tools that build and publish the site, and the one that checks the documentation's links, are
