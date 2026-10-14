@@ -30,17 +30,18 @@ Choices that look like accidents without their context: what was decided, why, a
   browser-only request (`size=91`, about 40 KB compressed), not in the transfer state.
 - **Revisit:** if the picks need back-button support, or a second feature puts state in the player page's URL.
 
-## Pull requests merge through a merge queue (2026-10-13)
+## Pull requests merge without a queue or an up-to-date rule (2026-10-14)
 
-- **Context:** `main` requires `build`, `lint`, `test` and `links` with strict checks. Parallel sessions merged 40 PRs
-  in four days, and every merge, plus the digest commit `CD` pushes after it, turned the other open PRs `BEHIND`: each
-  had to rebase, push and wait for CI again.
-- **Decision:** a merge queue on `main` (merge method merge, to keep the history style). CI runs on `merge_group` too,
-  and its `changes` job compares a queue run with the commit it's built on, so docs-only PRs still skip build and test.
-  The digest commit and doc-only pushes still go straight to `main` (deploy key, admin bypass); `CD` deploys only from
-  pushes to `main`, never from queue runs.
-- **Revisit:** if the queue stalls on digest commits landing while a group is in flight, or the repo stops being an
-  organization's public repo (no merge queue).
+- **Context:** parallel sessions merged 40 PRs in four days, and every merge, plus the digest commit `CD` pushes after
+  it, turns the other open PRs `BEHIND`. With strict required checks, each had to rebase, push and wait for CI again. A
+  merge queue (2026-10-13 to 2026-10-14) fixed that, but every merge then waited for a queue run, built and tested the
+  same commit twice (in the queue and on the push to `main`), and those duplicate check runs kept the `changes` job from
+  ever skipping build and test for the next docs-only push.
+- **Decision:** no merge queue and no "require branches to be up to date": a PR merges once its own `build`, `lint`,
+  `test` and `links` pass, even when `BEHIND`. CI on the push to `main` tests the merged result and `CD` deploys only a
+  `main` that passed, so two PRs that pass alone but clash together fail there and deploy nothing until `main` is fixed.
+  The digest commit and doc-only pushes still go straight to `main` (deploy key, admin bypass).
+- **Revisit:** if PRs that each passed start breaking `main` together more than rarely.
 
 ## Google Analytics loads only after consent, from a banner with equal buttons (2026-10-13)
 
