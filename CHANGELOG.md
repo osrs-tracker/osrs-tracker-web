@@ -7,6 +7,10 @@
   malicious. The outside tools that build and publish the site, and the one that checks the documentation's links, are
   pinned to an exact version, so what runs there only changes when they're updated on purpose, not whenever their makers
   publish (or someone else slips in) a new one.
+- The scripts that decide whether a change needs a full build and test, and which version of the site to deploy, moved
+  out of the workflow files into files of their own, and ShellCheck, which catches common shell mistakes, now checks
+  them and the project's other shell scripts on every change. A slip there could let a broken change through untested or
+  deploy the wrong version, and nothing checked them before.
 - The six numbers at the top of an item's page (instant buy and sell, the margin after tax, the daily volume, the buy
   limit and high alch) now have automated tests, so a later change can't quietly break the margin you trade on, the GE
   tax taken off it or how a failed or missing price shows. They look the same as before.

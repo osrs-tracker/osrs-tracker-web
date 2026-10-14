@@ -3,6 +3,7 @@
 # (then still OPEN). Prints the final state. Usage: wait-merge.sh <pr-number>
 set -euo pipefail
 n=${1:?usage: wait-merge.sh <pr-number>}
+# shellcheck disable=SC2016 # $n is a GraphQL variable, not a shell one
 query='query($n: Int!) { repository(owner: "osrs-tracker", name: "osrs-tracker-web") { pullRequest(number: $n) {
   state isInMergeQueue autoMergeRequest { enabledAt } } } }'
 while :; do
