@@ -31,7 +31,14 @@ fi
 root=$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null) || exit 0
 cd "$root" || exit 0
 
-if ! out=$({ npm run -s lint && npm run -s prettier:ci; } 2>&1); then
+# Another repo (osrs-tracker-api, -aws) has its own check with its own scripts: hand over to it. Running this one's
+# there would block the push (aws has no `lint`) or edit files (api's `lint` is `eslint --fix`).
+own=$root/.claude/hooks/pre-push-check.sh
+[ -x "$own" ] && ! [ "$own" -ef "$0" ] && exec "$own" <<<"$input"
+# Any other repo: skip the scripts it doesn't have, and fail open without a package.json
+[ -f package.json ] || exit 0
+
+if ! out=$({ npm run -s --if-present lint && npm run -s --if-present prettier:ci; } 2>&1); then
   printf 'Push blocked: lint or prettier check failed in %s.\n%s\n' "$root" "$(tail -40 <<<"$out")" >&2
   exit 2
 fi

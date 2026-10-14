@@ -72,6 +72,9 @@
 - The review agent that checks changes against the project's conventions can now read the GitHub issue a change is for,
   so it can tell whether the change does what the issue asked. Its guard used to block that; it still lets the agent run
   nothing that changes the code or GitHub.
+- The check Claude Code runs before it pushes a change hands over to the API's or the AWS project's own check when the
+  push is for one of those, instead of running this site's there. This site's check blocked every push of the AWS
+  project, which has no lint script of its own, and ran the API's lint in the mode that rewrites files.
 
 ## 2026-10-13
 
