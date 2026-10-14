@@ -57,10 +57,10 @@ describe('PlayerDetail', () => {
   const liveHiscores = (): TestRequest => httpTesting.expectOne(req => req.url.includes('/index_lite.json'));
 
   /** Opens the player page in a person's browser, as the router does (the template is left out: this is its state) */
-  const open = async (player: Player): Promise<PlayerDetail> => {
+  const open = async (player: Player, url: string = URL): Promise<PlayerDetail> => {
     resolved = player;
     const harness = await RouterTestingHarness.create();
-    const page = await harness.navigateByUrl(URL, PlayerDetail);
+    const page = await harness.navigateByUrl(url, PlayerDetail);
     // the check the week before starts from, which only the stat tiles use
     httpTesting.match(req => req.params.get('skip') === '14');
     return page;
@@ -154,6 +154,14 @@ describe('PlayerDetail', () => {
       expect(page.trackingState()).toBe('tracked');
       expect(page.logNotice()).toBeUndefined();
     });
+  });
+
+  it('opens Compare from a link with picked days, and Days takes them out of the URL', async () => {
+    const page = await open(player(), `${URL}?day=2026-10-10&vs=2026-10-06`);
+    expect(page.logView()).toBe('compare');
+
+    page.setLogView('days');
+    expect(TestBed.inject(Location).path()).toBe(URL);
   });
 
   describe('when the live hiscores fail', () => {
