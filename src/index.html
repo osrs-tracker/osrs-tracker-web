@@ -12,7 +12,7 @@
     <link rel="manifest" href="manifest.webmanifest" />
     <!-- End PWA -->
 
-    <!-- Google tag (gtag.js): loaded only once the visitor allows its cookies (ConsentService); before a choice, events
+    <!-- Google tag (gtag.js): loaded only once the visitor allows its cookies (ConsentStore); before a choice, events
          wait in dataLayer, and after Don't allow none are pushed. The ID and storage key are config.gaMeasurementId and
          StorageKey.AnalyticsConsent -->
     <script>
@@ -25,7 +25,7 @@
       const analyticsConsent = localStorage.getItem('analytics-consent');
       const analyticsAllowed = analyticsConsent === 'granted';
       // The server renders the consent banner in every page: hide it before the first paint from visitors who chose
-      // before, until ConsentService removes it. A style element of its own, as the build's critical CSS would drop a
+      // before, until ConsentStore removes it. A style element of its own, as the build's critical CSS would drop a
       // rule in styles.css that no element matches at build time
       if (analyticsConsent === 'granted' || analyticsConsent === 'denied') {
         const style = document.createElement('style');

@@ -1,0 +1,222 @@
+<article class="rounded-2xl bg-card">
+  <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 min-h-14 px-5 py-3 border-b border-line">
+    <div class="relative flex flex-wrap items-center gap-2">
+      <day-picker
+        label="Day"
+        legend="XP since last check"
+        [days]="options()"
+        [value]="day()?.key"
+        [other]="vs()?.key"
+        (picked)="pick({ day: $event! })"
+      />
+      <span class="text-sm text-muted">compared with</span>
+      <day-picker
+        label="Compared with"
+        noneLabel="No other day"
+        legend="XP since last check"
+        [days]="options()"
+        [value]="vs()?.key"
+        [other]="day()?.key"
+        (picked)="pick({ vs: $event ?? NO_DAY })"
+      />
+    </div>
+    @if (changes(); as changes) {
+      @let levels = changes.overall.to - changes.overall.from!;
+      <!-- the totals, as on a day card -->
+      <div class="flex items-center gap-3.5">
+        @if (levels > 0) {
+          <span class="text-sm font-bold text-accent tabular-nums"
+            >+{{ levels }} {{ levels === 1 ? 'level' : 'levels' }}</span
+          >
+        }
+        <span class="flex items-center gap-1.5 font-bold text-strong tabular-nums">
+          <img class="h-4.5 w-auto" icon [name]="SkillEnum.Overall" [skill]="true" />{{
+            signed(changes.overall.gained!)
+          }}
+          <span class="sr-only">XP</span>
+        </span>
+      </div>
+    }
+  </div>
+
+  @if (history.error()) {
+    <load-error
+      class="block px-5 py-4"
+      source="player-compare"
+      message="Couldn't load the history."
+      (retry)="history.reload()"
+    />
+  } @else if (newer()) {
+    @let diff = changes();
+    @if (diff && !allStats()) {
+      @if (diff.skills.length) {
+        <ul class="grid grid-cols-log gap-x-6 gap-y-2 px-5 py-4">
+          @for (row of diff.skills; track row.name) {
+            <li class="flex items-center gap-2.5 min-h-6" [attr.title]="cellTitle(row, true)">
+              <span class="flex items-center justify-center size-6 shrink-0">
+                <img class="max-h-6 w-auto" icon [name]="row.name" [skill]="true" />
+              </span>
+              <span class="truncate">{{ row.name }}</span>
+              <span class="mr-auto text-sm font-bold text-accent tabular-nums">
+                @if (row.to > row.from!) {
+                  +{{ row.to - row.from!
+                  }}<span class="sr-only"> {{ row.to - row.from! === 1 ? 'level' : 'levels' }}</span>
+                }
+              </span>
+              <span class="font-bold text-strong tabular-nums">{{ signed(row.gained!) }}</span>
+            </li>
+          }
+        </ul>
+      }
+      @if (diff.activities.length) {
+        <!-- its own rows under a full-width line, as on a day card: scores and kill counts, not XP -->
+        <ul class="grid grid-cols-log gap-x-6 gap-y-2 px-5 py-4 border-row" [class.border-t]="diff.skills.length">
+          @for (row of diff.activities; track row.name) {
+            <li class="flex items-center gap-2.5 min-h-6" [attr.title]="cellTitle(row, false)">
+              <span class="flex items-center justify-center size-6 shrink-0">
+                <img class="max-h-6 max-w-6" icon [name]="row.name" [activity]="true" />
+              </span>
+              <span class="mr-auto truncate">{{ row.name }}</span>
+              <span class="font-bold text-strong tabular-nums">+{{ row.gained | number }}</span>
+            </li>
+          }
+        </ul>
+      }
+      @if (!diff.skills.length && !diff.activities.length) {
+        <p class="px-5 py-4 text-base text-muted">Nothing was gained between these days.</p>
+      }
+    } @else {
+      @let comparing = !!diff;
+      <div class="px-5 pt-4 pb-2">
+        <segmented label="Stats" [options]="tabs" [value]="tab()" (valueChange)="setTab($event)" />
+      </div>
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-muted">
+            <th class="py-2 pl-5 pr-1.5 sm:pr-3 font-normal" scope="col">
+              {{ tab() === 'skills' ? 'Skill' : 'Activity' }}
+            </th>
+            <th class="py-2 px-1.5 sm:px-3 font-normal text-right" scope="col">
+              {{ tab() === 'skills' ? 'Level' : 'Score' }}
+            </th>
+            @if (tab() === 'skills') {
+              <th
+                class="py-2 px-1.5 sm:px-3 font-normal text-right"
+                [class]="comparing ? 'max-sm:hidden' : ''"
+                scope="col"
+              >
+                XP
+              </th>
+            }
+            @if (comparing) {
+              <th class="py-2 px-1.5 sm:px-3 font-normal text-right" scope="col">Gained</th>
+            }
+            <th
+              class="py-2 pl-1.5 sm:pl-3 pr-5 font-normal text-right"
+              [class]="comparing ? 'max-sm:hidden' : ''"
+              scope="col"
+            >
+              Rank
+            </th>
+          </tr>
+        </thead>
+        <tbody class="tabular-nums">
+          @for (row of rows(); track row.name) {
+            @let changed = !!row.gained;
+            <tr class="border-t border-row">
+              <td class="max-w-0 w-full py-2 pl-5 pr-1.5 sm:pr-3">
+                <span class="flex items-center gap-2 sm:gap-2.5 min-w-0">
+                  <span class="flex items-center justify-center size-6 shrink-0">
+                    <img
+                      class="max-h-6 max-w-6"
+                      icon
+                      [name]="row.name"
+                      [skill]="tab() === 'skills'"
+                      [activity]="tab() === 'activities'"
+                    />
+                  </span>
+                  <!-- in a comparison, what didn't change steps back -->
+                  <span
+                    class="truncate"
+                    [class]="comparing && !changed ? 'text-muted' : 'text-strong'"
+                    [class.font-bold]="$first && tab() === 'skills'"
+                    [attr.title]="row.name"
+                    >{{ row.name }}</span
+                  >
+                </span>
+              </td>
+              <td class="py-2 px-1.5 sm:px-3 text-right whitespace-nowrap">
+                @if (row.from !== undefined && row.from !== row.to) {
+                  <span class="pr-1 text-muted">{{ row.from | number }} →</span>
+                  <span class="font-bold text-strong">{{ row.to | number }}</span>
+                } @else {
+                  <span class="text-strong">{{ row.to | number }}</span>
+                }
+              </td>
+              @if (tab() === 'skills') {
+                <td
+                  class="py-2 px-1.5 sm:px-3 text-right whitespace-nowrap text-text"
+                  [class]="comparing ? 'max-sm:hidden' : ''"
+                >
+                  <!-- on phones only in the one-day view, short -->
+                  <span class="sm:hidden" [attr.title]="row.xp | number">{{ legible(row.xp!) }}</span>
+                  <span class="max-sm:hidden">{{ row.xp | number }}</span>
+                </td>
+              }
+              @if (comparing) {
+                <td
+                  class="py-2 px-1.5 sm:px-3 text-right whitespace-nowrap"
+                  [class]="!changed ? 'text-muted' : row.gained! > 0 ? 'font-bold text-up' : 'font-bold text-down'"
+                  [attr.title]="changed ? signed(row.gained!, true) : null"
+                >
+                  {{ changed ? signed(row.gained!) : '–' }}
+                </td>
+              }
+              <td
+                class="py-2 pl-1.5 sm:pl-3 pr-5 text-right whitespace-nowrap"
+                [class]="comparing ? 'max-sm:hidden' : ''"
+              >
+                @if (row.rank === null) {
+                  <span class="text-muted">–</span>
+                } @else {
+                  @if (row.rankChange) {
+                    <span
+                      class="max-sm:hidden pr-1.5 text-xs font-bold"
+                      [class]="row.rankChange > 0 ? 'text-up' : 'text-down'"
+                      [attr.title]="rankChangeTitle(row.rankChange)"
+                      >{{ row.rankChange > 0 ? '▲' : '▼' }}{{ short(row.rankChange) }}</span
+                    >
+                  }
+                  <span class="sm:hidden text-text" [attr.title]="row.rank | number">{{ short(row.rank) }}</span>
+                  <span class="max-sm:hidden text-text">{{ row.rank | number }}</span>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr class="border-t border-row">
+              <td class="py-3 px-5 text-muted" colspan="5">Not ranked in any activity on these days.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-2 mt-1 px-5 py-3 border-t border-line">
+      @if (diff) {
+        <button type="button" class="link text-sm font-bold" (click)="toggleAllStats()">
+          {{ allStats() ? 'Show only what changed' : 'Show all stats' }}
+        </button>
+      } @else {
+        <span class="text-sm text-muted">Pick a second day to see what changed.</span>
+      }
+    </div>
+  } @else if (history.hasValue()) {
+    <p class="px-5 py-4 text-base text-muted">No days are stored at this check time yet.</p>
+  } @else {
+    <div class="grid grid-cols-log gap-x-6 gap-y-2 px-5 py-4" aria-hidden="true">
+      @for (row of [0, 1, 2, 3, 4, 5]; track row) {
+        <skeleton class="h-6 w-full" />
+      }
+    </div>
+  }
+</article>

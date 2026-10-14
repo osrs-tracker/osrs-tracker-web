@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, DestroyRef, ElementRef, afterNextRender, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ConsentService } from '@app/common/analytics/consent-service';
+import { ConsentStore } from '@app/common/analytics/consent-store';
 
 /**
  * Asks to allow Google Analytics' cookies. Fixed over the page, so it shifts no layout, and not a modal: the page stays
@@ -37,7 +37,7 @@ import { ConsentService } from '@app/common/analytics/consent-service';
           </svg>
         </span>
         <h2 id="consent-heading" class="grow text-lg/6 font-bold text-strong">Allow analytics cookies?</h2>
-        @if (consentService.choice(); as choice) {
+        @if (consentStore.choice(); as choice) {
           <span
             class="shrink-0 h-6 px-2.5 flex items-center rounded-full text-xs font-bold"
             [class]="choice === 'granted' ? 'bg-accent/15 text-accent' : 'bg-inner text-muted'"
@@ -59,10 +59,10 @@ import { ConsentService } from '@app/common/analytics/consent-service';
       </div>
 
       <div class="flex gap-3">
-        <button type="button" class="button--default button--rounded flex-1 h-11" (click)="consentService.allow()">
+        <button type="button" class="button--default button--rounded flex-1 h-11" (click)="consentStore.allow()">
           Allow
         </button>
-        <button type="button" class="button--default button--rounded flex-1 h-11" (click)="consentService.deny()">
+        <button type="button" class="button--default button--rounded flex-1 h-11" (click)="consentStore.deny()">
           Don’t allow
         </button>
       </div>
@@ -72,14 +72,14 @@ import { ConsentService } from '@app/common/analytics/consent-service';
   imports: [RouterLink],
 })
 export class ConsentBanner {
-  readonly consentService = inject(ConsentService);
+  readonly consentStore = inject(ConsentStore);
 
   constructor() {
     const elementRef: ElementRef<HTMLElement> = inject(ElementRef);
 
     // Reopened from the footer: move focus to the banner, so keyboard and screen reader users land on it, and back to
     // the Cookies button once a choice closes it
-    if (this.consentService.choice()) {
+    if (this.consentStore.choice()) {
       const opener = inject(DOCUMENT).activeElement as HTMLElement | null;
       afterNextRender(() => elementRef.nativeElement.querySelector('section')?.focus());
       inject(DestroyRef).onDestroy(() => opener?.focus());

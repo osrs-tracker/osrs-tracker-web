@@ -2,13 +2,13 @@ import { inject, Service } from '@angular/core';
 import { NavigationEnd, Router, TitleStrategy } from '@angular/router';
 import { filter } from 'rxjs';
 import type { Metric } from 'web-vitals';
-import { ConsentService } from './consent-service';
+import { ConsentStore } from './consent-store';
 import { GTAG_TOKEN } from './gtag-token';
 
 @Service()
 export class AnalyticsService {
   private readonly gtag = inject(GTAG_TOKEN);
-  private readonly consentService = inject(ConsentService);
+  private readonly consentStore = inject(ConsentStore);
   private readonly router = inject(Router);
   private readonly titleStrategy = inject(TitleStrategy);
 
@@ -89,7 +89,7 @@ export class AnalyticsService {
    * event pushed after the click (web-vitals reports LCP in an idle callback after it) would still reach Google
    */
   private send(name: string, params: Gtag.CustomParams) {
-    if (this.consentService.choice() === 'denied') return;
+    if (this.consentStore.choice() === 'denied') return;
     this.gtag?.('event', name, params);
   }
 }

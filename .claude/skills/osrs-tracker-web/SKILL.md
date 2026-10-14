@@ -41,6 +41,8 @@ a worktree).
   `-repo`, `-store`, `-resolver`, `-interceptor`); generate a service with the suffix in its name
   (`ng g s common/storage/storage-service`). Only the CLI's own names keep a dot: `main.server.ts`, `app.config*.ts`,
   `*.routes.ts`.
+- **Templates**: inline (`template:`) up to about 80 lines, a `.html` file beside the component (`templateUrl`) above
+  that, so the class stays readable. Move a template out when a change takes it over the line.
 - **Imports**: relative within a feature or a folder of `common/` or `core/` (and from the root `app.*` files into their
   subfolders); `@app/…`, `@config/…` or `@server/…` otherwise. Lint enforces the layers (`import-x/no-restricted-paths`
   in `eslint.config.js`): `common/` and `core/` never import a feature, features don't import each other (Home may
