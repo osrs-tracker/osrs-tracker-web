@@ -4,7 +4,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ConsentStore } from '@app/common/analytics/consent-store';
 import { Icon } from '@app/common/icon/icon';
 import { LastPlayedStore } from '@app/common/storage/last-played-store';
-import { LoadingIndicatorStore } from '@app/core/interceptors/loading-indicator-interceptor';
+import { LoadingIndicatorStore } from '@app/core/interceptors/loading-indicator-store';
 import { ConsentBanner } from './consent-banner';
 import { DarkMode } from './dark-mode';
 import { NAV_TAB, NavMenu, NavMenuRow, NavMenus } from './nav-menu';
