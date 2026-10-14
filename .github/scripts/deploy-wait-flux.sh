@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # CD's wait for Flux (deploy.yml): waits up to 10 minutes for the `Flux / sync` commit status on the deploy commit SHA,
-# and fails when Flux reports a failure or never reports. Reads SHA, GH_TOKEN and REPO.
+# or on a newer main that contains it, logging each poll, and fails when Flux reports a failure or never reports. Reads
+# SHA, GH_TOKEN and REPO.
 # Keep in step with osrs-tracker-api's deploy.yml ("Wait for Flux to deploy it"), which does the same.
 # -e like GitHub's default `run` shell (bash -e), which a script run from it doesn't inherit
 set -e
