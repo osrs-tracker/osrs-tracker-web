@@ -5,8 +5,8 @@
 set -e
 
 # Deploy commits get no CI run (paths-ignore in nodejs.yml), so they have no results to compare with. Step back past
-# them to the last commit that went through CI, or the next push (or queued PR) would rebuild even for docs.
-if { [ "$GITHUB_EVENT_NAME" = push ] || [ "$GITHUB_EVENT_NAME" = merge_group ]; } && [ -n "$BEFORE" ]; then
+# them to the last commit that went through CI, or the next push would rebuild even for docs.
+if [ "$GITHUB_EVENT_NAME" = push ] && [ -n "$BEFORE" ]; then
   for _ in 1 2 3 4 5; do
     only=$(git diff --name-only "$BEFORE^" "$BEFORE" 2>/dev/null) || break
     printf '%s\n' "$only" | grep -q -v -E '^(osrs-tracker-web\.yaml|public/sitemap[^/]*\.xml)$' && break

@@ -9,9 +9,6 @@ on:
     paths-ignore: ['osrs-tracker-web.yaml', 'public/sitemap*.xml']
   pull_request:
     branches: ['main']
-  # The merge queue tests each PR on top of main and the PRs queued ahead of it; the required checks must report here
-  # too, or the queue never merges. Takes no paths filter, so they always do.
-  merge_group:
 
 # Read-only unless a job asks for more: build and test run code from every installed package, so they get a token that
 # can't push or approve pull requests, whatever the repository's default is
@@ -37,11 +34,10 @@ jobs:
         name: Check for source or dependency changes
         env:
           # A new push to a PR compares with the previous push, not the base branch, so a digest commit doesn't rerun
-          # them for the PR's earlier source changes. A merge queue run compares with the commit it's built on: main, or the
-          # group queued ahead, whose build and test may not have finished, so it then runs everything.
+          # them for the PR's earlier source changes
           BEFORE:
-            ${{ github.event.merge_group.base_sha || (github.event_name == 'push' || github.event.action ==
-            'synchronize') && github.event.before || github.event.pull_request.base.sha }}
+            ${{ (github.event_name == 'push' || github.event.action == 'synchronize') && github.event.before ||
+            github.event.pull_request.base.sha }}
           AFTER: ${{ github.event.pull_request.head.sha || github.sha }}
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}

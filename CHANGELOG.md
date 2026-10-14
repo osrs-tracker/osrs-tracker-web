@@ -11,6 +11,9 @@
   out of the workflow files into files of their own, and ShellCheck, which catches common shell mistakes, now checks
   them and the project's other shell scripts on every change. A slip there could let a broken change through untested or
   deploy the wrong version, and nothing checked them before.
+- Changes no longer go through GitHub's merge queue. Each one is still tested on its own before it merges, and the site
+  is tested again with it merged in before anything deploys. A change goes live sooner, with one test run fewer, and
+  changes to only the documentation skip the build again.
 - The six numbers at the top of an item's page (instant buy and sell, the margin after tax, the daily volume, the buy
   limit and high alch) now have automated tests, so a later change can't quietly break the margin you trade on, the GE
   tax taken off it or how a failed or missing price shows. They look the same as before.
