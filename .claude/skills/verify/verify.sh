@@ -5,10 +5,17 @@ set -u
 # Plain output: the logs are read by Claude, not a terminal
 export NO_COLOR=1 FORCE_COLOR=0
 
-# A worktree uses the main checkout's node_modules, which match the main checkout's lockfile, not the worktree's
-if [[ $PWD == */.claude/worktrees/* ]] && ! diff -q package-lock.json ../../../package-lock.json >/dev/null; then
-  echo '=== package-lock.json differs from the main checkout: npm ci'
-  npm ci --no-audit --no-fund >/dev/null || exit 1
+# A worktree without its own node_modules uses the main checkout's, which match the main checkout's lockfile, not the
+# worktree's, and only if someone ran npm ci there after the last pull that changed it (npm ls fails when the installed
+# packages don't satisfy package.json). Either way, install into the worktree: replacing the main checkout's packages
+# would pull them out from under other sessions.
+if [[ $PWD == */.claude/worktrees/* ]]; then
+  if [ -d node_modules ]; then root=.; else root=../../..; fi
+  if ! diff -q package-lock.json "$root/package-lock.json" >/dev/null \
+    || ! npm ls --all --prefix "$root" >/dev/null 2>&1; then
+    echo "=== $root/node_modules doesn't match this worktree's package-lock.json: npm ci"
+    npm ci --no-audit --no-fund >/dev/null || exit 1
+  fi
 fi
 
 names=(lint prettier test build)

@@ -15,10 +15,11 @@ holds the Angular conventions, SSR rules, deploy and release steps. Keep detail 
 - One spec: `npx ng test --watch=false --include <path>`
 - Dev server: `npm start`, always on port 4200 (the API's CORS allows only that).
 - Worktrees in `.claude/worktrees/` use the main checkout's `node_modules` (found in a parent folder), which match the
-  main checkout's lockfile, not the worktree's. If `diff -q package-lock.json ../../../package-lock.json` reports a
-  difference (deps bumped on either side), run `npm ci` in the worktree. Other sessions share port 4200: check
-  `ss -ltn | grep :4200` before `npm start`, and stop it when done. A session edits only its own worktree; Claude Code
-  blocks writes into another one.
+  main checkout's lockfile, not the worktree's, and only if `npm ci` ran there after the last pull that changed it. If
+  `diff -q package-lock.json ../../../package-lock.json` reports a difference or `npm ls --all --prefix ../../..` fails,
+  run `npm ci` in the worktree (`verify.sh` checks both). Other sessions share port 4200: check `ss -ltn | grep :4200`
+  before `npm start`, and stop it when done. A session edits only its own worktree; Claude Code blocks writes into
+  another one.
 - Claude Code's pushes run `.claude/hooks/pre-push-check.sh` first (lint and Prettier on the checkout being pushed).
   It's a PreToolUse hook, not a git hook: a push from your own terminal skips it.
 
