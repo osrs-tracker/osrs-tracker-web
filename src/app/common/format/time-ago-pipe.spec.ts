@@ -11,8 +11,9 @@ describe('TimeAgoPipe', () => {
   const pipe = new TimeAgoPipe();
   const ago = (ms: number): number => Date.now() - ms;
 
-  // The day after Europe's spring clock change, where 3 calendar days back in Amsterdam are 71 hours ("2 days ago"):
-  // the pipe counts elapsed time, so the spec subtracts milliseconds, not calendar days
+  // The pipe counts elapsed time, so the spec subtracts milliseconds, not calendar days. The clock is fixed on the day
+  // after Europe's spring clock change, where 3 calendar days back in Amsterdam are 71 hours ("2 days ago"), so going
+  // back to calendar days fails here instead of only in the last days of March.
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-03-30T12:00:00Z'));

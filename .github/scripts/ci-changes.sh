@@ -22,7 +22,7 @@ if [ -z "$BEFORE" ] || [ "$BEFORE" = 0000000000000000000000000000000000000000 ] 
 fi
 printf 'Changed files:\n%s\n' "$files"
 if printf '%s\n' "$files" | grep -v -E '^public/sitemap[^/]*\.xml$' \
-  | grep -q -E '^(src/|public/|scripts/|\.github/|package(-lock)?\.json$|angular\.json$|tsconfig[^/]*\.json$|\.postcssrc\.json$)'; then
+  | grep -q -E '^(src/|public/|scripts/|\.github/|package(-lock)?\.json$|angular\.json$|tsconfig[^/]*\.json$|\.postcssrc\.json$|vitest-base\.config\.ts$)'; then
   echo "code=true" >> "$GITHUB_OUTPUT"
   exit 0
 fi
