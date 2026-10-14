@@ -330,7 +330,7 @@ PRs that pass alone but clash together fail there and deploy nothing: fix `main`
 ## Commit and push
 
 - Conventional commits. What counts as doc-only, and how to push it: `CLAUDE.md`. Admin bypasses `main`'s PR rule; after
-  a direct push, check its CI run: its id from `gh run list --commit <sha> --workflow nodejs.yml`, then
+  a direct push, check its CI run: its id from `gh run list --commit <full sha> --workflow nodejs.yml`, then
   `gh run watch <id> --exit-status` as a background command, like Release step 3's watch (or the commit's checks with
   `gh api repos/osrs-tracker/osrs-tracker-web/commits/<sha>/check-runs` if that's blocked). A direct push that changes
   the image deploys too.
