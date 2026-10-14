@@ -53,45 +53,7 @@ jobs:
           # CHANGELOG.md too: /about/changelog fetches it from GitHub's main branch at runtime, so a changelog-only
           # commit is live without a deploy
           NOT_IN_IMAGE: '^(osrs-tracker-web\.yaml|public/sitemap[^/]*\.xml|docs/.*|\.claude/.*|\.github/.*|CLAUDE\.md|README\.md|CHANGELOG\.md|LICENSE|\.gitignore)$'
-        run: |
-          target=$RUN_SHA
-          tip=$(git rev-parse HEAD)
-          # A later commit's own run may have been replaced in the queue by this one, so take main's tip if CI passed there
-          if [ "$tip" != "$RUN_SHA" ]; then
-            tip_ci=$(gh api "repos/$REPO/actions/workflows/$CI_WORKFLOW_ID/runs?head_sha=$tip&event=push" \
-              --jq '.workflow_runs[0].conclusion // ""' 2>/dev/null || true)
-            if [ "$tip_ci" = success ]; then
-              echo "CI passed on main's tip $tip, deploying that instead of $RUN_SHA."
-              target=$tip
-            fi
-          fi
-
-          # A reverted digest commit is a rollback: building it would deploy the code it rolls back
-          if git log -1 --format=%s "$target" | grep -q '^Revert "chore(deploy)'; then
-            echo "$target rolls back a deploy, skipping."
-            echo "deploy=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          # Every deploy commit records the commit its image was built from
-          deployed=$(git log -1 --grep='^Deployed-from: ' --format='%(trailers:key=Deployed-from,valueonly)' HEAD \
-            | tr -d '[:space:]')
-          if [ -n "$deployed" ] && git merge-base --is-ancestor "$target" "$deployed" 2>/dev/null; then
-            echo "$target is already deployed (the live image was built from $deployed), skipping."
-            echo "deploy=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          if [ -n "$deployed" ] && files=$(git diff --name-only "$deployed" "$target" 2>/dev/null) \
-            && ! printf '%s\n' "$files" | grep -q -v -E "$NOT_IN_IMAGE"; then
-            printf 'Only files outside the image changed since %s, skipping:\n%s\n' "$deployed" "$files"
-            echo "deploy=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          echo "Deploying $target (last deployed: ${deployed:-unknown})."
-          git checkout --quiet --detach "$target"
-          echo "deploy=true" >> "$GITHUB_OUTPUT"
-          echo "sha=$target" >> "$GITHUB_OUTPUT"
+        run: .github/scripts/deploy-plan.sh
 
       - if: steps.plan.outputs.deploy == 'true'
         uses: ./.github/actions/setup-deps
@@ -134,86 +96,17 @@ jobs:
         env:
           DIGEST: ${{ steps.image.outputs.digest }}
           SOURCE_SHA: ${{ steps.plan.outputs.sha }}
-        run: |
-          sed -i -E "s#^( *image: $IMAGE)@sha256:[0-9a-f]{64}\$#\1@$DIGEST#" osrs-tracker-web.yaml
-          if ! grep -q -E "^ *image: $IMAGE@$DIGEST\$" osrs-tracker-web.yaml; then
-            echo "::error::Couldn't find the image: line in osrs-tracker-web.yaml"
-            exit 1
-          fi
-          cp ../public/sitemap*.xml public/
-
-          # Docker builds the same image when nothing in it changed: then there's nothing to deploy or check
-          if git diff --quiet -- osrs-tracker-web.yaml; then
-            echo "The image is unchanged ($DIGEST), skipping the deploy commit."
-            exit 0
-          fi
-
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add osrs-tracker-web.yaml public/sitemap*.xml
-          # The Deployed-from trailer tells later runs what's live. CI ignores pushes that only change the manifest and
-          # sitemaps, so this commit starts no second deploy; if it did, the plan step would skip it.
-          git commit --quiet -m "chore(deploy): deploy ${DIGEST:0:15} and update sitemaps" \
-            -m "Deployed-from: $SOURCE_SHA"
-
-          # If main moved meanwhile, rebase and retry once. A conflict (someone changed the image line) fails the job.
-          if ! git push origin HEAD:main; then
-            git pull --rebase origin main
-            git push origin HEAD:main
-          fi
-          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        run: .github/scripts/deploy-commit.sh
 
       - if: steps.commit.outputs.sha
         name: Wait for Flux to deploy it
+        # main's copy of the script: the root has the commit being deployed checked out, which may predate it
+        working-directory: .deploy
         env:
           SHA: ${{ steps.commit.outputs.sha }}
-        run: |
-          flux_state() {
-            gh api "repos/$REPO/commits/$1/status" \
-              --jq '[.statuses[] | select(.context == "Flux / sync") | .state][0] // ""' 2>/dev/null || true
-          }
-          deadline=$((SECONDS + 600))
-          while :; do
-            state=$(flux_state "$SHA")
-            # Flux applies main's tip, so a commit pushed right after this one may get the status instead
-            if [ -z "$state" ]; then
-              tip=$(gh api "repos/$REPO/commits/main" --jq .sha 2>/dev/null || true)
-              if [ -n "$tip" ] && [ "$tip" != "$SHA" ] \
-                && [ "$(gh api "repos/$REPO/compare/$SHA...$tip" --jq .status 2>/dev/null)" = ahead ]; then
-                state=$(flux_state "$tip")
-                [ -n "$state" ] && echo "main moved on to $tip, which Flux deployed instead."
-              fi
-            fi
-            case $state in
-              success) echo "Flux deployed $SHA."; exit 0 ;;
-              failure | error) echo "::error::Flux failed to deploy $SHA ($state). Check the Discord alerts."; exit 1 ;;
-            esac
-            if [ "$SECONDS" -ge "$deadline" ]; then
-              echo "::error::No 'Flux / sync' status on $SHA after 10 minutes"
-              exit 1
-            fi
-            sleep 15
-          done
+        run: .github/scripts/deploy-wait-flux.sh
 
       - if: steps.commit.outputs.sha
         name: Smoke test the site
-        # Checks the web app itself, not the API: pages with API data would fail on an API outage after a good deploy
-        run: |
-          base=https://osrs-tracker.freekmencke.com
-          failed=0
-          expect() {
-            status=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$base$2" || true)
-            echo "$2: $status (expected $1)"
-            [ "$status" = "$1" ] || failed=1
-          }
-          # Pre-rendered by the page cache
-          home=$(curl -s -D - --max-time 30 "$base/" || true)
-          echo "/: $(printf '%s\n' "$home" | head -1 | cut -d' ' -f2) (expected 200)"
-          printf '%s\n' "$home" | head -1 | grep -q ' 200' || failed=1
-          printf '%s\n' "$home" | grep -q -i '^x-cache:' || { echo "/: no x-cache header, so the page cache isn't serving"; failed=1; }
-          # The bundle the page loads, from the static file server
-          main=$(printf '%s\n' "$home" | grep -o -E '<script src="main-[^"]+\.js"' | head -1 | cut -d'"' -f2)
-          if [ -n "$main" ]; then expect 200 "/$main"; else echo "/: no main-*.js script tag"; failed=1; fi
-          expect 200 /about/terms # Rendered on request, without API data
-          expect 404 /this-page-does-not-exist
-          exit "$failed"
+        working-directory: .deploy # main's copy of the script, as above
+        run: .github/scripts/deploy-smoke-test.sh

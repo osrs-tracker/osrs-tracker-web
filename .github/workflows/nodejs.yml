@@ -45,41 +45,7 @@ jobs:
           AFTER: ${{ github.event.pull_request.head.sha || github.sha }}
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-        run: |
-          # Deploy commits get no CI run (paths-ignore above), so they have no results to compare with. Step back past
-          # them to the last commit that went through CI, or the next push (or queued PR) would rebuild even for docs.
-          if { [ "$GITHUB_EVENT_NAME" = push ] || [ "$GITHUB_EVENT_NAME" = merge_group ]; } && [ -n "$BEFORE" ]; then
-            for _ in 1 2 3 4 5; do
-              only=$(git diff --name-only "$BEFORE^" "$BEFORE" 2>/dev/null) || break
-              printf '%s\n' "$only" | grep -q -v -E '^(osrs-tracker-web\.yaml|public/sitemap[^/]*\.xml)$' && break
-              echo "$BEFORE only changes the manifest or sitemaps (no CI run), comparing with its parent."
-              BEFORE=$(git rev-parse "$BEFORE^")
-            done
-          fi
-          if [ -z "$BEFORE" ] || [ "$BEFORE" = 0000000000000000000000000000000000000000 ] \
-            || ! files=$(git diff --name-only "$BEFORE" "$AFTER" 2>/dev/null); then
-            echo "No previous commit to compare with, running everything."
-            echo "code=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          printf 'Changed files:\n%s\n' "$files"
-          if printf '%s\n' "$files" | grep -v -E '^public/sitemap[^/]*\.xml$' \
-            | grep -q -E '^(src/|public/|scripts/|\.github/|package(-lock)?\.json$|angular\.json$|tsconfig[^/]*\.json$|\.postcssrc\.json$)'; then
-            echo "code=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          # Skipping is only safe if build and test passed (or were safely skipped) on the commit compared with;
-          # otherwise a docs-only push after a failed build would turn the PR green
-          previous=$(gh api "repos/$REPO/commits/$BEFORE/check-runs?filter=latest&per_page=100" \
-            --jq '[.check_runs[] | select(.name == "build" or .name == "test") | "\(.name)=\(.conclusion)"] | sort | join(" ")' \
-            2>/dev/null || true)
-          if [ "$previous" = "build=success test=success" ] || [ "$previous" = "build=skipped test=skipped" ]; then
-            echo "No source or dependency changes and $BEFORE passed ($previous), skipping build and test."
-            echo "code=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "No source or dependency changes, but $BEFORE didn't pass build and test (${previous:-no results}), running them."
-            echo "code=true" >> "$GITHUB_OUTPUT"
-          fi
+        run: .github/scripts/ci-changes.sh
 
   lint:
     runs-on: ubuntu-latest
@@ -89,6 +55,8 @@ jobs:
       - uses: ./.github/actions/setup-deps
       - run: npm run lint
       - run: npm run prettier:ci
+      # The workflows' scripts and Claude Code's hooks and skill scripts. ShellCheck comes with GitHub's Ubuntu runners.
+      - run: shellcheck .github/scripts/*.sh .claude/hooks/*.sh .claude/skills/*/*.sh
 
   # Local links and #anchors in the Markdown, on every run as docs-only changes skip build and test. `--hidden` takes in
   # `.claude/` and `.github/`; `--offline` leaves out external URLs, so other sites can't make it flaky.

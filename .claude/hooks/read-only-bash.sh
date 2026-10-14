@@ -4,6 +4,7 @@
 # the normal permission rules. Frontmatter hooks are skipped in untrusted folders and in `claude -p`.
 cmd=$(jq -r '.tool_input.command // empty')
 
+# shellcheck disable=SC2016 # '$(' and '`' are the literal characters to block, not expansions
 case $cmd in
   *';'* | *'&'* | *'|'* | *'>'* | *'<'* | *'$('* | *'`'* | *$'\n'* | *--output* | *--upload-pack* | *--exec*)
     echo 'Read-only reviewer: one plain git or gh read command per call (no chaining, pipes, redirects, --output, --upload-pack or --exec).' >&2
