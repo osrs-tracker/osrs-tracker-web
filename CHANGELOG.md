@@ -1,5 +1,10 @@
 ## 2026-10-14
 
+### Price Tracker
+
+- Hovering an item's change in the price lists shows the difference from yesterday's average in whole gp ("+18 gp"), as
+  the game and the rest of the site write prices, instead of with the decimals left over from averaging ("+17.89 gp").
+
 ### Behind the scenes
 
 - The automated checks that run on every change can only read the code: they install and run hundreds of third-party
