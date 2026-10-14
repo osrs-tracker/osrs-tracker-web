@@ -18,6 +18,7 @@ import { DayPicker } from '@app/common/ui/controls/day-picker';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
+import { Glyph } from '@app/common/ui/glyph/glyph';
 
 /** Posts per page: the first one is rendered on the server, "Show older posts" loads the next */
 const PAGE_SIZE = 30;
@@ -49,7 +50,7 @@ interface NewsMonth {
 @Component({
   selector: 'news',
   templateUrl: './news.html',
-  imports: [DatePipe, DayPicker, LoadError, Segmented, Skeleton],
+  imports: [DatePipe, DayPicker, LoadError, Segmented, Skeleton, Glyph],
 })
 export default class News {
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);

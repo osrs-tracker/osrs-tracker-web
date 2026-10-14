@@ -35,6 +35,7 @@ import { ItemHeader } from './item-header';
 import { DailyVolume, ItemStat, dailyVolumes, itemStats, yesterdayAverageSellPrice } from './item-prices';
 import { ItemVolume } from './item-volume';
 import { ProfitCalculator } from './profit-calculator';
+import { Glyph } from '@app/common/ui/glyph/glyph';
 
 type PriceRange = '1D' | '1W' | '1M' | '1Y';
 
@@ -67,6 +68,7 @@ const VOLUME_DAYS = 7;
     ItemVolume,
     PriceChart,
     ProfitCalculator,
+    Glyph,
   ],
 })
 export default class ItemDetail implements OnInit {

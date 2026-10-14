@@ -7,6 +7,7 @@ import { TimeAgoPipe } from '@app/common/format/time-ago-pipe';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { AccountTile } from '../account-tile';
 import { XpTrackerStore } from '../xp-tracker-store';
+import { Glyph } from '@app/common/ui/glyph/glyph';
 
 /** Whether the player has a history at the visitor's offset yet, which decides the line under the name */
 export type TrackingState = 'tracked' | 'started' | 'untracked';
@@ -31,20 +32,7 @@ export type TrackingState = 'tracked' | 'started' | 'untracked';
           <h1 class="text-2xl sm:text-4xl leading-none font-bold">
             {{ player.username | capitalizeWords }}
           </h1>
-          <svg
-            class="size-4.5 shrink-0 text-muted"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M14 4h6v6" />
-            <path d="M20 4l-9 9" />
-            <path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
-          </svg>
+          <svg glyph="external-link" class="size-4.5 shrink-0 text-muted" />
           <span class="sr-only">(opens the Old School Hiscores in a new tab)</span>
         </a>
         <!-- on phones the combat level wraps under the name, without the divider -->
@@ -88,22 +76,11 @@ export type TrackingState = 'tracked' | 'started' | 'untracked';
       [title]="isFavorite() ? 'Remove from favourites' : 'Add to favourites'"
       (click)="toggleFavorite()"
     >
-      <svg
-        class="size-5.5"
-        viewBox="0 0 24 24"
-        [attr.fill]="isFavorite() ? 'currentColor' : 'none'"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M12 17.3l-6.2 3.6 1.6-7L2 9.2l7.1-.6L12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7z" />
-      </svg>
+      <svg glyph="star" class="size-5.5" [attr.fill]="isFavorite() ? 'currentColor' : 'none'" />
     </button>
   `,
   host: { class: 'flex flex-wrap items-center gap-4' },
-  imports: [AccountTile, CapitalizePipe, DatePipe, Icon, TimeAgoPipe],
+  imports: [AccountTile, CapitalizePipe, DatePipe, Icon, TimeAgoPipe, Glyph],
 })
 export class PlayerHeader {
   private readonly analyticsService = inject(AnalyticsService);

@@ -5,12 +5,13 @@ import { ItemRow } from '../item-row';
 import { RecentItem } from '../price-tracker-store';
 import { startingWith } from './browse-letters';
 import { LetterBar } from './letter-bar';
+import { Glyph } from '@app/common/ui/glyph/glyph';
 
 /** Every item for one first letter, with the letter bar to the others: a crawlable path to every item page. */
 @Component({
   selector: 'browse-items',
   templateUrl: './browse-items.html',
-  imports: [RouterLink, StatusPanel, ItemRow, LetterBar],
+  imports: [RouterLink, StatusPanel, ItemRow, LetterBar, Glyph],
 })
 export default class BrowseItems implements OnInit {
   // Only available during SSR, `null` in the browser

@@ -7,6 +7,7 @@ import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { config } from '@config/config';
 import { PriceTrackerStore } from '../price-tracker-store';
 import { formatSign, formatWhole } from '@app/common/format/number-format';
+import { Glyph } from '@app/common/ui/glyph/glyph';
 
 /**
  * The item page's header: icon tile, the name (to the OSRS Wiki), the examine text, the instant sell price with its
@@ -36,19 +37,9 @@ import { formatSign, formatWhole } from '@app/common/format/number-format';
         rel="noopener"
         title="Open on the OSRS Wiki"
       ><h1 class="inline">{{ item().name }}</h1>&#8288;<svg
+          glyph="external-link"
           class="inline size-4.5 ml-2.5 mt-0.75 align-top text-muted sm:mt-2.25"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M14 4h6v6" />
-          <path d="M20 4l-9 9" />
-          <path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
-        </svg>
+        />
         <span class="sr-only">(opens the OSRS Wiki in a new tab)</span>
       </a>
       <p class="text-base text-muted">{{ item().examine }}</p>
@@ -104,18 +95,7 @@ import { formatSign, formatWhole } from '@app/common/format/number-format';
           [title]="isFavorite() ? 'Remove from favourites' : 'Add to favourites'"
           (click)="toggleFavorite()"
         >
-          <svg
-            class="size-5.5"
-            viewBox="0 0 24 24"
-            [attr.fill]="isFavorite() ? 'currentColor' : 'none'"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M12 17.3l-6.2 3.6 1.6-7L2 9.2l7.1-.6L12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7z" />
-          </svg>
+          <svg glyph="star" class="size-5.5" [attr.fill]="isFavorite() ? 'currentColor' : 'none'" />
         </button>
       } @placeholder {
         <skeleton class="size-12 shrink-0 rounded-full" tone="ground" />
@@ -123,7 +103,7 @@ import { formatSign, formatWhole } from '@app/common/format/number-format';
     </div>
   `,
   host: { class: 'max-w-page mx-auto flex flex-wrap items-center gap-4 px-4 sm:px-6 py-2' },
-  imports: [Icon, LoadError, Skeleton],
+  imports: [Icon, LoadError, Skeleton, Glyph],
 })
 export class ItemHeader {
   private readonly analyticsService = inject(AnalyticsService);

@@ -89,20 +89,7 @@
               </a>
             }
             <a nav-menu-row label="Latest news" sub="Every post, or catch up since you last played" routerLink="/news">
-              <svg
-                class="size-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path
-                  d="M4 22h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"
-                />
-                <path d="M16 14h-6M14 18h-4M10 6h6v4h-6z" />
-              </svg>
+              <svg glyph="newspaper" class="size-5" stroke-width="2.5" />
             </a>
             <hr class="my-2 -mx-1.5 sm:-mx-2 border-line" />
             <players-online-card class="block" [active]="navMenus.open() === 'menu-game'" />
