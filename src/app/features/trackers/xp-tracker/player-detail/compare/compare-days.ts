@@ -1,4 +1,4 @@
-import { DecimalPipe, isPlatformBrowser, Location } from '@angular/common';
+import { DecimalPipe, formatDate, isPlatformBrowser, Location } from '@angular/common';
 import {
   afterNextRender,
   Component,
@@ -25,7 +25,7 @@ import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Icon } from '@app/common/icon/icon';
-import { formatNumberLegible, formatNumberShort } from '@app/common/format/number-format';
+import { formatNumberLegible, formatNumberShort, formatSign, formatWhole } from '@app/common/format/number-format';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { DayPicker, PickerDay } from '@app/common/ui/controls/day-picker';
@@ -38,9 +38,6 @@ const TABS: SegmentedOption<CompareTab>[] = [
   { value: 'skills', label: 'Skills' },
   { value: 'activities', label: 'Activities' },
 ];
-
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 /** The `vs` query value for no second day */
 const NO_DAY = 'none';
@@ -338,7 +335,9 @@ export class CompareDays {
     const most = Math.max(0, ...gains.map(gained => gained ?? 0));
     return entries.map((entry, i) => ({
       key: dayKey(entry.date),
-      label: dayLabel(entry.date),
+      // "Tue 13 Oct", in UTC like the key, so it matches its date in the calendar; Angular's en-US writes September
+      // "Sep" as date-fns does on the rest of the page, where `Intl`'s en-GB writes "Sept"
+      label: formatDate(entry.date, 'EEE d MMM', 'en-US', 'UTC'),
       gained: gains[i],
       // square-rooted, so a quieter day still shows next to the busiest
       heat: gains[i]! > 0 ? Math.ceil(Math.sqrt(gains[i]! / most) * 4) : 0,
@@ -458,10 +457,9 @@ export class CompareDays {
     this.location.replaceState(this.router.serializeUrl(url), '', this.location.getState());
   }
 
-  /** "+1.2M", or with `full` "+1,204,330" */
+  /** "+1.2M", or with `full` "+1,204,330"; "+0" for no gain */
   signed(value: number, full = false): string {
-    const number = full ? Math.abs(value).toLocaleString('en-US') : formatNumberLegible(Math.abs(value));
-    return (value < 0 ? '−' : '+') + number;
+    return formatSign(value, 'always') + (full ? formatWhole(Math.abs(value)) : formatNumberLegible(Math.abs(value)));
   }
 
   /** "1.2K", without a sign */
@@ -475,14 +473,14 @@ export class CompareDays {
   }
 
   rankChangeTitle(change: number): string {
-    return `${Math.abs(change).toLocaleString('en-US')} places ${change > 0 ? 'up' : 'down'}`;
+    return `${formatWhole(Math.abs(change))} places ${change > 0 ? 'up' : 'down'}`;
   }
 
   /** A cell's tooltip: "Slayer 90 → 92, +2,840,112 XP, rank 90,306 (71,000 places up)" */
   cellTitle(row: CompareRow, skill: boolean): string {
-    const value = row.from === row.to ? row.to.toLocaleString('en-US') : `${row.from} → ${row.to}`;
+    const value = row.from === row.to ? formatWhole(row.to) : `${row.from} → ${row.to}`;
     const gained = skill ? `, ${this.signed(row.gained!, true)} XP` : '';
-    const rank = row.rank === null ? '' : `, rank ${row.rank.toLocaleString('en-US')}`;
+    const rank = row.rank === null ? '' : `, rank ${formatWhole(row.rank)}`;
     const change = row.rankChange ? ` (${this.rankChangeTitle(row.rankChange)})` : '';
     return `${row.name} ${value}${gained}${rank}${change}`;
   }
@@ -492,14 +490,6 @@ export class CompareDays {
     const params = this.router.parseUrl(this.location.path()).queryParamMap;
     return { day: params.get('day') ?? undefined, vs: params.get('vs') ?? undefined };
   }
-}
-
-/**
- * "Tue 13 Oct": in UTC, like the day keys, so a label matches its date in the calendar. Spelled out rather than
- * `Intl`'s en-GB, which writes September "Sept" where the rest of the page (date-fns) writes "Sep".
- */
-function dayLabel(date: Date): string {
-  return `${WEEKDAYS[date.getUTCDay()]} ${date.getUTCDate()} ${MONTHS[date.getUTCMonth()]}`;
 }
 
 /** The check's UTC date, e.g. "2026-10-13": each offset checks once a day at a fixed UTC hour */

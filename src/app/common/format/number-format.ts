@@ -13,3 +13,29 @@ export function formatNumberLegible(num: number): string {
 export function formatNumberShort(num: number): string {
   return format(short, num);
 }
+
+/**
+ * The sign before a number as the design writes it: a true minus ("−") below zero, where Intl and DecimalPipe write a
+ * hyphen-minus. When it adds a plus, as Intl's `signDisplay` names it: never (`negative`), above zero (`exceptZero`:
+ * "+12" but "0") or from zero up (`always`: "+0", for a change of nothing).
+ */
+export function formatSign(value: number, display: 'negative' | 'exceptZero' | 'always' = 'negative'): string {
+  if (value < 0) return '−';
+  return display === 'always' || (display === 'exceptZero' && value > 0) ? '+' : '';
+}
+
+/** A whole number as written in the design: "1,398,000", "−8,402" with a true minus, "+12,000" when `signed` */
+export function formatWhole(value: number, signed = false): string {
+  return formatSign(value, signed ? 'exceptZero' : 'negative') + Math.abs(Math.round(value)).toLocaleString('en-US');
+}
+
+/**
+ * A whole number short enough for a compact stat tile on a 390px phone, which fits nine characters: in full as
+ * `formatWhole` writes it while it fits ("9,999,999", "−999,999"), otherwise as the item lists write prices, rounded to
+ * two decimals with a true minus ("786.71M", "−1.76M", "2.15B").
+ */
+export function formatWholeCompact(value: number): string {
+  const whole = Math.round(value);
+  if (whole < 10_000_000 && whole > -1_000_000) return formatWhole(whole);
+  return formatSign(whole) + formatNumberLegible(Math.abs(whole));
+}

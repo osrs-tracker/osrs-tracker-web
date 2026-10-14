@@ -3,7 +3,7 @@ import { Item } from '@osrs-tracker/models';
 import { wikiIconUrl } from '@app/common/icon/icon';
 import { PageImage, PageMeta } from '@app/common/seo/page-meta-strategy';
 import { breadcrumbList, webPage } from '@app/common/seo/structured-data';
-import { formatWhole } from './item-prices';
+import { formatWhole } from '@app/common/format/number-format';
 
 const MAX_DESCRIPTION_LENGTH = 160;
 

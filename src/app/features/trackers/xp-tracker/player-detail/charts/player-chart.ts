@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Icon } from '@app/common/icon/icon';
-import { formatNumberLegible } from '@app/common/format/number-format';
+import { formatNumberLegible, formatWhole } from '@app/common/format/number-format';
 import { ActivityChart } from './activity-chart';
 import { CHART_CATEGORIES } from './chart-categories';
 import { activitySeries, xpGainedSeries } from './log-chart-series';
@@ -232,11 +232,11 @@ export class PlayerChart {
         ? series.filter(({ name }) => name === this.minigame())
         : series.filter(({ name }) => !hidden.has(name));
     const sum = shown.reduce((total, { total: gained }) => total + gained, 0);
-    const total = sum ? `+${sum.toLocaleString('en-US')}` : 'None';
+    const total = sum ? formatWhole(sum, true) : 'None';
     const score = (name: string): string => {
       const current = this.current();
       const value = current?.activities[name]?.score;
-      return value != null ? value.toLocaleString('en-US') : '–';
+      return value != null ? formatWhole(value) : '–';
     };
 
     if (view === 'minigames') {

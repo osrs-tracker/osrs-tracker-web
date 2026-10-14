@@ -19,7 +19,7 @@ import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
 import { LatestPrices, OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { breakEvenSellPrice, geTax, isGeTaxExempt } from './ge-tax';
-import { formatWhole } from './item-prices';
+import { formatSign, formatWhole } from '@app/common/format/number-format';
 
 type Mode = 'flip' | 'alch';
 
@@ -235,6 +235,7 @@ export class ProfitCalculator {
     const id = this.item().id;
     const buy = this.buyAt();
     const perItem = this.profit().perItem;
+    const roi = buy ? (perItem / buy) * 100 : 0;
     return [
       { label: 'Margin per item', value: formatWhole(this.sellAt() - buy) },
       isGeTaxExempt(id)
@@ -247,8 +248,7 @@ export class ProfitCalculator {
           },
       {
         label: 'Return on investment',
-        // a true minus, as in the other numbers
-        value: buy ? `${((perItem / buy) * 100).toFixed(2).replace('-', '−')}%` : '–',
+        value: buy ? `${formatSign(roi)}${Math.abs(roi).toFixed(2)}%` : '–',
       },
       {
         label: 'Break-even sell price',

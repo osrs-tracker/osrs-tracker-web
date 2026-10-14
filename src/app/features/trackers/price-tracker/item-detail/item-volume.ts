@@ -1,9 +1,11 @@
+import { formatDate } from '@angular/common';
 import { Component, InputSignal, OutputEmitterRef, Signal, computed, input, output } from '@angular/core';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
+import { formatWhole } from '@app/common/format/number-format';
 import { VolumeChart } from './charts/volume-chart';
-import { DailyVolume, formatUtcDay, formatWhole } from './item-prices';
+import { DailyVolume } from './item-prices';
 
 interface VolumeSummary {
   label: string;
@@ -98,7 +100,8 @@ export class ItemVolume {
 
   readonly firstDay: Signal<string> = computed(() => {
     const first = this.volumes()[0];
-    return first ? formatUtcDay(first.day) : '';
+    // the days are UTC, whatever the visitor's time zone
+    return first ? formatDate(first.day * 1000, 'd MMM', 'en-US', 'UTC') : '';
   });
 
   readonly chartLabel: Signal<string> = computed(
