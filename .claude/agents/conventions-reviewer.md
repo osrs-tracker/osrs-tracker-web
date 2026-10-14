@@ -8,6 +8,7 @@ model: sonnet
 effort: medium
 skills:
   - osrs-tracker-web
+  - angular-conventions
 hooks:
   PreToolUse:
     - matcher: Bash
@@ -24,9 +25,11 @@ patterns, not `|`).
 
 They are the only source of rules; don't apply generic style preferences for the stack.
 
-1. The `osrs-tracker-web` skill, preloaded above. Every rule in it about code applies. Process steps (deploy, release,
-   commits) apply only when the diff touches what they describe. Its `## Review rules` section lists the rules that span
-   files, the extra files to read and what counts as **breaks** in this repo.
+1. The `osrs-tracker-web` and `angular-conventions` skills, preloaded above: the general Angular rules are in
+   `angular-conventions`, this repo's specifics in `osrs-tracker-web`, which wins where they differ. Every rule in them
+   about code applies. Process steps (deploy, release, commits) apply only when the diff touches what they describe.
+   `## Review rules` in `osrs-tracker-web` lists the rules that span files, the extra files to read and what counts as
+   **breaks** in this repo.
 2. `CLAUDE.md`, already in your context: its hard rules apply like the skill's.
 3. The files `## Review rules` tells you to read. Never flag something a decisions document explains.
 

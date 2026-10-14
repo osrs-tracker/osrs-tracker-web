@@ -11,8 +11,13 @@ description:
 
 Detailed guide; the always-on summary, commands and hard rules are in `CLAUDE.md` and aren't repeated here. Deliberate
 trade-offs in `docs/decisions.md` include production-only config, per-replica pre-rendering and the CSP nonce. The
-`conventions-reviewer` agent reviews diffs against this file and `CLAUDE.md` at runtime, so keep code rules here or
-there, not in the agent; repo-specific review rules go in `## Review rules`.
+`conventions-reviewer` agent reviews diffs against this file, `angular-conventions` and `CLAUDE.md` at runtime, so keep
+code rules in them, not in the agent; repo-specific review rules go in `## Review rules`.
+
+General Angular rules (templates, imports and layers, stores, failures, routes and meta, SSR, tests, Tailwind) are in
+the `angular-conventions` skill, on top of Angular's `angular-developer`: load both. This skill holds this repo's
+specifics and examples, and wins where they differ. Without `angular-conventions` (cloud sessions don't load personal
+skills), say so instead of guessing its rules.
 
 ## Related repos
 
@@ -35,53 +40,28 @@ a worktree).
 
 ## Angular conventions
 
-- **Names** (the 2025 style guide, the CLI's default): a file is named after its main identifier. Components and
-  directives have no suffix (`home.ts` with `class Home`, its template `home.html`). Other classes keep theirs and the
-  file joins it with a hyphen (`StorageService` in `storage-service.ts`, `TimeAgoPipe` in `time-ago-pipe.ts`, also
-  `-repo`, `-store`, `-resolver`, `-interceptor`); generate a service with the suffix in its name
-  (`ng g s common/storage/storage-service`). Only the CLI's own names keep a dot: `main.server.ts`, `app.config*.ts`,
-  `*.routes.ts`.
-- **Templates**: inline (`template:`) up to about 80 lines, a `.html` file beside the component (`templateUrl`) above
-  that, so the class stays readable. Move a template out when a change takes it over the line.
 - **Imports**: relative within a feature or a folder of `common/` or `core/` (and from the root `app.*` files into their
-  subfolders); `@app/…`, `@config/…` or `@server/…` otherwise. Lint enforces the layers (`import-x/no-restricted-paths`
-  in `eslint.config.js`): `common/` and `core/` never import a feature, features don't import each other (Home may
-  import the trackers), none of them imports `src/server` (only the root `app.config.server.ts` does), and `HttpClient`
-  is only used in `common/api/` (and specs).
+  subfolders); `@app/…`, `@config/…` or `@server/…` otherwise. In the layers (`eslint.config.js`), `common/` and `core/`
+  are the shared code, Home may import the trackers, and `common/api/` is the repository layer.
 - **DI**: `inject()` only; root services use `@Service()`, not `@Injectable({ providedIn: 'root' })`.
-- **State**: signals, with explicitly typed public fields (`readonly foo: Signal<Bar> = computed(...)`). Every store
-  (state shared between components, or kept in localStorage) is an `@ngrx/signals` `signalStore` (`XpTrackerStore`,
-  `PriceTrackerStore`, `LastPlayedStore`, `ThemeStore`), never a plain service; its private members start with `_`.
-  localStorage goes through one, never from components.
-- **Libraries first**: before writing a helper, use what's installed. RxJS operators (`switchMap`/`exhaustMap` cancel a
-  request a newer one replaces, not a manual `unsubscribe`), `@ngrx/signals` (`rxMethod`, `signalStoreFeature`),
-  Angular's `formatDate(…, 'UTC')` for UTC dates (date-fns' `format` is local time only), date-fns for local dates,
-  `Intl` for numbers. Hand-write only what they can't do, and say why in a comment.
-- **Async data**: prefer `httpResource` / `rxResource`, also for a request a user action starts (a signal of the
-  submitted input as `params`, `reload()` to repeat it). Pages after a list's first one ("Show older posts") load
-  through `paging()` (`common/paging/`). If you subscribe, reset loading state in `finalize`.
-- **Failures**: every failable load shows its failure. `value()` throws in the error state, so check `error()` (or
-  `hasValue()`) first and render `<load-error source="…" (retry)="resource.reload()" />`: `compact` when it replaces a
-  single value in a row or widget, `inline` (amber text, a short message) when it replaces a line under a value, the
-  default when it replaces a list or section, `panel` for a panel. Never `catchError(() => of(empty))` or an `error`
-  callback that only empties the data.
+- **State**: the stores include `XpTrackerStore`, `PriceTrackerStore`, `LastPlayedStore` and `ThemeStore`.
+- **Async data**: pages after a list's first one ("Show older posts") load through `paging()` (`common/paging/`).
+- **Failures**: `value()` throws in the error state, so check `error()` (or `hasValue()`) first and render
+  `<load-error source="…" (retry)="resource.reload()" />`: `compact` when it replaces a single value in a row or widget,
+  `inline` (amber text, a short message) when it replaces a line under a value, the default when it replaces a list or
+  section, `panel` for a panel.
 - **Keyboard patterns**: use `@angular/aria` (headless) for toolbars, listboxes, comboboxes and grids instead of
   hand-written arrow-key handling; style its state with `aria-*:` variants (`aria-disabled:`, `aria-checked:`).
   `segmented` shows the pattern and its SSR caveat (`docs/decisions.md`).
 - **HTTP**: repositories use the `BASE_URL_PREFIX` / `LOADING_INDICATOR` `HttpContext` tokens, not absolute URLs, and
-  `SSR_TIMEOUT` on third-party calls (see Third-party calls in SSR). `encodeURIComponent` path segments; query values go
-  in `params`.
-- **Routing**: lazy routes with default-exported components and a `title` (`'<Page> - OSRS Tracker'`, or one naming the
-  search term on landing pages, `'OSRS XP Tracker: Daily gains, …'`, with a capital after the colon: Google may show it
-  flipped, as `'Daily gains, … - OSRS Tracker'`); resolvers end with `catchError(resolverErrorHandler(<original url>))`.
-  `ParamAwareReuseStrategy` recreates components on param change. Adding or renaming a route means updating
-  `src/server/utils/route-label.ts` (its spec fails CI otherwise).
-- **Page meta**: `PageMetaStrategy` (`common/seo/`) sets the title, description, canonical and social tags once per
-  navigation from the deepest route's `data['meta']`, a `RouteMeta`: a `PageMeta`, or a function of the route that
-  builds one from its resolved data and params (`itemDetailMeta`), so the page's own resolver is the only fetch. The
-  meta's `title` wins over the route's `title`, which then only names the page without meta (a not-found state). A route
-  without meta gets the default description and no canonical or social tags. Never set meta from components or
-  resolvers.
+  `SSR_TIMEOUT` on third-party calls (see Third-party calls in SSR).
+- **Routing**: titles are `'<Page> - OSRS Tracker'`, or `'OSRS XP Tracker: Daily gains, …'` on a landing page; resolvers
+  end with `catchError(resolverErrorHandler(<original url>))`. `ParamAwareReuseStrategy` recreates components on param
+  change. Adding or renaming a route means updating `src/server/utils/route-label.ts` (its spec fails CI otherwise).
+- **Page meta**: `PageMetaStrategy` (`common/seo/`) sets it from `data['meta']`, a `RouteMeta`: a `PageMeta`, or a
+  function of the route that builds one from its resolved data and params (`itemDetailMeta`). The meta's `title` wins
+  over the route's `title`, which then only names the page without meta (a not-found state). A route without meta gets
+  the default description and no canonical or social tags.
 
 ## Design system
 
@@ -90,25 +70,22 @@ Artifact tool); why it looks like this is in `docs/decisions.md`. Try layout ide
 The Artifact tool reads its source but can't render it, nor can Playwright (sign-in), so ask the user for a screenshot.
 Its phone artboards import the desktop ones at 390px; component artboards are 640px wide with a Layout tweak (auto,
 desktop, phone); states such as hiscores down are tweaks, not extra artboards. A component's `<helmet>` styles apply on
-every artboard that imports it. Tailwind classes only, no arbitrary `[...]` values: a value the scale lacks becomes a
-token in `src/styles/tailwind/theme.css`.
+every artboard that imports it. Tailwind classes only; a value the scale lacks becomes a token in
+`src/styles/tailwind/theme.css`.
 
-- **Colours:** semantic tokens that swap under `.dark` (`base.css`), never `dark:` pairs: `ground` page, `card`, `line`
-  dividers, `row` row lines and hover, `inner` inner tiles, `deep` hero band and icon tiles, `border` controls,
-  `muted`/`text`/`strong` text, `accent` (+ `accent-hover`, `on-accent`) links and primary actions, `up`/`down` changes
-  (a true green in the dark theme, apart from the emerald accent), `down-pill` the red change pill's background (a tint
-  in light, solid in dark: a see-through red over slate turns pink), `amber`/`orange` warnings. Charts read them through
-  `token()` in `chart-setup.ts`, which lists the ones they use.
-- **Tints:** a colour see-through (`color-mix(in oklch, <colour> N%, transparent)`), layered over the surface when one
-  is needed (`hiscores/picked-cell.ts`, the chart legend). Never mix a colour with a slate token: the blend takes the
-  slate's blue hue and a red turns violet.
+- **Colours** (`base.css`): `ground` page, `card`, `line` dividers, `row` row lines and hover, `inner` inner tiles,
+  `deep` hero band and icon tiles, `border` controls, `muted`/`text`/`strong` text, `accent` (+ `accent-hover`,
+  `on-accent`) links and primary actions, `up`/`down` changes (a true green in the dark theme, apart from the emerald
+  accent), `down-pill` the red change pill's background (a tint in light, solid in dark: a see-through red over slate
+  turns pink), `amber`/`orange` warnings. Charts read them through `token()` in `chart-setup.ts`, which lists the ones
+  they use.
+- **Tints:** `hiscores/picked-cell.ts` and the chart legend layer one over the surface.
 - **Surfaces:** cards are flat; only floating layers (dropdowns, tooltips, Home's preview card) get `shadow-float`.
-  Hover changes the background, never adds a shadow.
 - **Radii:** `rounded-3xl` hero surfaces (search box, preview card), `rounded-2xl` cards, stat tiles and buttons in the
   search box, `rounded-xl` inner tiles, inputs and icon tiles, `rounded-full` pills and standalone buttons.
-- **Type:** Tailwind's `text-xs`…`text-6xl` with whole-pixel line heights (`text-xl/6`). Page titles
-  `text-2xl sm:text-3xl`, landing heroes `text-4xl md:text-5xl` (Home up to `lg:text-6xl`), card titles `text-xl`.
-  `tabular-nums` on standalone values only (prices, XP, levels, tiles, axes), never on numbers in text or a page root.
+- **Type:** Tailwind's `text-xs`…`text-6xl`, line heights like `text-xl/6`. Page titles `text-2xl sm:text-3xl`, landing
+  heroes `text-4xl md:text-5xl` (Home up to `lg:text-6xl`), card titles `text-xl`. Standalone values (`tabular-nums`):
+  prices, XP, levels, tiles, axes.
 - **Spacing:** steps of 4, 8, 12, 16, 24, 32, 48, 72px; card padding 20px (`px-5`). 24px between cards and sections,
   16px between stat tiles; pages `max-w-page mx-auto px-4 sm:px-6`, 48px from the nav (`pt-12`) and 72px above the
   footer (`pb-18`); reading pages narrow to `max-w-3xl`.
@@ -137,36 +114,24 @@ Which component to use (in `common/ui/<folder>/` unless noted):
 
 ## Code navigation
 
-Use the `LSP` tool for type info and navigation in `.ts` files, but it's plain TypeScript without Angular's language
-service: `findReferences` misses usages in templates (inline or `.html`), such as inputs, outputs, methods and pipes.
-Before renaming or deleting a member, grep the templates too (e.g. `grep -rn "(retry)=" src/app`). Go-to-definition
-doesn't reach `node_modules`; hover shows library signatures and docs instead.
-
-For Angular API questions, use the `angular-cli` MCP server's `search_documentation` (pass `version: 22`): it searches
-the angular.dev docs for the installed major version.
+Grep the templates like `grep -rn "(retry)=" src/app`. The `LSP` tool's go-to-definition doesn't reach `node_modules`;
+hover shows library signatures and docs instead.
 
 ## SSR rules
 
 - **Browser-only APIs**: inject `WINDOW` (null on the server) or `StorageService`, check `isPlatformBrowser`, or use
   `@defer` with a `@placeholder`.
-- **CSP**: no inline event handlers either. Any new path that sends page HTML must call `applyCspNonce`, or every script
-  is blocked.
+- **CSP**: a path that sends page HTML sets the nonce with `applyCspNonce`.
 - **Response status**: `inject(RESPONSE_INIT, { optional: true })`, not an Express `RESPONSE` token.
-- **Transfer cache**: responses reach the browser only if `Cache-Control` has no `no-store`, `no-cache` or `private`;
-  otherwise the browser refetches on hydration and resources flash to `defaultValue`. When a page refetches, check the
-  API's `Cache-Control` first. Verify in `<script id="ng-state">`: entries are keyed by a hash, not the URL, so look for
-  the response body (a news title, an item name), not the path.
-- **Transfer state size**: every SSR response is embedded in the page. Load large payloads the first paint doesn't need
-  (the Wiki's `/latest` and `/24h`, every item's prices) in the browser only and render skeletons on the server, like
-  item and player rows. The Wiki's `/latest` is the exception: the server keeps the full list for 60 s and transfers
-  only the rendered items' entries (`getLatestPrices` in `osrs-prices-repo.ts`). Don't ask the Wiki for one item
-  (`?id=`): it misses the Wiki's CDN cache (`docs/decisions.md`).
-- **Third-party calls in SSR**: a render waits for every request it makes, so keep third-party calls (the OSRS Wiki)
-  small, and render a failed one as loading on the server (`latestLoading` in `item-detail.ts`), as the browser fetches
-  it again after hydration. Set the `SSR_TIMEOUT` context token on such calls
-  (`core/interceptors/ssr-timeout-interceptor.ts`): during SSR they fail after `ssrRequestTimeout` (3 s).
-  `logOutgoingRequests` logs every request a render makes, with its duration and the page `renderingPage()`
-  (`server/utils/log.ts`) set (undici's `diagnostics_channel`, so it sees every `fetch`).
+- **Transfer cache**: in `<script id="ng-state">`, look for a news title or an item name.
+- **Transfer state size**: the browser alone loads the Wiki's `/latest` and `/24h` and every item's prices, and item and
+  player rows render skeletons on the server. The Wiki's `/latest` is the exception: the server keeps the full list for
+  60 s and transfers only the rendered items' entries (`getLatestPrices` in `osrs-prices-repo.ts`). Don't ask the Wiki
+  for one item (`?id=`): it misses the Wiki's CDN cache (`docs/decisions.md`).
+- **Third-party calls in SSR** (the OSRS Wiki): `latestLoading` in `item-detail.ts` renders a failed one as loading. Set
+  the `SSR_TIMEOUT` context token on such calls (`core/interceptors/ssr-timeout-interceptor.ts`): during SSR they fail
+  after `ssrRequestTimeout` (3 s). `logOutgoingRequests` logs every request a render makes, with its duration and the
+  page `renderingPage()` (`server/utils/log.ts`) set (undici's `diagnostics_channel`, so it sees every `fetch`).
 - **Server logs**: request logs match the API's shape: 5xx `error`, 4xx `warn`, else `info`; a client that disconnects
   before the response is `warn` with `aborted: true` and no `status`. Both come from `@osrs-tracker/logger` (in
   `osrs-tracker-aws`; change the shape there, for both apps). Every server log line is JSON with a `type`: write new
@@ -174,8 +139,8 @@ the angular.dev docs for the installed major version.
   (`logger.child({ type: 'lifecycle' satisfies WebLogType })`), not `console`, and add a type to `WebLogType` when none
   fits. Specs pass their own logger (`testing/log-lines.ts`): pino doesn't write through `process.stdout.write`, so
   spying on it sees nothing.
-- **Writes**: requests that record something (lookups, starting to track a player) run only when `isHumanVisitor()`
-  (`core/platform/human-visitor.ts`): never during SSR or for crawlers, which would fill the recent lookups.
+- **Writes** (lookups, starting to track a player): check `isHumanVisitor()` (`core/platform/human-visitor.ts`); a
+  crawler's would fill the recent lookups.
 - **Chart.js**: shared registrations and the date adapter in `common/charts/chart-setup.ts`; never `Chart.unregister`.
   Time series charts extend `common/charts/base-chart.ts`; their `setData` may build new datasets, as `BaseChart` keeps
   a drawn one in place when its label and dates match, so only changed points animate (Chart.js redraws a new object
@@ -190,10 +155,8 @@ the angular.dev docs for the installed major version.
   `base.css` and `index.html`. The link preview cards use the release's `ttf/SOLIX-Regular.ttf` and
   `ttf/SOLIX-SemiBold.ttf` as they are: copy them into `src/server/og/fonts/` and bump the cards' `?v=`
   (`docs/decisions.md`).
-- **Missing assets**: `middleware/missing-asset.ts` answers paths ending in a build asset extension (`.js`, `.css`,
-  `.woff2`…) with a 404 after `express.static`, before Angular, as some crawlers resolve the asset links against the
-  page path. Angular routes can't end in one of those extensions; a server router that does (`/og/item/:id.png`,
-  `routers/og-images.ts`) must be registered before this middleware in `app.ts`.
+- **Missing assets**: `middleware/missing-asset.ts` 404s them, so Angular routes can't end in a build asset extension;
+  `/og/item/:id.png` (`routers/og-images.ts`) registers before it in `app.ts`.
 - **Static files and compression**: `middleware/static-files.ts` sets the cache lifetimes (hashed bundles a year,
   `noCacheStaticFiles` revalidated, the rest a day). Traefik compresses text (`osrs-tracker-web-compress` in
   `osrs-tracker-web.yaml`): don't add Express's `compression`, and add a new text content type there. The request log's
@@ -209,16 +172,10 @@ the angular.dev docs for the installed major version.
 
 ## Tests
 
-Only for complex or important logic, never for coverage. Break the protected code once to confirm the test fails.
-
-- Specs sit next to the code and import from `vitest`.
-- Server specs start with `// @vitest-environment node` (not `route-label.spec.ts`, which loads the app's routes);
-  follow `src/server/app.spec.ts` and `src/server/testing/serve.ts`. `vi.mock` works for packages, not relative imports.
-  Run them as a quoted folder glob (`--include 'src/server/**/*.spec.ts'`), not one by one: `tsconfig.spec.json` leaves
-  out Node's types, which only come in through imports like `express` or `@angular/ssr/node`, so a spec without one
-  (`shutdown.spec.ts`) fails alone with "Cannot find name 'process'". An unquoted glob is expanded by the shell.
-- App specs: `TestBed` with `provideZonelessChangeDetection()` and `HttpTestingController`; clear `localStorage` in
-  `afterEach`.
+- Server specs: `// @vitest-environment node`, but not `route-label.spec.ts`, which loads the app's routes. Follow
+  `src/server/app.spec.ts` and `src/server/testing/serve.ts`. `tsconfig.spec.json` leaves out Node's types, which only
+  come in through imports like `express` or `@angular/ssr/node`: `shutdown.spec.ts` fails alone.
+- App specs: `TestBed` with `provideZonelessChangeDetection()`.
 
 ## Review rules
 
