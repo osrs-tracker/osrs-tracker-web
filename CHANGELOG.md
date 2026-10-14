@@ -42,6 +42,10 @@
 - Dependency updates: the web server, the changelog's Markdown reader, the shared hiscores package and the page speed
   measurements are on their latest minor and patch versions, which fixes a memory leak in the speed measurements on long
   visits. Pages look and work the same.
+- The cookie choice and the count of loading requests behind the bar at the top of the page now live in the same kind of
+  shared state as the theme and the trackers, and the two longest page templates (the Compare view and its day picker)
+  moved into files of their own, under a new rule for when a template gets one. The banner, the cookie choice and the
+  loading bar work the same as before.
 
 ## 2026-10-13
 

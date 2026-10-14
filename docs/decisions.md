@@ -52,7 +52,7 @@ Choices that look like accidents without their context: what was decided, why, a
   reports.
 - **Decision:** gtag.js isn't loaded until the visitor allows it (not consent mode's "advanced" setup, which sends
   cookieless pings to Google before any choice). `index.html` loads it on page load when `analytics-consent` is
-  `granted`; `ConsentService` loads it on Allow, and on Don't allow sets Google's `ga-disable-<id>` opt-out and deletes
+  `granted`; `ConsentStore` loads it on Allow, and on Don't allow sets Google's `ga-disable-<id>` opt-out and deletes
   the `_ga` cookies; `AnalyticsService` pushes nothing once the choice is `denied`. gtag batches hits, so a scroll hit
   recorded just before Don't allow can still go out a few seconds after it: data collected under consent, which
   withdrawing it doesn't undo (Article 7(3) GDPR), and gtag has no way to drop it. Events from before a choice wait in
@@ -64,8 +64,8 @@ Choices that look like accidents without their context: what was decided, why, a
   this device's storage and the page cache serves everyone the same HTML, so the server always renders it, and
   `index.html` hides it before the first paint with a `<style>` of its own when a choice is stored (a rule in
   `styles.css` would be dropped from the build's critical CSS, as no element matches it at build time).
-  `ConsentService.init()` then removes the banner, and `reopen()` removes that style. `data-nosnippet` keeps its text
-  out of search results.
+  `ConsentStore.init()` then removes the banner, and `reopen()` removes that style. `data-nosnippet` keeps its text out
+  of search results.
 - **Revisit:** if analytics moves to a cookieless tool (no banner needed), or the rules or the DPA's guidance change.
 
 ## The Wiki prices API is called through v2, as its guidelines ask (2026-10-13)

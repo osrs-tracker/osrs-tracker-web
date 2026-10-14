@@ -2,21 +2,21 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AnalyticsService } from './analytics-service';
-import { ConsentService } from './consent-service';
+import { ConsentStore } from './consent-store';
 import { GTAG_TOKEN } from './gtag-token';
 
 const TAG = 'script[src^="https://www.googletagmanager.com/gtag/js"]';
 
-describe('ConsentService', () => {
+describe('ConsentStore', () => {
   let gtag: ReturnType<typeof vi.fn>;
-  let service: ConsentService;
+  let store: InstanceType<typeof ConsentStore>;
 
   beforeEach(() => {
     gtag = vi.fn();
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection(), { provide: GTAG_TOKEN, useValue: gtag }],
     });
-    service = TestBed.inject(ConsentService);
+    store = TestBed.inject(ConsentStore);
   });
 
   afterEach(() => {
@@ -28,49 +28,49 @@ describe('ConsentService', () => {
   });
 
   it('opens the banner when nothing was chosen yet', () => {
-    service.init();
+    store.init();
 
-    expect(service.choice()).toBeNull();
-    expect(service.bannerOpen()).toBe(true);
+    expect(store.choice()).toBeNull();
+    expect(store.bannerOpen()).toBe(true);
   });
 
   it('keeps the banner closed after an earlier choice', () => {
     localStorage.setItem('analytics-consent', 'denied');
-    service.init();
+    store.init();
 
-    expect(service.choice()).toBe('denied');
-    expect(service.bannerOpen()).toBe(false);
+    expect(store.choice()).toBe('denied');
+    expect(store.bannerOpen()).toBe(false);
   });
 
   it('shows the banner again when reopened, although index.html hid it before the first paint', () => {
     localStorage.setItem('analytics-consent', 'granted');
     document.head.appendChild(Object.assign(document.createElement('style'), { id: 'consent-chosen' }));
-    service.init();
+    store.init();
 
-    service.reopen();
+    store.reopen();
 
-    expect(service.bannerOpen()).toBe(true);
+    expect(store.bannerOpen()).toBe(true);
     expect(document.getElementById('consent-chosen')).toBeNull();
   });
 
   it('loads the tag once, only when allowed', () => {
-    service.init();
+    store.init();
     expect(document.querySelectorAll(TAG)).toHaveLength(0);
 
-    service.allow();
-    service.allow();
+    store.allow();
+    store.allow();
 
     expect(document.querySelectorAll(TAG)).toHaveLength(1);
     expect(localStorage.getItem('analytics-consent')).toBe('granted');
     expect(gtag).toHaveBeenCalledWith('consent', 'update', { analytics_storage: 'granted' });
-    expect(service.bannerOpen()).toBe(false);
+    expect(store.bannerOpen()).toBe(false);
   });
 
   it('stops the tag and deletes its cookies when denied', () => {
     document.cookie = '_ga=GA1.1.123; path=/';
-    service.allow();
+    store.allow();
 
-    service.deny();
+    store.deny();
 
     expect((window as unknown as Record<string, unknown>)['ga-disable-G-PSQN8ELKNJ']).toBe(true);
     expect(document.cookie).not.toContain('_ga=');
@@ -79,18 +79,18 @@ describe('ConsentService', () => {
   });
 
   it('lifts the opt-out when allowed again', () => {
-    service.deny();
-    service.allow();
+    store.deny();
+    store.allow();
 
     expect((window as unknown as Record<string, unknown>)['ga-disable-G-PSQN8ELKNJ']).toBeUndefined();
   });
 
   it('sends no events after the visitor declined', () => {
     const analyticsService = TestBed.inject(AnalyticsService);
-    service.allow();
+    store.allow();
     analyticsService.trackEvent('before');
 
-    service.deny();
+    store.deny();
     analyticsService.trackEvent('after');
 
     expect(gtag).toHaveBeenCalledWith('event', 'before', {});

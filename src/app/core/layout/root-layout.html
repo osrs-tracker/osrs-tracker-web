@@ -155,7 +155,7 @@
         <a class="hover:text-accent-hover" routerLink="/about/changelog">Changelog</a>
         <a class="hover:text-accent-hover" routerLink="/about/privacy">Privacy</a>
         <!-- Opens the consent banner again, to change the choice -->
-        <button type="button" class="hover:text-accent-hover cursor-pointer" (click)="consentService.reopen()">
+        <button type="button" class="hover:text-accent-hover cursor-pointer" (click)="consentStore.reopen()">
           Cookies
         </button>
         <a class="hover:text-accent-hover" routerLink="/about/terms">Terms</a>
@@ -173,6 +173,6 @@
   </footer>
 </div>
 
-@if (consentService.bannerOpen()) {
+@if (consentStore.bannerOpen()) {
   <consent-banner />
 }

@@ -1,10 +1,10 @@
 import { DatePipe } from '@angular/common';
 import { Component, Signal, WritableSignal, afterNextRender, computed, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { ConsentService } from '@app/common/analytics/consent-service';
+import { ConsentStore } from '@app/common/analytics/consent-store';
 import { Icon } from '@app/common/icon/icon';
 import { LastPlayedStore } from '@app/common/storage/last-played-store';
-import { LoadingIndicatorService } from '@app/core/interceptors/loading-indicator-interceptor';
+import { LoadingIndicatorStore } from '@app/core/interceptors/loading-indicator-interceptor';
 import { ConsentBanner } from './consent-banner';
 import { DarkMode } from './dark-mode';
 import { NAV_TAB, NavMenu, NavMenuRow, NavMenus } from './nav-menu';
@@ -28,8 +28,8 @@ import { PlayersOnlineCard } from './players-online-card';
   providers: [NavMenus],
 })
 export default class RootLayout {
-  readonly consentService = inject(ConsentService);
-  readonly hasOngoingRequests: Signal<boolean> = inject(LoadingIndicatorService).hasOngoingRequests;
+  readonly consentStore = inject(ConsentStore);
+  readonly hasOngoingRequests: Signal<boolean> = inject(LoadingIndicatorStore).hasOngoingRequests;
 
   readonly currentYear = new Date().getFullYear();
 
@@ -63,7 +63,7 @@ export default class RootLayout {
   constructor() {
     // After hydration: whether the banner stays depends on this device's choice, which the server can't know
     afterNextRender(() => {
-      this.consentService.init();
+      this.consentStore.init();
       this.hydrated.set(true);
     });
   }
