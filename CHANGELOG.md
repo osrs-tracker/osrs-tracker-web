@@ -49,6 +49,11 @@
   shared state as the theme and the trackers, and the two longest page templates (the Compare view and its day picker)
   moved into files of their own, under a new rule for when a template gets one. The banner, the cookie choice and the
   loading bar work the same as before.
+- The profit calculator on an item's page and the calendar that picks days on the Compare view and the news page now
+  have automated tests: the calculator for the GE tax, the nature rune in a high alch, the most you can pay for an item
+  to alch and keeping the cursor in place as separators appear while you type a price; the calendar for where its weeks
+  start and how it tints the days between the two picked ones. The test of the "3 days ago" labels no longer fails for a
+  few days after the clocks go forward in spring. They all work the same as before.
 
 ## 2026-10-13
 
