@@ -7,7 +7,7 @@ import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Icon } from '@app/common/icon/icon';
 import { DAY, utcDayStart } from './utc-day';
-import { formatNumberLegible } from '@app/common/format/number-format';
+import { formatNumberLegible, formatSign } from '@app/common/format/number-format';
 import { OsrsPricesRepo, TimeSpan } from '@app/common/api/osrs-prices-repo';
 import { RecentItem } from './price-tracker-store';
 
@@ -119,11 +119,12 @@ export class ItemRow {
   readonly shortPrice: Signal<string> = computed(() => formatNumberLegible(this.price() ?? 0));
   readonly up: Signal<boolean> = computed(() => (this.data()?.change ?? 0) >= 0);
   /** The sign as written in the design: a plus or a true minus. */
-  readonly sign: Signal<string> = computed(() => (this.up() ? '+' : '−'));
+  readonly sign: Signal<string> = computed(() => formatSign(this.data()?.change ?? 0, 'always'));
   readonly changePercent: Signal<number | null> = computed(() => {
     const { change, average } = this.data() ?? {};
     return change != null && average ? (Math.abs(change) / average) * 100 : null;
   });
+  // Not `formatWhole`: the change from the average has decimals, and the tooltip shows them ("+17.89 gp")
   readonly changeTitle: Signal<string> = computed(
     () => `${this.sign()}${Math.abs(this.data()?.change ?? 0).toLocaleString('en-US')} gp vs yesterday's average`,
   );

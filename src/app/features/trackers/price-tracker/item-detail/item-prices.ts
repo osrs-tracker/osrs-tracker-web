@@ -3,7 +3,7 @@ import { Item } from '@osrs-tracker/models';
 import { DAY, utcDayStart } from '../utc-day';
 import { geTax, isGeTaxExempt } from './ge-tax';
 import { AveragePricesAtTime, LatestPrices } from '@app/common/api/osrs-prices-repo';
-import { formatNumberLegible } from '@app/common/format/number-format';
+import { formatWhole, formatWholeCompact } from '@app/common/format/number-format';
 
 /** One of the item page's stat tiles */
 export interface ItemStat {
@@ -172,30 +172,4 @@ export function yesterdayAverageSellPrice(hourly: AveragePricesAtTime[], now: Da
   }
 
   return volume ? Math.round(total / volume) : null;
-}
-
-/** A whole number as written in the design: "1,398,000", "−8,402" with a true minus, "+12,000" when `signed` */
-export function formatWhole(value: number, signed = false): string {
-  const sign = value < 0 ? '−' : signed && value > 0 ? '+' : '';
-  return sign + Math.abs(Math.round(value)).toLocaleString('en-US');
-}
-
-/**
- * A whole number short enough for a compact stat tile on a 390px phone, which fits nine characters: in full as
- * `formatWhole` writes it while it fits ("9,999,999", "−999,999"), otherwise as the item lists write prices, rounded to
- * two decimals with a true minus ("786.71M", "−1.76M", "2.15B").
- */
-export function formatWholeCompact(value: number): string {
-  const whole = Math.round(value);
-  if (whole < 10_000_000 && whole > -1_000_000) return formatWhole(whole);
-  return (whole < 0 ? '−' : '') + formatNumberLegible(Math.abs(whole));
-}
-
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-/** A UTC day (in seconds) as "24 Sep", or "24 Sep 2026": the days are UTC, whatever the visitor's time zone */
-export function formatUtcDay(day: number, withYear = false): string {
-  const date = new Date(day * 1000);
-  const text = `${date.getUTCDate()} ${MONTHS[date.getUTCMonth()]}`;
-  return withYear ? `${text} ${date.getUTCFullYear()}` : text;
 }

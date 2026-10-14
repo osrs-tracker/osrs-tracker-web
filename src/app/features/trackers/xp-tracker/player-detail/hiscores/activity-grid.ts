@@ -7,7 +7,7 @@ import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Tooltip } from '@app/common/ui/tooltip/tooltip';
 import { Icon } from '@app/common/icon/icon';
 import { setGridTabStop } from '@app/common/ui/controls/aria-tab-stop';
-import { formatNumberShort } from '@app/common/format/number-format';
+import { formatNumberShort, formatWhole } from '@app/common/format/number-format';
 import { ThemeStore } from '@app/common/theme/theme-store';
 import { UNCHARTED_MINIGAMES } from '../activity-categories';
 import { CHART_CATEGORIES } from '../charts/chart-categories';
@@ -232,14 +232,14 @@ export class ActivityGrid {
   }
 
   cellLabel(cell: ActivityCell): string {
-    const score = cell.activity ? cell.activity.score.toLocaleString('en-US') : 'none';
+    const score = cell.activity ? formatWhole(cell.activity.score) : 'none';
     return `${cell.name}, ${this.scoreLabel().toLowerCase()} ${score}`;
   }
 
   /** Four digits fit a cell; from 10,000 up the score is shortened (18.2K), the tooltip has the exact one */
   shortScore(score: number | undefined): string {
     if (score === undefined) return '–';
-    if (score < 10_000) return score.toLocaleString('en-US');
+    if (score < 10_000) return formatWhole(score);
     return formatNumberShort(score);
   }
 

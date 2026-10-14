@@ -2,6 +2,7 @@ import { Component, Signal, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
+import { formatSign } from '@app/common/format/number-format';
 import { XpTrackerStore } from './xp-tracker-store';
 
 /** The tracking offset select (stored in `XpTrackerStore`) with its explanation and the UTC hour it shows. */
@@ -51,8 +52,7 @@ export class TrackingOffset {
 
   /** E.g. "+02:00 UTC", "−03:00 UTC" (a true minus) or "00:00 UTC". */
   offsetLabel(offset: number): string {
-    const sign = offset > 0 ? '+' : offset < 0 ? '−' : '';
-    return `${sign}${pad(Math.abs(offset))}:00 UTC`;
+    return `${formatSign(offset, 'exceptZero')}${pad(Math.abs(offset))}:00 UTC`;
   }
 }
 

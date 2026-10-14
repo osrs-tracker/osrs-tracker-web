@@ -17,6 +17,9 @@
 - The six numbers at the top of an item's page (instant buy and sell, the margin after tax, the daily volume, the buy
   limit and high alch) now have automated tests, so a later change can't quietly break the margin you trade on, the GE
   tax taken off it or how a failed or missing price shows. They look the same as before.
+- Whole numbers and their plus and minus signs are now written by one shared piece of code instead of a dozen copies,
+  which writes a true minus (−) rather than a hyphen, and the day labels on the Compare view and an item's volume use
+  Angular's date formatting instead of hand-written month names. They read the same as before.
 
 ## 2026-10-13
 

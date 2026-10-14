@@ -1,6 +1,6 @@
 import { HiscoreSkill } from '@osrs-tracker/models';
 import { format } from 'date-fns';
-import { formatNumberLegible } from '@app/common/format/number-format';
+import { formatNumberLegible, formatSign, formatWhole } from '@app/common/format/number-format';
 import { PeriodSummary } from './player-summary';
 import { Period } from './player-view';
 
@@ -29,8 +29,8 @@ export function statTilesFor(
 ): StatTileView[] {
   const totalLevel: StatTileView = {
     label: 'Total level',
-    value: overall.level.toLocaleString('en-US'),
-    sub: overall.rank !== null ? `Rank ${overall.rank.toLocaleString('en-US')}` : 'Unranked',
+    value: formatWhole(overall.level),
+    sub: overall.rank !== null ? `Rank ${formatWhole(overall.rank)}` : 'Unranked',
     tone: 'muted',
   };
   const since = summary?.since;
@@ -51,7 +51,7 @@ export function statTilesFor(
     {
       label: xpLabel,
       value: formatNumberLegible(summary.xp),
-      tip: `${summary.xp.toLocaleString('en-US')} XP`,
+      tip: `${formatWhole(summary.xp)} XP`,
       // a period cut short by the history's start or a gap has nothing to compare with anyway
       ...(comparisonFailed && !summary.since && summary.previousXp === undefined
         ? { sub: '', tone: 'muted', comparisonFailed }
@@ -66,10 +66,8 @@ export function statTilesFor(
     },
     {
       label: 'Boss kills',
-      value: summary.bossKills.toLocaleString('en-US'),
-      sub: summary.mostKilled
-        ? `Most: ${summary.mostKilled.name} (${summary.mostKilled.kills.toLocaleString('en-US')})`
-        : '',
+      value: formatWhole(summary.bossKills),
+      sub: summary.mostKilled ? `Most: ${summary.mostKilled.name} (${formatWhole(summary.mostKilled.kills)})` : '',
       tone: 'muted',
     },
   ];
@@ -86,7 +84,7 @@ function periodComparison(summary: PeriodSummary, period: Period): Pick<StatTile
   const change = Math.round(((xp - previousXp) / previousXp) * 100);
   if (!change) return { sub: `Same as previous ${previous}`, tone: 'muted' };
   return {
-    sub: `${change > 0 ? '+' : '−'}${Math.abs(change)}% vs previous ${previous}`,
+    sub: `${formatSign(change, 'exceptZero')}${Math.abs(change)}% vs previous ${previous}`,
     tone: change > 0 ? 'up' : 'down',
   };
 }

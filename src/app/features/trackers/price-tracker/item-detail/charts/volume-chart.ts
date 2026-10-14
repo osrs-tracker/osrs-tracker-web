@@ -1,9 +1,9 @@
-import { formatNumber } from '@angular/common';
+import { formatDate, formatNumber } from '@angular/common';
 import { Component } from '@angular/core';
 import { Chart, ChartOptions, Point } from 'chart.js';
 import { BaseChart } from '@app/common/charts/base-chart';
 import { token } from '@app/common/charts/chart-setup';
-import { DailyVolume, formatUtcDay } from '../item-prices';
+import { DailyVolume } from '../item-prices';
 
 /**
  * Items bought (accent, above the line) and sold (orange, below it) per UTC day. Both halves share one scale, so the
@@ -32,7 +32,8 @@ export class VolumeChart extends BaseChart<'bar', DailyVolume[]> {
       plugins: {
         tooltip: {
           callbacks: {
-            title: ([context]) => formatUtcDay(context.parsed.x! / 1000, true),
+            // the days are UTC, whatever the visitor's time zone
+            title: ([context]) => formatDate(context.parsed.x!, 'd MMM y', 'en-US', 'UTC'),
             label: context =>
               ` ${context.dataset.label}: ${formatNumber(Math.abs(context.parsed.y!), 'en-US', '1.0-0')}`,
           },

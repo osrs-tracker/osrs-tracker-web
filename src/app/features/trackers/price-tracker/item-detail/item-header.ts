@@ -6,7 +6,7 @@ import { Icon } from '@app/common/icon/icon';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { config } from '@config/config';
 import { PriceTrackerStore } from '../price-tracker-store';
-import { formatWhole } from './item-prices';
+import { formatSign, formatWhole } from '@app/common/format/number-format';
 
 /**
  * The item page's header: icon tile, the name (to the OSRS Wiki), the examine text, the instant sell price with its
@@ -157,8 +157,7 @@ export class ItemHeader {
 
     const diff = price - average;
     const percent = (Math.abs(diff) / average) * 100;
-    const sign = diff < 0 ? '−' : '+';
-    return { text: `${formatWhole(diff, true)} (${sign}${percent.toFixed(1)}%)`, up: diff >= 0 };
+    return { text: `${formatWhole(diff, true)} (${formatSign(diff, 'always')}${percent.toFixed(1)}%)`, up: diff >= 0 };
   });
 
   readonly isFavorite: Signal<boolean> = computed(() => this.priceTrackerStore.isFavoriteItem(this.item().id));

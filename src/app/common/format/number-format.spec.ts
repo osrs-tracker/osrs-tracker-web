@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatNumberLegible, formatNumberShort } from './number-format';
+import { formatNumberLegible, formatNumberShort, formatSign, formatWhole, formatWholeCompact } from './number-format';
 
 describe('formatNumberLegible', () => {
   it('shortens with an upper case unit and up to two decimals', () => {
@@ -33,5 +33,68 @@ describe('formatNumberShort', () => {
 
   it('moves up a unit when rounding reaches 1,000', () => {
     expect(formatNumberShort(999_950)).toBe('1M');
+  });
+});
+
+describe('formatSign', () => {
+  it('writes a true minus below zero, not a hyphen', () => {
+    expect(formatSign(-1)).toBe('−');
+    expect(formatSign(-1, 'exceptZero')).toBe('−');
+    expect(formatSign(-1, 'always')).toBe('−');
+  });
+
+  it('writes a plus above zero only when asked', () => {
+    expect(formatSign(1)).toBe('');
+    expect(formatSign(1, 'exceptZero')).toBe('+');
+    expect(formatSign(1, 'always')).toBe('+');
+  });
+
+  it('writes a plus on zero only with `always`', () => {
+    expect(formatSign(0)).toBe('');
+    expect(formatSign(0, 'exceptZero')).toBe('');
+    expect(formatSign(0, 'always')).toBe('+');
+  });
+});
+
+describe('formatWhole', () => {
+  it('rounds and groups the thousands', () => {
+    expect(formatWhole(1_398_000)).toBe('1,398,000');
+    expect(formatWhole(2_540.6)).toBe('2,541');
+  });
+
+  it('writes negative numbers with a true minus', () => {
+    expect(formatWhole(-8_402)).toBe('−8,402');
+    expect(formatWhole(-8_402, true)).toBe('−8,402');
+  });
+
+  it('never writes a minus on a number that rounds to zero', () => {
+    expect(formatWhole(-0.4)).toBe('0');
+  });
+
+  it('writes a plus on positive numbers when `signed`, never on zero', () => {
+    expect(formatWhole(12_000, true)).toBe('+12,000');
+    expect(formatWhole(12_000)).toBe('12,000');
+    expect(formatWhole(0, true)).toBe('0');
+  });
+});
+
+describe('formatWholeCompact', () => {
+  it('writes amounts that fit in nine characters in full', () => {
+    expect(formatWholeCompact(9_999_999)).toBe('9,999,999');
+    expect(formatWholeCompact(-999_999)).toBe('−999,999');
+    expect(formatWholeCompact(0)).toBe('0');
+  });
+
+  it('writes positive amounts from 10M with up to two decimals', () => {
+    expect(formatWholeCompact(10_000_000)).toBe('10M');
+    expect(formatWholeCompact(786_705_873)).toBe('786.71M');
+    expect(formatWholeCompact(784_000_000)).toBe('784M');
+    expect(formatWholeCompact(2_147_483_647)).toBe('2.15B');
+  });
+
+  it('writes negative amounts from 1M with a true minus', () => {
+    expect(formatWholeCompact(-1_000_000)).toBe('−1M');
+    expect(formatWholeCompact(-1_756_095)).toBe('−1.76M');
+    expect(formatWholeCompact(-2_147_483_647)).toBe('−2.15B');
   });
 });
