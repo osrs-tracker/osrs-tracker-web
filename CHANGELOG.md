@@ -28,6 +28,9 @@
 - A new automated check, knip, finds code and packages that nothing uses any more, so what a change leaves behind gets
   cleaned up instead of piling up. Its first run found 19 pieces of code offered to the rest of the site that only their
   own file uses.
+- When a deploy waits for the server to pick up the new version, its log now says what the server reported on each
+  check, and when a newer change arrived in the meantime and went live with it, which change that was. A failed deploy
+  used to name the wrong change in that case, which sent the search for the cause to the wrong place.
 - A player's account type ("Hardcore ironman", "Former ironman") and their name with capitals are now written by one
   shared piece of code, used by both the player page's description and the preview card of a shared link, so the two
   can't disagree after a new account type or a relabel.
