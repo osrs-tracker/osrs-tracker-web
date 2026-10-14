@@ -77,6 +77,9 @@
 - The check Claude Code runs before it pushes a change hands over to the API's or the AWS project's own check when the
   push is for one of those, instead of running this site's there. This site's check blocked every push of the AWS
   project, which has no lint script of its own, and ran the API's lint in the mode that rewrites files.
+- The last two of the site's building blocks that still had an `app-` prefix in their name (the page's outer element,
+  now `root`, and the frame around every page with the navigation and footer) lost it, like all the others, and
+  Angular's tools no longer add it to new ones. Pages look and work the same.
 
 ## 2026-10-13
 

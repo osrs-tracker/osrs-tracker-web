@@ -12,7 +12,7 @@ import { PlayersOnlineCard } from './players-online-card';
 import { Glyph } from '@app/common/ui/glyph/glyph';
 
 @Component({
-  selector: 'app-root-layout',
+  selector: 'root-layout',
   templateUrl: './root-layout.html',
   imports: [
     DatePipe,

@@ -67,7 +67,7 @@ describe('createApp', () => {
   });
 
   it('gives rendered and cached pages a fresh CSP nonce that matches the header', async () => {
-    const page = '<html><app-root ngcspnonce="CSP_NONCE_PLACEHOLDER"></app-root><script nonce="CSP_NONCE_PLACEHOLDER">';
+    const page = '<html><root ngcspnonce="CSP_NONCE_PLACEHOLDER"></root><script nonce="CSP_NONCE_PLACEHOLDER">';
     handle.mockImplementation(async () => new Response(page, { headers: { 'content-type': 'text/html' } }));
     pageCache.set('/', page);
 
