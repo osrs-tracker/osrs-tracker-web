@@ -16,6 +16,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { formatNumberLegible } from '@app/common/format/number-format';
+import { Glyph } from '../glyph/glyph';
 
 /** A day with a stored check, as the picker shows it */
 export interface PickerDay {
@@ -71,7 +72,7 @@ const BAND = 'color-mix(in oklch, var(--accent) 12%, transparent)';
     '(document:click)': 'closeOnOutsideClick($event)',
     '(focusout)': 'closeOnFocusOut($event)',
   },
-  imports: [Grid, GridRow, GridCell, GridCellWidget],
+  imports: [Grid, GridRow, GridCell, GridCellWidget, Glyph],
 })
 export class DayPicker {
   private readonly elementRef: ElementRef<HTMLElement> = inject(ElementRef);

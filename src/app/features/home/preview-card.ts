@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Icon } from '@app/common/icon/icon';
+import { Glyph } from '@app/common/ui/glyph/glyph';
 
 interface PreviewSkill {
   name: string;
@@ -42,17 +43,7 @@ const LINE = CUMULATIVE_XP.map((xp, day) => `L${day * 50} ${Math.round(62 - (xp 
     >
       <div class="flex items-center gap-3 p-4 border-b border-line" aria-hidden="true">
         <span class="flex items-center justify-center size-10 shrink-0 rounded-xl bg-deep border border-line">
-          <svg
-            class="size-5.5 stroke-text"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <circle cx="12" cy="8" r="4" />
-            <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
-          </svg>
+          <svg glyph="user" class="size-5.5 stroke-text" />
         </span>
         <span class="flex flex-1 flex-col">
           <span class="text-lg font-bold text-strong">Zezima</span>
@@ -99,7 +90,7 @@ const LINE = CUMULATIVE_XP.map((xp, day) => `L${day * 50} ${Math.round(62 - (xp 
     </a>
   `,
   host: { class: 'block' },
-  imports: [RouterLink, Icon],
+  imports: [RouterLink, Icon, Glyph],
 })
 export class PreviewCard {
   readonly SKILLS: PreviewSkill[] = SKILLS;

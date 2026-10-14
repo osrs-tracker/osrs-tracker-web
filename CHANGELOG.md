@@ -28,6 +28,9 @@
 - A new automated check, knip, finds code and packages that nothing uses any more, so what a change leaves behind gets
   cleaned up instead of piling up. Its first run found 19 pieces of code offered to the rest of the site that only their
   own file uses.
+- The small line icons used in more than one place (the back and forward arrows, search, the star for favourites, the
+  warning sign, the newspaper and a dozen others) are now drawn by one shared piece of code instead of a copy in each
+  page, so restyling one changes it everywhere at once. They look the same as before.
 - When a deploy waits for the server to pick up the new version, its log now says what the server reported on each
   check, and when a newer change arrived in the meantime and went live with it, which change that was. A failed deploy
   used to name the wrong change in that case, which sent the search for the cause to the wrong place.

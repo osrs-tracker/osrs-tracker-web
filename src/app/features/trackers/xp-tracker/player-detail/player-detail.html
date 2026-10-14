@@ -1,18 +1,6 @@
 <div class="max-w-page mx-auto px-4 sm:px-6 pt-4">
   <a routerLink="/trackers/xp" class="link inline-flex items-center gap-1.5 min-h-11 text-base">
-    <svg
-      class="size-4.5"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      aria-hidden="true"
-    >
-      <line x1="19" y1="12" x2="5" y2="12" />
-      <polyline points="11 6 5 12 11 18" />
-    </svg>
+    <svg glyph="arrow-left" class="size-4.5" stroke-width="2.5" />
     XP Tracker
   </a>
 </div>
@@ -24,19 +12,7 @@
         role="status"
         class="flex flex-wrap items-center gap-x-4 gap-y-3 py-3 pl-4 pr-3 rounded-xl border border-amber/40 bg-amber/12"
       >
-        <svg
-          class="size-5 shrink-0 stroke-amber"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
-          <line x1="12" y1="9" x2="12" y2="13" />
-          <line x1="12" y1="17" x2="12.01" y2="17" />
-        </svg>
+        <svg glyph="triangle-alert" class="size-5 shrink-0 stroke-amber" />
         <p class="grow basis-70 text-base/6 text-strong">
           The hiscores aren’t responding, so these are {{ player.username | capitalizeWords }}’s stats from
           {{ history.lastCheckedAt() | timeAgo }}.

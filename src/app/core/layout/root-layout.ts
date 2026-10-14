@@ -9,6 +9,7 @@ import { ConsentBanner } from './consent-banner';
 import { DarkMode } from './dark-mode';
 import { NAV_TAB, NavMenu, NavMenuRow, NavMenus } from './nav-menu';
 import { PlayersOnlineCard } from './players-online-card';
+import { Glyph } from '@app/common/ui/glyph/glyph';
 
 @Component({
   selector: 'app-root-layout',
@@ -24,6 +25,7 @@ import { PlayersOnlineCard } from './players-online-card';
     NavMenu,
     NavMenuRow,
     PlayersOnlineCard,
+    Glyph,
   ],
   providers: [NavMenus],
 })

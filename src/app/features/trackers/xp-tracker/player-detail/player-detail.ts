@@ -49,6 +49,7 @@ import { LogNotice, PlayerLogs } from './player-logs';
 import { StatTileView, statTilesFor } from './stat-tiles';
 import { Gains, PeriodSummary, dailyGains, periodStart, periodSummary, totalGains } from './player-summary';
 import { PlayerView } from './player-view';
+import { Glyph } from '@app/common/ui/glyph/glyph';
 
 type LogView = 'days' | 'compare';
 
@@ -74,6 +75,7 @@ const LOG_VIEWS: SegmentedOption<LogView>[] = [
     StatTile,
     StatusPanel,
     TimeAgoPipe,
+    Glyph,
   ],
   providers: [
     PlayerView,

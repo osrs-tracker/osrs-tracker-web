@@ -28,6 +28,7 @@ import { formatNumberLegible } from '@app/common/format/number-format';
 import { OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
+import { Glyph } from '@app/common/ui/glyph/glyph';
 
 /** Keys the combobox passes on to the listbox to move the active option */
 const NAVIGATION_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageUp', 'PageDown']);
@@ -64,18 +65,7 @@ const NAVIGATION_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageUp'
       />
 
       <button type="submit" class="button--primary search-box-button">
-        <svg
-          class="size-4.5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
-          aria-hidden="true"
-        >
-          <circle cx="11" cy="11" r="7" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
+        <svg glyph="search" class="size-4.5" stroke-width="2.5" />
         <span class="max-sm:sr-only">Search</span>
       </button>
     </form>
@@ -148,7 +138,7 @@ const NAVIGATION_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageUp'
       }
     </ng-template>
   `,
-  imports: [Combobox, ComboboxPopup, ComboboxWidget, Listbox, Option, RouterLink, Icon, LoadError, Skeleton],
+  imports: [Combobox, ComboboxPopup, ComboboxWidget, Listbox, Option, RouterLink, Icon, LoadError, Skeleton, Glyph],
 })
 export class ItemSearch {
   private readonly analyticsService = inject(AnalyticsService);

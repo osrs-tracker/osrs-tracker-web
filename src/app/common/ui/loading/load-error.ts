@@ -9,6 +9,7 @@ import {
   output,
 } from '@angular/core';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
+import { Glyph } from '../glyph/glyph';
 
 /**
  * Shown in place of data that failed to load, with a retry button. Reports itself to analytics once it's visible in the
@@ -18,6 +19,7 @@ import { AnalyticsService } from '@app/common/analytics/analytics-service';
  */
 @Component({
   selector: 'load-error',
+  imports: [Glyph],
   template: `
     @if (compact()) {
       <button
@@ -27,21 +29,7 @@ import { AnalyticsService } from '@app/common/analytics/analytics-service';
         [attr.aria-label]="message() + ' Retry'"
         (click)="onRetry($event)"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="2"
-          stroke="currentColor"
-          class="size-5"
-          aria-hidden="true"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
-          />
-        </svg>
+        <svg glyph="refresh" class="size-5" />
       </button>
     } @else if (inline()) {
       <button
@@ -52,21 +40,7 @@ import { AnalyticsService } from '@app/common/analytics/analytics-service';
         (click)="onRetry($event)"
       >
         <span class="truncate">{{ message() }}</span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="2.5"
-          stroke="currentColor"
-          class="size-3.5 shrink-0"
-          aria-hidden="true"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
-          />
-        </svg>
+        <svg glyph="refresh" class="size-3.5 shrink-0" stroke-width="2.5" />
       </button>
     } @else {
       <div role="alert" class="flex flex-col items-center justify-center gap-1 h-full px-5 py-8 text-center">
