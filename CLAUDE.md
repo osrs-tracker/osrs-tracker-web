@@ -44,13 +44,14 @@ holds the Angular conventions, SSR rules, deploy and release steps. Keep detail 
 
 - `src/app/features/<feature>/` single-feature code; `src/app/common/` shared code by theme: `ui/` the design system's
   components, `api/` the repositories (the only HTTP), `charts/` (Chart.js setup and the base chart), `format/`,
-  `icon/`, `analytics/`, `storage/`, `theme/`, `seo/`, `paging/` (pages after a list's first). Lint enforces these
-  layers.
+  `icon/`, `analytics/`, `storage/`, `theme/`, `seo/`, `paging/` (pages after a list's first), `player-count/` (the
+  players-online store for the nav card and the page). Lint enforces these layers.
 - `src/app/core/` app-wide plumbing: the app frame (`layout/`: nav, footer, theme toggle), interceptors (API base URL,
   loading bar, shared GET requests, SSR user agent, SSR timeout for third-party calls), routing (reuse strategy,
   resolver errors), platform (`WINDOW`, `isHumanVisitor`), the global error handler.
 - `src/server/` the Express server: middleware (CSP nonce, security headers, request logging, metrics, missing assets,
-  page cache), the auto-generator that pre-renders pages, `server-config.ts` (env vars).
+  page cache), routers (the item and player sitemaps, link-preview images, health), `og/` (the link-preview cards), the
+  auto-generator that pre-renders pages, `server-config.ts` (env vars).
 - `docs/decisions.md` trade-offs, `docs/runbook.md` rollback and failure modes.
 - `.claude/agents/conventions-reviewer.md` reviews diffs against the skill and this file;
   `.claude/hooks/read-only-bash.sh` keeps review agents to git, gh and grep reads.
