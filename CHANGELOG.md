@@ -18,7 +18,8 @@
   packages, so none of them can change the repository or approve a change if one of those packages turns out to be
   malicious. The outside tools that build and publish the site, and the one that checks the documentation's links, are
   pinned to an exact version, so what runs there only changes when they're updated on purpose, not whenever their makers
-  publish (or someone else slips in) a new one.
+  publish (or someone else slips in) a new one. Dependabot proposes each new version of them as a change of its own,
+  tested like any other, so the pins don't fall behind on fixes.
 - The scripts that decide whether a change needs a full build and test, and which version of the site to deploy, moved
   out of the workflow files into files of their own, and ShellCheck, which catches common shell mistakes, now checks
   them and the project's other shell scripts on every change. A slip there could let a broken change through untested or

@@ -1,6 +1,6 @@
-# Security updates only for npm and GitHub Actions: open-pull-requests-limit 0 disables version updates, while
-# Dependabot security updates (enabled in the repository settings) still use this configuration. Other updates are done
-# by hand, except the Docker base image below.
+# Security updates only for npm: open-pull-requests-limit 0 disables version updates, while Dependabot security updates
+# (enabled in the repository settings) still use this configuration. Other npm updates are done by hand; GitHub Actions
+# and the Docker base image get version updates below.
 version: 2
 
 updates:
@@ -19,11 +19,15 @@ updates:
         applies-to: security-updates
         patterns: ['@osrs-tracker/*']
 
+  # Third-party actions are pinned to commit SHAs, which makes bumping them by hand the error-prone path: Dependabot
+  # moves the SHA and its version comment together. `/` covers only the workflows, not the composite actions.
   - package-ecosystem: github-actions
-    directory: /
+    directories: ['/', '/.github/actions/*']
     schedule:
       interval: weekly
-    open-pull-requests-limit: 0
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: ci
 
   # The base image is pinned by digest, so this opens a PR when node:24-alpine is rebuilt (Node patches, Alpine fixes)
   - package-ecosystem: docker
