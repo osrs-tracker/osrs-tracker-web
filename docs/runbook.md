@@ -58,16 +58,20 @@ FreekMencke/home-cluster's `cluster/osrs-tracker/flux.yaml`, not here.
 
 ## Look around
 
-The `kubectl` commands use the `kubernetes-admin@kubernetes` context. Claude Code sessions read through the read-only
-`kubernetes` and `flux` MCP servers instead; writes such as a rollout restart are for the user to run.
+The `kubectl` commands use the `kubernetes-admin@kubernetes` context. Claude Code sessions read the cluster through the
+read-only `kubernetes` and `flux` MCP servers instead (the current pods and their logs), and older logs and the metrics
+through the claude.ai Grafana Cloud connector: its tools are named by an ID (`mcp__<id>__query_loki_logs`), so find them
+with a tool search for `loki`. Use the connector to read only: it can also change dashboards and alert rules, which
+FreekMencke/home-cluster keeps. Writes such as a rollout restart are for the user to run.
 
 - Pods and events: `kubectl -n osrs-tracker get pods` and `kubectl -n osrs-tracker describe deploy osrs-tracker-web`.
-- Logs: `kubectl -n osrs-tracker logs deploy/osrs-tracker-web --since=15m`, or Loki in Grafana (grafana.freekmencke.com)
-  for older logs. The server's own lines are JSON with a `type`, written by `@osrs-tracker/logger`
-  (`src/server/utils/log.ts` adds `prerender`, `sitemap` and `og-image`): `incoming` (requests it answered), `outgoing`
-  (requests a render made), `lifecycle` (startup, shutdown), `prerender` (auto page generation), `sitemap` (the item and
-  player sitemaps), `og-image` (the item link preview images) and `uncaught` (errors that reached Express' error
-  handler, stack in `error`); Angular's own output is plain text. Pick one with `| json | type="…"`, e.g.
+- Logs: `kubectl -n osrs-tracker logs deploy/osrs-tracker-web --since=15m`, or Grafana Cloud (Explore, Loki) for older
+  logs, from 2026-10-13 on (how to reach it: FreekMencke/home-cluster's README, "Grafana Cloud"). The server's own lines
+  are JSON with a `type`, written by `@osrs-tracker/logger` (`src/server/utils/log.ts` adds `prerender`, `sitemap` and
+  `og-image`): `incoming` (requests it answered), `outgoing` (requests a render made), `lifecycle` (startup, shutdown),
+  `prerender` (auto page generation), `sitemap` (the item and player sitemaps), `og-image` (the item link preview
+  images) and `uncaught` (errors that reached Express' error handler, stack in `error`); Angular's own output is plain
+  text. Pick one with `| json | type="…"`, e.g.
   `{namespace="osrs-tracker", app="osrs-tracker-web"} | json | type="uncaught"`.
 - Requests: `incoming` lines have `status`, `route` and `cache`; a client that gave up before the response is a `warn`
   with `aborted: true` and no `status` (`… | json | type="incoming" | aborted="true"`). `responseTime` runs until the
@@ -75,11 +79,12 @@ The `kubectl` commands use the `kubernetes-admin@kubernetes` context. Claude Cod
 - Slow pages: `outgoing` lines have the `url`, `responseTime` and the `page` the render was for; a call cut short
   because the client closed the connection or an OSRS Wiki call cut off by `ssrRequestTimeout` (3 s) is `aborted: true`
   (`… | json | type="outgoing" |~ "\"responseTime\":\"[0-9]{4,}"` for calls of a second or more).
-- Metrics: "Express Dashboard" in Grafana (request rate, status codes and latency per route label), defined in
-  FreekMencke/home-cluster's `cluster/monitoring/grafana/dashboards/express-dashboard.json`. The series come from
+- Metrics: "Express Dashboard" in Grafana Cloud (request rate and status codes, average response time per route label,
+  and each pod's memory, event-loop lag, CPU and GC time), exported to FreekMencke/home-cluster's
+  `cluster/monitoring/grafana-cloud/dashboards/express-dashboard.json`. The series come from
   `@osrs-tracker/express-metrics` (osrs-tracker-aws, shared with the API) on the metrics port (9090, `/metrics`):
-  `http_request_duration_seconds` and `up`, plus Node's `nodejs_*` and `process_*` (heap, event-loop lag, resident
-  memory) for Prometheus queries; the dashboard doesn't chart those.
+  `http_request_duration_seconds` and `up`, plus Node's `nodejs_*` and `process_*`; query them in Grafana Cloud. Alloy
+  drops histogram buckets on the way, so there are averages (`_sum` / `_count`) but no percentiles.
 - Resources: `kubectl -n osrs-tracker top pods`. The pods request 50m CPU and 128Mi memory, with a 512Mi memory limit
   (no CPU limit). A pod that hits the limit is `OOMKilled` (see `describe pod`).
 
