@@ -14,13 +14,16 @@ tools:
   mcp__playwright-headless__browser_emulate_media, mcp__playwright-headless__browser_wait_for,
   mcp__playwright-headless__browser_console_messages, mcp__playwright-headless__browser_network_requests,
   mcp__playwright-headless__browser_close
+# `tools` limits only the built-in tools: the agent gets every tool of its inline server below (Claude Code 2.1.296).
+# `disallowedTools` does remove them: run_code_unsafe runs any code in the server, file_upload reads local files.
+disallowedTools: mcp__playwright-headless__browser_run_code_unsafe, mcp__playwright-headless__browser_file_upload
 # Its own browser: headless, so no window opens, and isolated (an in-memory profile), so it never shares the session's
 # Playwright browser or another check's. The osrs-tracker pages need no sign-in; other sites keep the headed plugin one.
 mcpServers:
   - playwright-headless:
       type: stdio
       command: npx
-      # Pinned: bump by hand (Dependabot doesn't read this), then check `tools` above against that version's README.
+      # Pinned: bump by hand (Dependabot doesn't read this), then check the tool names above in that version's README.
       args: ['-y', '@playwright/mcp@0.0.83', '--headless', '--isolated']
 model: sonnet
 effort: medium
