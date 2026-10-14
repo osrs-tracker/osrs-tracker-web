@@ -28,6 +28,7 @@ import { StatusPanel } from '@app/common/ui/page/status-panel';
 import { localIcons } from '@app/common/icon/local-icons.generated';
 import { LOCAL_ICONS } from '@app/common/icon/local-icons-token';
 import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
+import { capitalise } from '@app/common/format/player-labels';
 import { TimeAgoPipe } from '@app/common/format/time-ago-pipe';
 import { OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
@@ -166,7 +167,7 @@ export default class PlayerDetail implements OnInit {
   });
 
   readonly emptyChartText: Signal<string> = computed(() => {
-    const name = CapitalizePipe.capitalise(this.username);
+    const name = capitalise(this.username);
     return this.trackingState() === 'untracked'
       ? `${name} isn’t tracked at ${this.trackedAt()} yet. Once they’re looked up, this chart shows what they gain each day.`
       : `${name}’s stats were saved. After the next check at ${this.trackedAt()}, this chart shows what they gain each day.`;

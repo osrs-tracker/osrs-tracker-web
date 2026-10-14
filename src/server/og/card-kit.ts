@@ -18,8 +18,8 @@ export interface Node {
 }
 export type Child = Node | string;
 
-export const WIDTH = 1200;
-export const HEIGHT = 630;
+const WIDTH = 1200;
+const HEIGHT = 630;
 
 /** The site's dark theme */
 export const COLORS = {

@@ -18,10 +18,11 @@ if [[ $PWD == */.claude/worktrees/* ]]; then
   fi
 fi
 
-names=(lint prettier test build)
+names=(lint prettier knip test build)
 commands=(
   'npx ng lint'
   'npm run prettier:ci'
+  'npx knip'
   'npx ng test --watch=false'
   # Not `npm run build`, which regenerates the sitemaps and icons and so changes tracked files
   'npx ng build --configuration production'

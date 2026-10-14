@@ -1,3 +1,4 @@
+import { accountType, capitalise } from '@app/common/format/player-labels';
 import { type HiscoreEntry, type Player, PlayerStatus, PlayerType, SkillEnum } from '@osrs-tracker/models';
 import hardcoreIcon from '../../../public/assets/icons/player_type/hardcore_ironman.png';
 import ironmanIcon from '../../../public/assets/icons/player_type/ironman.png';
@@ -271,24 +272,6 @@ function cross(): Node {
     { position: 'relative', width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center' },
     [bar(45), bar(-45)],
   );
-}
-
-/** As `playerDescription` on the page */
-function accountType({ type, status, diedAsHardcore }: Player): string {
-  if (type === PlayerType.Normal) return 'Regular account';
-  if (status === PlayerStatus.DeIroned) return 'Former ironman';
-  if (status === PlayerStatus.DeUltimated) return 'Ironman, formerly ultimate';
-  if (diedAsHardcore) return 'Ironman, formerly hardcore';
-  return {
-    [PlayerType.Ironman]: 'Ironman',
-    [PlayerType.Hardcore]: 'Hardcore ironman',
-    [PlayerType.Ultimate]: 'Ultimate ironman',
-  }[type];
-}
-
-/** "the fraking" as "The Fraking", as the page's `CapitalizePipe` */
-function capitalise(username: string): string {
-  return username.replace(/(^|\s)\S/g, start => start.toUpperCase());
 }
 
 /** A GIF's width from its header: 16 for every skill icon but Ranged's 18 */

@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 export const SSR_TIMEOUT = new HttpContextToken<boolean>(() => false);
 
 /** How long a request with `SSR_TIMEOUT` may take during a server render, in ms. Unset in the browser. */
-export const SSR_REQUEST_TIMEOUT = new InjectionToken<number | undefined>('SSR_REQUEST_TIMEOUT', {
+const SSR_REQUEST_TIMEOUT = new InjectionToken<number | undefined>('SSR_REQUEST_TIMEOUT', {
   factory: () => undefined,
 });
 

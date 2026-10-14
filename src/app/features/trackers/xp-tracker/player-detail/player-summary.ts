@@ -10,7 +10,7 @@ export interface Gains extends HiscoreDiff {
   days: number;
 }
 
-export interface LevelGain {
+interface LevelGain {
   skill: string;
   from: number;
   to: number;

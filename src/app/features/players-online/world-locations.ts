@@ -15,7 +15,7 @@ const WORLD_LOCATIONS: Record<string, { name: string; flag: string }> = {
 };
 
 /** The key of the codes missing from `WORLD_LOCATIONS`, summed */
-export const OTHER_LOCATIONS = 'other';
+const OTHER_LOCATIONS = 'other';
 
 export interface LocationCount {
   /** A raw location code, or `OTHER_LOCATIONS` */

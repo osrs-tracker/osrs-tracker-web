@@ -5,7 +5,7 @@ import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { StorageKey } from '@app/common/storage/storage';
 import { StorageService } from '@app/common/storage/storage-service';
 
-export class ThemeState {
+class ThemeState {
   /** Dark until the browser reads the stored choice: most visitors use it, and `index.html` sets the class first */
   darkMode = true;
 }

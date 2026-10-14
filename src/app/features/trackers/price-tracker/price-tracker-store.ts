@@ -10,7 +10,7 @@ export interface RecentItem {
   icon: string;
 }
 
-export class PriceTrackerState {
+class PriceTrackerState {
   recentItems: RecentItem[] = [];
   favoriteItems: RecentItem[] = [];
 }

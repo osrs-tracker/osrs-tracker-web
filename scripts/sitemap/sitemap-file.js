@@ -15,7 +15,7 @@ export const hasFullHistory = () => {
   }
 };
 
-export const escapeXml = text =>
+const escapeXml = text =>
   text.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[char]);
 
 /** A `<urlset>` of `<url>` entries, each `{ loc, lastmod? }`. No `<priority>` or `<changefreq>`: Google ignores both. */

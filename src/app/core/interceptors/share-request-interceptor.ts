@@ -7,7 +7,7 @@ import { Observable, finalize, share } from 'rxjs';
  * (each with their own injector) don't share requests.
  */
 @Service()
-export class OngoingRequests extends Map<string, Observable<HttpEvent<unknown>>> {}
+class OngoingRequests extends Map<string, Observable<HttpEvent<unknown>>> {}
 
 /**
  * This interceptor is used to share ongoing requests to reduce the number of unnecessary requests.
