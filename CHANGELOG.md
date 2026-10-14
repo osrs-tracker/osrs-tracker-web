@@ -39,6 +39,9 @@
   and falls back on its two days. The page changes more often than any other, so this catches a change that quietly
   breaks one of them. Reading and writing the compared days in the address bar is now done in one place instead of two.
   It all works the same as before.
+- Dependency updates: the web server, the changelog's Markdown reader, the shared hiscores package and the page speed
+  measurements are on their latest minor and patch versions, which fixes a memory leak in the speed measurements on long
+  visits. Pages look and work the same.
 
 ## 2026-10-13
 
