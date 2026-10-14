@@ -248,19 +248,21 @@ only sees server HTML). If Playwright is unavailable, say so rather than falling
 The `browser-checker` agent does the check, so its screenshots stay out of the main session:
 
 1. Start the server yourself (see Running locally); for production, wait for the deploy.
-2. Delegate to `browser-checker` (without a `model`) with the URLs and what changed (theme, phone layout, caching). It
-   starts its own headless, isolated browser, so checks can run in parallel and beside the session's own Playwright
-   browser, which stays headed for sites that need a sign-in.
+2. Delegate every round to `browser-checker` (without a `model`), hover, keyboard and width iterations too, with the
+   URLs and what changed (theme, phone layout, caching, the state to show). It starts its own headless, isolated
+   browser, so checks can run in parallel and beside the session's own Playwright browser. That one stays headed, for
+   what the agent can't do: sites that need a sign-in, and mocking API responses (`browser_run_code_unsafe`).
 3. Pass on its `VERDICT:`, request counts, failed requests and console errors, and send its screenshots with
-   `SendUserFile`. Then delete them and `.playwright-mcp/`, and stop the server.
+   `SendUserFile` without `Read`ing them: it has looked, and a `Read` puts each image back in your context. For another
+   look, delegate again. Then delete them and `.playwright-mcp/`, and stop the server.
 
 The rules it follows (it reads them here):
 
 - Dark mode first (most visitors); light mode too for theme changes.
 - A screenshot per URL and mode, and request count, failed requests and console errors. For caching, load twice and
   compare.
-- Click controls picked from a snapshot (`browser_snapshot` refs), not buttons found by guessing: a stray click toggles
-  favourites or the theme in the test browser.
+- Click, hover or type into controls picked from a snapshot (`browser_snapshot` refs), not ones found by guessing: a
+  stray click toggles favourites or the theme in the test browser.
 - Close the browser as soon as the round of checks is done, even mid-task; open it again for the next one.
 
 ## Deploy

@@ -8,9 +8,12 @@ description:
 tools:
   Read, mcp__playwright-headless__browser_navigate, mcp__playwright-headless__browser_snapshot,
   mcp__playwright-headless__browser_take_screenshot, mcp__playwright-headless__browser_click,
-  mcp__playwright-headless__browser_resize, mcp__playwright-headless__browser_emulate_media,
-  mcp__playwright-headless__browser_wait_for, mcp__playwright-headless__browser_console_messages,
-  mcp__playwright-headless__browser_network_requests, mcp__playwright-headless__browser_close
+  mcp__playwright-headless__browser_hover, mcp__playwright-headless__browser_press_key,
+  mcp__playwright-headless__browser_type, mcp__playwright-headless__browser_select_option,
+  mcp__playwright-headless__browser_evaluate, mcp__playwright-headless__browser_resize,
+  mcp__playwright-headless__browser_emulate_media, mcp__playwright-headless__browser_wait_for,
+  mcp__playwright-headless__browser_console_messages, mcp__playwright-headless__browser_network_requests,
+  mcp__playwright-headless__browser_close
 # Its own browser: headless, so no window opens, and isolated (an in-memory profile), so it never shares the session's
 # Playwright browser or another check's. The osrs-tracker pages need no sign-in; other sites keep the headed plugin one.
 mcpServers:
@@ -31,8 +34,10 @@ or change data. The design system and the "Browser check" section of the preload
 
 1. For each URL the caller gives: dark mode first (`browser_emulate_media`), then light mode only if the change touches
    theming. Desktop width, then 390px if the caller mentions phones or layout.
-2. Use `browser_snapshot` for structure and to pick click targets by ref. Never click guessed buttons: a stray click
-   toggles favourites or the theme.
+2. Use `browser_snapshot` for structure and to pick targets by ref, for clicks, hovers, typing and selects. Never click
+   guessed buttons: a stray click toggles favourites or the theme. For a state the caller names (hover, focus, an open
+   menu or date picker), put the page in it with those tools or `browser_press_key` and screenshot it in that state.
+   Measure sizes and gaps the caller asks about with `browser_evaluate`, reading the page without changing it.
 3. Take one screenshot per URL and mode with `browser_take_screenshot`. Always pass `filename` with the folder:
    `.playwright-mcp/<page>-<mode>.png` (a bare `home-dark.png` lands in the checkout's root). Element screenshots when
    the change is one component. `Read` each screenshot to look at it: without that you haven't seen the page. Report the
