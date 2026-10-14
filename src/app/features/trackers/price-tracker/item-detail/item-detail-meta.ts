@@ -61,7 +61,7 @@ export function itemPageMeta(item: Item): PageMeta {
  * `?v=` busts the caches of shared links when the card's design changes.
  */
 function itemImage(item: Item): PageImage {
-  return { url: `/og/item/${item.id}.png?v=2`, width: 1200, height: 630, alt: item.name };
+  return { url: `/og/item/${item.id}.png?v=3`, width: 1200, height: 630, alt: item.name };
 }
 
 /**

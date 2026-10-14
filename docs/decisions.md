@@ -92,7 +92,7 @@ Choices that look like accidents without their context: what was decided, why, a
   preview for weeks. `satori` lays it out as SVG and `@resvg/resvg-wasm` turns that into a PNG. Both are plain JS and
   WebAssembly, bundled into `server.mjs` with the SOLIX TTFs and the `.wasm` (esbuild's `binary` loader in
   `angular.json`): the image ships only `dist/`, without `node_modules`, which rules out native `sharp` or
-  `@resvg/resvg-js`, and `sharp` would also need system fonts on Alpine. The renderer chunk (about 4 MB) loads on the
+  `@resvg/resvg-js`, and `sharp` would also need system fonts on Alpine. The renderer chunk (about 5 MB) loads on the
   first image request. Images live a week in browsers and preview caches, the last 200 in memory; `?v=` in the page
   meta's URL busts them when the design changes. Rendering in the API (it has `sharp`) was dropped: two repos for one
   feature, and the same font problem.
@@ -105,16 +105,15 @@ Choices that look like accidents without their context: what was decided, why, a
   a player it doesn't store answers 404, and their page (the API's live preview) keeps the square app icon. Without
   hiscores at the default offset the card shows only who they are. The skill and account icons are the site's own
   (`public/assets/icons`), bundled like the fonts; satori and resvg draw their GIFs as they are.
-- **satori stays on 0.32:** 0.33 depends on `harfbuzzjs`, whose Emscripten loader reads `hb.wasm` from `__dirname` at
-  runtime and fails inside the bundle. Check that before accepting a bump.
-- **Fonts:** `satori` reads TTF, OTF or WOFF, not WOFF2 or variable fonts, and 0.32 draws kerning without laying it out
-  (a gap after "Tumeken's") and can't turn on OpenType features such as `tnum`. `og/fonts/` holds the SOLIX release's
-  static `ttf/SOLIX-Regular.ttf` (400) and `ttf/SOLIX-SemiBold.ttf` (600) without their `GPOS` table (`kern`, plus
-  `mark` and `mkmk` for combining accents, which item names don't use: `é` is a glyph of its own) and their legacy
-  `kern` table, and `SOLIX-SemiBold-Tabular.ttf`, the SemiBold with the digits mapped to their `.tf` glyphs in every
-  `cmap` subtable, for the tiles' values. Outside `public/`, so they aren't served. Redo them when the site's SOLIX is
-  bumped, and bump the cards' `?v=` (`item-detail-meta.ts`, `player-detail-meta.ts`, the players online route in
-  `app.routes.ts`).
+- **satori 0.56 (2026-10-14):** 0.33 to 0.55 were held back because `harfbuzzjs`'s Emscripten loader read `hb.wasm` from
+  `__dirname`, which fails inside the bundle; satori now inlines that wasm. Specs never render a card, so check a bump
+  in the production build (render each card route). Like browsers, satori defaults to `content-box`: `el()`
+  (`og/card-kit.ts`) makes every element `border-box`, as Tailwind does on the site.
+- **Fonts:** satori lays out kerning and turns on OpenType features through HarfBuzz (`tabular-nums` for the tiles'
+  values), but can't read a variable font: loading the site's `SOLIX-Variable.woff2` breaks every font. `og/fonts/`
+  holds the SOLIX release's static `ttf/SOLIX-Regular.ttf` (400) and `ttf/SOLIX-SemiBold.ttf` (600) as they are, outside
+  `public/`, so they aren't served. Replace them when the site's SOLIX is bumped, and bump the cards' `?v=`
+  (`item-detail-meta.ts`, `player-detail-meta.ts`, the players online route in `app.routes.ts`).
 - **Tests load them as files:** with a `binary` loader, Angular's external-packages plugin resolves every bare import
   itself, and the browser-platform test build can't resolve `node:fs`, so every server spec failed to bundle. `ng test`
   builds with `development,test`; the `test` configuration switches both to the `file` loader, which leaves package

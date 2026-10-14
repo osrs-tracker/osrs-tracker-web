@@ -5,6 +5,13 @@
 - Hovering an item's change in the price lists shows the difference from yesterday's average in whole gp ("+18 gp"), as
   the game and the rest of the site write prices, instead of with the decimals left over from averaging ("+17.89 gp").
 
+### Link previews
+
+- The preview cards chat apps show for a shared item, player or players online link space their letters the way the site
+  does, with the font's own spacing for pairs like "Te" in "Tumeken's", instead of a copy of the font with that spacing
+  taken out. The library that draws the cards was 24 releases behind, held back by a bundling problem it has since
+  fixed.
+
 ### Behind the scenes
 
 - The automated checks that run on every change can only read the code: they install and run hundreds of third-party
