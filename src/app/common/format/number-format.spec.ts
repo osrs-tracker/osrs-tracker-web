@@ -67,6 +67,10 @@ describe('formatWhole', () => {
     expect(formatWhole(-8_402, true)).toBe('−8,402');
   });
 
+  it('never writes a minus on a number that rounds to zero', () => {
+    expect(formatWhole(-0.4)).toBe('0');
+  });
+
   it('writes a plus on positive numbers when `signed`, never on zero', () => {
     expect(formatWhole(12_000, true)).toBe('+12,000');
     expect(formatWhole(12_000)).toBe('12,000');

@@ -26,7 +26,9 @@ export function formatSign(value: number, display: 'negative' | 'exceptZero' | '
 
 /** A whole number as written in the design: "1,398,000", "−8,402" with a true minus, "+12,000" when `signed` */
 export function formatWhole(value: number, signed = false): string {
-  return formatSign(value, signed ? 'exceptZero' : 'negative') + Math.abs(Math.round(value)).toLocaleString('en-US');
+  // the sign of the rounded number, so −0.4 is "0", not "−0"
+  const whole = Math.round(value);
+  return formatSign(whole, signed ? 'exceptZero' : 'negative') + Math.abs(whole).toLocaleString('en-US');
 }
 
 /**
