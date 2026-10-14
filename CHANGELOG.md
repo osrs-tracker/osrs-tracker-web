@@ -1,3 +1,13 @@
+## 2026-10-14
+
+### Behind the scenes
+
+- The automated checks that run on every change can only read the code: they install and run hundreds of third-party
+  packages, so none of them can change the repository or approve a change if one of those packages turns out to be
+  malicious. The outside tools that build and publish the site, and the one that checks the documentation's links, are
+  pinned to an exact version, so what runs there only changes when they're updated on purpose, not whenever their makers
+  publish (or someone else slips in) a new one.
+
 ## 2026-10-13
 
 ### Players online and the navigation

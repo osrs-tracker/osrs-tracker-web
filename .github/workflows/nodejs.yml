@@ -13,6 +13,11 @@ on:
   # too, or the queue never merges. Takes no paths filter, so they always do.
   merge_group:
 
+# Read-only unless a job asks for more: build and test run code from every installed package, so they get a token that
+# can't push or approve pull requests, whatever the repository's default is
+permissions:
+  contents: read
+
 jobs:
   # Build and test only run when something they depend on changed since the previous push, so commits like a deploy
   # digest or docs skip them. Skipped jobs still satisfy the required checks; a workflow-level `paths` filter wouldn't.
@@ -92,7 +97,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - uses: lycheeverse/lychee-action@v2
+      - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:
           args: --offline --hidden --include-fragments --no-progress './**/*.md'
           fail: true
