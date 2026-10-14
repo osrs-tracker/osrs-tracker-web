@@ -31,6 +31,7 @@ import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { DayPicker, PickerDay } from '@app/common/ui/controls/day-picker';
 import { PERIOD_SIZE } from '../player-history';
 import { activityRows, CompareRow, skillRows } from './compare-rows';
+import { ComparePicks, NO_DAY, readComparePicks, writeComparePicks } from './compare-url';
 
 type CompareTab = 'skills' | 'activities';
 
@@ -38,9 +39,6 @@ const TABS: SegmentedOption<CompareTab>[] = [
   { value: 'skills', label: 'Skills' },
   { value: 'activities', label: 'Activities' },
 ];
-
-/** The `vs` query value for no second day */
-const NO_DAY = 'none';
 
 /** A stored check that can be picked */
 interface DayOption extends PickerDay {
@@ -318,7 +316,7 @@ export class CompareDays {
   /** The full table instead of only what changed */
   readonly allStats: WritableSignal<boolean> = signal(false);
   /** The days picked by key; `undefined` takes the default: the newest day, compared with the oldest */
-  private readonly picked: WritableSignal<{ day?: string; vs?: string }> = signal(this.pickedInUrl());
+  private readonly picked: WritableSignal<ComparePicks> = signal(readComparePicks(this.router, this.location));
 
   readonly history: ResourceRef<HiscoreEntry[] | undefined> = rxResource({
     params: () => (this.isBrowser ? { username: this.username(), offset: this.offset() } : undefined),
@@ -429,7 +427,7 @@ export class CompareDays {
   }
 
   /** Picks a day or the day to compare with, and puts both in the URL */
-  pick(change: { day?: string; vs?: string }): void {
+  pick(change: ComparePicks): void {
     const [day, vs] = [this.day()?.key, this.vs()?.key ?? NO_DAY];
     // picking the other picker's day swaps the two (the calendars show it ringed); with no second day, a day can't be
     // compared with itself
@@ -448,13 +446,7 @@ export class CompareDays {
   /** Puts the days picked in the URL, once there are picks */
   writeUrl(): void {
     if (!this.picked().day) return;
-    const url = this.router.createUrlTree([], {
-      relativeTo: this.route,
-      queryParams: { day: this.day()?.key, vs: this.vs()?.key ?? NO_DAY },
-      queryParamsHandling: 'merge',
-    });
-    // with the router's state, so Back to this page still restores its scroll position
-    this.location.replaceState(this.router.serializeUrl(url), '', this.location.getState());
+    writeComparePicks(this.router, this.route, this.location, { day: this.day()?.key, vs: this.vs()?.key ?? NO_DAY });
   }
 
   /** "+1.2M", or with `full` "+1,204,330"; "+0" for no gain */
@@ -483,12 +475,6 @@ export class CompareDays {
     const rank = row.rank === null ? '' : `, rank ${formatWhole(row.rank)}`;
     const change = row.rankChange ? ` (${this.rankChangeTitle(row.rankChange)})` : '';
     return `${row.name} ${value}${gained}${rank}${change}`;
-  }
-
-  /** The days picked in the URL as the browser has it: the router never sees them */
-  private pickedInUrl(): { day?: string; vs?: string } {
-    const params = this.router.parseUrl(this.location.path()).queryParamMap;
-    return { day: params.get('day') ?? undefined, vs: params.get('vs') ?? undefined };
   }
 }
 
