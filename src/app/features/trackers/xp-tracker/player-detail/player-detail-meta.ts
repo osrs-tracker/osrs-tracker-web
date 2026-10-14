@@ -1,6 +1,6 @@
 import { ActivatedRouteSnapshot } from '@angular/router';
-import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
-import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
+import { Player } from '@osrs-tracker/models';
+import { accountType, capitalise } from '@app/common/format/player-labels';
 import { ICON_IMAGE, PageImage, PageMeta } from '@app/common/seo/page-meta-strategy';
 import { breadcrumbList, webPage } from '@app/common/seo/structured-data';
 
@@ -20,8 +20,8 @@ export function playerDetailMeta(route: ActivatedRouteSnapshot): PageMeta | unde
  * "The Fraking - OSRS XP Tracker": from the player, not the URL, so every spelling of a name gets the same title. No
  * site name, which search results and link previews show on their own.
  */
-export function playerTitle(player: Player): string {
-  return `${CapitalizePipe.capitalise(player.username)} - OSRS XP Tracker`;
+function playerTitle(player: Player): string {
+  return `${capitalise(player.username)} - OSRS XP Tracker`;
 }
 
 /**
@@ -32,9 +32,9 @@ export function playerTitle(player: Player): string {
  * The structured data describes the player as a `Thing`, like an item: `ProfilePage` and `Person` are meant for
  * people's profiles, not game accounts.
  */
-export function playerPageMeta(player: Player): PageMeta {
+function playerPageMeta(player: Player): PageMeta {
   const canonicalPath = `/trackers/xp/${encodeURIComponent(player.username)}`;
-  const name = CapitalizePipe.capitalise(player.username);
+  const name = capitalise(player.username);
   const description = playerDescription(player);
   return {
     title: playerTitle(player),
@@ -75,23 +75,11 @@ function playerImage(player: Player, name: string): PageImage {
  * "OSRS stats for The Fraking: daily XP gains, boss kills and clue scrolls, tracked since 11 Aug 2026. Ironman,
  * formerly hardcore, combat level 125." From the player alone: the stats are a separate request.
  */
-export function playerDescription(player: Player): string {
-  const name = CapitalizePipe.capitalise(player.username);
+function playerDescription(player: Player): string {
+  const name = capitalise(player.username);
   const since = player.trackedSince ? `, tracked since ${DAY.format(new Date(player.trackedSince))}` : '';
   return (
     `OSRS stats for ${name}: daily XP gains, boss kills and clue scrolls${since}. ` +
     `${accountType(player)}, combat level ${player.combatLevel}.`
   );
-}
-
-function accountType({ type, status, diedAsHardcore }: Player): string {
-  if (type === PlayerType.Normal) return 'Regular account';
-  if (status === PlayerStatus.DeIroned) return 'Former ironman';
-  if (status === PlayerStatus.DeUltimated) return 'Ironman, formerly ultimate';
-  if (diedAsHardcore) return 'Ironman, formerly hardcore';
-  return {
-    [PlayerType.Ironman]: 'Ironman',
-    [PlayerType.Hardcore]: 'Hardcore ironman',
-    [PlayerType.Ultimate]: 'Ultimate ironman',
-  }[type];
 }

@@ -1,0 +1,7 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "ignoreDependencies": [
+    // `ng lint`'s builder in angular.json, installed by the angular-eslint package
+    "@angular-eslint/builder"
+  ]
+}

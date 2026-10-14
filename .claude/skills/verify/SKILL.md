@@ -1,8 +1,9 @@
 ---
 name: verify
 description:
-  Runs osrs-tracker-web's verify checks (lint, Prettier, unit tests, production build) and reports each one's result.
-  Use right before each commit of a code change, and when asked to verify, check or test the repo before a push or PR.
+  Runs osrs-tracker-web's verify checks (lint, Prettier, knip, unit tests, production build) and reports each one's
+  result. Use right before each commit of a code change, and when asked to verify, check or test the repo before a push
+  or PR.
 ---
 
 # verify
@@ -20,9 +21,11 @@ and exits 1 when any failed:
 
 1. `npx ng lint`
 2. `npm run prettier:ci`
-3. `npx ng test --watch=false` (Vitest doesn't type-check the specs, but `ng test` compiles them, so a type error fails
+3. `npx knip`: unused files, exports and dependencies. An export only its own file uses loses its `export`; a false
+   positive goes in `knip.json` with a comment saying why
+4. `npx ng test --watch=false` (Vitest doesn't type-check the specs, but `ng test` compiles them, so a type error fails
    it)
-4. `npx ng build --configuration production`: not `npm run build`, which regenerates sitemaps and icons and so changes
+5. `npx ng build --configuration production`: not `npm run build`, which regenerates sitemaps and icons and so changes
    tracked files
 
 Report one line per check: passed or failed. For each failure, quote the relevant output (the errors, not the whole

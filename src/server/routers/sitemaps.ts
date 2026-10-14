@@ -23,7 +23,7 @@ const escapeXml = (text: string) =>
   text.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[char]!);
 
 /** A `<urlset>`, one `<url>` per line. No `<priority>` or `<changefreq>`: Google ignores both. */
-export function urlset(urls: SitemapUrl[]): string {
+function urlset(urls: SitemapUrl[]): string {
   const lines = urls.map(
     ({ loc, lastmod }) => `<url><loc>${escapeXml(loc)}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}</url>`,
   );
@@ -36,7 +36,7 @@ export function urlset(urls: SitemapUrl[]): string {
 }
 
 /** The item pages, by id: every item the API has, so every page in it resolves. No `<lastmod>`: no item has a date. */
-export async function itemsSitemap(getJson: GetJson): Promise<string> {
+async function itemsSitemap(getJson: GetJson): Promise<string> {
   const letters = await Promise.all(
     BROWSE_LETTERS.map(letter => getJson(`/items/browse/${letter}`) as Promise<{ id: number }[]>),
   );
@@ -50,7 +50,7 @@ export async function itemsSitemap(getJson: GetJson): Promise<string> {
  * The tracked players with a recent hiscore entry (the API decides which), at the page's canonical, the API's
  * lower-case name (`player-detail-meta.ts`), dated by the newest entry: when the page last changed.
  */
-export async function playersSitemap(getJson: GetJson): Promise<string> {
+async function playersSitemap(getJson: GetJson): Promise<string> {
   const players = (await getJson('/sitemap/players')) as { username: string; lastEntry: string }[];
   if (players.length === 0) throw new Error('The API has no players for the sitemap');
 

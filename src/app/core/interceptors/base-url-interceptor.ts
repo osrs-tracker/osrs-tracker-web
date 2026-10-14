@@ -14,7 +14,7 @@ import { config } from '@config/config';
 export const BASE_URL_PREFIX = new HttpContextToken<boolean>(() => true);
 
 /** The API origin that `HttpClient` requests go to: the public URL, unless the server calls the API in-cluster. */
-export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL', { factory: () => config.apiBaseUrl });
+const API_BASE_URL = new InjectionToken<string>('API_BASE_URL', { factory: () => config.apiBaseUrl });
 
 /**
  * Server only: sends API requests to `internalOrigin` instead of the public URL. The transfer cache stores the

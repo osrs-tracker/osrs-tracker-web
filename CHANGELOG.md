@@ -25,6 +25,12 @@
 - Whole numbers and their plus and minus signs are now written by one shared piece of code instead of a dozen copies,
   which writes a true minus (−) rather than a hyphen, and the day labels on the Compare view and an item's volume use
   Angular's date formatting instead of hand-written month names. They read the same as before.
+- A new automated check, knip, finds code and packages that nothing uses any more, so what a change leaves behind gets
+  cleaned up instead of piling up. Its first run found 19 pieces of code offered to the rest of the site that only their
+  own file uses. A player's account type ("Hardcore ironman", "Former ironman") and the capitalised name now come from
+  one shared piece of code, used by both the player page's description and the preview card of a shared link, so the two
+  can't disagree after a new account type or a relabel. Two of Angular's checks for needless `?.` and `??` in the page
+  templates, switched off during an upgrade in July, are back on.
 
 ## 2026-10-13
 

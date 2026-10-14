@@ -15,7 +15,7 @@ export function parseDay(value: string | null | undefined): string | null {
   return value;
 }
 
-export class LastPlayedState {
+class LastPlayedState {
   /** The day last picked for "Since you last played", `YYYY-MM-DD` */
   lastPlayed: string | null = null;
 }

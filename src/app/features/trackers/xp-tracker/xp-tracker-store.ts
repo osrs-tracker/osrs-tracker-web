@@ -4,7 +4,7 @@ import { StorageKey } from '@app/common/storage/storage';
 import { StorageService } from '@app/common/storage/storage-service';
 import { config } from '@config/config';
 
-export class XpTrackerState {
+class XpTrackerState {
   scrapingOffset = 0;
   recentPlayers: string[] = [];
   favoritePlayers: string[] = [];
