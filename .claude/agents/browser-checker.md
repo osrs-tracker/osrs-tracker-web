@@ -20,7 +20,8 @@ mcpServers:
   - playwright-headless:
       type: stdio
       command: npx
-      args: ['-y', '@playwright/mcp@latest', '--headless', '--isolated']
+      # Pinned: bump by hand (Dependabot doesn't read this), then check `tools` above against that version's README.
+      args: ['-y', '@playwright/mcp@0.0.83', '--headless', '--isolated']
 model: sonnet
 effort: medium
 skills:
