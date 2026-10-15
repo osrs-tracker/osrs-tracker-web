@@ -58,7 +58,7 @@ export default class Home {
   private readonly analyticsService = inject(AnalyticsService);
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly document = inject(DOCUMENT);
-  private readonly elementRef = inject(ElementRef);
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly injector = inject(Injector);
   private readonly priceTrackerStore = inject(PriceTrackerStore);
 
@@ -98,9 +98,12 @@ export default class Home {
     this.analyticsService.trackOption('home_search', mode);
 
     if (hadFocus) {
-      afterNextRender(() => this.elementRef.nativeElement.querySelector('segmented [aria-checked="true"]')?.focus(), {
-        injector: this.injector,
-      });
+      afterNextRender(
+        () => this.elementRef.nativeElement.querySelector<HTMLElement>('segmented [aria-checked="true"]')?.focus(),
+        {
+          injector: this.injector,
+        },
+      );
     }
   }
 }

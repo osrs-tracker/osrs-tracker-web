@@ -99,8 +99,8 @@ export class ChartLegend {
   readonly hidden = computed(() => this.items().filter((item, i) => i >= this.collapseAfter() && !item.on).length);
 
   private readonly document = inject(DOCUMENT);
-  private readonly elementRef: ElementRef<HTMLElement> = inject(ElementRef);
-  private readonly toolbar: Toolbar = inject(Toolbar);
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly toolbar = inject(Toolbar);
   /** The chip that last had focus, while focus is in the legend */
   private focusedChip?: HTMLElement;
 

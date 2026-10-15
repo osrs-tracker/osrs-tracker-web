@@ -94,8 +94,8 @@ export class Segmented<T> {
 
   protected readonly focusWithin = signal(false);
 
-  private readonly elementRef: ElementRef<HTMLElement> = inject(ElementRef);
-  private readonly toolbar: Toolbar = inject(Toolbar);
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly toolbar = inject(Toolbar);
   private readonly widgets = viewChildren(ToolbarWidget);
 
   constructor() {

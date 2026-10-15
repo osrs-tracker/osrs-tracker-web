@@ -143,7 +143,7 @@ export class ItemSearch {
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
   private readonly router = inject(Router);
-  private readonly elementRef: ElementRef<HTMLElement> = inject(ElementRef);
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   /** E.g. the name searched for on an item page that wasn't found */
   readonly initialQuery: InputSignal<string> = input('');

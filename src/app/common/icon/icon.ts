@@ -36,7 +36,7 @@ const resolvedSharpUrls = new Map<string, string>();
   selector: 'img[icon]',
 })
 export class Icon implements OnInit {
-  private readonly elementRef = inject(ElementRef);
+  private readonly elementRef = inject<ElementRef<HTMLImageElement>>(ElementRef);
   private readonly document = inject(DOCUMENT);
   private readonly window = inject(WINDOW);
   private readonly localIcons = inject(LOCAL_ICONS, { optional: true });

@@ -111,7 +111,7 @@ export class NavMenus {
 })
 export class NavMenu {
   private readonly navMenus = inject(NavMenus);
-  private readonly elementRef: ElementRef<HTMLElement> = inject(ElementRef);
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly window = inject(WINDOW);
   private readonly tab = viewChild.required<ElementRef<HTMLButtonElement>>('tab');
 

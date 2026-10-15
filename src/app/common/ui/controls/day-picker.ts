@@ -73,7 +73,7 @@ const BAND = 'color-mix(in oklch, var(--accent) 12%, transparent)';
   imports: [Grid, GridRow, GridCell, GridCellWidget, Glyph],
 })
 export class DayPicker {
-  private readonly elementRef: ElementRef<HTMLElement> = inject(ElementRef);
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly injector = inject(Injector);
   private readonly trigger = viewChild.required<ElementRef<HTMLButtonElement>>('trigger');
 
