@@ -1,4 +1,4 @@
-import { Component, Signal, computed, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
@@ -41,9 +41,9 @@ export class TrackingOffset {
   private readonly xpTrackerStore = inject(XpTrackerStore);
 
   readonly SCRAPING_OFFSETS: number[] = Array.from({ length: 24 }, (_, i) => i - 12); // -12 to 11
-  readonly scrapingOffset: Signal<number> = this.xpTrackerStore.scrapingOffset;
+  readonly scrapingOffset = this.xpTrackerStore.scrapingOffset;
   /** The UTC hour the shown hiscores were tracked at, e.g. "21:00 UTC" for −03:00. */
-  readonly trackedAt: Signal<string> = computed(() => `${pad((this.scrapingOffset() + 24) % 24)}:00 UTC`);
+  readonly trackedAt = computed(() => `${pad((this.scrapingOffset() + 24) % 24)}:00 UTC`);
 
   setOffset(offset: number): void {
     this.xpTrackerStore.setScrapingOffset(offset);

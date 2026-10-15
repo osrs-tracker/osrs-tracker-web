@@ -2,7 +2,6 @@ import {
   Component,
   InputSignal,
   ResourceRef,
-  Signal,
   WritableSignal,
   computed,
   inject,
@@ -177,8 +176,8 @@ export class ProfitCalculator {
     stream: () => this.osrsPricesRepo.getLatestPrices(NATURE_RUNE_ID),
   });
 
-  readonly mode: WritableSignal<Mode> = signal('flip');
-  readonly modeOptions: Signal<SegmentedOption<Mode>[]> = computed(() => [
+  readonly mode = signal<Mode>('flip');
+  readonly modeOptions = computed<SegmentedOption<Mode>[]>(() => [
     { value: 'flip', label: 'Flip' },
     {
       value: 'alch',
@@ -188,21 +187,21 @@ export class ProfitCalculator {
     },
   ]);
 
-  private readonly highAlch: Signal<number> = computed(() => this.item().highalch ?? 0);
-  private readonly defaultQuantity: Signal<number> = computed(() => this.item().limit || 1);
-  private readonly natureRunePrice: Signal<number> = computed(() =>
+  private readonly highAlch = computed(() => this.item().highalch ?? 0);
+  private readonly defaultQuantity = computed(() => this.item().limit || 1);
+  private readonly natureRunePrice = computed(() =>
     this.natureRune.hasValue() ? (this.natureRune.value()?.high ?? 0) : 0,
   );
 
   // Flips buy at the instant sell price and sell at the instant buy price; alching buys at the instant buy price
-  readonly buyAt: WritableSignal<number> = linkedSignal(() => this.latestPrices()?.low ?? 0);
-  readonly sellAt: WritableSignal<number> = linkedSignal(() => this.latestPrices()?.high ?? 0);
-  readonly flipQuantity: WritableSignal<number> = linkedSignal(() => this.defaultQuantity());
-  readonly alchBuyAt: WritableSignal<number> = linkedSignal(() => this.latestPrices()?.high ?? 0);
-  readonly natureRuneAt: WritableSignal<number> = linkedSignal(() => this.natureRunePrice());
-  readonly alchQuantity: WritableSignal<number> = linkedSignal(() => this.defaultQuantity());
+  readonly buyAt = linkedSignal(() => this.latestPrices()?.low ?? 0);
+  readonly sellAt = linkedSignal(() => this.latestPrices()?.high ?? 0);
+  readonly flipQuantity = linkedSignal(() => this.defaultQuantity());
+  readonly alchBuyAt = linkedSignal(() => this.latestPrices()?.high ?? 0);
+  readonly natureRuneAt = linkedSignal(() => this.natureRunePrice());
+  readonly alchQuantity = linkedSignal(() => this.defaultQuantity());
 
-  readonly fields: Signal<Field[]> = computed(() =>
+  readonly fields = computed<Field[]>(() =>
     this.mode() === 'flip'
       ? [
           { id: 'buy', label: 'Buy at', value: this.buyAt },
@@ -216,9 +215,9 @@ export class ProfitCalculator {
         ],
   );
 
-  private readonly taxPerItem: Signal<number> = computed(() => geTax(this.item().id, this.sellAt()));
+  private readonly taxPerItem = computed(() => geTax(this.item().id, this.sellAt()));
 
-  readonly rows: Signal<ResultRow[]> = computed(() => {
+  readonly rows = computed<ResultRow[]>(() => {
     if (this.mode() === 'alch') {
       return [
         { label: 'High alch value', value: formatWhole(this.highAlch()) },
@@ -258,7 +257,7 @@ export class ProfitCalculator {
     ];
   });
 
-  readonly profit: Signal<{ perItem: number; total: number; sub: string }> = computed(() => {
+  readonly profit = computed(() => {
     const flip = this.mode() === 'flip';
     const perItem = flip
       ? this.sellAt() - this.buyAt() - this.taxPerItem()
@@ -274,7 +273,7 @@ export class ProfitCalculator {
     };
   });
 
-  readonly note: Signal<string> = computed(() => {
+  readonly note = computed(() => {
     const limit = this.item().limit ? `Buy limit ${formatWhole(this.item().limit)} per 4 hours.` : '';
     return this.mode() === 'flip' ? limit : `1 nature rune and ${HIGH_ALCH_XP} Magic XP per cast. ${limit}`.trim();
   });

@@ -1,4 +1,4 @@
-import { Component, InputSignal, OutputEmitterRef, Signal, computed, inject, input, output } from '@angular/core';
+import { Component, InputSignal, OutputEmitterRef, computed, inject, input, output } from '@angular/core';
 import { Item } from '@osrs-tracker/models';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
@@ -125,12 +125,12 @@ export class ItemHeader {
   readonly retry: OutputEmitterRef<void> = output();
   readonly retryAverage: OutputEmitterRef<void> = output();
 
-  readonly wikiUrl: Signal<string> = computed(
+  readonly wikiUrl = computed(
     () => `${config.wikiBaseUrl}/w/${encodeURIComponent(this.item().name.replaceAll(' ', '_'))}`,
   );
-  readonly priceText: Signal<string> = computed(() => formatWhole(this.price() ?? 0));
+  readonly priceText = computed(() => formatWhole(this.price() ?? 0));
   /** E.g. "−8,402 (−0.6%)" */
-  readonly change: Signal<{ text: string; up: boolean } | null> = computed(() => {
+  readonly change = computed(() => {
     const price = this.price();
     const average = this.average();
     if (price === null || !average) return null;
@@ -140,7 +140,7 @@ export class ItemHeader {
     return { text: `${formatWhole(diff, true)} (${formatSign(diff, 'always')}${percent.toFixed(1)}%)`, up: diff >= 0 };
   });
 
-  readonly isFavorite: Signal<boolean> = computed(() => this.priceTrackerStore.isFavoriteItem(this.item().id));
+  readonly isFavorite = computed(() => this.priceTrackerStore.isFavoriteItem(this.item().id));
 
   toggleFavorite(): void {
     const { id, name, icon } = this.item();

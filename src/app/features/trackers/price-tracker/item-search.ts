@@ -5,8 +5,6 @@ import {
   ElementRef,
   InputSignal,
   ResourceRef,
-  Signal,
-  WritableSignal,
   afterNextRender,
   afterRenderEffect,
   computed,
@@ -145,14 +143,14 @@ export class ItemSearch {
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
   private readonly router = inject(Router);
-  private readonly elementRef: ElementRef<HTMLElement> = inject(ElementRef);
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   /** E.g. the name searched for on an item page that wasn't found */
   readonly initialQuery: InputSignal<string> = input('');
 
-  readonly query: WritableSignal<string> = signal('');
+  readonly query = signal('');
   /** The query each search was started with; a new object per search, so searching the same query again refetches */
-  private readonly submitted: WritableSignal<{ query: string } | undefined> = signal(undefined);
+  private readonly submitted = signal<{ query: string } | undefined>(undefined);
   /** A new search cancels the one before, so a slow earlier response can't overwrite a newer one */
   readonly search: ResourceRef<Item[] | undefined> = rxResource({
     params: () => this.submitted(),
@@ -162,24 +160,22 @@ export class ItemSearch {
         tap(items => this.analyticsService.trackSearch('item', query, items.length)),
       ),
   });
-  readonly loading: Signal<boolean> = this.search.isLoading;
-  readonly error: Signal<boolean> = computed(() => !!this.search.error());
-  readonly results: Signal<Item[]> = computed(() => (this.search.hasValue() ? (this.search.value() ?? []) : []));
+  readonly loading = this.search.isLoading;
+  readonly error = computed(() => !!this.search.error());
+  readonly results = computed(() => (this.search.hasValue() ? (this.search.value() ?? []) : []));
   /** The query of the last finished search, for the "No items match" message. */
-  readonly searchedQuery: Signal<string | null> = computed(() =>
-    this.search.hasValue() ? (this.submitted()?.query ?? null) : null,
-  );
+  readonly searchedQuery = computed(() => (this.search.hasValue() ? (this.submitted()?.query ?? null) : null));
 
   /** The combobox's state: a search opens it; Escape, focus or a press leaving the search, or clearing it close it. */
-  readonly expanded: WritableSignal<boolean> = signal(false);
+  readonly expanded = signal(false);
   /** Whether there's something to show: while searching and once a search has finished or failed, until cleared. */
-  readonly open: Signal<boolean> = computed(
+  readonly open = computed(
     () => !!this.query().trim() && (this.loading() || this.error() || this.searchedQuery() !== null),
   );
   /** The active option's item ID (the listbox selects the option the arrow keys reach, the first one at the start) */
-  readonly selected: WritableSignal<number[]> = signal([]);
+  readonly selected = signal<number[]>([]);
   /** Whether the arrow keys moved the active option since the input last changed, so Enter opens it. */
-  readonly navigated: WritableSignal<boolean> = signal(false);
+  readonly navigated = signal(false);
 
   /** Name bar widths of the rows shown while searching, varied like `list-row-skeleton`'s */
   readonly skeletonWidths: string[] = ['w-32', 'w-24', 'w-36'];
@@ -195,11 +191,9 @@ export class ItemSearch {
         : of({}),
     defaultValue: {},
   });
-  readonly prices: Signal<Record<number, number | undefined>> = computed(() =>
-    this.pricesResource.hasValue() ? this.pricesResource.value() : {},
-  );
+  readonly prices = computed(() => (this.pricesResource.hasValue() ? this.pricesResource.value() : {}));
 
-  private readonly listbox: Signal<Listbox<number> | undefined> = viewChild(Listbox);
+  private readonly listbox = viewChild<Listbox<number>>(Listbox);
 
   constructor() {
     // Browser only: the page is cached without its query string, so the server never sees it

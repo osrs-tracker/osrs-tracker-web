@@ -1,5 +1,5 @@
 import { formatNumber } from '@angular/common';
-import { DOCUMENT, Component, computed, inject, Signal } from '@angular/core';
+import { DOCUMENT, Component, computed, inject } from '@angular/core';
 import { SkillEnum } from '@osrs-tracker/hiscores';
 import { Chart, ChartOptions, Point } from 'chart.js';
 import { merge } from 'chart.js/helpers';
@@ -12,7 +12,7 @@ import { Gains } from '../player-summary';
 import { PlayerView } from '../player-view';
 import { ChartLegend, LegendItem } from './chart-legend';
 import { logChartOptions } from './log-chart-options';
-import { ChartSeries, xpGainedSeries } from './log-chart-series';
+import { xpGainedSeries } from './log-chart-series';
 import { TooltipMarkers } from './tooltip-markers';
 
 /** Above this many days, the points crowd the line */
@@ -57,16 +57,14 @@ export class XpGainedChart extends BaseChart<'line', Gains[]> {
   readonly #markers = new TooltipMarkers(inject(DOCUMENT), 'skill', inject(LOCAL_ICONS, { optional: true }));
 
   /** The picked skills that gained XP */
-  readonly series: Signal<ChartSeries[]> = computed(() => xpGainedSeries(this.data(), [...this.playerView.skills()]));
+  readonly series = computed(() => xpGainedSeries(this.data(), [...this.playerView.skills()]));
   /** Overall, then the skills that gained XP, largest first; only those can be picked */
-  readonly chips: Signal<LegendItem[]> = computed(() => {
+  readonly chips = computed<LegendItem[]>(() => {
     const picked = this.playerView.skills();
     const names = [SkillEnum.Overall, ...xpGainedSeries(this.data()).map(({ name }) => name)];
     return names.map(name => ({ name, color: this.cssColor(name), on: picked.has(name) }));
   });
-  readonly label: Signal<string> = computed(
-    () => `${[...this.playerView.skills()].join(', ')} XP gained over the period, cumulative`,
-  );
+  readonly label = computed(() => `${[...this.playerView.skills()].join(', ')} XP gained over the period, cumulative`);
 
   /** For the chips, in CSS: Overall is the accent token, a skill without a colour (newer than the enum) muted */
   private cssColor(skill: string): string {

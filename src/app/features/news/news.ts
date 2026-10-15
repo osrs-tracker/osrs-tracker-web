@@ -1,14 +1,5 @@
 import { DatePipe, formatDate, isPlatformBrowser } from '@angular/common';
-import {
-  Component,
-  computed,
-  inject,
-  linkedSignal,
-  PLATFORM_ID,
-  ResourceRef,
-  Signal,
-  WritableSignal,
-} from '@angular/core';
+import { Component, computed, inject, linkedSignal, PLATFORM_ID, ResourceRef } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NewsArchivePage, newsImageUrl, NewsPost, OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
@@ -69,25 +60,25 @@ export default class News {
   private readonly queryParams = toSignal(this.route.queryParamMap, { requireSync: true });
 
   /** The category's name as Jagex uses it, `''` for all; a link to another one shows all */
-  readonly category: WritableSignal<string> = linkedSignal(() => {
+  readonly category = linkedSignal(() => {
     const category = this.queryParams().get('category') ?? '';
     return NEWS_CATEGORIES.some(option => option.value === category) ? category : '';
   });
 
   /** The "since you last played" day, `YYYY-MM-DD`, or `null` for every post */
-  readonly since: WritableSignal<string | null> = linkedSignal(() => parseDay(this.queryParams().get('since')));
-  readonly sinceDate: Signal<Date | null> = computed(() => {
+  readonly since = linkedSignal(() => parseDay(this.queryParams().get('since')));
+  readonly sinceDate = computed(() => {
     const since = this.since();
     return since ? new Date(`${since}T00:00:00Z`) : null;
   });
   /** The end of the picked day: the posts "after the day" start here (feed posts carry a time, not only a day) */
-  private readonly sinceEnd: Signal<Date | null> = computed(() => {
+  private readonly sinceEnd = computed(() => {
     const sinceDate = this.sinceDate();
     return sinceDate ? new Date(sinceDate.getTime() + 24 * 60 * 60 * 1000) : null;
   });
 
   /** With no day in the link, the calendar opens on the one remembered on this device */
-  readonly lastPlayed: Signal<string | null> = this.lastPlayedStore.lastPlayed;
+  readonly lastPlayed = this.lastPlayedStore.lastPlayed;
 
   readonly firstPage: ResourceRef<NewsArchivePage | undefined> = rxResource({
     params: () => ({ category: this.category() }),
@@ -95,7 +86,7 @@ export default class News {
   });
 
   /** During SSR a failed load renders as loading, as the browser fetches it again after hydration */
-  readonly firstPageFailed: Signal<boolean> = computed(() => this.isBrowser && !!this.firstPage.error());
+  readonly firstPageFailed = computed(() => this.isBrowser && !!this.firstPage.error());
 
   /** The pages after the first, which start over with the category */
   private readonly older = paging({
@@ -103,35 +94,35 @@ export default class News {
     fetch: ({ before, category }: { before: string; category: string }) =>
       this.osrsTrackerRepo.getNewsArchive(PAGE_SIZE, { before, category: category || undefined }),
   });
-  readonly loadingOlder: Signal<boolean> = this.older.loading;
-  readonly olderFailed: Signal<boolean> = computed(() => !!this.older.failed());
-  private readonly olderPosts: Signal<NewsPost[]> = computed(() => this.older.pages().flatMap(page => page.posts));
+  readonly loadingOlder = this.older.loading;
+  readonly olderFailed = computed(() => !!this.older.failed());
+  private readonly olderPosts = computed(() => this.older.pages().flatMap(page => page.posts));
 
-  private readonly posts: Signal<NewsPost[]> = computed(() =>
+  private readonly posts = computed(() =>
     this.firstPage.hasValue() && this.firstPage.value() ? [...this.firstPage.value()!.posts, ...this.olderPosts()] : [],
   );
-  private readonly next: Signal<string | null> = computed(() => {
+  private readonly next = computed(() => {
     const lastPage = this.older.pages().at(-1) ?? (this.firstPage.hasValue() ? this.firstPage.value() : undefined);
     return lastPage?.next ?? null;
   });
 
   /** With a day picked: whether the loaded posts reach back to it, so every post since is shown */
-  readonly reachedSince: Signal<boolean> = computed(() => {
+  readonly reachedSince = computed(() => {
     const sinceEnd = this.sinceEnd();
     const oldest = this.posts().at(-1);
     return !!sinceEnd && !!oldest && oldest.pubDate < sinceEnd;
   });
 
-  readonly hasOlder: Signal<boolean> = computed(() => !this.reachedSince() && this.next() !== null);
+  readonly hasOlder = computed(() => !this.reachedSince() && this.next() !== null);
 
   /** The day picked is before the oldest stored post: the end note says where the history starts */
-  readonly historyStart: Signal<Date | null> = computed(() =>
+  readonly historyStart = computed(() =>
     this.since() && !this.category() && !this.hasOlder() && !this.reachedSince()
       ? (this.posts().at(-1)?.pubDate ?? null)
       : null,
   );
 
-  readonly months: Signal<NewsMonth[]> = computed(() => {
+  readonly months = computed(() => {
     const sinceEnd = this.sinceEnd();
     const months: NewsMonth[] = [];
 
@@ -149,7 +140,7 @@ export default class News {
     return months;
   });
 
-  readonly categoryLabel: Signal<string> = computed(
+  readonly categoryLabel = computed(
     () => NEWS_CATEGORIES.find(option => option.value === this.category())?.label ?? '',
   );
 

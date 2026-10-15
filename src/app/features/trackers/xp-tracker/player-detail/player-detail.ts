@@ -7,8 +7,6 @@ import {
   OnInit,
   PLATFORM_ID,
   RESPONSE_INIT,
-  Signal,
-  WritableSignal,
   computed,
   effect,
   inject,
@@ -19,7 +17,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { HiscoreSkill, overallOf, Player } from '@osrs-tracker/models';
+import { overallOf, Player } from '@osrs-tracker/models';
 import { EMPTY, catchError } from 'rxjs';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
@@ -43,11 +41,11 @@ import { SkillsCard } from './hiscores/skills-card';
 import { PlayerChart } from './charts/player-chart';
 import { CompareDays } from './compare/compare-days';
 import { DAY_PARAM, readComparePicks, writeComparePicks } from './compare/compare-url';
-import { PlayerHeader, TrackingState } from './player-header';
+import { PlayerHeader } from './player-header';
 import { playerHistory, PlayerHistory } from './player-history';
 import { LogNotice, PlayerLogs } from './player-logs';
-import { StatTileView, statTilesFor } from './stat-tiles';
-import { Gains, PeriodSummary, dailyGains, periodStart, periodSummary, totalGains } from './player-summary';
+import { statTilesFor } from './stat-tiles';
+import { dailyGains, periodStart, periodSummary, totalGains } from './player-summary';
 import { PlayerView } from './player-view';
 import { Glyph } from '@app/common/ui/glyph/glyph';
 
@@ -103,27 +101,21 @@ export default class PlayerDetail implements OnInit {
 
   readonly logViews: SegmentedOption<LogView>[] = LOG_VIEWS;
   /** The day log, or two days compared in its place; a shared link with picked days opens the comparison */
-  readonly logView: WritableSignal<LogView> = signal(
-    this.route.snapshot.queryParamMap.has(DAY_PARAM) ? 'compare' : 'days',
-  );
+  readonly logView = signal<LogView>(this.route.snapshot.queryParamMap.has(DAY_PARAM) ? 'compare' : 'days');
   /** Once opened, the comparison stays (hidden on Days), so going back to it keeps the picks and loads nothing again */
-  readonly compareOpened: WritableSignal<boolean> = signal(this.logView() === 'compare');
+  readonly compareOpened = signal(this.logView() === 'compare');
   /** Compare is shown in the day log's place; a new player's single day has nothing to compare */
-  readonly comparing: Signal<boolean> = computed(
-    () => this.logView() === 'compare' && this.history.entries().length > 1,
-  );
+  readonly comparing = computed(() => this.logView() === 'compare' && this.history.entries().length > 1);
   readonly #pageErrorHandler = resolverErrorHandler('/trackers/xp/' + this.username);
 
   /** `null` when there's no such player */
   readonly player = input.required<Player | null>();
   /** The resolved player, until `trackPlayer` returns a fresh one (or finds they no longer exist) */
-  readonly playerDetail: WritableSignal<Player | null> = linkedSignal(() => this.player());
+  readonly playerDetail = linkedSignal(() => this.player());
 
-  readonly scrapingOffset: Signal<number> = this.xpTrackerStore.scrapingOffset;
+  readonly scrapingOffset = this.xpTrackerStore.scrapingOffset;
   /** The UTC hour the visitor's offset is checked at, e.g. "02:00 UTC" */
-  readonly trackedAt: Signal<string> = computed(
-    () => `${String((this.scrapingOffset() + 24) % 24).padStart(2, '0')}:00 UTC`,
-  );
+  readonly trackedAt = computed(() => `${String((this.scrapingOffset() + 24) % 24).padStart(2, '0')}:00 UTC`);
 
   readonly history: PlayerHistory = playerHistory({
     username: this.username,
@@ -134,51 +126,51 @@ export default class PlayerDetail implements OnInit {
   });
 
   /** The stats shown are the last tracked ones because the hiscores didn't respond (to the API or the browser) */
-  readonly stale: Signal<boolean> = computed(
+  readonly stale = computed(
     () =>
       !this.history.today() &&
       !!this.history.entries().length &&
       (this.history.todayFailed() || !!this.playerDetail()?.refreshFailed),
   );
   /** Without live hiscores the newest tracked entry stands in, so this only fails when there's none either */
-  readonly hiscoresFailed: Signal<boolean> = computed(
+  readonly hiscoresFailed = computed(
     () =>
       !this.history.current() &&
       this.history.todayFailed() &&
       (this.history.loaded() || this.history.firstPageFailed()),
   );
 
-  readonly trackingState: Signal<TrackingState> = computed(() => {
+  readonly trackingState = computed(() => {
     const player = this.playerDetail();
     if (!player || !isTrackedFor(player, this.scrapingOffset())) return 'untracked';
     return this.history.loaded() && this.history.entries().length <= 1 ? 'started' : 'tracked';
   });
 
   /** Each day's gains, newest first; the first is today's so far when the live hiscores are in */
-  readonly diffs: Signal<Gains[]> = computed(() => {
+  readonly diffs = computed(() => {
     const current = this.history.current();
     return current ? dailyGains(current, this.history.entries()) : [];
   });
   /** The days the chart and tiles cover: the period's days and today so far, newest first */
-  readonly periodDiffs: Signal<Gains[]> = computed(() => {
+  readonly periodDiffs = computed(() => {
     const current = this.history.current();
     const entries = this.history.entries();
     if (!current || !entries.length) return [];
     return this.diffs().slice(0, periodStart(current, entries, this.playerView.period()).index + 1);
   });
-  readonly chartState: Signal<'loading' | 'empty' | 'ready'> = computed(() => {
+  readonly chartState = computed(() => {
     if (!this.history.periodLoaded()) return 'loading';
     return this.history.entries().length > 1 ? 'ready' : 'empty';
   });
 
-  readonly emptyChartText: Signal<string> = computed(() => {
+  readonly emptyChartText = computed(() => {
     const name = capitalise(this.username);
     return this.trackingState() === 'untracked'
       ? `${name} isn’t tracked at ${this.trackedAt()} yet. Once they’re looked up, this chart shows what they gain each day.`
       : `${name}’s stats were saved. After the next check at ${this.trackedAt()}, this chart shows what they gain each day.`;
   });
 
-  readonly logNotice: Signal<LogNotice | undefined> = computed(() => {
+  readonly logNotice = computed<LogNotice | undefined>(() => {
     switch (this.trackingState()) {
       case 'started':
         return {
@@ -198,29 +190,27 @@ export default class PlayerDetail implements OnInit {
     }
   });
 
-  readonly summary: Signal<PeriodSummary | undefined> = computed(() => {
+  readonly summary = computed(() => {
     const current = this.history.current();
     return current && periodSummary(current, this.history.comparedEntries(), this.playerView.period());
   });
 
   /** Each skill's XP gained over the period, for the skills that gained any */
-  readonly skillGains: Signal<ReadonlyMap<string, number>> = computed(() => totalGains(this.periodDiffs(), 'skills'));
+  readonly skillGains = computed(() => totalGains(this.periodDiffs(), 'skills'));
   /** Each activity's gains over the period */
-  readonly activityGains: Signal<ReadonlyMap<string, number>> = computed(() =>
-    totalGains(this.periodDiffs(), 'activities'),
-  );
+  readonly activityGains = computed(() => totalGains(this.periodDiffs(), 'activities'));
   /** The picked minigame, or the first running total with gains */
-  readonly chartedMinigame: Signal<string | undefined> = computed(
+  readonly chartedMinigame = computed(
     () =>
       this.playerView.minigame() ??
       MINIGAME_ROWS.flat().find(name => !(name in UNCHARTED_MINIGAMES) && this.activityGains().has(name)),
   );
 
-  readonly overall: Signal<HiscoreSkill | undefined> = computed(() => {
+  readonly overall = computed(() => {
     const current = this.history.current();
     return current && overallOf(current);
   });
-  readonly statTiles: Signal<StatTileView[] | undefined> = computed(() => {
+  readonly statTiles = computed(() => {
     const overall = this.overall();
     if (!overall || !this.history.comparedLoaded()) return undefined;
     return statTilesFor(overall, this.summary(), this.playerView.period(), this.history.previousPeriodFailed());

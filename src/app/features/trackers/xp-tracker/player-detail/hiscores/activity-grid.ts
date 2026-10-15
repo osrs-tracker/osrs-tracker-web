@@ -1,6 +1,6 @@
 import { Grid, GridCell, GridCellWidget, GridRow } from '@angular/aria/grid';
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, effect, inject, input, InputSignal, Signal, viewChild } from '@angular/core';
+import { Component, computed, effect, inject, input, InputSignal, viewChild } from '@angular/core';
 import { ActivityEnum } from '@osrs-tracker/hiscores';
 import { HiscoreActivity, HiscoreEntry } from '@osrs-tracker/models';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
@@ -158,13 +158,13 @@ export class ActivityGrid {
   readonly hasFooter: InputSignal<boolean> = input(false);
 
   /** The colours the chart gives the category's activities with gains */
-  readonly #colors: Signal<Map<string, string>> = computed(() => {
+  readonly #colors = computed(() => {
     const category = CHART_CATEGORIES[this.view()];
     const series = [...this.gains()].filter(([name]) => category.has(name)).map(([name, total]) => ({ name, total }));
     return chartColors(series, this.darkMode());
   });
 
-  readonly cells: Signal<ActivityCell[]> = computed(() => {
+  readonly cells = computed(() => {
     const view = this.view();
     const charting = this.playerView.chart() === view;
     const hidden = this.playerView.hidden();
@@ -195,12 +195,12 @@ export class ActivityGrid {
   });
 
   /** The cells in rows of three, as the grid reads them */
-  readonly rows: Signal<ActivityCell[][]> = computed(() => {
+  readonly rows = computed(() => {
     const cells = this.cells();
     return Array.from({ length: Math.ceil(cells.length / 3) }, (_, i) => cells.slice(i * 3, i * 3 + 3));
   });
 
-  private readonly grid: Signal<Grid | undefined> = viewChild(Grid);
+  private readonly grid = viewChild(Grid);
 
   constructor() {
     effect(() => setGridTabStop(this.grid()));

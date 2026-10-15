@@ -1,8 +1,8 @@
 import { Grid, GridCell, GridCellWidget, GridRow } from '@angular/aria/grid';
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, effect, inject, input, InputSignal, Signal, viewChild } from '@angular/core';
+import { Component, computed, effect, inject, input, InputSignal, viewChild } from '@angular/core';
 import { calculateXPForSkillLevel, SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreEntry, HiscoreSkill, overallOf, skillProgress } from '@osrs-tracker/models';
+import { HiscoreEntry, overallOf, skillProgress } from '@osrs-tracker/models';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Tooltip } from '@app/common/ui/tooltip/tooltip';
 import { Icon } from '@app/common/icon/icon';
@@ -175,7 +175,7 @@ export class SkillGrid {
   /** Each skill's XP gained over the charted days */
   readonly gains: InputSignal<ReadonlyMap<string, number>> = input.required();
 
-  readonly cells: Signal<SkillCell[]> = computed(() => {
+  readonly cells = computed<SkillCell[]>(() => {
     const selected = this.playerView.skills();
     const theme = this.darkMode() ? 'dark' : 'light';
     return SKILL_LAYOUT.map(name => {
@@ -199,17 +199,17 @@ export class SkillGrid {
     });
   });
   /** The cells in rows of three, as the grid reads them */
-  readonly rows: Signal<SkillCell[][]> = computed(() => {
+  readonly rows = computed(() => {
     const cells = this.cells();
     return Array.from({ length: Math.ceil(cells.length / 3) }, (_, i) => cells.slice(i * 3, i * 3 + 3));
   });
-  readonly overall: Signal<HiscoreSkill | undefined> = computed(() => {
+  readonly overall = computed(() => {
     const hiscore = this.hiscore();
     return hiscore && overallOf(hiscore);
   });
-  readonly overallOn: Signal<boolean> = computed(() => this.playerView.skills().has(SkillEnum.Overall));
+  readonly overallOn = computed(() => this.playerView.skills().has(SkillEnum.Overall));
 
-  private readonly grid: Signal<Grid | undefined> = viewChild(Grid);
+  private readonly grid = viewChild(Grid);
 
   constructor() {
     effect(() => setGridTabStop(this.grid()));

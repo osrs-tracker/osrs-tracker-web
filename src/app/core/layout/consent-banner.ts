@@ -75,7 +75,7 @@ export class ConsentBanner {
   readonly consentStore = inject(ConsentStore);
 
   constructor() {
-    const elementRef: ElementRef<HTMLElement> = inject(ElementRef);
+    const elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
     // Reopened from the footer: move focus to the banner, so keyboard and screen reader users land on it, and back to
     // the Cookies button once a choice closes it

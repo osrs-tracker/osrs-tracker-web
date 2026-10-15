@@ -1,4 +1,4 @@
-import { Component, computed, input, InputSignal, Signal } from '@angular/core';
+import { Component, computed, input, InputSignal } from '@angular/core';
 import { Skeleton } from '../loading/skeleton';
 
 /** Name bar widths, varied per row so a list of skeleton rows doesn't look like a barcode. */
@@ -34,5 +34,5 @@ export class ListRowSkeleton {
   /** The row's position in the list, to vary the name bar. */
   readonly index: InputSignal<number> = input(0);
 
-  readonly nameWidth: Signal<string> = computed(() => NAME_WIDTHS[this.index() % NAME_WIDTHS.length]);
+  readonly nameWidth = computed(() => NAME_WIDTHS[this.index() % NAME_WIDTHS.length]);
 }

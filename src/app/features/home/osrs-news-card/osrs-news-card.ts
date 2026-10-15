@@ -1,5 +1,5 @@
 import { DatePipe, NgOptimizedImage } from '@angular/common';
-import { Component, InputSignal, Signal, computed, input } from '@angular/core';
+import { Component, InputSignal, computed, input } from '@angular/core';
 import { newsImageUrl, OsrsNewsItem } from '@app/common/api/osrs-tracker-repo';
 
 /** A news post: image, date and category, title and text; the whole card links to the post. */
@@ -10,5 +10,5 @@ import { newsImageUrl, OsrsNewsItem } from '@app/common/api/osrs-tracker-repo';
 })
 export default class OsrsNewsCard {
   readonly osrsNewsItem: InputSignal<OsrsNewsItem> = input.required();
-  readonly imageSrc: Signal<string> = computed(() => newsImageUrl(this.osrsNewsItem().enclosure.url));
+  readonly imageSrc = computed(() => newsImageUrl(this.osrsNewsItem().enclosure.url));
 }

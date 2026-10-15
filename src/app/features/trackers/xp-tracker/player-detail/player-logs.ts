@@ -1,10 +1,10 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, computed, input, InputSignal, Signal } from '@angular/core';
+import { Component, computed, input, InputSignal } from '@angular/core';
 import { SkillEnum } from '@osrs-tracker/hiscores';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Icon } from '@app/common/icon/icon';
 import { ShortDatePipe } from './charts/short-date-pipe';
-import { dayLogGroups, LogGroup } from './day-log-groups';
+import { dayLogGroups } from './day-log-groups';
 import { Gains } from './player-summary';
 
 export interface LogNotice {
@@ -35,7 +35,5 @@ export class PlayerLogs {
   /** Shown instead of the days while there are none: tracking just started, or the player isn't tracked */
   readonly notice: InputSignal<LogNotice | undefined> = input();
 
-  readonly groups: Signal<LogGroup[]> = computed(() =>
-    dayLogGroups(this.diffs(), this.todayLoading(), this.todaySince()),
-  );
+  readonly groups = computed(() => dayLogGroups(this.diffs(), this.todayLoading(), this.todaySince()));
 }

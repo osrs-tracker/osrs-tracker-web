@@ -1,15 +1,15 @@
-import { Component, InputSignal, ResourceRef, Signal, computed, inject, input } from '@angular/core';
+import { Component, InputSignal, ResourceRef, computed, inject, input } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
-import { ListCard, ListCardState, listCardState } from '@app/common/ui/cards/list-card';
+import { ListCard, listCardState } from '@app/common/ui/cards/list-card';
 import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
 import { Icon } from '@app/common/icon/icon';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { TrackerHero } from '../tracker-hero';
 import { ItemSearch } from './item-search';
 import { ItemRow } from './item-row';
-import { PriceTrackerStore, RecentItem } from './price-tracker-store';
+import { PriceTrackerStore } from './price-tracker-store';
 
 @Component({
   selector: 'price-tracker',
@@ -23,12 +23,12 @@ export default class PriceTracker {
   /** A search to run straight away, from `?q=` (e.g. from an item page that wasn't found) */
   readonly q: InputSignal<string | undefined> = input<string>();
 
-  readonly favoriteItems: Signal<RecentItem[]> = this.priceTrackerStore.favoriteItems;
-  readonly recentItems: Signal<RecentItem[]> = this.priceTrackerStore.recentItems;
+  readonly favoriteItems = this.priceTrackerStore.favoriteItems;
+  readonly recentItems = this.priceTrackerStore.recentItems;
 
   readonly recentItemLookups: ResourceRef<Item[]> = rxResource({
     stream: () => this.osrsTrackerRepo.getRecentItemLookups(),
     defaultValue: [],
   });
-  readonly recentItemLookupsState: Signal<ListCardState> = computed(() => listCardState(this.recentItemLookups));
+  readonly recentItemLookupsState = computed(() => listCardState(this.recentItemLookups));
 }

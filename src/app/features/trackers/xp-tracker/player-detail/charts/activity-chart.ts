@@ -1,5 +1,5 @@
 import { formatNumber } from '@angular/common';
-import { DOCUMENT, Component, computed, inject, input, InputSignal, Signal } from '@angular/core';
+import { DOCUMENT, Component, computed, inject, input, InputSignal } from '@angular/core';
 import { Chart, ChartOptions, Point } from 'chart.js';
 import { merge } from 'chart.js/helpers';
 import { BaseChart } from '@app/common/charts/base-chart';
@@ -10,7 +10,7 @@ import { ActivityView, PlayerView } from '../player-view';
 import { CHART_CATEGORIES } from './chart-categories';
 import { ChartLegend, LegendItem } from './chart-legend';
 import { logChartOptions } from './log-chart-options';
-import { activitySeries, ChartSeries } from './log-chart-series';
+import { activitySeries } from './log-chart-series';
 import { TooltipMarkers } from './tooltip-markers';
 
 /** The activities with the largest totals get a chip; the rest wait behind "+N" */
@@ -61,14 +61,12 @@ export class ActivityChart extends BaseChart<'bar', Gains[]> {
   readonly minigame: InputSignal<string | undefined> = input();
 
   /** Every activity of the category with gains */
-  readonly #allSeries: Signal<ChartSeries[]> = computed(() =>
-    activitySeries(this.data(), CHART_CATEGORIES[this.category()]),
-  );
+  readonly #allSeries = computed(() => activitySeries(this.data(), CHART_CATEGORIES[this.category()]));
   /** Every activity's colour, kept apart from the others with gains */
-  readonly #colors: Signal<Map<string, string>> = computed(() => chartColors(this.#allSeries(), this.darkMode()));
+  readonly #colors = computed(() => chartColors(this.#allSeries(), this.darkMode()));
   /** The ones shown */
-  readonly series: Signal<ChartSeries[]> = computed(() => this.#allSeries().filter(({ name }) => !this.hidden(name)));
-  readonly legendItems: Signal<LegendItem[]> = computed(() =>
+  readonly series = computed(() => this.#allSeries().filter(({ name }) => !this.hidden(name)));
+  readonly legendItems = computed<LegendItem[]>(() =>
     this.#allSeries().map(series => ({
       name: series.name,
       color: this.color(series.name),

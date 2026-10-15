@@ -1,4 +1,4 @@
-import { inject, Service, signal, WritableSignal } from '@angular/core';
+import { inject, Service, signal } from '@angular/core';
 import { SkillEnum } from '@osrs-tracker/hiscores';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 
@@ -18,17 +18,17 @@ export type Period = 7 | 30 | 60 | 90;
 export class PlayerView {
   private readonly analyticsService = inject(AnalyticsService);
 
-  readonly top: WritableSignal<TopTab> = signal('skills');
-  readonly bottom: WritableSignal<BottomTab> = signal('clues');
-  readonly chart: WritableSignal<ChartView> = signal('skills');
-  readonly period: WritableSignal<Period> = signal(7);
+  readonly top = signal<TopTab>('skills');
+  readonly bottom = signal<BottomTab>('clues');
+  readonly chart = signal<ChartView>('skills');
+  readonly period = signal<Period>(7);
 
   /** Overall alone, or the skills being compared */
-  readonly skills: WritableSignal<ReadonlySet<string>> = signal(new Set([SkillEnum.Overall]));
+  readonly skills = signal<ReadonlySet<string>>(new Set([SkillEnum.Overall]));
   /** Activities of the charted category that are hidden */
-  readonly hidden: WritableSignal<ReadonlySet<string>> = signal(new Set());
+  readonly hidden = signal<ReadonlySet<string>>(new Set());
   /** The charted minigame, one at a time; until one is picked, the chart shows the first with gains */
-  readonly minigame: WritableSignal<string | undefined> = signal(undefined);
+  readonly minigame = signal<string | undefined>(undefined);
 
   setPeriod(period: Period): void {
     this.period.set(period);

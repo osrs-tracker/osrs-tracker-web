@@ -4,7 +4,7 @@ import { StorageKey } from './storage';
 
 @Service()
 export class StorageService implements Storage {
-  readonly window: Window | null = inject(WINDOW);
+  readonly window = inject(WINDOW);
 
   getItem(key: StorageKey): string | null {
     return this.window && this.window.localStorage.getItem(key);

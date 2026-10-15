@@ -11,7 +11,6 @@ import {
   InputSignal,
   OnChanges,
   OnDestroy,
-  Signal,
   TemplateRef,
   ViewContainerRef,
   inject,
@@ -52,7 +51,7 @@ import { Subject, debounceTime, fromEvent } from 'rxjs';
 export class Tooltip implements OnChanges, AfterViewInit, OnDestroy {
   private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
-  private readonly elementRef = inject(ElementRef);
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly overlay = inject(Overlay);
   private readonly viewContainerRef = inject(ViewContainerRef);
 
@@ -74,8 +73,8 @@ export class Tooltip implements OnChanges, AfterViewInit, OnDestroy {
   readonly tooltipTemplate: InputSignal<TemplateRef<unknown>> = input.required();
   readonly tooltipUnderline: InputSignal<boolean> = input(true);
 
-  readonly tooltipTemplateArrow: Signal<TemplateRef<unknown>> = viewChild.required('tooltipTemplateArrow');
-  readonly tooltipTemplateContainer: Signal<TemplateRef<unknown>> = viewChild.required('tooltipTemplateContainer');
+  readonly tooltipTemplateArrow = viewChild.required<TemplateRef<unknown>>('tooltipTemplateArrow');
+  readonly tooltipTemplateContainer = viewChild.required<TemplateRef<unknown>>('tooltipTemplateContainer');
 
   constructor() {
     fromEvent(this.elementRef.nativeElement, 'touchstart', { passive: true })

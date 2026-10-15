@@ -1,5 +1,5 @@
 import { DecimalPipe, isPlatformBrowser } from '@angular/common';
-import { Component, InputSignal, PLATFORM_ID, ResourceRef, Signal, computed, inject, input } from '@angular/core';
+import { Component, InputSignal, PLATFORM_ID, ResourceRef, computed, inject, input } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { fromUnixTime, getUnixTime } from 'date-fns';
 import { forkJoin, map } from 'rxjs';
@@ -109,23 +109,21 @@ export class ItemRow {
   });
 
   // The server renders skeletons, the browser fetches
-  readonly loading: Signal<boolean> = computed(() => !this.isBrowser || this.priceResource.isLoading());
+  readonly loading = computed(() => !this.isBrowser || this.priceResource.isLoading());
 
-  private readonly data: Signal<ItemRowPrice | null> = computed(() =>
-    this.priceResource.hasValue() ? (this.priceResource.value() ?? null) : null,
-  );
+  private readonly data = computed(() => (this.priceResource.hasValue() ? (this.priceResource.value() ?? null) : null));
 
-  readonly price: Signal<number | null> = computed(() => this.data()?.price ?? null);
-  readonly shortPrice: Signal<string> = computed(() => formatNumberLegible(this.price() ?? 0));
-  readonly up: Signal<boolean> = computed(() => (this.data()?.change ?? 0) >= 0);
+  readonly price = computed(() => this.data()?.price ?? null);
+  readonly shortPrice = computed(() => formatNumberLegible(this.price() ?? 0));
+  readonly up = computed(() => (this.data()?.change ?? 0) >= 0);
   /** The sign as written in the design: a plus or a true minus. */
-  readonly sign: Signal<string> = computed(() => formatSign(this.data()?.change ?? 0, 'always'));
-  readonly changePercent: Signal<number | null> = computed(() => {
+  readonly sign = computed(() => formatSign(this.data()?.change ?? 0, 'always'));
+  readonly changePercent = computed(() => {
     const { change, average } = this.data() ?? {};
     return change != null && average ? (Math.abs(change) / average) * 100 : null;
   });
   // whole gp, as in the game: the average has decimals
-  readonly changeTitle: Signal<string> = computed(
+  readonly changeTitle = computed(
     () => `${this.sign()}${formatWhole(Math.abs(this.data()?.change ?? 0))} gp vs yesterday's average`,
   );
 }

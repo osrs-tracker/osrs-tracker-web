@@ -1,5 +1,5 @@
 import { formatDate } from '@angular/common';
-import { Component, InputSignal, OutputEmitterRef, Signal, computed, input, output } from '@angular/core';
+import { Component, InputSignal, OutputEmitterRef, computed, input, output } from '@angular/core';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
@@ -78,7 +78,7 @@ export class ItemVolume {
 
   readonly retry: OutputEmitterRef<void> = output();
 
-  readonly summary: Signal<VolumeSummary[]> = computed(() => {
+  readonly summary = computed<VolumeSummary[]>(() => {
     const volumes = this.volumes();
     const today = volumes.at(-1);
     // Today isn't over yet, so the average is over the full days before it
@@ -98,13 +98,11 @@ export class ItemVolume {
     ].map(stat => ({ ...stat, value: formatWhole(stat.value ?? 0) }));
   });
 
-  readonly firstDay: Signal<string> = computed(() => {
+  readonly firstDay = computed(() => {
     const first = this.volumes()[0];
     // the days are UTC, whatever the visitor's time zone
     return first ? formatDate(first.day * 1000, 'd MMM', 'en-US', 'UTC') : '';
   });
 
-  readonly chartLabel: Signal<string> = computed(
-    () => `Items bought and sold per day over the last ${this.volumes().length} days`,
-  );
+  readonly chartLabel = computed(() => `Items bought and sold per day over the last ${this.volumes().length} days`);
 }

@@ -6,8 +6,6 @@ import {
   PLATFORM_ID,
   RESPONSE_INIT,
   ResourceRef,
-  Signal,
-  WritableSignal,
   computed,
   inject,
   input,
@@ -32,7 +30,7 @@ import { PriceTrackerStore } from '../price-tracker-store';
 import { browseLetterOf, startingWith } from '../browse/browse-letters';
 import { PriceChart } from './charts/price-chart';
 import { ItemHeader } from './item-header';
-import { DailyVolume, ItemStat, dailyVolumes, itemStats, yesterdayAverageSellPrice } from './item-prices';
+import { dailyVolumes, itemStats, yesterdayAverageSellPrice } from './item-prices';
 import { ItemVolume } from './item-volume';
 import { ProfitCalculator } from './profit-calculator';
 import { Glyph } from '@app/common/ui/glyph/glyph';
@@ -87,18 +85,18 @@ export default class ItemDetail implements OnInit {
   readonly item: InputSignal<Item | null> = input.required();
 
   /** The browse page the item is listed on */
-  readonly browseLetter: Signal<string | undefined> = computed(() => {
+  readonly browseLetter = computed(() => {
     const item = this.item();
     return item ? browseLetterOf(item.name) : undefined;
   });
-  readonly browseStartingWith: Signal<string> = computed(() => startingWith(this.browseLetter() ?? ''));
+  readonly browseStartingWith = computed(() => startingWith(this.browseLetter() ?? ''));
 
   readonly rangeOptions: SegmentedOption<PriceRange>[] = (Object.keys(PRICE_RANGES) as PriceRange[]).map(range => ({
     value: range,
     label: range,
     title: `Last ${PRICE_RANGES[range].title}`,
   }));
-  readonly range: WritableSignal<PriceRange> = signal('1W');
+  readonly range = signal<PriceRange>('1W');
 
   readonly latest: ResourceRef<LatestPrices | undefined> = rxResource({
     params: () => this.item()?.id,
@@ -109,29 +107,25 @@ export default class ItemDetail implements OnInit {
    * During SSR a failed price load renders as loading, as the browser fetches it again after hydration (failed
    * responses aren't in the transfer cache).
    */
-  readonly latestLoading: Signal<boolean> = computed(
-    () => this.latest.isLoading() || (!this.isBrowser && !!this.latest.error()),
-  );
-  readonly latestFailed: Signal<boolean> = computed(() => this.isBrowser && !!this.latest.error());
+  readonly latestLoading = computed(() => this.latest.isLoading() || (!this.isBrowser && !!this.latest.error()));
+  readonly latestFailed = computed(() => this.isBrowser && !!this.latest.error());
 
   /**
    * Shared per item, so switching back and forth between ranges doesn't refetch. Browser only: the hourly series is
    * about 20KB that SSR would wait for and embed in the page, and the chart it feeds isn't rendered on the server.
    */
-  private readonly timeSeries: Signal<Record<PriceRange, Observable<AveragePricesAtTime[]>> | undefined> = computed(
-    () => {
-      const id = this.item()?.id;
-      if (id === undefined || !this.isBrowser) return undefined;
+  private readonly timeSeries = computed<Record<PriceRange, Observable<AveragePricesAtTime[]>> | undefined>(() => {
+    const id = this.item()?.id;
+    if (id === undefined || !this.isBrowser) return undefined;
 
-      const fetch = (lookback: Lookback) => this.osrsPricesRepo.getPriceTimeSeries(id, lookback).pipe(shareReplay(1));
-      return {
-        '1D': fetch(PRICE_RANGES['1D'].lookback),
-        '1W': fetch(PRICE_RANGES['1W'].lookback),
-        '1M': fetch(PRICE_RANGES['1M'].lookback),
-        '1Y': fetch(PRICE_RANGES['1Y'].lookback),
-      };
-    },
-  );
+    const fetch = (lookback: Lookback) => this.osrsPricesRepo.getPriceTimeSeries(id, lookback).pipe(shareReplay(1));
+    return {
+      '1D': fetch(PRICE_RANGES['1D'].lookback),
+      '1W': fetch(PRICE_RANGES['1W'].lookback),
+      '1M': fetch(PRICE_RANGES['1M'].lookback),
+      '1Y': fetch(PRICE_RANGES['1Y'].lookback),
+    };
+  });
 
   /** The last 168 hours: the volume, the 24-hour volume and yesterday's average come from it, as does the 1W range */
   readonly hourly: ResourceRef<AveragePricesAtTime[]> = rxResource({
@@ -140,7 +134,7 @@ export default class ItemDetail implements OnInit {
     defaultValue: [],
   });
   /** Never loaded on the server, so it renders as loading there */
-  readonly hourlyLoading: Signal<boolean> = computed(() => !this.isBrowser || this.hourly.isLoading());
+  readonly hourlyLoading = computed(() => !this.isBrowser || this.hourly.isLoading());
 
   // A resource cancels the previous request when the range changes, so a slow response can't overwrite a newer one
   readonly priceSeries: ResourceRef<AveragePricesAtTime[]> = rxResource({
@@ -149,28 +143,22 @@ export default class ItemDetail implements OnInit {
     defaultValue: [],
   });
 
-  readonly priceChartData: Signal<AveragePricesAtTime[]> = computed(() => {
+  readonly priceChartData = computed(() => {
     const since = Date.now() / 1000 - PRICE_RANGES[this.range()].seconds;
     return this.priceSeries.hasValue() ? this.priceSeries.value().filter(price => price.timestamp >= since) : [];
   });
-  readonly priceChartLabel: Signal<string> = computed(
+  readonly priceChartLabel = computed(
     () => `Instant buy and instant sell price over the last ${PRICE_RANGES[this.range()].title}`,
   );
 
-  private readonly latestPrices: Signal<LatestPrices | undefined> = computed(() =>
-    this.latest.hasValue() ? this.latest.value() : undefined,
-  );
-  private readonly hourlySeries: Signal<AveragePricesAtTime[]> = computed(() =>
-    this.hourly.hasValue() ? this.hourly.value() : [],
-  );
+  private readonly latestPrices = computed(() => (this.latest.hasValue() ? this.latest.value() : undefined));
+  private readonly hourlySeries = computed(() => (this.hourly.hasValue() ? this.hourly.value() : []));
 
-  readonly sellPrice: Signal<number | null> = computed(() => this.latestPrices()?.low ?? null);
-  readonly yesterdayAverage: Signal<number | null> = computed(() =>
-    yesterdayAverageSellPrice(this.hourlySeries(), new Date()),
-  );
-  readonly volumes: Signal<DailyVolume[]> = computed(() => dailyVolumes(this.hourlySeries(), new Date(), VOLUME_DAYS));
+  readonly sellPrice = computed(() => this.latestPrices()?.low ?? null);
+  readonly yesterdayAverage = computed(() => yesterdayAverageSellPrice(this.hourlySeries(), new Date()));
+  readonly volumes = computed(() => dailyVolumes(this.hourlySeries(), new Date(), VOLUME_DAYS));
 
-  readonly stats: Signal<ItemStat[]> = computed(() =>
+  readonly stats = computed(() =>
     itemStats({
       item: this.item()!,
       latest: this.latestPrices(),

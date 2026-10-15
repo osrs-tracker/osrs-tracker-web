@@ -12,10 +12,8 @@ import {
   ModelSignal,
   output,
   OutputEmitterRef,
-  Signal,
   signal,
   viewChildren,
-  WritableSignal,
 } from '@angular/core';
 import { Icon } from '@app/common/icon/icon';
 import { setToolbarTabStop } from './aria-tab-stop';
@@ -94,11 +92,11 @@ export class Segmented<T> {
   readonly variant: InputSignal<'accent' | 'slate'> = input<'accent' | 'slate'>('accent');
   readonly stretch: InputSignalWithTransform<boolean, unknown> = input(false, { transform: booleanAttribute });
 
-  protected readonly focusWithin: WritableSignal<boolean> = signal(false);
+  protected readonly focusWithin = signal(false);
 
-  private readonly elementRef: ElementRef<HTMLElement> = inject(ElementRef);
-  private readonly toolbar: Toolbar = inject(Toolbar);
-  private readonly widgets: Signal<readonly ToolbarWidget[]> = viewChildren(ToolbarWidget);
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly toolbar = inject(Toolbar);
+  private readonly widgets = viewChildren(ToolbarWidget);
 
   constructor() {
     // The toolbar makes its first option the Tab stop; a radio group's is the checked one. Set it while focus is

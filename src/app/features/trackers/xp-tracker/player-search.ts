@@ -1,4 +1,4 @@
-import { Component, WritableSignal, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
@@ -37,7 +37,7 @@ import { Glyph } from '@app/common/ui/glyph/glyph';
 export class PlayerSearch {
   private readonly analyticsService = inject(AnalyticsService);
 
-  readonly usernameQuery: WritableSignal<string> = signal('');
+  readonly usernameQuery = signal('');
 
   /** The Search button, which Enter in the input clicks too */
   trackSearch(): void {

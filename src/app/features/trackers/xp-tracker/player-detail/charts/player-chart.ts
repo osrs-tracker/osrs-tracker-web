@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core';
+import { Component, computed, inject, input, InputSignal } from '@angular/core';
 import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
 import { HiscoreEntry, skillProgress } from '@osrs-tracker/models';
 import { format } from 'date-fns';
@@ -173,13 +173,13 @@ export class PlayerChart {
   /** The charted minigame */
   readonly minigame: InputSignal<string | undefined> = input();
 
-  readonly title: Signal<string> = computed(() => TITLES[this.playerView.chart()]);
-  readonly activityView: Signal<ActivityView | undefined> = computed(() => {
+  readonly title = computed(() => TITLES[this.playerView.chart()]);
+  readonly activityView = computed(() => {
     const chart = this.playerView.chart();
     return chart === 'skills' ? undefined : chart;
   });
 
-  readonly heading: Signal<ChartHeading> = computed(() => {
+  readonly heading = computed(() => {
     const since = this.since();
     const period = since ? `since ${format(since, 'd MMM')}` : `last ${this.playerView.period()} days`;
     const view = this.activityView();

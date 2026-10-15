@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core';
+import { Component, computed, inject, input, InputSignal } from '@angular/core';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { Icon } from '@app/common/icon/icon';
 import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
@@ -95,12 +95,10 @@ export class PlayerHeader {
   /** The stats shown are the last stored ones, as the hiscores didn't respond: then the header says how old they are */
   readonly stale: InputSignal<boolean> = input(false);
 
-  readonly isFavorite: Signal<boolean> = computed(() =>
-    this.xpTrackerStore.isFavoritePlayer(this.playerDetail().username),
-  );
+  readonly isFavorite = computed(() => this.xpTrackerStore.isFavoritePlayer(this.playerDetail().username));
 
   /** The account type's hiscores, where the player is ranked now */
-  readonly hiscoreUrl: Signal<string> = computed(() => {
+  readonly hiscoreUrl = computed(() => {
     const player = this.playerDetail();
     return `https://secure.runescape.com/m=hiscore_oldschool${this.hiscoreType(player)}/hiscorepersonal?user1=${encodeURIComponent(player.username)}`;
   });
