@@ -8,7 +8,6 @@ import {
   OnDestroy,
   OnInit,
   PLATFORM_ID,
-  Signal,
   effect,
   inject,
   input,
@@ -32,11 +31,11 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
 
   private chart?: Chart<TType, Point[]>;
   private initFrame?: number;
-  private readonly canvas: Signal<ElementRef<HTMLCanvasElement>> = viewChild.required('chart');
+  private readonly canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('chart');
 
   readonly data: InputSignal<TData> = input.required();
 
-  protected readonly darkMode: Signal<boolean> = this.themeStore.darkMode;
+  protected readonly darkMode = this.themeStore.darkMode;
 
   protected abstract readonly type: TType;
 

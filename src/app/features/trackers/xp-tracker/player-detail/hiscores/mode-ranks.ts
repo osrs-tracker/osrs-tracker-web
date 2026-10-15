@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { computed, inject, PLATFORM_ID, Service, Signal, signal, WritableSignal } from '@angular/core';
+import { computed, inject, PLATFORM_ID, Service, Signal, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { SkillEnum } from '@osrs-tracker/hiscores';
 import { HiscoreEntry, Player, PlayerStatus, PlayerType, skillLevel } from '@osrs-tracker/models';
@@ -77,23 +77,23 @@ export class ModeRanks {
   private readonly osrsProxyRepo = inject(OsrsProxyRepo);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  readonly #source: WritableSignal<ModeRanksSource | undefined> = signal(undefined);
-  readonly #wanted: WritableSignal<boolean> = signal(false);
+  readonly #source = signal<ModeRanksSource | undefined>(undefined);
+  readonly #wanted = signal(false);
 
-  readonly #mode: Signal<RankTable | undefined> = computed(() => {
+  readonly #mode = computed(() => {
     const player = this.#source()?.player();
     return player ? modeTable(player) : undefined;
   });
-  readonly #build: Signal<RankTable | undefined> = computed(() => {
+  readonly #build = computed(() => {
     const source = this.#source();
     const player = source?.player();
     return player ? buildTable(player.combatLevel, source!.hiscore()) : undefined;
   });
 
-  readonly #modeRanks: Signal<TableRanks | undefined> = this.ranksOn(this.#mode);
-  readonly #buildRanks: Signal<TableRanks | undefined> = this.ranksOn(this.#build);
+  readonly #modeRanks = this.ranksOn(this.#mode);
+  readonly #buildRanks = this.ranksOn(this.#build);
   /** The tables the player is on besides the main one, mode first; empty until `load()` */
-  readonly tables: Signal<TableRanks[]> = computed(() =>
+  readonly tables = computed(() =>
     [this.#modeRanks(), this.#buildRanks()].filter((ranks): ranks is TableRanks => !!ranks),
   );
 

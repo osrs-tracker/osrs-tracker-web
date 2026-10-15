@@ -12,9 +12,7 @@ import {
   InputSignal,
   output,
   OutputEmitterRef,
-  Signal,
   signal,
-  WritableSignal,
 } from '@angular/core';
 import { Icon } from '@app/common/icon/icon';
 import { ensureToolbarTabStop, toolbarTabStop } from '@app/common/ui/controls/aria-tab-stop';
@@ -92,15 +90,13 @@ export class ChartLegend {
 
   readonly toggled: OutputEmitterRef<string> = output();
 
-  readonly expanded: WritableSignal<boolean> = signal(false);
+  readonly expanded = signal(false);
   /** Collapsed: the first items, and any that are on */
-  readonly shown: Signal<LegendItem[]> = computed(() =>
+  readonly shown = computed(() =>
     this.expanded() ? this.items() : this.items().filter((item, i) => i < this.collapseAfter() || item.on),
   );
   /** How many items collapsing hides; with none, there is nothing to expand or collapse */
-  readonly hidden: Signal<number> = computed(
-    () => this.items().filter((item, i) => i >= this.collapseAfter() && !item.on).length,
-  );
+  readonly hidden = computed(() => this.items().filter((item, i) => i >= this.collapseAfter() && !item.on).length);
 
   private readonly document = inject(DOCUMENT);
   private readonly elementRef: ElementRef<HTMLElement> = inject(ElementRef);

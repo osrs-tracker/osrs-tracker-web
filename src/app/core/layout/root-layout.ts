@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, Signal, WritableSignal, afterNextRender, computed, inject, signal } from '@angular/core';
+import { Component, afterNextRender, computed, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ConsentStore } from '@app/common/analytics/consent-store';
 import { Icon } from '@app/common/icon/icon';
@@ -31,26 +31,26 @@ import { Glyph } from '@app/common/ui/glyph/glyph';
 })
 export default class RootLayout {
   readonly consentStore = inject(ConsentStore);
-  readonly hasOngoingRequests: Signal<boolean> = inject(LoadingIndicatorStore).hasOngoingRequests;
+  readonly hasOngoingRequests = inject(LoadingIndicatorStore).hasOngoingRequests;
 
   readonly currentYear = new Date().getFullYear();
 
   readonly navMenus = inject(NavMenus);
   private readonly lastPlayedStore = inject(LastPlayedStore);
-  private readonly hydrated: WritableSignal<boolean> = signal(false);
+  private readonly hydrated = signal(false);
 
   /**
    * The news catch-up's day remembered on this device, for the Game menu's row. Only after hydration: the server can't
    * read it, so the row would differ from the server's render
    */
-  readonly lastPlayed: Signal<{ day: string; date: Date } | null> = computed(() => {
+  readonly lastPlayed = computed(() => {
     const day = this.hydrated() ? this.lastPlayedStore.lastPlayed() : null;
     return day ? { day, date: new Date(`${day}T00:00:00Z`) } : null;
   });
   protected readonly navTab = NAV_TAB;
 
   /** The nav tab the current page is under, besides Home */
-  readonly section: Signal<'trackers' | 'game' | null> = computed(() => {
+  readonly section = computed(() => {
     const path = this.navMenus.url().split(/[?#]/)[0];
     if (path.startsWith('/trackers')) return 'trackers';
     if (path === '/players-online' || path === '/news') return 'game';
@@ -58,9 +58,7 @@ export default class RootLayout {
   });
 
   /** Home's tab is underlined on phones on Home, unless a menu is open (its tab is underlined then) */
-  readonly homeMarked: Signal<boolean> = computed(
-    () => !this.navMenus.open() && this.navMenus.url().split(/[?#]/)[0] === '/',
-  );
+  readonly homeMarked = computed(() => !this.navMenus.open() && this.navMenus.url().split(/[?#]/)[0] === '/');
 
   constructor() {
     // After hydration: whether the banner stays depends on this device's choice, which the server can't know

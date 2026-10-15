@@ -1,12 +1,11 @@
 import { DecimalPipe } from '@angular/common';
-import { afterNextRender, Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
-import { PlayerCount } from '@osrs-tracker/models';
+import { afterNextRender, Component, computed, inject, signal } from '@angular/core';
 import { format } from 'date-fns';
 import { PlayerCountStore } from '@app/common/player-count/player-count-store';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { PlayerCountHistory } from './player-count-history';
-import { formatShare, LocationCount, locationCounts } from './world-locations';
+import { formatShare, locationCounts } from './world-locations';
 
 /**
  * The players online: the count (`PlayerCountStore`: live, rendered on the server and refreshed in the browser), its
@@ -18,14 +17,14 @@ import { formatShare, LocationCount, locationCounts } from './world-locations';
   imports: [DecimalPipe, LoadError, PlayerCountHistory, Skeleton],
 })
 export default class PlayersOnline {
-  private readonly hydrated: WritableSignal<boolean> = signal(false);
+  private readonly hydrated = signal(false);
 
   private readonly playerCountStore = inject(PlayerCountStore);
 
-  readonly count: Signal<PlayerCount | undefined> = this.playerCountStore.count;
-  readonly failed: Signal<boolean> = this.playerCountStore.failed;
+  readonly count = this.playerCountStore.count;
+  readonly failed = this.playerCountStore.failed;
 
-  readonly locations: Signal<(LocationCount & { share: string; percent: number })[]> = computed(() => {
+  readonly locations = computed(() => {
     const count = this.count();
     if (!count) return [];
     const { byLocation, total } = count;
@@ -36,9 +35,9 @@ export default class PlayersOnline {
     }));
   });
 
-  readonly locationOrder: Signal<string[]> = computed(() => this.locations().map(location => location.key));
+  readonly locationOrder = computed(() => this.locations().map(location => location.key));
 
-  readonly split: Signal<{ label: string; players: number; share: string; color: string }[]> = computed(() => {
+  readonly split = computed(() => {
     const count = this.count();
     if (!count) return [];
     const players = count.members + count.f2p;
@@ -48,13 +47,13 @@ export default class PlayersOnline {
     ];
   });
 
-  readonly membersPercent: Signal<number> = computed(() => {
+  readonly membersPercent = computed(() => {
     const count = this.count();
     return count && count.members + count.f2p ? (count.members / (count.members + count.f2p)) * 100 : 0;
   });
 
   /** The count's time in the viewer's time zone, so only set in the browser, after hydration */
-  readonly countedAt: Signal<string | undefined> = computed(() => {
+  readonly countedAt = computed(() => {
     const count = this.count();
     return this.hydrated() && count ? format(count.date, 'HH:mm') : undefined;
   });

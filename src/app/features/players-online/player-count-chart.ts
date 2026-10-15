@@ -1,12 +1,12 @@
 import { formatNumber } from '@angular/common';
-import { Component, computed, Signal, signal, WritableSignal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { Chart, ChartOptions, Point, TimeScaleOptions, TooltipModel } from 'chart.js';
 import { format } from 'date-fns';
 import { PlayerCountPoint, PlayerCountRange } from '@app/common/api/osrs-tracker-repo';
 import { BaseChart } from '@app/common/charts/base-chart';
 import { token, withAlpha } from '@app/common/charts/chart-setup';
 import { formatNumberShort } from '@app/common/format/number-format';
-import { formatShare, LocationCount, locationCountsInOrder } from './world-locations';
+import { formatShare, locationCountsInOrder } from './world-locations';
 
 export interface PlayerCountSeries {
   range: PlayerCountRange;
@@ -101,14 +101,9 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
 export class PlayerCountChart extends BaseChart<'line', PlayerCountSeries> {
   protected readonly type = 'line';
 
-  protected readonly hovered: WritableSignal<HoveredPoint | null> = signal(null);
+  protected readonly hovered = signal<HoveredPoint | null>(null);
 
-  protected readonly tip: Signal<{
-    title: string;
-    rows: { label: string; value: string; dot: string }[];
-    locations: (Omit<LocationCount, 'players'> & { players: string })[];
-    split: { label: string; value: string; share: string }[];
-  }> = computed(() => {
+  protected readonly tip = computed(() => {
     const point = this.hovered()!.point;
     const { range, locationOrder } = this.data();
     const daily = range === '1y' || range === 'all';

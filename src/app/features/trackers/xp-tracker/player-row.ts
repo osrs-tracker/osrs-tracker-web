@@ -1,16 +1,6 @@
 import { DecimalPipe, isPlatformBrowser } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  Component,
-  InputSignal,
-  OnInit,
-  PLATFORM_ID,
-  ResourceRef,
-  Signal,
-  computed,
-  inject,
-  input,
-} from '@angular/core';
+import { Component, InputSignal, OnInit, PLATFORM_ID, ResourceRef, computed, inject, input } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { getOverallXpDiff } from '@osrs-tracker/hiscores';
 import { HiscoreEntry, overallOf, Player } from '@osrs-tracker/models';
@@ -98,7 +88,7 @@ export class PlayerRow implements OnInit {
   readonly player: InputSignal<Player | null> = input<Player | null>(null);
   readonly scrapingOffset: InputSignal<number> = input.required();
 
-  readonly _username: Signal<string> = computed(() => (this.player()?.username ?? this.username())!);
+  readonly _username = computed(() => (this.player()?.username ?? this.username())!);
 
   /** The XP gained since the last scrape, and the player itself when only a username was given. Browser only. */
   readonly overallDiffResource: ResourceRef<PlayerRowData | undefined> = rxResource({
@@ -108,17 +98,17 @@ export class PlayerRow implements OnInit {
       player ? this.fetchFromPlayer(player, offset) : this.fetchFromUsername(username!, offset),
   });
 
-  private readonly data: Signal<PlayerRowData | null> = computed(() =>
+  private readonly data = computed(() =>
     this.overallDiffResource.hasValue() ? (this.overallDiffResource.value() ?? null) : null,
   );
 
-  readonly playerDetails: Signal<Player | null> = computed(() => this.player() ?? this.data()?.player ?? null);
-  readonly overallDiff: Signal<number | null> = computed(() => this.data()?.overallDiff ?? null);
-  readonly totalLevel: Signal<number | null> = computed(() => this.data()?.totalLevel ?? null);
+  readonly playerDetails = computed(() => this.player() ?? this.data()?.player ?? null);
+  readonly overallDiff = computed(() => this.data()?.overallDiff ?? null);
+  readonly totalLevel = computed(() => this.data()?.totalLevel ?? null);
   // The server renders skeletons, the browser fetches
-  readonly loading: Signal<boolean> = computed(() => !this.isBrowser || this.overallDiffResource.isLoading());
+  readonly loading = computed(() => !this.isBrowser || this.overallDiffResource.isLoading());
 
-  readonly xpTitle: Signal<string> = computed(() => {
+  readonly xpTitle = computed(() => {
     const lastTracked = this.playerDetails()?.hiscoreEntries?.[0]?.date;
     return `XP gained since ${this._username()} was last tracked, ${this.timeAgoPipe.transform(lastTracked)}.`;
   });

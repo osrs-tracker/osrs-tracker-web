@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, inject, input, InputSignal, OnInit, Signal } from '@angular/core';
+import { Component, computed, inject, input, InputSignal, OnInit } from '@angular/core';
 import { HiscoreEntry } from '@osrs-tracker/models';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
@@ -45,7 +45,7 @@ export class RankLines implements OnInit {
   /** On the main table; `null` or `undefined` unranked */
   readonly rank: InputSignal<number | null | undefined> = input.required();
 
-  readonly lines: Signal<RankLine[]> = computed(() => [
+  readonly lines = computed<RankLine[]>(() => [
     { label: 'Rank', rank: this.rank() ?? null, failed: false },
     ...this.modeRanks.tables().map(table => ({
       label: `${table.label} rank`,

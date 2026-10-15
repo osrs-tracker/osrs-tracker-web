@@ -1,4 +1,4 @@
-import { Component, input, InputSignal, linkedSignal, output, OutputEmitterRef, WritableSignal } from '@angular/core';
+import { Component, input, InputSignal, linkedSignal, output, OutputEmitterRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Glyph, GlyphName } from '../glyph/glyph';
 
@@ -85,7 +85,7 @@ export class StatusPanel {
   readonly searched: OutputEmitterRef<string> = output();
   readonly retry: OutputEmitterRef<void> = output();
 
-  readonly query: WritableSignal<string> = linkedSignal(() => this.initialQuery());
+  readonly query = linkedSignal(() => this.initialQuery());
 
   onSearch(event: Event): void {
     event.preventDefault();

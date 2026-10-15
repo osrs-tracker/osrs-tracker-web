@@ -4,8 +4,6 @@ import {
   ElementRef,
   Injectable,
   InputSignal,
-  Signal,
-  WritableSignal,
   computed,
   inject,
   input,
@@ -35,9 +33,9 @@ export const NAV_TAB =
 export class NavMenus {
   private readonly router = inject(Router);
 
-  readonly open: WritableSignal<string | null> = signal(null);
+  readonly open = signal<string | null>(null);
 
-  readonly url: Signal<string> = toSignal(
+  readonly url = toSignal(
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd),
       map(event => event.urlAfterRedirects),
@@ -115,7 +113,7 @@ export class NavMenu {
   private readonly navMenus = inject(NavMenus);
   private readonly elementRef: ElementRef<HTMLElement> = inject(ElementRef);
   private readonly window = inject(WINDOW);
-  private readonly tab: Signal<ElementRef<HTMLButtonElement>> = viewChild.required('tab');
+  private readonly tab = viewChild.required<ElementRef<HTMLButtonElement>>('tab');
 
   readonly label: InputSignal<string> = input.required();
   /** The menu panel's id, for `aria-controls` */
@@ -124,8 +122,8 @@ export class NavMenu {
   readonly current: InputSignal<boolean> = input(false);
 
   protected readonly tabClass = NAV_TAB;
-  readonly isOpen: Signal<boolean> = computed(() => this.navMenus.open() === this.menuId());
-  protected readonly marked: Signal<boolean> = computed(() => (this.navMenus.open() ? this.isOpen() : this.current()));
+  readonly isOpen = computed(() => this.navMenus.open() === this.menuId());
+  protected readonly marked = computed(() => (this.navMenus.open() ? this.isOpen() : this.current()));
 
   /** Whether hover opened it, so leaving closes it; a mouse click keeps it open */
   private openedByHover = false;

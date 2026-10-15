@@ -1,12 +1,4 @@
-import {
-  Component,
-  InputSignal,
-  InputSignalWithTransform,
-  Signal,
-  booleanAttribute,
-  computed,
-  input,
-} from '@angular/core';
+import { Component, InputSignal, InputSignalWithTransform, booleanAttribute, computed, input } from '@angular/core';
 import { SkillEnum } from '@osrs-tracker/hiscores';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { Icon } from '@app/common/icon/icon';
@@ -111,7 +103,7 @@ export class AccountTile {
   /** The player page's 64px tile, focusable; otherwise a list row's 40px (32px on phones) one */
   readonly large: InputSignalWithTransform<boolean, unknown> = input(false, { transform: booleanAttribute });
 
-  readonly mode: Signal<AccountMode> = computed(() => {
+  readonly mode = computed<AccountMode>(() => {
     const { type, status, diedAsHardcore } = this.account();
     const label = TYPE_LABELS[type];
 
@@ -127,11 +119,11 @@ export class AccountTile {
     }
     return { label };
   });
-  readonly modeText: Signal<string> = computed(() =>
+  readonly modeText = computed(() =>
     [this.mode().label, this.mode().change, this.mode().note].filter(Boolean).join('. '),
   );
 
-  readonly badgeClass: Signal<string> = computed(() =>
+  readonly badgeClass = computed(() =>
     this.large()
       ? 'absolute -left-1.75 -bottom-1.75 size-6.5 rounded-full border border-line bg-deep'
       : 'absolute -left-1.5 -bottom-1.5 size-5 rounded-full border border-line bg-deep',

@@ -10,10 +10,8 @@ import {
   InputSignal,
   output,
   OutputEmitterRef,
-  Signal,
   signal,
   viewChild,
-  WritableSignal,
 } from '@angular/core';
 import { formatNumberLegible } from '@app/common/format/number-format';
 import { Glyph } from '../glyph/glyph';
@@ -77,7 +75,7 @@ const BAND = 'color-mix(in oklch, var(--accent) 12%, transparent)';
 export class DayPicker {
   private readonly elementRef: ElementRef<HTMLElement> = inject(ElementRef);
   private readonly injector = inject(Injector);
-  private readonly trigger: Signal<ElementRef<HTMLButtonElement>> = viewChild.required('trigger');
+  private readonly trigger = viewChild.required<ElementRef<HTMLButtonElement>>('trigger');
 
   /** What's picked, e.g. "Day"; names the button and the calendar */
   readonly label: InputSignal<string> = input.required();
@@ -106,15 +104,13 @@ export class DayPicker {
   readonly picked: OutputEmitterRef<string | null> = output();
 
   readonly weekdays: string[] = WEEKDAYS;
-  readonly open: WritableSignal<boolean> = signal(false);
+  readonly open = signal(false);
   /** The month shown, e.g. "2026-10" */
-  readonly shownMonth: WritableSignal<string> = signal('');
+  readonly shownMonth = signal('');
 
-  private readonly byKey: Signal<Map<string, PickerDay>> = computed(
-    () => new Map(this.days().map(day => [day.key, day])),
-  );
+  private readonly byKey = computed(() => new Map(this.days().map(day => [day.key, day])));
   /** The months with a day to pick, oldest first */
-  private readonly months: Signal<string[]> = computed(() => {
+  private readonly months = computed(() => {
     const range = this.range();
     if (!range) return [...new Set(this.days().map(day => day.key.slice(0, 7)))].sort();
 
@@ -128,26 +124,24 @@ export class DayPicker {
     return months;
   });
   /** The years with a day to pick, oldest first */
-  readonly years: Signal<string[]> = computed(() => [...new Set(this.months().map(month => month.slice(0, 4)))]);
+  readonly years = computed(() => [...new Set(this.months().map(month => month.slice(0, 4)))]);
 
-  readonly valueLabel: Signal<string> = computed(() => {
+  readonly valueLabel = computed(() => {
     const value = this.value();
     const day = value && this.dayOf(value);
     return day ? this.prefix() + day.label : (this.placeholder() ?? this.noneLabel() ?? '–');
   });
-  readonly monthTitle: Signal<string> = computed(() => monthTitle(this.shownMonth()));
-  readonly monthName: Signal<string> = computed(() => MONTH_NAMES[Number(this.shownMonth().slice(5)) - 1] ?? '');
-  readonly previousMonth: Signal<string | undefined> = computed(() =>
+  readonly monthTitle = computed(() => monthTitle(this.shownMonth()));
+  readonly monthName = computed(() => MONTH_NAMES[Number(this.shownMonth().slice(5)) - 1] ?? '');
+  readonly previousMonth = computed(() =>
     this.months()
       .filter(month => month < this.shownMonth())
       .at(-1),
   );
-  readonly nextMonth: Signal<string | undefined> = computed(() =>
-    this.months().find(month => month > this.shownMonth()),
-  );
+  readonly nextMonth = computed(() => this.months().find(month => month > this.shownMonth()));
 
   /** The shown month as its weeks, Monday first (a list, so the grid is recreated per month) */
-  readonly calendars: Signal<{ month: string; title: string; weeks: CalendarCell[][] }[]> = computed(() => {
+  readonly calendars = computed(() => {
     const month = this.shownMonth();
     return month ? [{ month, title: monthTitle(month), weeks: this.weeksOf(month) }] : [];
   });

@@ -5,8 +5,6 @@ import {
   ElementRef,
   Injector,
   ResourceRef,
-  Signal,
-  WritableSignal,
   afterNextRender,
   computed,
   inject,
@@ -15,7 +13,7 @@ import {
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { Item, Player } from '@osrs-tracker/models';
-import { ListCard, ListCardState, listCardState } from '@app/common/ui/cards/list-card';
+import { ListCard, listCardState } from '@app/common/ui/cards/list-card';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { Icon } from '@app/common/icon/icon';
@@ -23,7 +21,7 @@ import { OsrsNewsItem, OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { ItemRow } from '@app/features/trackers/price-tracker/item-row';
 import { ItemSearch } from '@app/features/trackers/price-tracker/item-search';
-import { PriceTrackerStore, RecentItem } from '@app/features/trackers/price-tracker/price-tracker-store';
+import { PriceTrackerStore } from '@app/features/trackers/price-tracker/price-tracker-store';
 import { PlayerRow } from '@app/features/trackers/xp-tracker/player-row';
 import { PlayerSearch } from '@app/features/trackers/xp-tracker/player-search';
 import { TrackingOffset } from '@app/features/trackers/xp-tracker/tracking-offset';
@@ -70,10 +68,10 @@ export default class Home {
     { value: 'item', label: 'Item', icon: { name: 'coin stack' } },
   ];
 
-  readonly searchMode: WritableSignal<SearchMode> = signal('player');
-  readonly scrapingOffset: Signal<number> = inject(XpTrackerStore).scrapingOffset;
+  readonly searchMode = signal<SearchMode>('player');
+  readonly scrapingOffset = inject(XpTrackerStore).scrapingOffset;
   /** The first three, as on the Price Tracker. Only shown in item mode, which the server never renders. */
-  readonly favoriteItems: Signal<RecentItem[]> = computed(() => this.priceTrackerStore.favoriteItems().slice(0, 3));
+  readonly favoriteItems = computed(() => this.priceTrackerStore.favoriteItems().slice(0, 3));
 
   readonly osrsNewsItems: ResourceRef<OsrsNewsItem[]> = rxResource({
     stream: () => this.osrsTrackerRepo.getNews(),
@@ -85,13 +83,13 @@ export default class Home {
     stream: ({ params: { offset } }) => this.osrsTrackerRepo.getRecentPlayerLookups(offset),
     defaultValue: [],
   });
-  readonly recentPlayerLookupsState: Signal<ListCardState> = computed(() => listCardState(this.recentPlayerLookups));
+  readonly recentPlayerLookupsState = computed(() => listCardState(this.recentPlayerLookups));
 
   readonly recentItemLookups: ResourceRef<Item[]> = rxResource({
     stream: () => this.osrsTrackerRepo.getRecentItemLookups(),
     defaultValue: [],
   });
-  readonly recentItemLookupsState: Signal<ListCardState> = computed(() => listCardState(this.recentItemLookups));
+  readonly recentItemLookupsState = computed(() => listCardState(this.recentItemLookups));
 
   /** Switches the search, moving focus to the new switch if it was on the old one (which is destroyed). */
   setSearchMode(mode: SearchMode): void {

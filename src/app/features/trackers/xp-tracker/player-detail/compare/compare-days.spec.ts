@@ -2,7 +2,7 @@ import { Location } from '@angular/common';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideLocationMocks } from '@angular/common/testing';
-import { Component, provideZonelessChangeDetection, signal, WritableSignal } from '@angular/core';
+import { Component, provideZonelessChangeDetection, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { provideRouter, Router } from '@angular/router';
@@ -20,7 +20,7 @@ import { NO_DAY } from './compare-url';
   imports: [CompareDays],
 })
 class PlayerPage {
-  readonly shown: WritableSignal<boolean> = signal(true);
+  readonly shown = signal(true);
 }
 
 const PAGE = '/trackers/xp/zezima';

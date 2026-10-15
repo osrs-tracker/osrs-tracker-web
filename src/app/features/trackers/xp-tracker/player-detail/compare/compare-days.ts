@@ -11,10 +11,8 @@ import {
   InputSignal,
   PLATFORM_ID,
   ResourceRef,
-  Signal,
   signal,
   untracked,
-  WritableSignal,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -89,11 +87,11 @@ export class CompareDays {
   readonly NO_DAY: string = NO_DAY;
   readonly SkillEnum: typeof SkillEnum = SkillEnum;
 
-  readonly tab: WritableSignal<CompareTab> = signal('skills');
+  readonly tab = signal<CompareTab>('skills');
   /** The full table instead of only what changed */
-  readonly allStats: WritableSignal<boolean> = signal(false);
+  readonly allStats = signal(false);
   /** The days picked by key; `undefined` takes the default: the newest day, compared with the oldest */
-  private readonly picked: WritableSignal<ComparePicks> = signal(readComparePicks(this.router, this.location));
+  private readonly picked = signal(readComparePicks(this.router, this.location));
 
   readonly history: ResourceRef<HiscoreEntry[] | undefined> = rxResource({
     params: () => (this.isBrowser ? { username: this.username(), offset: this.offset() } : undefined),
@@ -101,7 +99,7 @@ export class CompareDays {
   });
 
   /** The stored checks, newest first, with the XP each gained since the one before (its strength in the calendar) */
-  readonly options: Signal<DayOption[]> = computed(() => {
+  readonly options = computed<DayOption[]>(() => {
     const entries = this.history.hasValue() ? this.history.value() : [];
     const overallXp = (entry: HiscoreEntry): number => skillProgress(entry.skills[SkillEnum.Overall]).xp;
     const gains = entries.map((entry, i) =>
@@ -121,7 +119,7 @@ export class CompareDays {
   });
 
   /** The picked day, or the newest; a day missing from the history (another offset, or since removed) falls back too */
-  readonly day: Signal<DayOption | undefined> = computed(() => {
+  readonly day = computed<DayOption | undefined>(() => {
     const days = this.options();
     return days.find(day => day.key === this.picked().day) ?? days[0];
   });
@@ -129,7 +127,7 @@ export class CompareDays {
    * The day compared with: the picked one, or the oldest; none when `vs=none`, or when the history has one day. A picked
    * day that turns out to be the day (its own pick fell back to the newest) falls back to the oldest too.
    */
-  readonly vs: Signal<DayOption | undefined> = computed(() => {
+  readonly vs = computed<DayOption | undefined>(() => {
     const days = this.options();
     const { vs } = this.picked();
     if (vs === NO_DAY) return undefined;
@@ -138,17 +136,17 @@ export class CompareDays {
   });
 
   /** Of the two days, the older; `undefined` for one day */
-  readonly older: Signal<HiscoreEntry | undefined> = computed(() => {
+  readonly older = computed(() => {
     const [day, vs] = [this.day()?.entry, this.vs()?.entry];
     return day && vs ? (vs.date < day.date ? vs : day) : undefined;
   });
-  readonly newer: Signal<HiscoreEntry | undefined> = computed(() => {
+  readonly newer = computed(() => {
     const [day, vs] = [this.day()?.entry, this.vs()?.entry];
     return day && vs ? (vs.date < day.date ? day : vs) : day;
   });
 
   /** What changed between two days; `undefined` for one day */
-  readonly changes: Signal<Changes | undefined> = computed(() => {
+  readonly changes = computed<Changes | undefined>(() => {
     const [newer, older] = [this.newer(), this.older()];
     if (!newer || !older) return undefined;
     const [overall, ...skills] = skillRows(newer, older);
@@ -163,7 +161,7 @@ export class CompareDays {
   });
 
   /** The full table's rows, for the open tab */
-  readonly rows: Signal<CompareRow[]> = computed(() => {
+  readonly rows = computed(() => {
     const newer = this.newer();
     if (!newer) return [];
     return this.tab() === 'skills' ? skillRows(newer, this.older()) : activityRows(newer, this.older());

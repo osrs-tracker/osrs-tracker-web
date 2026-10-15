@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, inject, input, InputSignal, Signal } from '@angular/core';
+import { Component, computed, inject, input, InputSignal } from '@angular/core';
 import { ActivityEnum } from '@osrs-tracker/hiscores';
 import { HiscoreEntry } from '@osrs-tracker/models';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
@@ -82,14 +82,12 @@ export class ActivitiesCard {
   readonly tabs: SegmentedOption<BottomTab>[] = TABS;
   readonly clueLayout: (string | null)[] = CLUE_LAYOUT;
   /** Only the minigames the player is ranked in, each row of three filled up on its own */
-  readonly minigameLayout: Signal<(string | null)[]> = computed(() => {
+  readonly minigameLayout = computed(() => {
     const hiscore = this.hiscore();
     const ranked = (name: string): boolean => hiscore?.activities[name] != null;
     return MINIGAME_ROWS.flatMap(row => fillRows(row.filter(ranked)));
   });
   /** One row of loading cells */
   readonly minigameSkeleton: (string | null)[] = MINIGAME_ROWS[0];
-  readonly clueTotal: Signal<number | undefined> = computed(
-    () => this.hiscore()?.activities[ActivityEnum.ClueScrollsAll]?.score,
-  );
+  readonly clueTotal = computed(() => this.hiscore()?.activities[ActivityEnum.ClueScrollsAll]?.score);
 }

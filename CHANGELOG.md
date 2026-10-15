@@ -1,3 +1,12 @@
+## 2026-10-15
+
+### Behind the scenes
+
+- The code no longer spells out the type of each value a page keeps up to date (about 220 of them) where TypeScript
+  works it out by itself, as the project's Angular conventions now ask, so new code and old read alike. The type stays
+  where TypeScript would get it wrong: a value that starts empty, a choice from a fixed list, or a named shape such as a
+  row of the profit calculator, whose name and checks would otherwise be lost. Pages look and work the same.
+
 ## 2026-10-14
 
 ### Price Tracker

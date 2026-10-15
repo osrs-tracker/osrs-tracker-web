@@ -8,9 +8,7 @@ import {
   linkedSignal,
   PLATFORM_ID,
   ResourceRef,
-  Signal,
   signal,
-  WritableSignal,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { format, isToday, isYesterday } from 'date-fns';
@@ -130,9 +128,9 @@ export class PlayerCountHistory {
   readonly rangeOptions: SegmentedOption<PlayerCountRange>[] = (Object.keys(RANGES) as PlayerCountRange[]).map(
     range => ({ value: range, label: RANGES[range].label, title: RANGES[range].title }),
   );
-  readonly range: WritableSignal<PlayerCountRange> = signal('24h');
-  readonly daily: Signal<boolean> = computed(() => isDaily(this.range()));
-  readonly lineName: Signal<string> = computed(() => lineName(this.range()));
+  readonly range = signal<PlayerCountRange>('24h');
+  readonly daily = computed(() => isDaily(this.range()));
+  readonly lineName = computed(() => lineName(this.range()));
 
   // Browser only: the server renders the loading state. A resource cancels the previous request when the range changes,
   // so a slow response can't overwrite a newer one
@@ -147,7 +145,7 @@ export class PlayerCountHistory {
   });
 
   /** The range's points; a refresh keeps the drawn ones until new ones arrive, and keeps them when it fails */
-  private readonly points: Signal<PlayerCountPoint[] | undefined> = linkedSignal<
+  private readonly points = linkedSignal<
     { range: PlayerCountRange; points: PlayerCountPoint[] | undefined },
     PlayerCountPoint[] | undefined
   >({
@@ -157,25 +155,25 @@ export class PlayerCountHistory {
   });
 
   /** Skeletons on a first load, a new range or a retry, never on a refresh */
-  readonly loading: Signal<boolean> = computed(() => !this.isBrowser || (this.history.isLoading() && !this.points()));
+  readonly loading = computed(() => !this.isBrowser || (this.history.isLoading() && !this.points()));
 
   /** An error only when there's nothing to draw: a failed refresh keeps the chart, and the next one tries again */
-  readonly failed: Signal<boolean> = computed(() => !!this.history.error() && !this.points());
+  readonly failed = computed(() => !!this.history.error() && !this.points());
 
-  readonly series: Signal<PlayerCountSeries | undefined> = computed(() => {
+  readonly series = computed<PlayerCountSeries | undefined>(() => {
     const points = this.points();
     return points ? { range: this.range(), points, locationOrder: this.locationOrder() } : undefined;
   });
 
   /** A daily range on the first day of counting: one point, so no line */
-  readonly singleDay: Signal<boolean> = computed(() => this.series()?.points.length === 1);
+  readonly singleDay = computed(() => this.series()?.points.length === 1);
 
-  readonly firstDay: Signal<string> = computed(() => {
+  readonly firstDay = computed(() => {
     const first = this.series()?.points[0];
     return first ? format(first.date, 'd MMMM') : '';
   });
 
-  readonly peak: Signal<{ label: string; value: string; when: string } | undefined> = computed(() => {
+  readonly peak = computed(() => {
     const points = this.series()?.points;
     if (!points?.length) return undefined;
 
@@ -197,14 +195,14 @@ export class PlayerCountHistory {
   });
 
   /** When counting started, if that's within the range */
-  readonly countingStarted: Signal<string | undefined> = computed(() => {
+  readonly countingStarted = computed(() => {
     const first = this.series()?.points[0];
     const { span, slack } = RANGES[this.range()];
     if (!first || span === undefined || first.date.getTime() < Date.now() - span + slack!) return undefined;
     return format(first.date, 'd MMMM yyyy');
   });
 
-  readonly chartLabel: Signal<string> = computed(() => {
+  readonly chartLabel = computed(() => {
     const points = this.series()?.points ?? [];
     const totals = points.map(point => point.total);
     return (

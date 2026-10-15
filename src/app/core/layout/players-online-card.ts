@@ -1,17 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import {
-  Component,
-  InputSignal,
-  ResourceRef,
-  Signal,
-  WritableSignal,
-  computed,
-  effect,
-  inject,
-  input,
-  signal,
-  untracked,
-} from '@angular/core';
+import { Component, InputSignal, ResourceRef, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { OsrsTrackerRepo, PlayerCountPoint } from '@app/common/api/osrs-tracker-repo';
@@ -70,22 +58,20 @@ export class PlayersOnlineCard {
   /** Whether the menu is open */
   readonly active: InputSignal<boolean> = input(false);
 
-  private readonly requested: WritableSignal<boolean> = signal(false);
+  private readonly requested = signal(false);
 
   readonly history: ResourceRef<PlayerCountPoint[] | undefined> = rxResource({
     params: () => this.requested() || undefined,
     stream: () => this.osrsTrackerRepo.getPlayerCountHistory('24h'),
   });
 
-  readonly failed: Signal<boolean> = this.playerCountStore.failed;
+  readonly failed = this.playerCountStore.failed;
 
   /** Shown once the history has loaded too, so the number and the line's end appear together */
-  readonly latest: Signal<number | undefined> = computed(() =>
-    this.history.hasValue() ? this.playerCountStore.count()?.total : undefined,
-  );
+  readonly latest = computed(() => (this.history.hasValue() ? this.playerCountStore.count()?.total : undefined));
 
   /** The line through every sample and the live count, scaled to the box with 4px to spare at the top and bottom */
-  readonly line: Signal<string> = computed(() => {
+  readonly line = computed(() => {
     const latest = this.latest();
     if (latest === undefined) return '';
     const totals = [...this.history.value()!.map(point => point.total), latest];
