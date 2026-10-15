@@ -1,4 +1,4 @@
-import { Component, input, InputSignal, linkedSignal, output, OutputEmitterRef } from '@angular/core';
+import { Component, input, linkedSignal, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Glyph, GlyphName } from '../glyph/glyph';
 
@@ -70,20 +70,20 @@ export class StatusPanel {
     clock: 'clock',
   };
 
-  readonly icon: InputSignal<StatusPanelIcon> = input<StatusPanelIcon>('search');
-  readonly action: InputSignal<'search' | 'retry' | 'none'> = input<'search' | 'retry' | 'none'>('none');
-  readonly heading: InputSignal<string> = input.required();
-  readonly message: InputSignal<string> = input('');
+  readonly icon = input<StatusPanelIcon>('search');
+  readonly action = input<'search' | 'retry' | 'none'>('none');
+  readonly heading = input.required<string>();
+  readonly message = input('');
   /** 1 when the panel is the page's content (e.g. not found), 2 when it sits under a page heading */
-  readonly headingLevel: InputSignal<1 | 2> = input<1 | 2>(1);
+  readonly headingLevel = input<1 | 2>(1);
 
   /** The search box's initial value, e.g. the name that wasn't found */
-  readonly initialQuery: InputSignal<string> = input('');
-  readonly placeholder: InputSignal<string> = input('');
-  readonly searchLabel: InputSignal<string> = input('Search');
+  readonly initialQuery = input('');
+  readonly placeholder = input('');
+  readonly searchLabel = input('Search');
 
-  readonly searched: OutputEmitterRef<string> = output();
-  readonly retry: OutputEmitterRef<void> = output();
+  readonly searched = output<string>();
+  readonly retry = output();
 
   readonly query = linkedSignal(() => this.initialQuery());
 

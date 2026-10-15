@@ -8,9 +8,7 @@ import {
   inject,
   Injector,
   input,
-  InputSignal,
   PLATFORM_ID,
-  ResourceRef,
   signal,
   untracked,
 } from '@angular/core';
@@ -78,10 +76,10 @@ export class CompareDays {
   private readonly location = inject(Location);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  readonly username: InputSignal<string> = input.required();
-  readonly offset: InputSignal<number> = input.required();
+  readonly username = input.required<string>();
+  readonly offset = input.required<number>();
   /** Hidden on the page's Days view, which takes the picks out of the URL; shown again, it puts them back */
-  readonly shown: InputSignal<boolean> = input.required();
+  readonly shown = input.required<boolean>();
 
   readonly tabs: SegmentedOption<CompareTab>[] = TABS;
   readonly NO_DAY: string = NO_DAY;
@@ -93,7 +91,7 @@ export class CompareDays {
   /** The days picked by key; `undefined` takes the default: the newest day, compared with the oldest */
   private readonly picked = signal(readComparePicks(this.router, this.location));
 
-  readonly history: ResourceRef<HiscoreEntry[] | undefined> = rxResource({
+  readonly history = rxResource({
     params: () => (this.isBrowser ? { username: this.username(), offset: this.offset() } : undefined),
     stream: ({ params }) => this.osrsTrackerRepo.getPlayerHiscores(params.username, params.offset, PERIOD_SIZE, 0),
   });

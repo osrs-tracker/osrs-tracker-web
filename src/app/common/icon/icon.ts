@@ -1,15 +1,4 @@
-import {
-  DOCUMENT,
-  Directive,
-  ElementRef,
-  InputSignal,
-  InputSignalWithTransform,
-  OnInit,
-  booleanAttribute,
-  effect,
-  inject,
-  input,
-} from '@angular/core';
+import { DOCUMENT, Directive, ElementRef, OnInit, booleanAttribute, effect, inject, input } from '@angular/core';
 import { WINDOW } from '@app/core/platform/window-token';
 import { config } from '@config/config';
 import { iconMap } from '@config/icon-map';
@@ -41,18 +30,18 @@ export class Icon implements OnInit {
   private readonly window = inject(WINDOW);
   private readonly localIcons = inject(LOCAL_ICONS, { optional: true });
 
-  readonly name: InputSignal<string> = input.required();
-  readonly skill: InputSignal<boolean> = input(false);
-  readonly activity: InputSignal<boolean> = input(false);
-  readonly wiki: InputSignal<boolean> = input(false);
+  readonly name = input.required<string>();
+  readonly skill = input(false);
+  readonly activity = input(false);
+  readonly wiki = input(false);
   /** Loads the icon right away instead of lazily: for icons above the fold. */
-  readonly eager: InputSignalWithTransform<boolean, unknown> = input(false, { transform: booleanAttribute });
+  readonly eager = input(false, { transform: booleanAttribute });
   /**
    * Scales the icon relative to its natural size. Pixel art only scales cleanly by whole factors, so for
    * fractional ones (e.g. 1.5) the icon is upscaled by `SHARP_FACTOR` with hard edges and then scaled down
    * smoothly ("sharp bilinear"): pixels stay crisp and evenly sized, only their borders get blended.
    */
-  readonly scale: InputSignal<number | undefined> = input();
+  readonly scale = input<number>();
 
   get element(): HTMLImageElement {
     return this.elementRef.nativeElement;

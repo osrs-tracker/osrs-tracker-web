@@ -1,16 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import {
-  Component,
-  InputSignal,
-  OnInit,
-  PLATFORM_ID,
-  RESPONSE_INIT,
-  ResourceRef,
-  computed,
-  inject,
-  input,
-  signal,
-} from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, RESPONSE_INIT, computed, inject, input, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
@@ -22,7 +11,7 @@ import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { StatTile } from '@app/common/ui/cards/stat-tile';
 import { StatusPanel } from '@app/common/ui/page/status-panel';
 import { TimeAgoPipe } from '@app/common/format/time-ago-pipe';
-import { AveragePricesAtTime, LatestPrices, Lookback, OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
+import { AveragePricesAtTime, Lookback, OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { isHumanVisitor } from '@app/core/platform/human-visitor';
@@ -82,7 +71,7 @@ export default class ItemDetail implements OnInit {
   private readonly timeAgo = new TimeAgoPipe();
 
   /** `null` when there's no such item */
-  readonly item: InputSignal<Item | null> = input.required();
+  readonly item = input.required<Item | null>();
 
   /** The browse page the item is listed on */
   readonly browseLetter = computed(() => {
@@ -98,7 +87,7 @@ export default class ItemDetail implements OnInit {
   }));
   readonly range = signal<PriceRange>('1W');
 
-  readonly latest: ResourceRef<LatestPrices | undefined> = rxResource({
+  readonly latest = rxResource({
     params: () => this.item()?.id,
     stream: ({ params: id }) => this.osrsPricesRepo.getLatestPrices(id),
   });
@@ -128,7 +117,7 @@ export default class ItemDetail implements OnInit {
   });
 
   /** The last 168 hours: the volume, the 24-hour volume and yesterday's average come from it, as does the 1W range */
-  readonly hourly: ResourceRef<AveragePricesAtTime[]> = rxResource({
+  readonly hourly = rxResource({
     params: () => this.timeSeries()?.['1W'],
     stream: ({ params: hourly$ }) => hourly$,
     defaultValue: [],
@@ -137,7 +126,7 @@ export default class ItemDetail implements OnInit {
   readonly hourlyLoading = computed(() => !this.isBrowser || this.hourly.isLoading());
 
   // A resource cancels the previous request when the range changes, so a slow response can't overwrite a newer one
-  readonly priceSeries: ResourceRef<AveragePricesAtTime[]> = rxResource({
+  readonly priceSeries = rxResource({
     params: () => this.timeSeries()?.[this.range()],
     stream: ({ params: series$ }) => series$,
     defaultValue: [],

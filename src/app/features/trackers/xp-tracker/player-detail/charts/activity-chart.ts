@@ -1,5 +1,5 @@
 import { formatNumber } from '@angular/common';
-import { DOCUMENT, Component, computed, inject, input, InputSignal } from '@angular/core';
+import { DOCUMENT, Component, computed, inject, input } from '@angular/core';
 import { Chart, ChartOptions, Point } from 'chart.js';
 import { merge } from 'chart.js/helpers';
 import { BaseChart } from '@app/common/charts/base-chart';
@@ -56,9 +56,9 @@ export class ActivityChart extends BaseChart<'bar', Gains[]> {
 
   readonly #markers = new TooltipMarkers(inject(DOCUMENT), 'activity', inject(LOCAL_ICONS, { optional: true }));
 
-  readonly category: InputSignal<ActivityView> = input.required();
+  readonly category = input.required<ActivityView>();
   /** The charted minigame */
-  readonly minigame: InputSignal<string | undefined> = input();
+  readonly minigame = input<string>();
 
   /** Every activity of the category with gains */
   readonly #allSeries = computed(() => activitySeries(this.data(), CHART_CATEGORIES[this.category()]));

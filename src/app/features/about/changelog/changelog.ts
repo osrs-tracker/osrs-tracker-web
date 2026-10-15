@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, InputSignal, computed, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { marked } from 'marked';
 import { InformationPage } from '@app/common/ui/page/information-page';
 
@@ -13,7 +13,7 @@ import { InformationPage } from '@app/common/ui/page/information-page';
   imports: [AsyncPipe, InformationPage],
 })
 export default class Changelog {
-  readonly changelog: InputSignal<string> = input('loading');
+  readonly changelog = input('loading');
 
   readonly markdown = computed(async () => marked(this.changelog()));
 }

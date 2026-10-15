@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, inject, input, InputSignal, OnInit } from '@angular/core';
+import { Component, computed, inject, input, OnInit } from '@angular/core';
 import { HiscoreEntry } from '@osrs-tracker/models';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
@@ -39,11 +39,11 @@ interface RankLine {
 export class RankLines implements OnInit {
   private readonly modeRanks = inject(ModeRanks);
 
-  readonly kind: InputSignal<'skills' | 'activities'> = input.required();
+  readonly kind = input.required<'skills' | 'activities'>();
   /** A skill or activity */
-  readonly name: InputSignal<string> = input.required();
+  readonly name = input.required<string>();
   /** On the main table; `null` or `undefined` unranked */
-  readonly rank: InputSignal<number | null | undefined> = input.required();
+  readonly rank = input.required<number | null | undefined>();
 
   readonly lines = computed<RankLine[]>(() => [
     { label: 'Rank', rank: this.rank() ?? null, failed: false },

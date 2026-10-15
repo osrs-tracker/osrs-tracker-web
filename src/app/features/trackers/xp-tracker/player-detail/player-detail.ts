@@ -42,7 +42,7 @@ import { PlayerChart } from './charts/player-chart';
 import { CompareDays } from './compare/compare-days';
 import { DAY_PARAM, readComparePicks, writeComparePicks } from './compare/compare-url';
 import { PlayerHeader } from './player-header';
-import { playerHistory, PlayerHistory } from './player-history';
+import { playerHistory } from './player-history';
 import { LogNotice, PlayerLogs } from './player-logs';
 import { statTilesFor } from './stat-tiles';
 import { dailyGains, periodStart, periodSummary, totalGains } from './player-summary';
@@ -117,7 +117,7 @@ export default class PlayerDetail implements OnInit {
   /** The UTC hour the visitor's offset is checked at, e.g. "02:00 UTC" */
   readonly trackedAt = computed(() => `${String((this.scrapingOffset() + 24) % 24).padStart(2, '0')}:00 UTC`);
 
-  readonly history: PlayerHistory = playerHistory({
+  readonly history = playerHistory({
     username: this.username,
     offset: this.scrapingOffset,
     // the resolved player, not playerDetail: trackPlayer replacing it mustn't restart the requests

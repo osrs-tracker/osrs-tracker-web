@@ -1,14 +1,4 @@
-import {
-  Component,
-  InputSignal,
-  ResourceRef,
-  WritableSignal,
-  computed,
-  inject,
-  input,
-  linkedSignal,
-  signal,
-} from '@angular/core';
+import { Component, WritableSignal, computed, inject, input, linkedSignal, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Item } from '@osrs-tracker/models';
 import { LoadError } from '@app/common/ui/loading/load-error';
@@ -167,12 +157,12 @@ export class ProfitCalculator {
   private readonly analyticsService = inject(AnalyticsService);
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
 
-  readonly item: InputSignal<Item> = input.required();
-  readonly latestPrices: InputSignal<LatestPrices | undefined> = input<LatestPrices | undefined>();
-  readonly loading: InputSignal<boolean> = input(false);
-  readonly error: InputSignal<boolean> = input(false);
+  readonly item = input.required<Item>();
+  readonly latestPrices = input<LatestPrices | undefined>();
+  readonly loading = input(false);
+  readonly error = input(false);
 
-  readonly natureRune: ResourceRef<LatestPrices | undefined> = rxResource({
+  readonly natureRune = rxResource({
     stream: () => this.osrsPricesRepo.getLatestPrices(NATURE_RUNE_ID),
   });
 

@@ -1,4 +1,4 @@
-import { Component, input, InputSignal } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 export type GlyphName =
   | 'arrow-left'
@@ -95,5 +95,5 @@ export type GlyphName =
   `,
 })
 export class Glyph {
-  readonly glyph: InputSignal<GlyphName> = input.required();
+  readonly glyph = input.required<GlyphName>();
 }

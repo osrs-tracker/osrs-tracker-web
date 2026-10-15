@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, inject, input, InputSignal } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { ActivityEnum } from '@osrs-tracker/hiscores';
 import { HiscoreEntry } from '@osrs-tracker/models';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
@@ -72,12 +72,12 @@ const TABS: SegmentedOption<BottomTab>[] = [
 export class ActivitiesCard {
   readonly playerView = inject(PlayerView);
 
-  readonly username: InputSignal<string> = input.required();
+  readonly username = input.required<string>();
   /** `undefined` while the hiscores load */
-  readonly hiscore: InputSignal<HiscoreEntry | undefined> = input.required();
-  readonly gains: InputSignal<ReadonlyMap<string, number>> = input.required();
+  readonly hiscore = input.required<HiscoreEntry | undefined>();
+  readonly gains = input.required<ReadonlyMap<string, number>>();
   /** The charted minigame */
-  readonly minigame: InputSignal<string | undefined> = input();
+  readonly minigame = input<string>();
 
   readonly tabs: SegmentedOption<BottomTab>[] = TABS;
   readonly clueLayout: (string | null)[] = CLUE_LAYOUT;

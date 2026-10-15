@@ -1,4 +1,4 @@
-import { booleanAttribute, Component, input, InputSignal, InputSignalWithTransform } from '@angular/core';
+import { booleanAttribute, Component, input } from '@angular/core';
 import { InfoTooltip } from '../tooltip/info-tooltip';
 import { Tooltip } from '../tooltip/tooltip';
 import { Skeleton } from '../loading/skeleton';
@@ -57,16 +57,16 @@ import { Skeleton } from '../loading/skeleton';
   imports: [InfoTooltip, Skeleton, Tooltip],
 })
 export class StatTile {
-  readonly label: InputSignal<string> = input('');
-  readonly value: InputSignal<string> = input('');
-  readonly sub: InputSignal<string> = input('');
-  readonly tone: InputSignal<'muted' | 'up' | 'down'> = input<'muted' | 'up' | 'down'>('muted');
+  readonly label = input('');
+  readonly value = input('');
+  readonly sub = input('');
+  readonly tone = input<'muted' | 'up' | 'down'>('muted');
   /** Explains the label, in an info tooltip */
-  readonly info: InputSignal<string> = input('');
+  readonly info = input('');
   /** Shown on hover over the value, e.g. the exact number behind a short one */
-  readonly tip: InputSignal<string> = input('');
+  readonly tip = input('');
   /** Shown in a tooltip over the line, e.g. the whole of a list the line cuts off; `\n` starts a new line */
-  readonly subTip: InputSignal<string> = input('');
-  readonly compact: InputSignalWithTransform<boolean, unknown> = input(false, { transform: booleanAttribute });
-  readonly loading: InputSignalWithTransform<boolean, unknown> = input(false, { transform: booleanAttribute });
+  readonly subTip = input('');
+  readonly compact = input(false, { transform: booleanAttribute });
+  readonly loading = input(false, { transform: booleanAttribute });
 }

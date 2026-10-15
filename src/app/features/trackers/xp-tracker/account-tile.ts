@@ -1,4 +1,4 @@
-import { Component, InputSignal, InputSignalWithTransform, booleanAttribute, computed, input } from '@angular/core';
+import { Component, booleanAttribute, computed, input } from '@angular/core';
 import { SkillEnum } from '@osrs-tracker/hiscores';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { Icon } from '@app/common/icon/icon';
@@ -99,9 +99,9 @@ export class AccountTile {
   readonly PlayerType: typeof PlayerType = PlayerType;
   readonly SkillEnum: typeof SkillEnum = SkillEnum;
 
-  readonly account: InputSignal<Player> = input.required();
+  readonly account = input.required<Player>();
   /** The player page's 64px tile, focusable; otherwise a list row's 40px (32px on phones) one */
-  readonly large: InputSignalWithTransform<boolean, unknown> = input(false, { transform: booleanAttribute });
+  readonly large = input(false, { transform: booleanAttribute });
 
   readonly mode = computed<AccountMode>(() => {
     const { type, status, diedAsHardcore } = this.account();

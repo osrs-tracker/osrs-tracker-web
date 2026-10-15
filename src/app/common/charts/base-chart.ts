@@ -4,7 +4,6 @@ import {
   ElementRef,
   HostListener,
   Injector,
-  InputSignal,
   OnDestroy,
   OnInit,
   PLATFORM_ID,
@@ -33,7 +32,7 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
   private initFrame?: number;
   private readonly canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('chart');
 
-  readonly data: InputSignal<TData> = input.required();
+  readonly data = input.required<TData>();
 
   protected readonly darkMode = this.themeStore.darkMode;
 

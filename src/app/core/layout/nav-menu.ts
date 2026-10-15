@@ -3,7 +3,6 @@ import {
   DestroyRef,
   ElementRef,
   Injectable,
-  InputSignal,
   computed,
   inject,
   input,
@@ -115,11 +114,11 @@ export class NavMenu {
   private readonly window = inject(WINDOW);
   private readonly tab = viewChild.required<ElementRef<HTMLButtonElement>>('tab');
 
-  readonly label: InputSignal<string> = input.required();
+  readonly label = input.required<string>();
   /** The menu panel's id, for `aria-controls` */
-  readonly menuId: InputSignal<string> = input.required();
+  readonly menuId = input.required<string>();
   /** Whether the current page is one of the menu's */
-  readonly current: InputSignal<boolean> = input(false);
+  readonly current = input(false);
 
   protected readonly tabClass = NAV_TAB;
   readonly isOpen = computed(() => this.navMenus.open() === this.menuId());
@@ -219,7 +218,7 @@ export class NavMenu {
   host: { class: 'flex items-center gap-3 min-h-11 px-2.5 py-2 max-sm:min-h-13 max-sm:py-1.5 rounded-xl hover:bg-row' },
 })
 export class NavMenuRow {
-  readonly label: InputSignal<string> = input.required();
-  readonly sub: InputSignal<string> = input.required();
-  readonly isNew: InputSignal<boolean> = input(false);
+  readonly label = input.required<string>();
+  readonly sub = input.required<string>();
+  readonly isNew = input(false);
 }

@@ -1,4 +1,4 @@
-import { Component, input, InputSignal } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 /**
  * A pulsing placeholder block, sized by the classes on the host (e.g. `class="h-4 w-24"`). On a card it's one step
@@ -15,5 +15,5 @@ import { Component, input, InputSignal } from '@angular/core';
   },
 })
 export class Skeleton {
-  readonly tone: InputSignal<'card' | 'ground'> = input<'card' | 'ground'>('card');
+  readonly tone = input<'card' | 'ground'>('card');
 }

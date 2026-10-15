@@ -1,6 +1,6 @@
 import { DecimalPipe, isPlatformBrowser } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, InputSignal, OnInit, PLATFORM_ID, ResourceRef, computed, inject, input } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, computed, inject, input } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { getOverallXpDiff } from '@osrs-tracker/hiscores';
 import { HiscoreEntry, overallOf, Player } from '@osrs-tracker/models';
@@ -84,14 +84,14 @@ export class PlayerRow implements OnInit {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly timeAgoPipe = new TimeAgoPipe();
 
-  readonly username: InputSignal<string | null> = input<string | null>(null);
-  readonly player: InputSignal<Player | null> = input<Player | null>(null);
-  readonly scrapingOffset: InputSignal<number> = input.required();
+  readonly username = input<string | null>(null);
+  readonly player = input<Player | null>(null);
+  readonly scrapingOffset = input.required<number>();
 
   readonly _username = computed(() => (this.player()?.username ?? this.username())!);
 
   /** The XP gained since the last scrape, and the player itself when only a username was given. Browser only. */
-  readonly overallDiffResource: ResourceRef<PlayerRowData | undefined> = rxResource({
+  readonly overallDiffResource = rxResource({
     params: () =>
       this.isBrowser ? { username: this.username(), player: this.player(), offset: this.scrapingOffset() } : undefined,
     stream: ({ params: { username, player, offset } }) =>

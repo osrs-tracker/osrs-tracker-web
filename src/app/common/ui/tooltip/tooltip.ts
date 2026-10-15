@@ -8,7 +8,6 @@ import {
   DestroyRef,
   ElementRef,
   HostListener,
-  InputSignal,
   OnChanges,
   OnDestroy,
   TemplateRef,
@@ -69,9 +68,9 @@ export class Tooltip implements OnChanges, AfterViewInit, OnDestroy {
   containerTemplatePortal: TemplatePortal;
 
   /** When `false` is passed, the tooltip will be disabled. */
-  readonly tooltip: InputSignal<string | boolean> = input<string | boolean>(true);
-  readonly tooltipTemplate: InputSignal<TemplateRef<unknown>> = input.required();
-  readonly tooltipUnderline: InputSignal<boolean> = input(true);
+  readonly tooltip = input<string | boolean>(true);
+  readonly tooltipTemplate = input.required<TemplateRef<unknown>>();
+  readonly tooltipUnderline = input(true);
 
   readonly tooltipTemplateArrow = viewChild.required<TemplateRef<unknown>>('tooltipTemplateArrow');
   readonly tooltipTemplateContainer = viewChild.required<TemplateRef<unknown>>('tooltipTemplateContainer');

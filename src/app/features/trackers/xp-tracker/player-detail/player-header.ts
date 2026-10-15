@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, computed, inject, input, InputSignal } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { Icon } from '@app/common/icon/icon';
 import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
@@ -86,14 +86,14 @@ export class PlayerHeader {
   private readonly analyticsService = inject(AnalyticsService);
   private readonly xpTrackerStore = inject(XpTrackerStore);
 
-  readonly playerDetail: InputSignal<Player> = input.required();
-  readonly trackingState: InputSignal<TrackingState> = input.required();
+  readonly playerDetail = input.required<Player>();
+  readonly trackingState = input.required<TrackingState>();
   /** The UTC hour the visitor's offset is checked at, e.g. "02:00 UTC" */
-  readonly trackedAt: InputSignal<string> = input.required();
+  readonly trackedAt = input.required<string>();
   /** When the daily check last stored the player's stats; unknown while the history loads */
-  readonly lastCheckedAt: InputSignal<Date | undefined> = input.required();
+  readonly lastCheckedAt = input.required<Date | undefined>();
   /** The stats shown are the last stored ones, as the hiscores didn't respond: then the header says how old they are */
-  readonly stale: InputSignal<boolean> = input(false);
+  readonly stale = input(false);
 
   readonly isFavorite = computed(() => this.xpTrackerStore.isFavoritePlayer(this.playerDetail().username));
 

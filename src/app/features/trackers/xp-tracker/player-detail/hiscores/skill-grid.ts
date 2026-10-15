@@ -1,6 +1,6 @@
 import { Grid, GridCell, GridCellWidget, GridRow } from '@angular/aria/grid';
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, effect, inject, input, InputSignal, viewChild } from '@angular/core';
+import { Component, computed, effect, inject, input, viewChild } from '@angular/core';
 import { calculateXPForSkillLevel, SkillEnum } from '@osrs-tracker/hiscores';
 import { HiscoreEntry, overallOf, skillProgress } from '@osrs-tracker/models';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
@@ -171,9 +171,9 @@ export class SkillGrid {
   readonly OVERALL_COLOR: string = OVERALL_COLOR;
 
   /** Undefined while the hiscores load */
-  readonly hiscore: InputSignal<HiscoreEntry | undefined> = input.required();
+  readonly hiscore = input.required<HiscoreEntry | undefined>();
   /** Each skill's XP gained over the charted days */
-  readonly gains: InputSignal<ReadonlyMap<string, number>> = input.required();
+  readonly gains = input.required<ReadonlyMap<string, number>>();
 
   readonly cells = computed<SkillCell[]>(() => {
     const selected = this.playerView.skills();

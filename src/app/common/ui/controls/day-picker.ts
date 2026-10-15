@@ -7,9 +7,7 @@ import {
   inject,
   Injector,
   input,
-  InputSignal,
   output,
-  OutputEmitterRef,
   signal,
   viewChild,
 } from '@angular/core';
@@ -78,30 +76,30 @@ export class DayPicker {
   private readonly trigger = viewChild.required<ElementRef<HTMLButtonElement>>('trigger');
 
   /** What's picked, e.g. "Day"; names the button and the calendar */
-  readonly label: InputSignal<string> = input.required();
+  readonly label = input.required<string>();
   /** The days that can be picked, newest first; or none, with `range` */
-  readonly days: InputSignal<PickerDay[]> = input<PickerDay[]>([]);
+  readonly days = input<PickerDay[]>([]);
   /** Every day from `from` to `to` (`YYYY-MM-DD`) can be picked, instead of only the `days` */
-  readonly range: InputSignal<{ from: string; to: string } | undefined> = input<{ from: string; to: string }>();
+  readonly range = input<{ from: string; to: string }>();
   /** The picked day's key; `undefined` for none */
-  readonly value: InputSignal<string | undefined> = input.required();
+  readonly value = input.required<string | undefined>();
   /** The other picker's day, ringed, with the days between the two tinted */
-  readonly other: InputSignal<string | undefined> = input<string | undefined>();
+  readonly other = input<string | undefined>();
   /** When set, a button that picks no day, and the button's text while none is picked */
-  readonly noneLabel: InputSignal<string | undefined> = input<string | undefined>();
+  readonly noneLabel = input<string | undefined>();
   /** The button's text and name while no day is picked, without a button for none (e.g. "Since you last played") */
-  readonly placeholder: InputSignal<string | undefined> = input<string | undefined>();
+  readonly placeholder = input<string | undefined>();
   /** Before the picked day's label on the button, e.g. "Since " */
-  readonly prefix: InputSignal<string> = input('');
+  readonly prefix = input('');
   /** The day the calendar opens on while none is picked; else the newest */
-  readonly openAt: InputSignal<string | undefined> = input<string | undefined>();
+  readonly openAt = input<string | undefined>();
   /** Under the calendar, what the heat bars mean; none without */
-  readonly legend: InputSignal<string | undefined> = input<string | undefined>();
-  readonly variant: InputSignal<'default' | 'inline'> = input<'default' | 'inline'>('default');
+  readonly legend = input<string | undefined>();
+  readonly variant = input<'default' | 'inline'>('default');
   /** Which edge of the button the calendar lines up with from 640px; on phones it's under the positioned ancestor */
-  readonly align: InputSignal<'start' | 'end'> = input<'start' | 'end'>('start');
+  readonly align = input<'start' | 'end'>('start');
   /** A day's key, or `null` for none */
-  readonly picked: OutputEmitterRef<string | null> = output();
+  readonly picked = output<string | null>();
 
   readonly weekdays: string[] = WEEKDAYS;
   readonly open = signal(false);

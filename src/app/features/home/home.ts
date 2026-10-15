@@ -1,23 +1,12 @@
 import { NgTemplateOutlet } from '@angular/common';
-import {
-  Component,
-  DOCUMENT,
-  ElementRef,
-  Injector,
-  ResourceRef,
-  afterNextRender,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, DOCUMENT, ElementRef, Injector, afterNextRender, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { Item, Player } from '@osrs-tracker/models';
 import { ListCard, listCardState } from '@app/common/ui/cards/list-card';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { Icon } from '@app/common/icon/icon';
-import { OsrsNewsItem, OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
+import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { ItemRow } from '@app/features/trackers/price-tracker/item-row';
 import { ItemSearch } from '@app/features/trackers/price-tracker/item-search';
@@ -73,19 +62,19 @@ export default class Home {
   /** The first three, as on the Price Tracker. Only shown in item mode, which the server never renders. */
   readonly favoriteItems = computed(() => this.priceTrackerStore.favoriteItems().slice(0, 3));
 
-  readonly osrsNewsItems: ResourceRef<OsrsNewsItem[]> = rxResource({
+  readonly osrsNewsItems = rxResource({
     stream: () => this.osrsTrackerRepo.getNews(),
     defaultValue: [],
   });
 
-  readonly recentPlayerLookups: ResourceRef<Player[]> = rxResource({
+  readonly recentPlayerLookups = rxResource({
     params: () => ({ offset: this.scrapingOffset() }),
     stream: ({ params: { offset } }) => this.osrsTrackerRepo.getRecentPlayerLookups(offset),
     defaultValue: [],
   });
   readonly recentPlayerLookupsState = computed(() => listCardState(this.recentPlayerLookups));
 
-  readonly recentItemLookups: ResourceRef<Item[]> = rxResource({
+  readonly recentItemLookups = rxResource({
     stream: () => this.osrsTrackerRepo.getRecentItemLookups(),
     defaultValue: [],
   });

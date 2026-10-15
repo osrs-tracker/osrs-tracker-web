@@ -1,8 +1,8 @@
 import { DatePipe, formatDate, isPlatformBrowser } from '@angular/common';
-import { Component, computed, inject, linkedSignal, PLATFORM_ID, ResourceRef } from '@angular/core';
+import { Component, computed, inject, linkedSignal, PLATFORM_ID } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NewsArchivePage, newsImageUrl, NewsPost, OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
+import { newsImageUrl, NewsPost, OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { paging } from '@app/common/paging/paging';
 import { LastPlayedStore, parseDay } from '@app/common/storage/last-played-store';
 import { DayPicker } from '@app/common/ui/controls/day-picker';
@@ -80,7 +80,7 @@ export default class News {
   /** With no day in the link, the calendar opens on the one remembered on this device */
   readonly lastPlayed = this.lastPlayedStore.lastPlayed;
 
-  readonly firstPage: ResourceRef<NewsArchivePage | undefined> = rxResource({
+  readonly firstPage = rxResource({
     params: () => ({ category: this.category() }),
     stream: ({ params }) => this.osrsTrackerRepo.getNewsArchive(PAGE_SIZE, { category: params.category || undefined }),
   });
