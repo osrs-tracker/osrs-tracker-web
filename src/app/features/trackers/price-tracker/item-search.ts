@@ -180,6 +180,7 @@ export class ItemSearch {
   /** The latest instant-sell price per result; the requests share one fetch of all latest prices. */
   readonly pricesResource = rxResource({
     params: () => ({ ids: this.results().map(item => item.id) }),
+    // Typed here: `Object.fromEntries` returns `any`, and `rxResource` takes no partial generic
     stream: ({ params: { ids } }): Observable<Record<number, number | undefined>> =>
       ids.length
         ? forkJoin(ids.map(id => this.osrsPricesRepo.getLatestPrices(id).pipe(map(prices => [id, prices.low])))).pipe(
