@@ -6,12 +6,8 @@ import {
   ElementRef,
   inject,
   input,
-  InputSignal,
-  InputSignalWithTransform,
   model,
-  ModelSignal,
   output,
-  OutputEmitterRef,
   signal,
   viewChildren,
 } from '@angular/core';
@@ -83,14 +79,14 @@ export interface SegmentedOption<T> {
   imports: [Icon, ToolbarWidget],
 })
 export class Segmented<T> {
-  readonly options: InputSignal<SegmentedOption<T>[]> = input.required();
-  readonly value: ModelSignal<T> = model.required();
+  readonly options = input.required<SegmentedOption<T>[]>();
+  readonly value = model.required<T>();
   /** Every choice, also of the checked option, which `valueChange` skips */
-  readonly picked: OutputEmitterRef<T> = output();
+  readonly picked = output<T>();
   /** What the options choose between, e.g. "Period" */
-  readonly label: InputSignal<string> = input.required();
-  readonly variant: InputSignal<'accent' | 'slate'> = input<'accent' | 'slate'>('accent');
-  readonly stretch: InputSignalWithTransform<boolean, unknown> = input(false, { transform: booleanAttribute });
+  readonly label = input.required<string>();
+  readonly variant = input<'accent' | 'slate'>('accent');
+  readonly stretch = input(false, { transform: booleanAttribute });
 
   protected readonly focusWithin = signal(false);
 

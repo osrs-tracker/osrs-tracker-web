@@ -1,4 +1,4 @@
-import { Component, InputSignal, OutputEmitterRef, computed, inject, input, output } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { Item } from '@osrs-tracker/models';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
@@ -109,21 +109,21 @@ export class ItemHeader {
   private readonly analyticsService = inject(AnalyticsService);
   private readonly priceTrackerStore = inject(PriceTrackerStore);
 
-  readonly item: InputSignal<Item> = input.required();
+  readonly item = input.required<Item>();
   /** The latest instant sell price, `null` without recent trades */
-  readonly price: InputSignal<number | null> = input<number | null>(null);
+  readonly price = input<number | null>(null);
   /** Yesterday's (UTC) 24-hour average instant sell price, `null` without trades */
-  readonly average: InputSignal<number | null> = input<number | null>(null);
+  readonly average = input<number | null>(null);
   /** The price is loading */
-  readonly loading: InputSignal<boolean> = input(false);
+  readonly loading = input(false);
   /** Yesterday's average is loading, so the change isn't known yet */
-  readonly averageLoading: InputSignal<boolean> = input(false);
-  readonly error: InputSignal<boolean> = input(false);
+  readonly averageLoading = input(false);
+  readonly error = input(false);
   /** Yesterday's average failed to load, so the change can't be shown */
-  readonly averageError: InputSignal<boolean> = input(false);
+  readonly averageError = input(false);
 
-  readonly retry: OutputEmitterRef<void> = output();
-  readonly retryAverage: OutputEmitterRef<void> = output();
+  readonly retry = output();
+  readonly retryAverage = output();
 
   readonly wikiUrl = computed(
     () => `${config.wikiBaseUrl}/w/${encodeURIComponent(this.item().name.replaceAll(' ', '_'))}`,

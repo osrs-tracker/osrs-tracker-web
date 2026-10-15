@@ -1,4 +1,4 @@
-import { Component, InputSignal, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 /**
  * The tracker landing pages' hero: a dot-grid band with an icon tile (the `[icon]` content), the title with its
@@ -30,6 +30,6 @@ import { Component, InputSignal, input } from '@angular/core';
 })
 export class TrackerHero {
   /** The accented word before "Tracker", e.g. "XP". */
-  readonly subject: InputSignal<string> = input.required();
-  readonly intro: InputSignal<string> = input.required();
+  readonly subject = input.required<string>();
+  readonly intro = input.required<string>();
 }

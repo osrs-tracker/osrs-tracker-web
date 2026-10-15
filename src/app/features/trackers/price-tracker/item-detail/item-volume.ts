@@ -1,5 +1,5 @@
 import { formatDate } from '@angular/common';
-import { Component, InputSignal, OutputEmitterRef, computed, input, output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
@@ -72,11 +72,11 @@ interface VolumeSummary {
 })
 export class ItemVolume {
   /** Oldest first, today (so far) last */
-  readonly volumes: InputSignal<DailyVolume[]> = input.required();
-  readonly loading: InputSignal<boolean> = input(false);
-  readonly error: InputSignal<boolean> = input(false);
+  readonly volumes = input.required<DailyVolume[]>();
+  readonly loading = input(false);
+  readonly error = input(false);
 
-  readonly retry: OutputEmitterRef<void> = output();
+  readonly retry = output();
 
   readonly summary = computed<VolumeSummary[]>(() => {
     const volumes = this.volumes();

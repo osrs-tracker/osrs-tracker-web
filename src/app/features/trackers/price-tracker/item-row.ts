@@ -1,5 +1,5 @@
 import { DecimalPipe, isPlatformBrowser } from '@angular/common';
-import { Component, InputSignal, PLATFORM_ID, ResourceRef, computed, inject, input } from '@angular/core';
+import { Component, PLATFORM_ID, computed, inject, input } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { fromUnixTime, getUnixTime } from 'date-fns';
 import { forkJoin, map } from 'rxjs';
@@ -83,13 +83,13 @@ export class ItemRow {
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  readonly item: InputSignal<RecentItem> = input.required();
+  readonly item = input.required<RecentItem>();
 
   /**
    * Browser only: `/latest` and `/24h` return every item, and the server would embed both (about 730KB) in the page's
    * transfer state.
    */
-  readonly priceResource: ResourceRef<ItemRowPrice | undefined> = rxResource({
+  readonly priceResource = rxResource({
     params: () => (this.isBrowser ? { id: this.item().id } : undefined),
     stream: ({ params: { id } }) =>
       forkJoin([
@@ -100,7 +100,7 @@ export class ItemRow {
           fromUnixTime(utcDayStart(getUnixTime(new Date())) - DAY),
         ),
       ]).pipe(
-        map(([latest, recent]) => {
+        map(([latest, recent]): ItemRowPrice => {
           const price = latest.low ?? null;
           const average = recent.averagePrices?.avgLowPrice ?? null;
           return { price, average, change: price !== null && average !== null ? price - average : null };

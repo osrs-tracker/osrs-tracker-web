@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, InputSignal } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
 import { HiscoreEntry, skillProgress } from '@osrs-tracker/models';
 import { format } from 'date-fns';
@@ -162,16 +162,16 @@ export class PlayerChart {
   }));
 
   /** The period's daily diffs, newest first */
-  readonly diffs: InputSignal<Gains[]> = input.required();
+  readonly diffs = input.required<Gains[]>();
   /** The current stats, for levels and all-time scores */
-  readonly current: InputSignal<HiscoreEntry | undefined> = input();
+  readonly current = input<HiscoreEntry>();
   /** Where the diffs start, when it isn't the period's first day: the history is shorter, or has a gap there */
-  readonly since: InputSignal<Date | undefined> = input();
+  readonly since = input<Date>();
   /** `empty` until there's a second entry to compare with */
-  readonly state: InputSignal<'loading' | 'empty' | 'ready'> = input.required();
-  readonly emptyText: InputSignal<string> = input('');
+  readonly state = input.required<'loading' | 'empty' | 'ready'>();
+  readonly emptyText = input('');
   /** The charted minigame */
-  readonly minigame: InputSignal<string | undefined> = input();
+  readonly minigame = input<string>();
 
   readonly title = computed(() => TITLES[this.playerView.chart()]);
   readonly activityView = computed(() => {

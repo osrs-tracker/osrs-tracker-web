@@ -1,6 +1,6 @@
 import { Grid, GridCell, GridCellWidget, GridRow } from '@angular/aria/grid';
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, effect, inject, input, InputSignal, viewChild } from '@angular/core';
+import { Component, computed, effect, inject, input, viewChild } from '@angular/core';
 import { ActivityEnum } from '@osrs-tracker/hiscores';
 import { HiscoreActivity, HiscoreEntry } from '@osrs-tracker/models';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
@@ -144,18 +144,18 @@ export class ActivityGrid {
   readonly playerView = inject(PlayerView);
   private readonly darkMode = inject(ThemeStore).darkMode;
 
-  readonly view: InputSignal<ActivityView> = input.required();
+  readonly view = input.required<ActivityView>();
   /** Activity names in grid order; `null` is an empty cell */
-  readonly layout: InputSignal<(string | null)[]> = input.required();
+  readonly layout = input.required<(string | null)[]>();
   /** Undefined while the hiscores load */
-  readonly hiscore: InputSignal<HiscoreEntry | undefined> = input.required();
+  readonly hiscore = input.required<HiscoreEntry | undefined>();
   /** Each activity's gain over the charted days */
-  readonly gains: InputSignal<ReadonlyMap<string, number>> = input.required();
-  readonly scoreLabel: InputSignal<string> = input('Score');
+  readonly gains = input.required<ReadonlyMap<string, number>>();
+  readonly scoreLabel = input('Score');
   /** The charted minigame */
-  readonly minigame: InputSignal<string | undefined> = input();
+  readonly minigame = input<string>();
   /** A full-width row follows (the clue total), so the last row keeps square corners */
-  readonly hasFooter: InputSignal<boolean> = input(false);
+  readonly hasFooter = input(false);
 
   /** The colours the chart gives the category's activities with gains */
   readonly #colors = computed(() => {

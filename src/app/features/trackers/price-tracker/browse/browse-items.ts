@@ -1,4 +1,4 @@
-import { Component, InputSignal, OnInit, RESPONSE_INIT, computed, inject, input } from '@angular/core';
+import { Component, OnInit, RESPONSE_INIT, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { StatusPanel } from '@app/common/ui/page/status-panel';
 import { ItemRow } from '../item-row';
@@ -17,9 +17,9 @@ export default class BrowseItems implements OnInit {
   // Only available during SSR, `null` in the browser
   private readonly responseInit = inject(RESPONSE_INIT, { optional: true });
 
-  readonly letter: InputSignal<string> = input.required();
+  readonly letter = input.required<string>();
   /** `null` for a letter there's no page for */
-  readonly items: InputSignal<RecentItem[] | null> = input.required();
+  readonly items = input.required<RecentItem[] | null>();
 
   readonly heading = computed(() => `Items ${startingWith(this.letter())}`);
 

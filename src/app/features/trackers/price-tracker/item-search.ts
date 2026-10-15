@@ -3,8 +3,6 @@ import { Listbox, Option } from '@angular/aria/listbox';
 import {
   Component,
   ElementRef,
-  InputSignal,
-  ResourceRef,
   afterNextRender,
   afterRenderEffect,
   computed,
@@ -17,8 +15,7 @@ import {
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
-import { Item } from '@osrs-tracker/models';
-import { forkJoin, map, of, tap } from 'rxjs';
+import { forkJoin, map, Observable, of, tap } from 'rxjs';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Icon } from '@app/common/icon/icon';
@@ -146,13 +143,13 @@ export class ItemSearch {
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   /** E.g. the name searched for on an item page that wasn't found */
-  readonly initialQuery: InputSignal<string> = input('');
+  readonly initialQuery = input('');
 
   readonly query = signal('');
   /** The query each search was started with; a new object per search, so searching the same query again refetches */
   private readonly submitted = signal<{ query: string } | undefined>(undefined);
   /** A new search cancels the one before, so a slow earlier response can't overwrite a newer one */
-  readonly search: ResourceRef<Item[] | undefined> = rxResource({
+  readonly search = rxResource({
     params: () => this.submitted(),
     stream: ({ params: { query } }) =>
       this.osrsTrackerRepo.searchItems(query).pipe(
@@ -181,9 +178,9 @@ export class ItemSearch {
   readonly skeletonWidths: string[] = ['w-32', 'w-24', 'w-36'];
 
   /** The latest instant-sell price per result; the requests share one fetch of all latest prices. */
-  readonly pricesResource: ResourceRef<Record<number, number | undefined>> = rxResource({
+  readonly pricesResource = rxResource({
     params: () => ({ ids: this.results().map(item => item.id) }),
-    stream: ({ params: { ids } }) =>
+    stream: ({ params: { ids } }): Observable<Record<number, number | undefined>> =>
       ids.length
         ? forkJoin(ids.map(id => this.osrsPricesRepo.getLatestPrices(id).pipe(map(prices => [id, prices.low])))).pipe(
             map(entries => Object.fromEntries(entries)),

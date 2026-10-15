@@ -1,4 +1,4 @@
-import { Component, input, InputSignal, output, Resource } from '@angular/core';
+import { Component, input, output, Resource } from '@angular/core';
 import { ListRowSkeleton } from './list-row-skeleton';
 import { LoadError } from '../loading/load-error';
 
@@ -74,17 +74,17 @@ export function listCardState(resource: Resource<readonly unknown[] | undefined>
 export class ListCard {
   readonly SKELETON_ROWS = [0, 1, 2, 3, 4];
 
-  readonly heading: InputSignal<string> = input.required();
-  readonly subtitle: InputSignal<string> = input.required();
-  readonly kind: InputSignal<'player' | 'item'> = input.required();
-  readonly state: InputSignal<ListCardState> = input.required();
+  readonly heading = input.required<string>();
+  readonly subtitle = input.required<string>();
+  readonly kind = input.required<'player' | 'item'>();
+  readonly state = input.required<ListCardState>();
   /** Shown in the header when set and the list is ready. */
-  readonly count: InputSignal<number | undefined> = input();
-  readonly emptyText: InputSignal<string> = input('Nothing here yet.');
-  readonly emptyHint: InputSignal<string> = input('');
+  readonly count = input<number>();
+  readonly emptyText = input('Nothing here yet.');
+  readonly emptyHint = input('');
   /** The `load-error` source for analytics; required for lists that can fail to load. */
-  readonly errorSource: InputSignal<string> = input('list-card');
-  readonly errorText: InputSignal<string> = input("Couldn't load this list.");
+  readonly errorSource = input('list-card');
+  readonly errorText = input("Couldn't load this list.");
 
   readonly retry = output<void>();
 }

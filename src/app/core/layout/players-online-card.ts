@@ -1,8 +1,8 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, InputSignal, ResourceRef, computed, effect, inject, input, signal, untracked } from '@angular/core';
+import { Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { OsrsTrackerRepo, PlayerCountPoint } from '@app/common/api/osrs-tracker-repo';
+import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { PlayerCountStore } from '@app/common/player-count/player-count-store';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
@@ -56,11 +56,11 @@ export class PlayersOnlineCard {
   private readonly playerCountStore = inject(PlayerCountStore);
 
   /** Whether the menu is open */
-  readonly active: InputSignal<boolean> = input(false);
+  readonly active = input(false);
 
   private readonly requested = signal(false);
 
-  readonly history: ResourceRef<PlayerCountPoint[] | undefined> = rxResource({
+  readonly history = rxResource({
     params: () => this.requested() || undefined,
     stream: () => this.osrsTrackerRepo.getPlayerCountHistory('24h'),
   });

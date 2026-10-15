@@ -1,4 +1,4 @@
-import { Component, input, InputSignal } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 /**
  * A flat card with a header: a 56px one-line header (title and `[actions]`, e.g. a segmented control), or a two-line
@@ -32,5 +32,5 @@ import { Component, input, InputSignal } from '@angular/core';
   },
 })
 export class Card {
-  readonly subtitle: InputSignal<string | undefined> = input();
+  readonly subtitle = input<string>();
 }

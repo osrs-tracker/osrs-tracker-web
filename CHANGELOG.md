@@ -2,11 +2,12 @@
 
 ### Behind the scenes
 
-- The code no longer spells out the type of each value a page keeps up to date (about 220 of them), or of the services a
-  part of the page asks for, where TypeScript works it out by itself, as the project's Angular conventions now ask, so
-  new code and old read alike. The type stays where TypeScript would get it wrong: a value that starts empty, a choice
-  from a fixed list, a named shape such as a row of the profit calculator, whose name and checks would otherwise be
-  lost, or the page element a part sits in, which TypeScript would otherwise stop checking at all. Pages look and work
+- The code no longer spells out the type of each value a page keeps up to date (about 220 of them), of the services a
+  part of the page asks for, of what each part takes in and reports back (about 160), or of the data it loads, where
+  TypeScript works it out by itself, as the project's Angular conventions now ask, so new code and old read alike. The
+  type stays where TypeScript would get it wrong: a value that starts empty, a choice from a fixed list, a named shape
+  such as a row of the profit calculator, whose name and checks would otherwise be lost, or the page element a part sits
+  in and the prices the item search loads, which TypeScript would otherwise stop checking at all. Pages look and work
   the same.
 
 ## 2026-10-14

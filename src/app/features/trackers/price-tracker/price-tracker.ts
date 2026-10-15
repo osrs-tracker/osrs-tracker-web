@@ -1,7 +1,6 @@
-import { Component, InputSignal, ResourceRef, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { Item } from '@osrs-tracker/models';
 import { ListCard, listCardState } from '@app/common/ui/cards/list-card';
 import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
 import { Icon } from '@app/common/icon/icon';
@@ -21,12 +20,12 @@ export default class PriceTracker {
   private readonly priceTrackerStore = inject(PriceTrackerStore);
 
   /** A search to run straight away, from `?q=` (e.g. from an item page that wasn't found) */
-  readonly q: InputSignal<string | undefined> = input<string>();
+  readonly q = input<string>();
 
   readonly favoriteItems = this.priceTrackerStore.favoriteItems;
   readonly recentItems = this.priceTrackerStore.recentItems;
 
-  readonly recentItemLookups: ResourceRef<Item[]> = rxResource({
+  readonly recentItemLookups = rxResource({
     stream: () => this.osrsTrackerRepo.getRecentItemLookups(),
     defaultValue: [],
   });

@@ -9,9 +9,7 @@ import {
   ElementRef,
   inject,
   input,
-  InputSignal,
   output,
-  OutputEmitterRef,
   signal,
 } from '@angular/core';
 import { Icon } from '@app/common/icon/icon';
@@ -83,12 +81,12 @@ export interface LegendItem {
   imports: [DecimalPipe, Icon, ToolbarWidget],
 })
 export class ChartLegend {
-  readonly items: InputSignal<LegendItem[]> = input.required();
-  readonly kind: InputSignal<'skill' | 'activity'> = input.required();
-  readonly prefix: InputSignal<string> = input('');
-  readonly collapseAfter: InputSignal<number> = input(Infinity);
+  readonly items = input.required<LegendItem[]>();
+  readonly kind = input.required<'skill' | 'activity'>();
+  readonly prefix = input('');
+  readonly collapseAfter = input(Infinity);
 
-  readonly toggled: OutputEmitterRef<string> = output();
+  readonly toggled = output<string>();
 
   readonly expanded = signal(false);
   /** Collapsed: the first items, and any that are on */

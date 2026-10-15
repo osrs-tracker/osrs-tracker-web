@@ -1,4 +1,4 @@
-import { Component, inject, input, InputSignal, output, OutputEmitterRef } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { HiscoreEntry } from '@osrs-tracker/models';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { LoadError } from '@app/common/ui/loading/load-error';
@@ -66,12 +66,12 @@ export class SkillsCard {
   readonly playerView = inject(PlayerView);
 
   /** `undefined` while the hiscores load */
-  readonly hiscore: InputSignal<HiscoreEntry | undefined> = input.required();
-  readonly skillGains: InputSignal<ReadonlyMap<string, number>> = input.required();
-  readonly activityGains: InputSignal<ReadonlyMap<string, number>> = input.required();
+  readonly hiscore = input.required<HiscoreEntry | undefined>();
+  readonly skillGains = input.required<ReadonlyMap<string, number>>();
+  readonly activityGains = input.required<ReadonlyMap<string, number>>();
   /** Neither the live hiscores nor a stored entry could be loaded */
-  readonly failed: InputSignal<boolean> = input(false);
-  readonly retry: OutputEmitterRef<void> = output();
+  readonly failed = input(false);
+  readonly retry = output();
 
   readonly tabs: SegmentedOption<TopTab>[] = TABS;
   readonly bossLayout: (string | null)[] = BOSS_LAYOUT;

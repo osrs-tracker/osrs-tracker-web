@@ -1,4 +1,4 @@
-import { Component, InputSignal, input, provideZonelessChangeDetection } from '@angular/core';
+import { Component, input, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
@@ -12,10 +12,10 @@ import { LOCAL_ICONS } from './local-icons-token';
   imports: [Icon],
 })
 class TestComponent {
-  readonly name: InputSignal<string> = input('coins');
-  readonly wiki: InputSignal<boolean> = input(false);
-  readonly skill: InputSignal<boolean> = input(false);
-  readonly activity: InputSignal<boolean> = input(false);
+  readonly name = input('coins');
+  readonly wiki = input(false);
+  readonly skill = input(false);
+  readonly activity = input(false);
 }
 
 describe('Icon', () => {

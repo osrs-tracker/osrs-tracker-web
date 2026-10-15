@@ -1,4 +1,4 @@
-import { Component, InputSignal, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BROWSE_LETTERS, browseLetterLabel, startingWith } from './browse-letters';
 
@@ -33,5 +33,5 @@ export class LetterBar {
   readonly startingWith = startingWith;
 
   /** The letter of the page it's on, if any */
-  readonly current: InputSignal<string | undefined> = input<string>();
+  readonly current = input<string>();
 }

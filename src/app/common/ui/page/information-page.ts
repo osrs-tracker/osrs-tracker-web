@@ -1,4 +1,4 @@
-import { Component, InputSignal, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 /**
  * A reading page (changelog, privacy, terms): a title and one card, narrowed for reading. Wrap the content in
@@ -20,6 +20,6 @@ import { Component, InputSignal, input } from '@angular/core';
   `,
 })
 export class InformationPage {
-  readonly title: InputSignal<string> = input.required();
-  readonly lastUpdated: InputSignal<string | undefined> = input();
+  readonly title = input.required<string>();
+  readonly lastUpdated = input<string>();
 }

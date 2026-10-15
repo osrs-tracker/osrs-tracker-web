@@ -1,15 +1,5 @@
 import { formatNumber, isPlatformBrowser } from '@angular/common';
-import {
-  Component,
-  computed,
-  inject,
-  input,
-  InputSignal,
-  linkedSignal,
-  PLATFORM_ID,
-  ResourceRef,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, input, linkedSignal, PLATFORM_ID, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { format, isToday, isYesterday } from 'date-fns';
 import { map } from 'rxjs';
@@ -123,7 +113,7 @@ export class PlayerCountHistory {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   /** The hero card's order of locations, which the tooltip keeps */
-  readonly locationOrder: InputSignal<readonly string[]> = input.required();
+  readonly locationOrder = input.required<readonly string[]>();
 
   readonly rangeOptions: SegmentedOption<PlayerCountRange>[] = (Object.keys(RANGES) as PlayerCountRange[]).map(
     range => ({ value: range, label: RANGES[range].label, title: RANGES[range].title }),
@@ -134,7 +124,7 @@ export class PlayerCountHistory {
 
   // Browser only: the server renders the loading state. A resource cancels the previous request when the range changes,
   // so a slow response can't overwrite a newer one
-  readonly history: ResourceRef<PlayerCountPoint[] | undefined> = rxResource({
+  readonly history = rxResource({
     params: () => (this.isBrowser ? this.range() : undefined),
     stream: ({ params: range }) =>
       this.osrsTrackerRepo

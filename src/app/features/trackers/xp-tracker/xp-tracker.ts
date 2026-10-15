@@ -1,7 +1,6 @@
-import { Component, ResourceRef, computed, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { Player } from '@osrs-tracker/models';
 import { ListCard, listCardState } from '@app/common/ui/cards/list-card';
 import { Icon } from '@app/common/icon/icon';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
@@ -22,7 +21,7 @@ export default class XpTracker {
 
   readonly scrapingOffset = this.xpTrackerStore.scrapingOffset;
 
-  readonly recentPlayerLookups: ResourceRef<Player[]> = rxResource({
+  readonly recentPlayerLookups = rxResource({
     params: () => ({ offset: this.scrapingOffset() }),
     stream: ({ params: { offset } }) => this.osrsTrackerRepo.getRecentPlayerLookups(offset),
     defaultValue: [],

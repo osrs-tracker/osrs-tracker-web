@@ -1,13 +1,4 @@
-import {
-  afterNextRender,
-  booleanAttribute,
-  Component,
-  inject,
-  input,
-  InputSignal,
-  InputSignalWithTransform,
-  output,
-} from '@angular/core';
+import { afterNextRender, booleanAttribute, Component, inject, input, output } from '@angular/core';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { Glyph } from '../glyph/glyph';
 
@@ -63,12 +54,12 @@ import { Glyph } from '../glyph/glyph';
 export class LoadError {
   private readonly analyticsService = inject(AnalyticsService);
 
-  readonly source: InputSignal<string> = input.required();
-  readonly message: InputSignal<string> = input("Couldn't load this data.");
-  readonly hint: InputSignal<string> = input('Check your connection, then try again.');
-  readonly compact: InputSignalWithTransform<boolean, unknown> = input(false, { transform: booleanAttribute });
-  readonly panel: InputSignalWithTransform<boolean, unknown> = input(false, { transform: booleanAttribute });
-  readonly inline: InputSignalWithTransform<boolean, unknown> = input(false, { transform: booleanAttribute });
+  readonly source = input.required<string>();
+  readonly message = input("Couldn't load this data.");
+  readonly hint = input('Check your connection, then try again.');
+  readonly compact = input(false, { transform: booleanAttribute });
+  readonly panel = input(false, { transform: booleanAttribute });
+  readonly inline = input(false, { transform: booleanAttribute });
 
   readonly retry = output<void>();
 
