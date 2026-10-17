@@ -46,6 +46,7 @@ export function securityMiddleware(): RequestHandler {
         scriptSrc: [
           "'self'",
           (req, res) => `'nonce-${getCspNonce(res as Response)}'`,
+          "'strict-dynamic'",
           'https://www.googletagmanager.com',
         ],
         scriptSrcAttr: ["'none'"],

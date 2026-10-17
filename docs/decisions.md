@@ -453,7 +453,11 @@ Choices that look like accidents without their context: what was decided, why, a
 - **Decision:** a nonce per response (`middleware/csp-nonce.ts`). `index.html` sets
   `ngCspNonce="CSP_NONCE_PLACEHOLDER"`, Angular copies it onto every inline script, and `applyCspNonce` swaps in the
   real nonce for rendered and cached pages. Inline event handlers are blocked (`script-src-attr 'none'`).
-- **Revisit:** any new path that serves HTML must call `applyCspNonce`, or its scripts won't run.
+  `'strict-dynamic'` (2026-10-17) makes current browsers ignore `'self'` and the host allowlist, which Lighthouse calls
+  bypassable: a script runs only with the nonce or when a script that has one adds it (the Google tag, lazy chunks,
+  `main.js`'s imports). The allowlist stays for browsers without `'strict-dynamic'`.
+- **Revisit:** any new path that serves HTML must call `applyCspNonce`, or its scripts won't run. A `<script src>` in a
+  template or `index.html` needs `nonce="CSP_NONCE_PLACEHOLDER"`: its host in the allowlist no longer lets it run.
 
 ## Every replica pre-renders its own pages (2026-10-04)
 
