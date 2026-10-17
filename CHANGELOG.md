@@ -10,14 +10,14 @@
 
 ### Price Tracker
 
-- Two new tables list every item at the latest prices, linked from the Price Tracker and the Trackers menu. **High-alch
-  profit** shows what a cast of High Level Alchemy makes: the alch value minus the buy price and a nature rune, at the
-  instant-buy price or, for a buy offer, the instant-sell price. **Margins** shows what a flip makes: bought at the
-  instant-sell price and sold at the instant-buy price, after the 2% GE tax. Both show the buy limit, the profit on a
-  full 4-hour limit and yesterday's trades, sort by any column, and filter by name, members or free-to-play and daily
-  volume. Rarely traded items, and items without a trade in the last hour, are left out at first, as their prices
-  mislead; pick Any volume to see them, with a clock on old prices. Hover or tap a profit or margin to see what it's
-  made of.
+- Two new tables list every item at the latest prices, linked from the Price Tracker, the Trackers menu and Home's item
+  search, where they replace your favourites (still on the Price Tracker). **High-alch profit** shows what a cast of
+  High Level Alchemy makes: the alch value minus the buy price and a nature rune, at the instant-buy price or, for a buy
+  offer, the instant-sell price. **Margins** shows what a flip makes: bought at the instant-sell price and sold at the
+  instant-buy price, after the 2% GE tax. Both show the buy limit, the profit on a full 4-hour limit and yesterday's
+  trades, sort by any column, and filter by name, members or free-to-play and daily volume. Rarely traded items, and
+  items without a trade in the last hour, are left out at first, as their prices mislead; pick Any volume to see them,
+  with a clock on old prices. Hover or tap a profit or margin to see what it's made of.
 
 ### Look and feel
 
