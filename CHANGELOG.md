@@ -1,8 +1,10 @@
 ## 2026-10-17
 
-- Updated the SOLIX font to version 3.01: hyphens and dashes sit at the middle of lowercase letters, as in "Anti-dragon
-  shield", instead of floating above them. Plus, minus and equals signs stay where they were, so changes like "−0.6%"
-  look the same. The link preview cards for shared items, players and players online use the new version too.
+- Updated the SOLIX font to version 3.03: hyphens, dashes and brackets sit at the middle of lowercase letters, as in
+  "Anti-dragon shield" and "(UTC)", instead of floating above them. The dot between details, as in "Last checked 2 hours
+  ago · Tracking started 3 days ago", sits a little lower too, so it lines up with words as well as with numbers. Plus,
+  minus and equals signs stay where they were, so changes like "−0.6%" look the same. The link preview cards for shared
+  items, players and players online use the new version too.
 
 ## 2026-10-15
 
