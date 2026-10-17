@@ -29,6 +29,8 @@
   ago · Tracking started 3 days ago", sits a little lower too, so it lines up with words as well as with numbers. Plus,
   minus and equals signs stay where they were, so changes like "−0.6%" look the same. The link preview cards for shared
   items, players and players online use the new version too.
+- On a player's page, skills, bosses, clue scrolls and minigames that gained XP or kills in the charted days have a
+  clearer outline in their chart colour, so it's easier to see which ones you can pick to compare on the chart.
 
 ## 2026-10-15
 
