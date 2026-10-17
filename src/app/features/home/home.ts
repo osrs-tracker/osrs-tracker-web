@@ -17,7 +17,7 @@ import { XpTrackerStore } from '@app/features/trackers/xp-tracker/xp-tracker-sto
 import { OsrsNewsCardSkeleton } from './osrs-news-card/osrs-news-card-skeleton';
 import OsrsNewsCard from './osrs-news-card/osrs-news-card';
 import { PreviewCard } from './preview-card';
-import { Glyph } from '@app/common/ui/glyph/glyph';
+import { LucideArrowRight } from '@lucide/angular';
 
 type SearchMode = 'player' | 'item';
 
@@ -39,7 +39,7 @@ type SearchMode = 'player' | 'item';
     TrackingOffset,
     ItemSearch,
     ItemRow,
-    Glyph,
+    LucideArrowRight,
   ],
 })
 export default class Home {

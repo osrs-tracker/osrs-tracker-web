@@ -9,7 +9,7 @@ import { ConsentBanner } from './consent-banner';
 import { DarkMode } from './dark-mode';
 import { NAV_TAB, NavMenu, NavMenuRow, NavMenus } from './nav-menu';
 import { PlayersOnlineCard } from './players-online-card';
-import { Glyph } from '@app/common/ui/glyph/glyph';
+import { LucideArrowUpDown, LucideClock, LucideNewspaper } from '@lucide/angular';
 
 @Component({
   selector: 'root-layout',
@@ -25,7 +25,9 @@ import { Glyph } from '@app/common/ui/glyph/glyph';
     NavMenu,
     NavMenuRow,
     PlayersOnlineCard,
-    Glyph,
+    LucideNewspaper,
+    LucideArrowUpDown,
+    LucideClock,
   ],
   providers: [NavMenus],
 })

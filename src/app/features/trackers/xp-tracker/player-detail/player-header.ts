@@ -7,7 +7,7 @@ import { TimeAgoPipe } from '@app/common/format/time-ago-pipe';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { AccountTile } from '../account-tile';
 import { XpTrackerStore } from '../xp-tracker-store';
-import { Glyph } from '@app/common/ui/glyph/glyph';
+import { LucideExternalLink, LucideStar } from '@lucide/angular';
 
 /** Whether the player has a history at the visitor's offset yet, which decides the line under the name */
 export type TrackingState = 'tracked' | 'started' | 'untracked';
@@ -32,7 +32,7 @@ export type TrackingState = 'tracked' | 'started' | 'untracked';
           <h1 class="text-2xl sm:text-4xl leading-none font-bold">
             {{ player.username | capitalizeWords }}
           </h1>
-          <svg glyph="external-link" class="size-4.5 shrink-0 text-muted" />
+          <svg lucideExternalLink class="size-4.5 shrink-0 text-muted" />
           <span class="sr-only">(opens the Old School Hiscores in a new tab)</span>
         </a>
         <!-- on phones the combat level wraps under the name, without the divider -->
@@ -76,11 +76,11 @@ export type TrackingState = 'tracked' | 'started' | 'untracked';
       [title]="isFavorite() ? 'Remove from favourites' : 'Add to favourites'"
       (click)="toggleFavorite()"
     >
-      <svg glyph="star" class="size-5.5" [attr.fill]="isFavorite() ? 'currentColor' : 'none'" />
+      <svg lucideStar class="size-5.5" [attr.fill]="isFavorite() ? 'currentColor' : 'none'" />
     </button>
   `,
   host: { class: 'flex flex-wrap items-center gap-4' },
-  imports: [AccountTile, CapitalizePipe, DatePipe, Icon, TimeAgoPipe, Glyph],
+  imports: [AccountTile, CapitalizePipe, DatePipe, Icon, TimeAgoPipe, LucideExternalLink, LucideStar],
 })
 export class PlayerHeader {
   private readonly analyticsService = inject(AnalyticsService);

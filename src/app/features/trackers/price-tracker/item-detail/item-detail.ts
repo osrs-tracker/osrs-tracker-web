@@ -22,7 +22,7 @@ import { ItemHeader } from './item-header';
 import { dailyVolumes, itemStats, yesterdayAverageSellPrice } from './item-prices';
 import { ItemVolume } from './item-volume';
 import { ProfitCalculator } from './profit-calculator';
-import { Glyph } from '@app/common/ui/glyph/glyph';
+import { LucideArrowLeft, LucideArrowRight } from '@lucide/angular';
 
 type PriceRange = '1D' | '1W' | '1M' | '1Y';
 
@@ -55,7 +55,8 @@ const VOLUME_DAYS = 7;
     ItemVolume,
     PriceChart,
     ProfitCalculator,
-    Glyph,
+    LucideArrowLeft,
+    LucideArrowRight,
   ],
 })
 export default class ItemDetail implements OnInit {

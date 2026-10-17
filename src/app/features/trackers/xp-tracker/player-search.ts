@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
-import { Glyph } from '@app/common/ui/glyph/glyph';
+import { LucideSearch } from '@lucide/angular';
 
 /** Player name search that opens the player's page; `[leading]` content (e.g. a mode switch) goes before the input. */
 @Component({
@@ -27,12 +27,12 @@ import { Glyph } from '@app/common/ui/glyph/glyph';
         [routerLink]="usernameQuery() ? ['/trackers/xp', usernameQuery()] : '.'"
         (click)="trackSearch()"
       >
-        <svg glyph="search" class="size-4.5" stroke-width="2.5" />
+        <svg lucideSearch class="size-4.5" strokeWidth="2.5" />
         <span class="max-sm:sr-only">Search</span>
       </button>
     </form>
   `,
-  imports: [FormsModule, RouterLink, Glyph],
+  imports: [FormsModule, RouterLink, LucideSearch],
 })
 export class PlayerSearch {
   private readonly analyticsService = inject(AnalyticsService);

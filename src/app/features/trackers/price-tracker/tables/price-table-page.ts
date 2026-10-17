@@ -20,7 +20,7 @@ import { LatestPriceList, OsrsPricesRepo, TimeSpan } from '@app/common/api/osrs-
 import { formatWhole } from '@app/common/format/number-format';
 import { Icon } from '@app/common/icon/icon';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
-import { Glyph } from '@app/common/ui/glyph/glyph';
+import { LucideArrowDown, LucideArrowLeft, LucideArrowRight, LucideClock, LucideSearch } from '@lucide/angular';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
@@ -73,7 +73,21 @@ interface Column {
 @Component({
   selector: 'price-table-page',
   templateUrl: './price-table-page.html',
-  imports: [DecimalPipe, RouterLink, Glyph, Icon, InfoTooltip, LoadError, Segmented, Skeleton, Tooltip],
+  imports: [
+    DecimalPipe,
+    RouterLink,
+    LucideArrowLeft,
+    LucideArrowRight,
+    LucideClock,
+    LucideSearch,
+    Icon,
+    InfoTooltip,
+    LoadError,
+    Segmented,
+    Skeleton,
+    Tooltip,
+    LucideArrowDown,
+  ],
 })
 export default class PriceTablePage {
   private readonly analyticsService = inject(AnalyticsService);

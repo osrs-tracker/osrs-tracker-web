@@ -13,7 +13,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { filter, map } from 'rxjs';
 import { WINDOW } from '@app/core/platform/window-token';
-import { Glyph } from '@app/common/ui/glyph/glyph';
+import { LucideChevronDown } from '@lucide/angular';
 
 /**
  * A top-level nav tab, link or menu button. From `sm` up the current one is accented (`current:` matches the link's
@@ -67,7 +67,7 @@ export class NavMenus {
  */
 @Component({
   selector: 'nav-menu',
-  imports: [Glyph],
+  imports: [LucideChevronDown],
   template: `
     <button
       #tab
@@ -81,11 +81,10 @@ export class NavMenus {
     >
       {{ label() }}
       <svg
-        glyph="chevron-down"
+        lucideChevronDown
         class="size-4 transition-transform motion-reduce:transition-none"
-        [class.rotate-180]="isOpen()"
-        [class.text-muted]="!current() && !marked()"
-        stroke-width="2.5"
+        [class]="chevronClass()"
+        strokeWidth="2.5"
       />
     </button>
 
@@ -123,6 +122,10 @@ export class NavMenu {
   protected readonly tabClass = NAV_TAB;
   readonly isOpen = computed(() => this.navMenus.open() === this.menuId());
   protected readonly marked = computed(() => (this.navMenus.open() ? this.isOpen() : this.current()));
+  /** One `[class]` binding: a Lucide icon rewrites its class attribute and drops `[class.x]` bindings true on creation */
+  protected readonly chevronClass = computed(
+    () => `${this.isOpen() ? 'rotate-180' : ''} ${!this.current() && !this.marked() ? 'text-muted' : ''}`,
+  );
 
   /** Whether hover opened it, so leaving closes it; a mouse click keeps it open */
   private openedByHover = false;

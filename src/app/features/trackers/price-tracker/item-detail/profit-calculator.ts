@@ -9,6 +9,7 @@ import { LatestPrices, OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { breakEvenSellPrice, geTax, isGeTaxExempt } from './ge-tax';
 import { formatSign, formatWhole } from '@app/common/format/number-format';
+import { LucideRotateCw } from '@lucide/angular';
 
 type Mode = 'flip' | 'alch';
 
@@ -79,19 +80,7 @@ interface ResultRow {
               [disabled]="error()"
               (click)="useLatestPrices()"
             >
-              <svg
-                class="size-3.5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M21 12a9 9 0 1 1-2.6-6.4" />
-                <path d="M21 3v6h-6" />
-              </svg>
+              <svg lucideRotateCw class="size-3.5" strokeWidth="2.5" />
               Use latest prices
             </button>
             <p class="flex items-center gap-1 text-sm text-muted">
@@ -151,7 +140,7 @@ interface ResultRow {
     }
   `,
   host: { class: 'flex flex-col rounded-2xl bg-card overflow-hidden' },
-  imports: [InfoTooltip, LoadError, Segmented, Skeleton],
+  imports: [InfoTooltip, LoadError, Segmented, Skeleton, LucideRotateCw],
 })
 export class ProfitCalculator {
   private readonly analyticsService = inject(AnalyticsService);

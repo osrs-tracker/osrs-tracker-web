@@ -23,7 +23,7 @@ import { formatNumberLegible } from '@app/common/format/number-format';
 import { OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
-import { Glyph } from '@app/common/ui/glyph/glyph';
+import { LucideSearch } from '@lucide/angular';
 
 /** Keys the combobox passes on to the listbox to move the active option */
 const NAVIGATION_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageUp', 'PageDown']);
@@ -60,7 +60,7 @@ const NAVIGATION_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageUp'
       />
 
       <button type="submit" class="button--primary search-box-button">
-        <svg glyph="search" class="size-4.5" stroke-width="2.5" />
+        <svg lucideSearch class="size-4.5" strokeWidth="2.5" />
         <span class="max-sm:sr-only">Search</span>
       </button>
     </form>
@@ -133,7 +133,18 @@ const NAVIGATION_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageUp'
       }
     </ng-template>
   `,
-  imports: [Combobox, ComboboxPopup, ComboboxWidget, Listbox, Option, RouterLink, Icon, LoadError, Skeleton, Glyph],
+  imports: [
+    Combobox,
+    ComboboxPopup,
+    ComboboxWidget,
+    Listbox,
+    Option,
+    RouterLink,
+    Icon,
+    LoadError,
+    Skeleton,
+    LucideSearch,
+  ],
 })
 export class ItemSearch {
   private readonly analyticsService = inject(AnalyticsService);

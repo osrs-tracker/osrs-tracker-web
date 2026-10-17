@@ -1,6 +1,6 @@
 <div class="max-w-page mx-auto flex flex-wrap items-center justify-between gap-x-4 px-4 sm:px-6 pt-4">
   <a routerLink="/trackers/price" class="link inline-flex items-center gap-1.5 min-h-11">
-    <svg glyph="arrow-left" class="size-4.5" stroke-width="2.5" />
+    <svg lucideArrowLeft class="size-4.5" strokeWidth="2.5" />
     Price Tracker
   </a>
   <a
@@ -8,7 +8,7 @@
     [routerLink]="isHighAlch() ? '/trackers/price/margins' : '/trackers/price/high-alch'"
   >
     {{ isHighAlch() ? 'Margins' : 'High-alch profit' }}
-    <svg glyph="arrow-right" class="size-4.5" stroke-width="2.5" />
+    <svg lucideArrowRight class="size-4.5" strokeWidth="2.5" />
   </a>
 </div>
 
@@ -31,7 +31,7 @@
          own (Margins); on phones every control is full width, with its label above -->
     <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-5 max-sm:px-4 py-3 border-b border-line">
       <div class="relative flex items-center grow basis-60 max-sm:basis-full" [class.max-lg:basis-full]="!isHighAlch()">
-        <svg glyph="search" class="absolute left-3 size-4 text-muted pointer-events-none" stroke-width="2.5" />
+        <svg lucideSearch class="absolute left-3 size-4 text-muted pointer-events-none" strokeWidth="2.5" />
         <input
           type="search"
           class="w-full h-10 pl-9 pr-3 rounded-xl border-border bg-inner text-strong placeholder:text-muted focus:border-accent focus:ring-0"
@@ -142,18 +142,11 @@
               >
                 {{ column.label }}
                 <svg
+                  lucideArrowDown
                   class="size-3.5 shrink-0 transition-transform motion-reduce:transition-none"
                   [class]="sorted ? (options().dir === 'asc' ? 'rotate-180' : '') : 'opacity-0'"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M12 5v14M6 13l6 6 6-6" />
-                </svg>
+                  strokeWidth="2.5"
+                />
               </button>
               <ng-template #headerTip>{{ column.tip }}</ng-template>
             </th>
@@ -273,7 +266,7 @@
                           [tooltipTemplate]="ageTip"
                           [tooltipUnderline]="false"
                         >
-                          <svg glyph="clock" class="size-3.5 text-amber" stroke-width="2.5" />
+                          <svg lucideClock class="size-3.5 text-amber" strokeWidth="2.5" />
                           <span class="sr-only">An old price:</span>
                           {{ price | number }}
                         </span>

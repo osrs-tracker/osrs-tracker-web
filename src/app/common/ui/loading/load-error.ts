@@ -1,6 +1,6 @@
 import { afterNextRender, booleanAttribute, Component, inject, input, output } from '@angular/core';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
-import { Glyph } from '../glyph/glyph';
+import { LucideRefreshCw } from '@lucide/angular';
 
 /**
  * Shown in place of data that failed to load, with a retry button. Reports itself to analytics once it's visible in the
@@ -10,7 +10,7 @@ import { Glyph } from '../glyph/glyph';
  */
 @Component({
   selector: 'load-error',
-  imports: [Glyph],
+  imports: [LucideRefreshCw],
   template: `
     @if (compact()) {
       <button
@@ -20,7 +20,7 @@ import { Glyph } from '../glyph/glyph';
         [attr.aria-label]="message() + ' Retry'"
         (click)="onRetry($event)"
       >
-        <svg glyph="refresh" class="size-5" />
+        <svg lucideRefreshCw class="size-5" />
       </button>
     } @else if (inline()) {
       <button
@@ -31,7 +31,7 @@ import { Glyph } from '../glyph/glyph';
         (click)="onRetry($event)"
       >
         <span class="truncate">{{ message() }}</span>
-        <svg glyph="refresh" class="size-3.5 shrink-0" stroke-width="2.5" />
+        <svg lucideRefreshCw class="size-3.5 shrink-0" strokeWidth="2.5" />
       </button>
     } @else {
       <div role="alert" class="flex flex-col items-center justify-center gap-1 h-full px-5 py-8 text-center">

@@ -2,6 +2,29 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## Line icons are Lucide's, from `@lucide/angular` (2026-10-17)
+
+- **Context:** the line icons were a mix: 13 shared ones in an `svg[glyph]` component and 11 inline SVGs, drawn after
+  Lucide, Feather and Heroicons (the Retry arrows were Heroicons' 1.5 stroke path at 2), some redrawn by hand, so a new
+  icon had no set to come from. Side by side with Heroicons, Feather, Tabler, Phosphor, Material Symbols and Font
+  Awesome Free, Lucide was the stroke set that had all 24 icons the site uses, was closest to what was there, and is the
+  most used and maintained (`lucide-react` alone about 109M npm downloads a week; Feather, where it started, has had no
+  update since March 2025).
+- **Decision:** every line icon is a Lucide icon from `@lucide/angular`, Lucide's own Angular package: a standalone,
+  signal-based `svg[lucideSearch]` component per icon, rendered by a template, so the server HTML has the paths and
+  hydration keeps them, and the compiler checks the names. Only imported icons are bundled. The cost: each icon's
+  component carries its own compiled copy of the package's template (about 3.4 KB minified), and the package is a single
+  module, so every icon used anywhere lands in `main`. The 24 icons and `svg[lucideIcon]` (for `status-panel`) grow
+  `main` from 48.8 to 131.6 KB, but only from 15.5 to 18.4 KB gzipped, as the copies compress to almost nothing.
+- **Not chosen:** `lucide-static`'s icon font (300 KB of WOFF2 for every icon plus 105 KB of CSS, blank icons until it
+  loads, one fixed weight) and its sprite (529 KB, 90 KB gzipped, an extra request) need a subsetting step of our own.
+  `svg[lucideIcon]` fed with the `lucide` package's raw data compiles the template once, but takes icons as strings
+  registered in the app config (unchecked until runtime) or as a data field per icon on each component. The older
+  `lucide-angular` supports Angular up to 21 only. Copying paths into a component of our own, as `svg[glyph]` did, means
+  updating them by hand.
+- **Revisit:** if the site uses many more icons (each adds about 3.4 KB to `main` before compression), or when
+  `@lucide/angular` compiles its template once.
+
 ## The nav is Home, Trackers and Game, with menus (2026-10-13)
 
 - **Context:** the nav had three plain links (Home, XP Tracker, Price Tracker). The October roadmap adds pages a plain

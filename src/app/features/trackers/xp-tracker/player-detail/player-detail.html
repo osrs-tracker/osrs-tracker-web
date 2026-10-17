@@ -1,6 +1,6 @@
 <div class="max-w-page mx-auto px-4 sm:px-6 pt-4">
   <a routerLink="/trackers/xp" class="link inline-flex items-center gap-1.5 min-h-11 text-base">
-    <svg glyph="arrow-left" class="size-4.5" stroke-width="2.5" />
+    <svg lucideArrowLeft class="size-4.5" strokeWidth="2.5" />
     XP Tracker
   </a>
 </div>
@@ -12,7 +12,7 @@
         role="status"
         class="flex flex-wrap items-center gap-x-4 gap-y-3 py-3 pl-4 pr-3 rounded-xl border border-amber/40 bg-amber/12"
       >
-        <svg glyph="triangle-alert" class="size-5 shrink-0 stroke-amber" />
+        <svg lucideTriangleAlert class="size-5 shrink-0 stroke-amber" />
         <p class="grow basis-70 text-base/6 text-strong">
           The hiscores aren’t responding, so these are {{ player.username | capitalizeWords }}’s stats from
           {{ history.lastCheckedAt() | timeAgo }}.

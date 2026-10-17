@@ -1,6 +1,13 @@
 import { Component, input, linkedSignal, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Glyph, GlyphName } from '../glyph/glyph';
+import {
+  LucideClock,
+  LucideDynamicIcon,
+  LucideIcon,
+  LucideSearch,
+  LucideSearchX,
+  LucideTriangleAlert,
+} from '@lucide/angular';
 
 type StatusPanelIcon = 'search' | 'alert' | 'clock';
 
@@ -17,7 +24,7 @@ type StatusPanelIcon = 'search' | 'alert' | 'clock';
       [class]="icon() === 'alert' ? 'text-amber' : icon() === 'clock' ? 'text-accent' : 'text-muted'"
       aria-hidden="true"
     >
-      <svg class="size-10" [glyph]="glyphs[icon()]" />
+      <svg class="size-10" [lucideIcon]="icons[icon()]" />
     </span>
 
     <div class="flex flex-col items-center gap-2">
@@ -46,7 +53,7 @@ type StatusPanelIcon = 'search' | 'alert' | 'clock';
             [(ngModel)]="query"
           />
           <button type="submit" class="button--primary">
-            <svg glyph="search" class="size-4.5" stroke-width="2.5" />
+            <svg lucideSearch class="size-4.5" strokeWidth="2.5" />
             Search
           </button>
         </form>
@@ -61,13 +68,13 @@ type StatusPanelIcon = 'search' | 'alert' | 'clock';
   host: {
     class: 'flex flex-col items-center gap-6 w-full max-w-160 mx-auto px-8 py-10 rounded-2xl bg-card text-center',
   },
-  imports: [FormsModule, Glyph],
+  imports: [FormsModule, LucideDynamicIcon, LucideSearch],
 })
 export class StatusPanel {
-  protected readonly glyphs: Record<StatusPanelIcon, GlyphName> = {
-    search: 'search-x',
-    alert: 'triangle-alert',
-    clock: 'clock',
+  protected readonly icons: Record<StatusPanelIcon, LucideIcon> = {
+    search: LucideSearchX,
+    alert: LucideTriangleAlert,
+    clock: LucideClock,
   };
 
   readonly icon = input<StatusPanelIcon>('search');

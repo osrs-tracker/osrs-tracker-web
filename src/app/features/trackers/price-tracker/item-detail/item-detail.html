@@ -1,12 +1,12 @@
 <div class="max-w-page mx-auto flex flex-wrap items-center justify-between gap-x-4 px-4 sm:px-6 pt-4">
   <a routerLink="/trackers/price" class="link inline-flex items-center gap-1.5 min-h-11">
-    <svg glyph="arrow-left" class="size-4.5" stroke-width="2.5" />
+    <svg lucideArrowLeft class="size-4.5" strokeWidth="2.5" />
     Price Tracker
   </a>
   @if (browseLetter(); as letter) {
     <a class="link inline-flex items-center gap-1.5 min-h-11" [routerLink]="['/trackers/price/browse', letter]">
       Items {{ browseStartingWith() }}
-      <svg glyph="arrow-right" class="size-4.5" stroke-width="2.5" />
+      <svg lucideArrowRight class="size-4.5" strokeWidth="2.5" />
     </a>
   }
 </div>

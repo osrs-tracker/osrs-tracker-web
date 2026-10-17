@@ -97,6 +97,15 @@ every artboard that imports it. Tailwind classes only; a value the scale lacks b
   change. Pictures are never cropped (Home's news is a 2×2 grid of picture-on-top cards; tablets show four of them in a
   row, the `compact:` variant). List rows are one line: no second line, 32px tiles, 16px names, the item price beside
   the change pill.
+- **Icons:** every line icon is Lucide's, through `@lucide/angular` (`docs/decisions.md`): import the icon's component
+  (`LucideSearch`) and write `<svg lucideSearch class="size-4.5" strokeWidth="2.5" />`; pick from
+  https://lucide.dev/icons, never hand-draw one or take it from another set. Weight with `strokeWidth` (a `stroke-width`
+  attribute is overwritten): 2 by default, 2.5 beside bold text (buttons, nav tabs, back links). Size and colour with
+  classes (`size-*`, `text-*`, `stroke-*`), changing ones in one `[class]="…"` binding, never `[class.x]`: the component
+  rewrites its `class` attribute on creation and drops a `[class.x]` that's already true (`[class]` feeds its `class`
+  input instead); `[attr.fill]="'currentColor'"` fills one (the favourites star). When the icon varies, bind a component
+  class to `svg[lucideIcon]` (`LucideDynamicIcon`, as in `status-panel`). Icons are `aria-hidden`: label the control
+  around them. `img[icon]` is for the game's pixel-art icons.
 - **Classes** (`components.css`): `.button--primary` (accent) and `.button--default` (outlined), `.button--rounded` for
   standalone ones; `.link` for accent links; `.search-box`/`.search-box-input`/`.search-box-button` for the big search;
   `.markdown` for reading text (changelog, privacy, terms).
@@ -115,7 +124,7 @@ Which component to use (in `common/ui/<folder>/` unless noted):
 | Something is loading (`loading/`)                             | `skeleton` blocks sized like the content, never a spinner                               |
 | A short explanation (`tooltip/`)                              | `info-tooltip`, or `[tooltip]` on any element                                           |
 | A reading page (`page/`)                                      | `information-page` around `<div class="markdown">`                                      |
-| A line icon used in more than one place (`glyph/`)            | `svg[glyph]` (decorative; `img[icon]` is for the game's pixel-art icons)                |
+| A line icon                                                   | a Lucide component, `<svg lucideSearch />` (see Icons above)                            |
 
 ## Code navigation
 
