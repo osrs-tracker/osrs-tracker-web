@@ -37,14 +37,40 @@ export interface AveragePricesAtTime extends AveragePrices {
   timestamp: number;
 }
 
-/** How long the server reuses the Wiki's full `/latest` list, in ms: as long as the Wiki's CDN caches it */
-const SERVER_LATEST_PRICES_TTL = 60_000;
+/** An item from the Wiki's `/mapping`, cut down to the fields the site uses */
+export interface ItemMapping {
+  id: number;
+  name: string;
+  icon: string;
+  members: boolean;
+  highalch?: number;
+  /** The GE buy limit per 4 hours, missing for some items */
+  limit?: number;
+}
+
+/** The full `/latest` list, by item id: prices in gp, times in Unix seconds */
+export type LatestPriceList = Record<string, Record<string, number>>;
+
+/** The lists the server keeps for every render, and how long each stays fresh, in ms */
+interface ServerLists {
+  /** As long as the Wiki's CDN caches it */
+  latest: LatestPriceList;
+  /** Names, alch values and buy limits change with game updates only */
+  mapping: ItemMapping[];
+  /** A finished UTC day's `/24h` bucket doesn't change: the key (its timestamp) moves on the next day */
+  day: Record<string, AveragePrices>;
+}
+const SERVER_LIST_TTL: Record<keyof ServerLists, number> = {
+  latest: 60_000,
+  mapping: 6 * 3_600_000,
+  day: 86_400_000,
+};
 
 /**
- * Server only: the full `/latest` list, shared by every render (unlike `OngoingRequests`) since it's public and the same
- * for everyone. The data, not the request: a render only waits for its own `HttpClient`'s requests.
+ * Server only: the Wiki's full lists, shared by every render (unlike `OngoingRequests`) since they're public and the
+ * same for everyone. The data, not the request: a render only waits for its own `HttpClient`'s requests.
  */
-let latestPricesCache: { data: Record<string, Record<string, number>>; fetchedAt: number } | undefined;
+const serverLists: { [K in keyof ServerLists]?: { data: ServerLists[K]; key: string; fetchedAt: number } } = {};
 
 /**
  * The OSRS Wiki's prices API (v2), as its guidelines ask: bulk lists over single items, and time series by `lookback`,
@@ -58,8 +84,10 @@ export class OsrsPricesRepo {
 
   /** Browser only: until the app is stable, the rendered items' prices come from the server (like the transfer cache) */
   private useTransferredPrices = !this.isServer;
-  /** Server only: the render's ongoing request for the full `/latest` list, while `latestPricesCache` is stale */
-  private latestPricesRequest$?: Observable<Record<string, Record<string, number>>>;
+  /** Server only: the render's ongoing request for each list in `serverLists` that is stale */
+  private readonly serverListRequests: Partial<Record<keyof ServerLists, Observable<unknown>>> = {};
+  /** Browser only: `/mapping` for the session */
+  private mapping$?: Observable<ItemMapping[]>;
 
   private averagePriceCache: Record<
     TimeSpan,
@@ -97,6 +125,29 @@ export class OsrsPricesRepo {
     return this.fetchLatestPrices(options).pipe(map(data => toLatestPrices(data[id])));
   }
 
+  /** Every item's name, icon, membership, alch value and buy limit */
+  getItemMapping(): Observable<ItemMapping[]> {
+    if (this.isServer) return this.serverList('mapping', '', () => this.fetchItemMapping({ transferCache: false }));
+    return (this.mapping$ ??= this.fetchItemMapping().pipe(shareReplay(1)));
+  }
+
+  /** The full `/latest` list, by item id; times in Unix seconds */
+  getAllLatestPrices(): Observable<LatestPriceList> {
+    return this.isServer ? this.serverLatestPrices() : this.fetchLatestPrices();
+  }
+
+  /**
+   * Every item's average prices for the `timeSpan` period starting at `timestamp`, by item id. The browser shares the
+   * request with `getCachedPriceAverage`; the server keeps the day (`TimeSpan.DAY`) for every render.
+   */
+  getAveragePrices(timeSpan: TimeSpan, timestamp: Date): Observable<Record<string, AveragePrices>> {
+    if (this.isServer && timeSpan === TimeSpan.DAY)
+      return this.serverList('day', String(getUnixTime(timestamp)), () =>
+        this.fetchAveragePrice(timeSpan, timestamp, { transferCache: false }).pipe(map(response => response.data)),
+      );
+    return this.cachedAveragePrice(timeSpan, timestamp).pipe(map(response => response.data));
+  }
+
   getPriceTimeSeries(
     id: number,
     lookback: Lookback,
@@ -131,35 +182,62 @@ export class OsrsPricesRepo {
     timeSpan: TimeSpan,
     timestamp: Date,
   ): Observable<{ averagePrices?: AveragePrices; timestamp: Date }> {
-    const cachedRequest$ = this.averagePriceCache[timeSpan][getUnixTime(timestamp)];
-    if (cachedRequest$) return this.mapAveragePriceResponse(id, cachedRequest$);
+    return this.mapAveragePriceResponse(id, this.cachedAveragePrice(timeSpan, timestamp));
+  }
 
-    const request$ = this.fetchAveragePrice(timeSpan, timestamp).pipe(shareReplay(1));
-    this.averagePriceCache[timeSpan][getUnixTime(timestamp)] = request$;
-
-    return this.mapAveragePriceResponse(id, request$);
+  private cachedAveragePrice(
+    timeSpan: TimeSpan,
+    timestamp: Date,
+  ): Observable<{ data: Record<string, AveragePrices>; timestamp: number }> {
+    return (this.averagePriceCache[timeSpan][getUnixTime(timestamp)] ??= this.fetchAveragePrice(
+      timeSpan,
+      timestamp,
+    ).pipe(shareReplay(1)));
   }
 
   /** The full `/latest` list for the server: kept for every render, and requested once per render when stale */
-  private serverLatestPrices(options?: {
-    loadingIndicator?: boolean;
-  }): Observable<Record<string, Record<string, number>>> {
-    if (latestPricesCache && Date.now() - latestPricesCache.fetchedAt < SERVER_LATEST_PRICES_TTL)
-      return of(latestPricesCache.data);
+  private serverLatestPrices(options?: { loadingIndicator?: boolean }): Observable<LatestPriceList> {
+    return this.serverList('latest', '', () => this.fetchLatestPrices({ ...options, transferCache: false }));
+  }
 
-    return (this.latestPricesRequest$ ??= this.fetchLatestPrices({ ...options, transferCache: false }).pipe(
-      tap(data => (latestPricesCache = { data, fetchedAt: Date.now() })),
-      finalize(() => (this.latestPricesRequest$ = undefined)),
+  /** A list in `serverLists`, or the render's one request for it while it's missing, stale or for another `key` */
+  private serverList<K extends keyof ServerLists>(
+    name: K,
+    key: string,
+    fetch: () => Observable<ServerLists[K]>,
+  ): Observable<ServerLists[K]> {
+    const kept = serverLists[name];
+    // A copy from the future is stale too: a clock set back, or another spec's fake time in the same test worker
+    const age = kept ? Date.now() - kept.fetchedAt : -1;
+    if (kept && kept.key === key && age >= 0 && age < SERVER_LIST_TTL[name]) return of(kept.data);
+
+    return (this.serverListRequests[name] ??= fetch().pipe(
+      tap(data => (serverLists[name] = { data, key, fetchedAt: Date.now() } as (typeof serverLists)[K])),
+      finalize(() => delete this.serverListRequests[name]),
       share(),
-    ));
+    )) as Observable<ServerLists[K]>;
+  }
+
+  private fetchItemMapping(options?: { transferCache?: boolean }): Observable<ItemMapping[]> {
+    return this.httpClient
+      .get<(ItemMapping & Record<string, unknown>)[]>(`${config.pricesBaseUrl}/mapping`, {
+        transferCache: options?.transferCache,
+        context: new HttpContext().set(BASE_URL_PREFIX, false).set(SSR_TIMEOUT, true),
+      })
+      .pipe(
+        // About a third of the response is `examine`, which nothing shows
+        map(items =>
+          items.map(({ id, name, icon, members, highalch, limit }) => ({ id, name, icon, members, highalch, limit })),
+        ),
+      );
   }
 
   private fetchLatestPrices(options?: {
     loadingIndicator?: boolean;
     transferCache?: boolean;
-  }): Observable<Record<string, Record<string, number>>> {
+  }): Observable<LatestPriceList> {
     return this.httpClient
-      .get<{ data: Record<string, Record<string, number>> }>(`${config.pricesBaseUrl}/latest`, {
+      .get<{ data: LatestPriceList }>(`${config.pricesBaseUrl}/latest`, {
         transferCache: options?.transferCache,
         context: new HttpContext()
           .set(BASE_URL_PREFIX, false)
@@ -172,10 +250,12 @@ export class OsrsPricesRepo {
   private fetchAveragePrice(
     timeSpan: TimeSpan,
     timestamp?: Date,
+    options?: { transferCache?: boolean },
   ): Observable<{ data: Record<string, AveragePrices>; timestamp: number }> {
     return this.httpClient.get<{ data: Record<string, AveragePrices>; timestamp: number }>(
       `${config.pricesBaseUrl}/${timeSpan}`,
       {
+        transferCache: options?.transferCache,
         ...(timestamp && { params: { timestamp: getUnixTime(timestamp) } }), // Only add the timestamp param if it's defined
         context: new HttpContext().set(BASE_URL_PREFIX, false).set(SSR_TIMEOUT, true),
       },

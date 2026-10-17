@@ -5,6 +5,7 @@ import { itemDetailResolver } from './item-detail/item-detail-resolver';
 import { itemDetailMeta } from './item-detail/item-detail-meta';
 import { browseItemsResolver } from './browse/browse-items-resolver';
 import { browseMeta } from './browse/browse-meta';
+import { TableKind } from './tables/price-table';
 
 export default [
   {
@@ -21,7 +22,47 @@ export default [
     },
     loadComponent: () => import('./price-tracker'),
   },
-  // Before `:id`, which matches `browse` too
+  // Before `:id`, which matches these too
+  {
+    title: 'OSRS High Alch Profit: Every item at live GE prices',
+    path: 'high-alch',
+    pathMatch: 'full',
+    data: {
+      kind: 'high-alch' satisfies TableKind,
+      meta: {
+        description:
+          'The high-alch profit of every OSRS item at live Grand Exchange prices: alch value minus the buy price and a nature rune, with buy limits, profit per limit and daily volume.',
+        canonicalPath: '/trackers/price/high-alch',
+        jsonLd: [
+          breadcrumbList([
+            { name: 'Price Tracker', path: '/trackers/price' },
+            { name: 'High-alch profit', path: '/trackers/price/high-alch' },
+          ]),
+        ],
+      } satisfies PageMeta,
+    },
+    loadComponent: () => import('./tables/price-table-page'),
+  },
+  {
+    title: 'OSRS GE Margins: Flips after tax, per buy limit',
+    path: 'margins',
+    pathMatch: 'full',
+    data: {
+      kind: 'margins' satisfies TableKind,
+      meta: {
+        description:
+          'Grand Exchange margins for every OSRS item at live prices: the spread between the instant-sell and instant-buy price after the 2% GE tax, per buy limit, with daily volume.',
+        canonicalPath: '/trackers/price/margins',
+        jsonLd: [
+          breadcrumbList([
+            { name: 'Price Tracker', path: '/trackers/price' },
+            { name: 'Margins', path: '/trackers/price/margins' },
+          ]),
+        ],
+      } satisfies PageMeta,
+    },
+    loadComponent: () => import('./tables/price-table-page'),
+  },
   { path: 'browse', pathMatch: 'full', redirectTo: 'browse/a' },
   {
     // The meta's title, or this one when there's no meta

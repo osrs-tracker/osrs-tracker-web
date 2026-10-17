@@ -1,12 +1,11 @@
 import { DecimalPipe, isPlatformBrowser } from '@angular/common';
 import { Component, PLATFORM_ID, computed, inject, input } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { fromUnixTime, getUnixTime } from 'date-fns';
 import { forkJoin, map } from 'rxjs';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Icon } from '@app/common/icon/icon';
-import { DAY, utcDayStart } from './utc-day';
+import { yesterdayStart } from './utc-day';
 import { formatNumberLegible, formatSign, formatWhole } from '@app/common/format/number-format';
 import { OsrsPricesRepo, TimeSpan } from '@app/common/api/osrs-prices-repo';
 import { RecentItem } from './price-tracker-store';
@@ -94,11 +93,7 @@ export class ItemRow {
     stream: ({ params: { id } }) =>
       forkJoin([
         this.osrsPricesRepo.getLatestPrices(id),
-        this.osrsPricesRepo.getCachedPriceAverage(
-          id,
-          TimeSpan.DAY,
-          fromUnixTime(utcDayStart(getUnixTime(new Date())) - DAY),
-        ),
+        this.osrsPricesRepo.getCachedPriceAverage(id, TimeSpan.DAY, yesterdayStart()),
       ]).pipe(
         map(([latest, recent]): ItemRowPrice => {
           const price = latest.low ?? null;

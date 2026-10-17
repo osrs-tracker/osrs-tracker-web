@@ -1,0 +1,359 @@
+<div class="max-w-page mx-auto flex flex-wrap items-center justify-between gap-x-4 px-4 sm:px-6 pt-4">
+  <a routerLink="/trackers/price" class="link inline-flex items-center gap-1.5 min-h-11">
+    <svg glyph="arrow-left" class="size-4.5" stroke-width="2.5" />
+    Price Tracker
+  </a>
+  <a
+    class="link inline-flex items-center gap-1.5 min-h-11"
+    [routerLink]="isHighAlch() ? '/trackers/price/margins' : '/trackers/price/high-alch'"
+  >
+    {{ isHighAlch() ? 'Margins' : 'High-alch profit' }}
+    <svg glyph="arrow-right" class="size-4.5" stroke-width="2.5" />
+  </a>
+</div>
+
+<header class="max-w-page mx-auto flex flex-col gap-1 px-4 sm:px-6 pt-2">
+  <h1 class="text-2xl sm:text-3xl font-bold text-strong">{{ title() }}</h1>
+  <p class="max-w-180 text-muted">
+    @if (isHighAlch()) {
+      What a cast of High Level Alchemy makes at the latest prices: the item’s alch value, minus its buy price and a
+      nature rune. Per limit is the profit on a full 4-hour buy limit.
+    } @else {
+      What a flip makes at the latest prices: buy at the instant-sell price, sell at the instant-buy price and pay the
+      2% GE tax. Per limit is the margin on a full 4-hour buy limit.
+    }
+  </p>
+</header>
+
+<main class="max-w-page mx-auto flex flex-col gap-4 px-4 sm:px-6 pt-6 pb-18">
+  <section class="rounded-2xl bg-card overflow-hidden" [attr.aria-label]="title()" [attr.aria-busy]="lists.isLoading()">
+    <!-- One row from 1024px. Below it the name filter shares a row with the membership control (High alch) or takes its
+         own (Margins); on phones every control is full width, with its label above -->
+    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-5 max-sm:px-4 py-3 border-b border-line">
+      <div class="relative flex items-center grow basis-60 max-sm:basis-full" [class.max-lg:basis-full]="!isHighAlch()">
+        <svg glyph="search" class="absolute left-3 size-4 text-muted pointer-events-none" stroke-width="2.5" />
+        <input
+          type="search"
+          class="w-full h-10 pl-9 pr-3 rounded-xl border-border bg-inner text-strong placeholder:text-muted focus:border-accent focus:ring-0"
+          aria-label="Filter items by name"
+          placeholder="Filter by name"
+          autocomplete="off"
+          [value]="options().query"
+          (input)="setOptions({ query: $any($event.target).value })"
+        />
+      </div>
+
+      <segmented
+        class="max-sm:w-full"
+        stretch
+        label="Membership"
+        [options]="memberOptions"
+        [value]="options().members"
+        (picked)="pickMembers($event)"
+      />
+
+      <div [class]="isHighAlch() ? 'flex gap-x-4 max-lg:basis-full' : 'contents'">
+        <div
+          class="flex items-center gap-2 max-sm:flex-col max-sm:items-stretch max-sm:gap-1 min-w-0 text-sm text-muted"
+          [class]="isHighAlch() ? 'max-lg:flex-1' : 'max-sm:flex-1'"
+        >
+          <span class="flex items-center whitespace-nowrap">
+            <label for="price-table-volume">Volume</label>
+            <info-tooltip>
+              Prices of rarely traded items mislead, so items traded less often, or without a trade
+              {{ isHighAlch() ? 'at the buy price' : 'on both sides' }} in the last hour, are left out. Pick Any to see
+              them: old prices get a clock.
+            </info-tooltip>
+          </span>
+          <select
+            id="price-table-volume"
+            class="h-10 pl-3 pr-9 rounded-xl border-border bg-card text-base font-bold text-strong cursor-pointer hover:bg-row focus:border-accent focus:ring-accent"
+            [class]="isHighAlch() ? 'max-lg:w-full' : 'max-sm:w-full'"
+            (change)="pickVolume($any($event.target).value)"
+          >
+            @for (option of volumeOptions; track option.value) {
+              <option [value]="option.value" [selected]="option.value === options().volume">{{ option.label }}</option>
+            }
+          </select>
+        </div>
+
+        @if (isHighAlch()) {
+          <div
+            class="flex items-center gap-2 max-sm:flex-col max-sm:items-stretch max-sm:gap-1 max-lg:flex-1 min-w-0 text-sm text-muted"
+          >
+            <span class="flex items-center whitespace-nowrap">
+              <label for="price-table-buy-at">Buy at</label>
+              <info-tooltip>
+                Instant buy: the price that buys the item right away. Instant sell: the price sellers take right away,
+                which is lower, but a buy offer at it waits for them and can take hours to fill.
+              </info-tooltip>
+            </span>
+            <select
+              id="price-table-buy-at"
+              class="max-lg:w-full h-10 pl-3 pr-9 rounded-xl border-border bg-card text-base font-bold text-strong cursor-pointer hover:bg-row focus:border-accent focus:ring-accent"
+              (change)="pickBuyAt($any($event.target).value)"
+            >
+              @for (option of buyAtOptions; track option.value) {
+                <option [value]="option.value" [selected]="option.value === options().buyAt">{{ option.label }}</option>
+              }
+            </select>
+          </div>
+        }
+      </div>
+
+      <!-- Phones have no room for the headers' sort buttons beyond three columns -->
+      <div
+        class="sm:hidden flex flex-col gap-1 min-w-0 text-sm text-muted"
+        [class]="isHighAlch() ? 'basis-full' : 'flex-1'"
+      >
+        <label for="price-table-sort">Sort by</label>
+        <select
+          id="price-table-sort"
+          class="w-full h-10 pl-3 pr-9 rounded-xl border-border bg-card text-base font-bold text-strong cursor-pointer focus:border-accent focus:ring-accent"
+          (change)="sortBy($any($event.target).value, false)"
+        >
+          @for (column of columns(); track column.key) {
+            <option [value]="column.key" [selected]="column.key === options().sort">{{ column.label }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <table class="w-full">
+      <thead>
+        <tr class="border-b border-line text-sm text-muted">
+          <th scope="col" class="w-full py-3 pl-5 max-sm:pl-4 pr-3 max-sm:pr-2 text-left font-normal">Item</th>
+          @for (column of columns(); track column.key) {
+            @let sorted = column.key === options().sort;
+            <th
+              scope="col"
+              class="py-3 px-3 max-sm:px-2 last:pr-5 max-sm:last:pr-4 text-right font-normal whitespace-nowrap"
+              [class]="columnClass(column.key)"
+              [attr.aria-sort]="sorted ? (options().dir === 'desc' ? 'descending' : 'ascending') : 'none'"
+            >
+              <button
+                type="button"
+                class="inline-flex items-center gap-1 hover:text-strong"
+                [class]="sorted ? 'font-bold text-strong' : ''"
+                tooltip
+                [tooltipTemplate]="headerTip"
+                [tooltipUnderline]="false"
+                (click)="sortBy(column.key)"
+              >
+                {{ column.label }}
+                <svg
+                  class="size-3.5 shrink-0 transition-transform motion-reduce:transition-none"
+                  [class]="sorted ? (options().dir === 'asc' ? 'rotate-180' : '') : 'opacity-0'"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M12 5v14M6 13l6 6 6-6" />
+                </svg>
+              </button>
+              <ng-template #headerTip>{{ column.tip }}</ng-template>
+            </th>
+          }
+        </tr>
+      </thead>
+
+      <!-- On a failed load, the error below replaces the body -->
+      @if (failed()) {
+      } @else if (view(); as view) {
+        <tbody>
+          @for (row of view.rows; track row.id) {
+            <tr
+              class="group border-b border-row hover:bg-row has-focus-visible:outline-2 has-focus-visible:-outline-offset-2 has-focus-visible:outline-accent"
+            >
+              <th scope="row" class="relative max-w-0 py-3 pl-5 max-sm:pl-4 pr-3 max-sm:pr-2 text-left font-normal">
+                <!-- The row's one link, stretched over it from its cell to the card's edge, which clips it: WebKit
+                     doesn't position inside a relative <tr>. Values with a tooltip sit above it -->
+                <a
+                  class="flex items-center gap-3 min-w-0 text-strong after:content-[''] after:absolute after:inset-y-0 after:left-0 after:w-screen focus-visible:outline-none"
+                  [routerLink]="['/trackers/price', row.id]"
+                >
+                  <span
+                    class="flex items-center justify-center size-8 shrink-0 rounded-xl bg-deep border border-line"
+                    aria-hidden="true"
+                  >
+                    <img class="max-w-6 max-h-6" icon [name]="row.icon" [wiki]="true" />
+                  </span>
+                  <span
+                    class="truncate text-base/5 font-bold group-hover:underline decoration-border underline-offset-3"
+                    >{{ row.name }}</span
+                  >
+                </a>
+              </th>
+              @for (column of columns(); track column.key) {
+                <td
+                  class="py-3 px-3 max-sm:px-2 last:pr-5 max-sm:last:pr-4 text-right text-base/5 tabular-nums whitespace-nowrap"
+                  [class]="columnClass(column.key)"
+                >
+                  @switch (column.key) {
+                    @case ('key') {
+                      <span
+                        class="relative z-1 font-bold cursor-help decoration-dotted underline-offset-6 group-hover:underline pointer-coarse:underline"
+                        [class]="row.key > 0 ? 'text-up' : row.key < 0 ? 'text-down' : 'text-text'"
+                        tooltip
+                        [tooltipTemplate]="breakdown"
+                        [tooltipUnderline]="false"
+                        >{{ formatWhole(row.key, true) }}</span
+                      >
+                      <ng-template #breakdown>
+                        <span class="flex flex-col min-w-48 tabular-nums">
+                          @if (isHighAlch()) {
+                            <span class="flex justify-between gap-6"
+                              ><span>Buy price</span><span>−{{ formatWhole(row.buy) }}</span></span
+                            >
+                            <span class="flex justify-between gap-6"
+                              ><span>Nature rune</span><span>−{{ formatWhole(row.natureRune ?? 0) }}</span></span
+                            >
+                            <span class="flex justify-between gap-6"
+                              ><span>Alch value</span><span>+{{ formatWhole(row.alch ?? 0) }}</span></span
+                            >
+                          } @else {
+                            <span class="flex justify-between gap-6"
+                              ><span>Buy at</span><span>−{{ formatWhole(row.buy) }}</span></span
+                            >
+                            <span class="flex justify-between gap-6"
+                              ><span>Sell at</span><span>+{{ formatWhole(row.sell ?? 0) }}</span></span
+                            >
+                            <span class="flex justify-between gap-6"
+                              ><span>GE tax</span
+                              ><span>{{ isGeTaxExempt(row.id) ? 'None' : '−' + formatWhole(row.tax ?? 0) }}</span></span
+                            >
+                          }
+                          <span class="flex justify-between gap-6 mt-2 pt-2 border-t border-line font-bold text-strong"
+                            ><span>{{ isHighAlch() ? 'Profit' : 'Margin' }}</span
+                            ><span>{{ formatWhole(row.key, true) }}</span></span
+                          >
+                        </span>
+                      </ng-template>
+                    }
+                    @case ('perLimit') {
+                      @if (row.perLimit !== null && row.limit !== null) {
+                        <span
+                          class="relative z-1 font-bold text-strong cursor-help decoration-dotted underline-offset-6 group-hover:underline pointer-coarse:underline"
+                          tooltip
+                          [tooltipTemplate]="perLimitTip"
+                          [tooltipUnderline]="false"
+                          >{{ formatTableNumber(row.perLimit) }}</span
+                        >
+                        <ng-template #perLimitTip
+                          >{{ formatWhole(row.perLimit) }} gp on a buy limit of
+                          {{ formatWhole(row.limit) }}</ng-template
+                        >
+                      } @else {
+                        <span class="text-muted">–</span>
+                      }
+                    }
+                    @case ('limit') {
+                      @if (row.limit !== null) {
+                        {{ row.limit | number }}
+                      } @else {
+                        <span class="text-muted">–</span>
+                      }
+                    }
+                    @case ('volume') {
+                      {{ formatTableNumber(row.volume) }}
+                    }
+                    @case ('alch') {
+                      {{ row.alch | number }}
+                    }
+                    @default {
+                      @let price = column.key === 'sell' ? row.sell : row.buy;
+                      @if (staleFor(row, view); as age) {
+                        <span
+                          class="relative z-1 inline-flex items-center gap-1.5 cursor-help decoration-dotted underline-offset-6 group-hover:underline pointer-coarse:underline"
+                          tooltip
+                          [tooltipTemplate]="ageTip"
+                          [tooltipUnderline]="false"
+                        >
+                          <svg glyph="clock" class="size-3.5 text-amber" stroke-width="2.5" />
+                          <span class="sr-only">An old price:</span>
+                          {{ price | number }}
+                        </span>
+                        <ng-template #ageTip>Last traded {{ age }} ago</ng-template>
+                      } @else {
+                        {{ price | number }}
+                      }
+                    }
+                  }
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      } @else {
+        <tbody aria-hidden="true">
+          @for (width of skeletons; track $index) {
+            <tr class="border-b border-row">
+              <td class="py-3 pl-5 max-sm:pl-4 pr-3">
+                <span class="flex items-center gap-3">
+                  <skeleton class="size-8 rounded-xl" />
+                  <skeleton class="h-4" [class]="width" />
+                </span>
+              </td>
+              @for (column of columns(); track column.key) {
+                <td class="py-3 px-3 max-sm:px-2 last:pr-5 max-sm:last:pr-4" [class]="columnClass(column.key)">
+                  <span class="flex justify-end"><skeleton class="h-4 w-14" /></span>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      }
+    </table>
+
+    @if (failed()) {
+      <load-error
+        source="price-table"
+        message="Prices didn’t load."
+        hint="The OSRS Wiki didn’t answer. Try again in a minute."
+        (retry)="lists.reload()"
+      />
+    } @else if (view(); as view) {
+      @if (view.rows.length === 0) {
+        <div class="flex flex-col items-center gap-1 px-5 py-8 text-center">
+          <p class="font-bold text-strong">
+            {{ query() ? 'No items match “' + query() + '”.' : 'No items match these filters.' }}
+          </p>
+          <p class="text-sm text-muted">
+            @if (!query()) {
+              Pick a lower volume, or All items.
+            } @else if (options().volume === 'any' && options().members === 'all') {
+              Check the spelling.
+            } @else {
+              Check the spelling, or pick Any volume and All items.
+            }
+          </p>
+        </div>
+      } @else {
+        <div
+          class="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 -mt-px px-5 max-sm:px-4 py-3 border-t border-line"
+        >
+          <span class="text-sm text-muted tabular-nums">
+            Showing {{ view.rows.length | number }} of {{ view.total | number }}
+            {{ view.total === 1 ? 'item' : 'items' }}
+            @if (query()) {
+              matching “{{ query() }}”
+            }
+          </span>
+          @if (view.total > view.rows.length) {
+            <button type="button" class="button--default button--rounded h-9 px-4 text-sm" (click)="showMore()">
+              Show 25 more
+            </button>
+          }
+        </div>
+      }
+    }
+  </section>
+
+  <p class="text-sm text-muted">
+    Prices from the OSRS Wiki’s real-time prices, refreshed every minute. Volume is yesterday’s trades (UTC).
+  </p>
+</main>
