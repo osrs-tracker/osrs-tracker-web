@@ -1,4 +1,4 @@
-import { AveragePrices, ItemMapping } from '@app/common/api/osrs-prices-repo';
+import { AveragePrices, ItemMapping, LatestPriceList } from '@app/common/api/osrs-prices-repo';
 import { formatNumberLegible, formatNumberShort, formatSign, formatWhole } from '@app/common/format/number-format';
 import { geTax } from '../item-detail/ge-tax';
 
@@ -53,9 +53,6 @@ export interface TableRow {
 const NATURE_RUNE_ID = 561;
 /** A row needs a trade this recent at the price it uses, unless the volume filter is `any` */
 const STALE_AFTER = 3_600_000;
-
-/** The `/latest` list, by item id (prices in gp, times in Unix seconds) */
-type LatestPriceList = Record<string, Record<string, number>>;
 
 /** The nature rune's price on the `buyAt` side; it trades all day, so a missing one is a failed load */
 export function natureRunePrice(latest: LatestPriceList, buyAt: BuyAt): number {

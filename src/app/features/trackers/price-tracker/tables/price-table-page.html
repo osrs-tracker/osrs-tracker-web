@@ -57,7 +57,7 @@
           class="flex items-center gap-2 max-sm:flex-col max-sm:items-stretch max-sm:gap-1 min-w-0 text-sm text-muted"
           [class]="isHighAlch() ? 'max-lg:flex-1' : 'max-sm:flex-1'"
         >
-          <span class="flex items-center">
+          <span class="flex items-center whitespace-nowrap">
             <label for="price-table-volume">Volume</label>
             <info-tooltip>
               Prices of rarely traded items mislead, so items traded less often, or without a trade
@@ -81,7 +81,7 @@
           <div
             class="flex items-center gap-2 max-sm:flex-col max-sm:items-stretch max-sm:gap-1 max-lg:flex-1 min-w-0 text-sm text-muted"
           >
-            <span class="flex items-center">
+            <span class="flex items-center whitespace-nowrap">
               <label for="price-table-buy-at">Buy at</label>
               <info-tooltip>
                 Instant buy: the price that buys the item right away. Instant sell: the price sellers take right away,
@@ -119,7 +119,7 @@
       </div>
     </div>
 
-    <table class="w-full tabular-nums">
+    <table class="w-full">
       <thead>
         <tr class="border-b border-line text-sm text-muted">
           <th scope="col" class="w-full py-3 pl-5 max-sm:pl-4 pr-3 max-sm:pr-2 text-left font-normal">Item</th>
@@ -190,13 +190,13 @@
               </th>
               @for (column of columns(); track column.key) {
                 <td
-                  class="py-3 px-3 max-sm:px-2 last:pr-5 max-sm:last:pr-4 text-right text-base/5 whitespace-nowrap"
+                  class="py-3 px-3 max-sm:px-2 last:pr-5 max-sm:last:pr-4 text-right text-base/5 tabular-nums whitespace-nowrap"
                   [class]="columnClass(column.key)"
                 >
                   @switch (column.key) {
                     @case ('key') {
                       <span
-                        class="relative z-1 font-bold cursor-help decoration-dotted underline-offset-[6px] group-hover:underline pointer-coarse:underline"
+                        class="relative z-1 font-bold cursor-help decoration-dotted underline-offset-6 group-hover:underline pointer-coarse:underline"
                         [class]="row.key > 0 ? 'text-up' : row.key < 0 ? 'text-down' : 'text-text'"
                         tooltip
                         [tooltipTemplate]="breakdown"
@@ -237,7 +237,7 @@
                     @case ('perLimit') {
                       @if (row.perLimit !== null && row.limit !== null) {
                         <span
-                          class="relative z-1 font-bold text-strong cursor-help decoration-dotted underline-offset-[6px] group-hover:underline pointer-coarse:underline"
+                          class="relative z-1 font-bold text-strong cursor-help decoration-dotted underline-offset-6 group-hover:underline pointer-coarse:underline"
                           tooltip
                           [tooltipTemplate]="perLimitTip"
                           [tooltipUnderline]="false"
@@ -268,7 +268,7 @@
                       @let price = column.key === 'sell' ? row.sell : row.buy;
                       @if (staleFor(row, view); as age) {
                         <span
-                          class="relative z-1 inline-flex items-center gap-1.5 cursor-help decoration-dotted underline-offset-[6px] group-hover:underline pointer-coarse:underline"
+                          class="relative z-1 inline-flex items-center gap-1.5 cursor-help decoration-dotted underline-offset-6 group-hover:underline pointer-coarse:underline"
                           tooltip
                           [tooltipTemplate]="ageTip"
                           [tooltipUnderline]="false"

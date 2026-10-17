@@ -48,7 +48,8 @@ export interface ItemMapping {
   limit?: number;
 }
 
-type LatestPriceList = Record<string, Record<string, number>>;
+/** The full `/latest` list, by item id: prices in gp, times in Unix seconds */
+export type LatestPriceList = Record<string, Record<string, number>>;
 
 /** The lists the server keeps for every render, and how long each stays fresh, in ms */
 interface ServerLists {

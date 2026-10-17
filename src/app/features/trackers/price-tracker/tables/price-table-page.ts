@@ -13,10 +13,10 @@ import {
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { formatDistanceStrict, fromUnixTime, getUnixTime } from 'date-fns';
+import { formatDistanceStrict } from 'date-fns';
 import { forkJoin, map, tap } from 'rxjs';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
-import { OsrsPricesRepo, TimeSpan } from '@app/common/api/osrs-prices-repo';
+import { LatestPriceList, OsrsPricesRepo, TimeSpan } from '@app/common/api/osrs-prices-repo';
 import { formatWhole } from '@app/common/format/number-format';
 import { Icon } from '@app/common/icon/icon';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
@@ -26,7 +26,7 @@ import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
 import { Tooltip } from '@app/common/ui/tooltip/tooltip';
 import { isGeTaxExempt } from '../item-detail/ge-tax';
-import { DAY, utcDayStart } from '../utc-day';
+import { yesterdayStart } from '../utc-day';
 import {
   BuyAt,
   Members,
@@ -105,10 +105,7 @@ export default class PriceTablePage {
       forkJoin({
         mapping: this.osrsPricesRepo.getItemMapping(),
         latest: this.osrsPricesRepo.getAllLatestPrices(),
-        day: this.osrsPricesRepo.getAveragePrices(
-          TimeSpan.DAY,
-          fromUnixTime(utcDayStart(getUnixTime(new Date())) - DAY),
-        ),
+        day: this.osrsPricesRepo.getAveragePrices(TimeSpan.DAY, yesterdayStart()),
       }).pipe(
         map(lists => {
           // A failed load, not a table without High alch's rune price
@@ -267,7 +264,7 @@ export default class PriceTablePage {
 
   private toView(
     rows: TableRow[],
-    lists: { latest: Record<string, Record<string, number>>; loadedAt: number },
+    lists: { latest: LatestPriceList; loadedAt: number },
     options: TableOptions,
     shown: number,
   ): TableView {
