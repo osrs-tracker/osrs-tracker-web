@@ -88,6 +88,13 @@ describe('createApp', () => {
     expect(new Set(nonces).size).toBe(3);
   });
 
+  it('turns off browser features the site never uses', async () => {
+    const policy = (await get('/trackers/xp/ToxSick')).headers.get('permissions-policy');
+
+    expect(policy).toContain('camera=()');
+    expect(policy).toContain('geolocation=()');
+  });
+
   it('passes the status Angular renders, so unknown routes are a 404', async () => {
     handle.mockImplementation(async () => new Response('<html>not found</html>', { status: 404 }));
 

@@ -15,8 +15,30 @@ export function allowCrossOriginEmbedding(res: ServerResponse): void {
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
 }
 
+/**
+ * Turns off the browser features the site never uses, for its own pages and anything they embed. Helmet doesn't set
+ * this header. Only features Chrome knows: it logs an error for each name it doesn't.
+ */
+const PERMISSIONS_POLICY = [
+  'accelerometer',
+  'browsing-topics',
+  'camera',
+  'display-capture',
+  'geolocation',
+  'gyroscope',
+  'hid',
+  'magnetometer',
+  'microphone',
+  'midi',
+  'payment',
+  'serial',
+  'usb',
+]
+  .map(feature => `${feature}=()`)
+  .join(', ');
+
 export function securityMiddleware(): RequestHandler {
-  return helmet({
+  const headers = helmet({
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
@@ -56,4 +78,9 @@ export function securityMiddleware(): RequestHandler {
     xContentTypeOptions: true,
     xDnsPrefetchControl: { allow: true },
   });
+
+  return (req, res, next) => {
+    res.setHeader('Permissions-Policy', PERMISSIONS_POLICY);
+    headers(req, res, next);
+  };
 }

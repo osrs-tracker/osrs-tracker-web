@@ -36,6 +36,8 @@
 
 - The site now publishes a `security.txt` (at `/.well-known/security.txt`, the standard place), so anyone who finds a
   security problem knows where to report it.
+- Pages now tell the browser that the site never uses the camera, microphone, location, payments, motion sensors or
+  connected devices, so nothing on a page, including the analytics script, can ask for them.
 
 ## 2026-10-15
 
