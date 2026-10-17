@@ -33,4 +33,8 @@ log). Fix every failure that's in the change being committed in one round, then 
 a check fails, never claim a pass without its output, and don't drop a check to save time: the push gate covers only
 lint and Prettier.
 
+CI also runs two checks this script doesn't: `shellcheck` on `.github/scripts/*.sh`, `.claude/hooks/*.sh` and
+`.claude/skills/*/*.sh` (not installed on the dev machine), and a link check (lychee). A change to a shell script or a
+link is checked by CI only: say so in the report.
+
 `npm run prettier:ci` failing on files you changed: `npx prettier --write <files>`.

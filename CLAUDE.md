@@ -18,7 +18,8 @@ holds the Angular conventions, SSR rules, deploy and release steps. Keep detail 
   main checkout's lockfile, not the worktree's, and only if `npm ci` ran there after the last pull that changed it. If
   `diff -q package-lock.json ../../../package-lock.json` reports a difference or `npm ls --all --prefix ../../..` fails,
   run `npm ci` in the worktree (`verify.sh` checks both). Other sessions share port 4200: check `ss -ltn | grep :4200`
-  before `npm start`, and stop it when done. A session edits only its own worktree; Claude Code blocks writes into
+  before `npm start`. If it's taken by a server this session didn't start, it's another session's: don't stop it, wait
+  or ask the user. Stop your own when done. A session edits only its own worktree; Claude Code blocks writes into
   another one.
 - Claude Code's pushes run `.claude/hooks/pre-push-check.sh` first (lint and Prettier on the checkout being pushed).
   It's a PreToolUse hook, not a git hook: a push from your own terminal skips it.

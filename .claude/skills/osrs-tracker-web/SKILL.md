@@ -80,8 +80,9 @@ every artboard that imports it. Tailwind classes only; a value the scale lacks b
   `deep` hero band and icon tiles, `border` controls, `muted`/`text`/`strong` text, `accent` (+ `accent-hover`,
   `on-accent`) links and primary actions, `up`/`down` changes (a true green in the dark theme, apart from the emerald
   accent), `down-pill` the red change pill's background (a tint in light, solid in dark: a see-through red over slate
-  turns pink), `amber`/`orange` warnings. Charts read them through `token()` in `chart-setup.ts`, which lists the ones
-  they use.
+  turns pink), `amber`/`orange` warnings, `scrim` the see-through layer behind the phone nav's menu sheet, `dot` the
+  hero's dot grid (`.dot-grid` in `utilities.css`). Charts read them through `token()` in `chart-setup.ts`, which lists
+  the ones they use.
 - **Tints:** `hiscores/picked-cell.ts` and the chart legend layer one over the surface.
 - **Surfaces:** cards are flat; only floating layers (dropdowns, tooltips, Home's preview card) get `shadow-float`.
 - **Radii:** `rounded-3xl` hero surfaces (search box, preview card), `rounded-2xl` cards, stat tiles and buttons in the
@@ -114,6 +115,7 @@ Which component to use (in `common/ui/<folder>/` unless noted):
 | Something is loading (`loading/`)                             | `skeleton` blocks sized like the content, never a spinner                               |
 | A short explanation (`tooltip/`)                              | `info-tooltip`, or `[tooltip]` on any element                                           |
 | A reading page (`page/`)                                      | `information-page` around `<div class="markdown">`                                      |
+| A line icon used in more than one place (`glyph/`)            | `svg[glyph]` (decorative; `img[icon]` is for the game's pixel-art icons)                |
 
 ## Code navigation
 
@@ -195,14 +197,15 @@ agent.
 ## Running locally
 
 - `npm start` (`ng serve --open`) for browser-side work; it has no auto-generator or page cache. If port 4200 is taken
-  it offers another port: decline and stop the other process, as the API's CORS rejects any other port.
+  it offers another port: decline, as the API's CORS rejects any other port. Whose server holds the port and whether to
+  stop it: `CLAUDE.md`.
 - Server code needs the production build. `npm run build` first regenerates `public/sitemap*.xml` (the site sitemap and
   the index, dated from git; the items and players sitemaps are built by the server, `routers/sitemaps.ts`) and the
   icons, which dirties tracked files: `git restore public/sitemap*.xml` afterwards, or build with
   `npx ng build --configuration production`. Then
   `HOST=localhost PORT=4200 node dist/osrs-tracker-web/server/server.mjs`. Smoke test with
-  `curl -s -D - http://localhost:4200/<path>` (unknown routes 404, generated pages `x-cache: HIT`). Stop with
-  `lsof -ti:4200 -sTCP:LISTEN | xargs -r kill`.
+  `curl -s -D - http://localhost:4200/<path>` (unknown routes 404, generated pages `x-cache: HIT`). Stop the server you
+  started with `lsof -ti:4200 -sTCP:LISTEN | xargs -r kill`.
 
 ## Browser check
 
@@ -275,8 +278,8 @@ chains or loops, which the permission check reads as something else and blocks. 
 the exact command; never edit permission settings, ask another session to run it, or reach the same result another way
 (`git merge -X ours` is blocked too: resolve conflicts by hand).
 
-1. Commit on `<type>/<short-name>` (in a worktree, `git switch -c` it from the `claude/…` branch you started on),
-   `git fetch origin && git rebase origin/main`, push, `gh pr create --base main`.
+1. Commit on `<type>/<short-name>` (in a worktree, `git switch -c` it from where you started: a `claude/…` branch or a
+   detached `HEAD`), `git fetch origin && git rebase origin/main`, push, `gh pr create --base main`.
 2. Review the PR with two subagents in parallel, without passing `model`: `conventions-reviewer` (its report starts with
    a `VERDICT:` line), and a `general-purpose` agent that runs `/code-review high <n>` and returns only its findings, so
    the review gets a fresh context and its reading stays out of the session. Check each finding against the code before

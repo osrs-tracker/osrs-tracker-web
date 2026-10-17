@@ -61,7 +61,10 @@ FreekMencke/home-cluster's `cluster/osrs-tracker/flux.yaml`, not here.
 The `kubectl` commands use the `kubernetes-admin@kubernetes` context. Claude Code sessions read the cluster through the
 read-only `kubernetes` and `flux` MCP servers instead (the current pods and their logs), and older logs and the metrics
 through the claude.ai Grafana Cloud connector: its tools are named by an ID (`mcp__<id>__query_loki_logs`), so find them
-with a tool search for `loki`. Use the connector to read only: it can also change dashboards and alert rules, which
+with a tool search for `loki`. Desktop WSL sessions often don't get connector tools (claude-kb MCP-010), and the
+`claude-agent` ServiceAccount can't reach Loki through the cluster's API proxy: when the search finds nothing, read the
+pods' logs with the `kubernetes` or `flux` MCP server, which reach back only to each pod's start, and ask the user for
+older lines. Use the connector to read only: it can also change dashboards and alert rules, which
 FreekMencke/home-cluster keeps. Writes such as a rollout restart are for the user to run.
 
 - Pods and events: `kubectl -n osrs-tracker get pods` and `kubectl -n osrs-tracker describe deploy osrs-tracker-web`.

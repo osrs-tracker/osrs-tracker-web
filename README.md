@@ -25,7 +25,7 @@
 - **XP Tracker**: look up any player and follow their daily XP gains, levels, boss kills, clue scrolls and more. Keep a
   list of your favourite players to check on your (and your friends') progress.
 - **Price Tracker**: search any tradeable item and see its current Grand Exchange price, trends, and price and volume
-  charts from the last day up to the last year.
+  charts from the last day up to the last year. Tables rank items by high-alch profit and by margin after tax.
 - **Players online**: how many people are playing right now, split by members and free-to-play and by country's worlds,
   and the count over the last day up to all time.
 - **OSRS News**: the latest news on the home page, and every news post since the first in the archive at `/news`, by
@@ -62,8 +62,8 @@ Local runs use the production API, so player lookups show up in the live "Global
 
 ## Contributing
 
-Before pushing, run the same checks as CI (lint, Prettier, the tests and a production build, all at once, reporting
-every failure):
+Before pushing, run CI's main checks (lint, Prettier, knip, the tests and a production build, all at once, reporting
+every failure). CI also runs `shellcheck` on the shell scripts and a link check, which this doesn't:
 
 ```bash
 .claude/skills/verify/verify.sh
