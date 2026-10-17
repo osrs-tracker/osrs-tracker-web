@@ -18,26 +18,35 @@ if [[ $PWD == */.claude/worktrees/* ]]; then
   fi
 fi
 
-names=(lint prettier knip test build)
+names=(lint prettier knip)
 commands=(
   'npx ng lint'
   'npm run prettier:ci'
   'npx knip'
+)
+summary=()
+
+# A check whose tool is a system binary, not in package.json: skipped, not failed, where it isn't installed, as CI runs
+# it anyway. Usage: optional <tool> <command> <how to install>
+optional() {
+  if command -v "$1" >/dev/null; then
+    names+=("$1")
+    commands+=("$2")
+  else
+    summary+=("skipped $1: not installed ($3), so only CI runs it")
+  fi
+}
+# The same files as CI's lint job
+optional shellcheck 'shellcheck .github/scripts/*.sh .claude/hooks/*.sh .claude/skills/*/*.sh' 'sudo apt install shellcheck'
+# CI's links job: local links and #anchors in the Markdown
+optional lychee "lychee --offline --hidden --include-fragments --no-progress './**/*.md'" 'the verify skill says how'
+
+names+=(test build)
+commands+=(
   'npx ng test --watch=false'
   # Not `npm run build`, which regenerates the sitemaps and icons and so changes tracked files
   'npx ng build --configuration production'
 )
-summary=()
-
-# The same files as CI's lint job. Skipped, not failed, where ShellCheck isn't installed (a system package, not in
-# package.json): CI runs it anyway.
-if command -v shellcheck >/dev/null; then
-  # After knip, so a failure's output comes with the other fast checks'
-  names=("${names[@]:0:3}" shellcheck "${names[@]:3}")
-  commands=("${commands[@]:0:3}" 'shellcheck .github/scripts/*.sh .claude/hooks/*.sh .claude/skills/*/*.sh' "${commands[@]:3}")
-else
-  summary+=('skipped shellcheck: not installed (sudo apt install shellcheck), so CI checks the shell scripts')
-fi
 
 # Kept when a check fails, so its full log can be read further
 out=$(mktemp -d -t verify.XXXXXX)

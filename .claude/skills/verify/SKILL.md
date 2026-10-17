@@ -23,12 +23,12 @@ and exits 1 when any failed:
 2. `npm run prettier:ci`
 3. `npx knip`: unused files, exports and dependencies. An export only its own file uses loses its `export`; a false
    positive goes in `knip.jsonc` with a comment saying why
-4. `shellcheck` on `.github/scripts/*.sh`, `.claude/hooks/*.sh` and `.claude/skills/*/*.sh`, as CI does. Where it isn't
-   installed (on the dev machine: `sudo apt install shellcheck`) the summary says it was skipped: then a change to a
-   shell script is checked by CI only, so say so in the report
-5. `npx ng test --watch=false` (Vitest doesn't type-check the specs, but `ng test` compiles them, so a type error fails
+4. `shellcheck` on `.github/scripts/*.sh`, `.claude/hooks/*.sh` and `.claude/skills/*/*.sh`, as CI's lint job does
+5. `lychee --offline --hidden --include-fragments './**/*.md'`, CI's links job: local links and `#anchors` in the
+   Markdown
+6. `npx ng test --watch=false` (Vitest doesn't type-check the specs, but `ng test` compiles them, so a type error fails
    it)
-6. `npx ng build --configuration production`: not `npm run build`, which regenerates sitemaps and icons and so changes
+7. `npx ng build --configuration production`: not `npm run build`, which regenerates sitemaps and icons and so changes
    tracked files
 
 Report one line per check: passed, failed or skipped. For each failure, quote the relevant output (the errors, not the
@@ -36,6 +36,17 @@ whole log). Fix every failure that's in the change being committed in one round,
 while a check fails, never claim a pass without its output, and don't drop a check to save time: the push gate covers
 only lint and Prettier.
 
-CI also runs a link check (lychee) that this script doesn't: a change to a link is checked by CI only.
+ShellCheck and lychee are system binaries, not npm packages: where one isn't installed, the summary says it was skipped
+and only CI checks those files, so say so in the report. To install them, use the versions CI uses (ShellCheck 0.9.0 on
+Ubuntu 24.04; lychee is the version `lycheeverse/lychee-action`'s pin in `nodejs.yml` defaults to, `lycheeVersion` in
+its `action.yml`):
+
+```bash
+sudo apt install shellcheck
+```
+
+```bash
+gh release download lychee-v0.24.2 -R lycheeverse/lychee -p lychee-x86_64-unknown-linux-gnu.tar.gz -O - | tar -xz -C ~/.local/bin --strip-components=1 lychee-x86_64-unknown-linux-gnu/lychee
+```
 
 `npm run prettier:ci` failing on files you changed: `npx prettier --write <files>`.

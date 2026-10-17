@@ -62,8 +62,8 @@ Local runs use the production API, so player lookups show up in the live "Global
 
 ## Contributing
 
-Before pushing, run CI's checks (lint, Prettier, knip, ShellCheck if it's installed, the tests and a production build,
-all at once, reporting every failure). Only CI's link check isn't in it:
+Before pushing, run the same checks as CI (lint, Prettier, knip, ShellCheck and the link check if they're installed, the
+tests and a production build, all at once, reporting every failure):
 
 ```bash
 .claude/skills/verify/verify.sh
