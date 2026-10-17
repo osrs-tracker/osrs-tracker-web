@@ -11,7 +11,7 @@ import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SSR_TIMEOUT } from '@app/core/interceptors/ssr-timeout-interceptor';
 import { config } from '@config/config';
-import { OsrsPricesRepo } from './osrs-prices-repo';
+import { OsrsPricesRepo, TimeSpan } from './osrs-prices-repo';
 
 describe('OsrsPricesRepo', () => {
   let repo: OsrsPricesRepo;
@@ -27,7 +27,7 @@ describe('OsrsPricesRepo', () => {
 
   // A single item (`?id=`) rarely is in the Wiki's CDN cache, and took over 2 s at the 90th percentile during SSR
   describe('on the server', () => {
-    let hour = 0;
+    let week = 0;
 
     beforeEach(() => {
       TestBed.resetTestingModule();
@@ -42,9 +42,9 @@ describe('OsrsPricesRepo', () => {
       repo = TestBed.inject(OsrsPricesRepo);
       httpTesting = TestBed.inject(HttpTestingController);
 
-      // The list outlives a render: start each test after the previous one's has expired
+      // The lists outlive a render: start each test after the previous one's have expired
       vi.useFakeTimers({ toFake: ['Date'] });
-      vi.setSystemTime(++hour * 3_600_000);
+      vi.setSystemTime(++week * 7 * 86_400_000);
     });
 
     afterEach(() => vi.useRealTimers());
@@ -79,6 +79,55 @@ describe('OsrsPricesRepo', () => {
       repo.getLatestPrices(4151).subscribe();
       httpTesting.expectOne(`${config.pricesBaseUrl}/latest`);
     });
+
+    it('keeps the mapping, cut down, for every render for 6 hours', () => {
+      let names: string[] = [];
+      repo.getItemMapping().subscribe(items => (names = items.map(item => item.name)));
+      const req = httpTesting.expectOne(`${config.pricesBaseUrl}/mapping`);
+      expect(req.request.transferCache).toBe(false);
+      req.flush([{ id: 4151, name: 'Abyssal whip', icon: 'Abyssal whip.png', members: true, examine: 'A weapon' }]);
+      expect(names).toEqual(['Abyssal whip']);
+
+      vi.setSystemTime(Date.now() + 6 * 3_600_000 - 1);
+      let kept: object[] = [];
+      repo.getItemMapping().subscribe(items => (kept = items));
+      httpTesting.expectNone(() => true);
+      expect(kept[0]).not.toHaveProperty('examine');
+
+      vi.setSystemTime(Date.now() + 1);
+      repo.getItemMapping().subscribe();
+      httpTesting.expectOne(`${config.pricesBaseUrl}/mapping`);
+    });
+
+    it('keeps a day of averages until another day is asked for', () => {
+      const day = new Date(Date.now() - 86_400_000);
+      repo.getAveragePrices(TimeSpan.DAY, day).subscribe();
+      const req = httpTesting.expectOne(`${config.pricesBaseUrl}/24h?timestamp=${day.getTime() / 1000}`);
+      expect(req.request.transferCache).toBe(false);
+      req.flush({ data: { 4151: { highPriceVolume: 1 } }, timestamp: day.getTime() / 1000 });
+
+      vi.setSystemTime(Date.now() + 23 * 3_600_000);
+      repo.getAveragePrices(TimeSpan.DAY, day).subscribe();
+      httpTesting.expectNone(() => true);
+
+      const nextDay = new Date(day.getTime() + 86_400_000);
+      repo.getAveragePrices(TimeSpan.DAY, nextDay).subscribe();
+      httpTesting.expectOne(`${config.pricesBaseUrl}/24h?timestamp=${nextDay.getTime() / 1000}`);
+    });
+  });
+
+  it('shares the mapping, and a day of averages with the item rows, for the session', () => {
+    repo.getItemMapping().subscribe();
+    repo.getItemMapping().subscribe();
+    httpTesting.expectOne(`${config.pricesBaseUrl}/mapping`).flush([]);
+    repo.getItemMapping().subscribe();
+
+    const day = new Date(86_400_000);
+    repo.getAveragePrices(TimeSpan.DAY, day).subscribe();
+    repo.getCachedPriceAverage(4151, TimeSpan.DAY, day).subscribe();
+    httpTesting.expectOne(`${config.pricesBaseUrl}/24h?timestamp=86400`).flush({ data: {}, timestamp: 86400 });
+    repo.getAveragePrices(TimeSpan.DAY, day).subscribe();
+    httpTesting.expectNone(() => true);
   });
 
   it("uses the server's price for an item until the app is stable", async () => {

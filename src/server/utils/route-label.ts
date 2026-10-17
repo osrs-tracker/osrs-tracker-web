@@ -5,6 +5,7 @@ import { Request, Response } from 'express';
 const PAGE_ROUTES: [RegExp, string][] = [
   [/^\/$/, '/'],
   [/^\/trackers\/price$/, '/trackers/price'],
+  [/^\/trackers\/price\/(high-alch|margins)$/, '/trackers/price/$1'],
   [/^\/trackers\/price\/browse$/, '/trackers/price/browse'],
   [/^\/trackers\/price\/browse\/[^/]+$/, '/trackers/price/browse/:letter'],
   [/^\/trackers\/price\/[^/]+$/, '/trackers/price/:id'],

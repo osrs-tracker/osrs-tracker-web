@@ -1,10 +1,26 @@
 ## 2026-10-17
 
+### XP Tracker
+
 - A player's page has a new Milestones card, under the Skills card (after the chart on phones): when each skill reaches
   its next level, 99 or 200M XP if the player keeps up their pace, with the date and the days left, soonest first, each
   skill's icon outlined in its colour from the chart. The pace is each skill's average XP a day over the last 7, 30, 60
   or 90 days, picked in the card apart from the chart's period; a player tracked for fewer days is averaged over the
   days there are. Skills without XP in that period are left out, and hovering a row shows the XP a day it counts on.
+
+### Price Tracker
+
+- Two new tables list every item at the latest prices, linked from the Price Tracker and the Trackers menu. **High-alch
+  profit** shows what a cast of High Level Alchemy makes: the alch value minus the buy price and a nature rune, at the
+  instant-buy price or, for a buy offer, the instant-sell price. **Margins** shows what a flip makes: bought at the
+  instant-sell price and sold at the instant-buy price, after the 2% GE tax. Both show the buy limit, the profit on a
+  full 4-hour limit and yesterday's trades, sort by any column, and filter by name, members or free-to-play and daily
+  volume. Rarely traded items, and items without a trade in the last hour, are left out at first, as their prices
+  mislead; pick Any volume to see them, with a clock on old prices. Hover or tap a profit or margin to see what it's
+  made of.
+
+### Look and feel
+
 - Text boxes and dropdowns have a slightly stronger outline, the one the site's buttons and search box already use, so
   they stand out more from the card around them: the profit calculator's fields, the tracking offset, the News category,
   the calendar's year and the new Milestones card's period.

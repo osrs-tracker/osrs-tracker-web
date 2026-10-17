@@ -44,6 +44,8 @@ describe('routeLabel', () => {
     ['/trackers/xp/ToxSick/', '/trackers/xp/:username'],
     ['/trackers/price/4151?range=week', '/trackers/price/:id'],
     ['/trackers/price/browse', '/trackers/price/browse'],
+    ['/trackers/price/high-alch', '/trackers/price/high-alch'],
+    ['/trackers/price/margins/', '/trackers/price/margins'],
     ['/trackers/price/browse/a', '/trackers/price/browse/:letter'],
     ['/trackers/xp/a/b', '#unmatched'],
     ['/main-ABC123.js', '/static'],
