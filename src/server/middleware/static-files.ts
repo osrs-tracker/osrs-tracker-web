@@ -15,6 +15,8 @@ const HASHED_FILE = /^\/[^/]+\.(?:js|css)$/;
 export function staticFilesMiddleware(): RequestHandler {
   return express.static(serverConfig.browserDistFolder, {
     cacheControl: false,
+    // Serves `/.well-known/security.txt`; the build holds only the bundles and `public/`, no private dotfiles
+    dotfiles: 'allow',
     setHeaders: (res, path) => {
       const url = '/' + relative(serverConfig.browserDistFolder, path).split(sep).join('/');
 

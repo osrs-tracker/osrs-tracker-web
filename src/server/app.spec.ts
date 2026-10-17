@@ -24,7 +24,8 @@ vi.mock('@angular/ssr/node', () => ({
 }));
 
 describe('createApp', () => {
-  // A browser build with a chunk, an icon, a preview image and a sitemap, so the static middleware has real files to serve
+  // A browser build with a chunk, an icon, a preview image, a sitemap and a security.txt, so the static middleware has
+  // real files to serve
   serverConfig.browserDistFolder = mkdtempSync(join(tmpdir(), 'osrs-tracker-browser-'));
   writeFileSync(join(serverConfig.browserDistFolder, 'chunk-real.js'), 'export {};');
   writeFileSync(join(serverConfig.browserDistFolder, 'sitemap-site.xml'), '<urlset/>');
@@ -32,6 +33,8 @@ describe('createApp', () => {
   writeFileSync(join(serverConfig.browserDistFolder, 'assets/icons/coins.png'), 'png');
   mkdirSync(join(serverConfig.browserDistFolder, 'assets/og'), { recursive: true });
   writeFileSync(join(serverConfig.browserDistFolder, 'assets/og/osrs-tracker.png'), 'png');
+  mkdirSync(join(serverConfig.browserDistFolder, '.well-known'));
+  writeFileSync(join(serverConfig.browserDistFolder, '.well-known/security.txt'), 'Contact: mailto:x@example.com');
   afterAll(() => rmSync(serverConfig.browserDistFolder, { recursive: true }));
 
   let ready = true;
@@ -146,6 +149,15 @@ describe('createApp', () => {
 
     expect(res.status).toBe(200);
     expect(await res.text()).toBe('export {};');
+    expect(handle).not.toHaveBeenCalled();
+  });
+
+  it('serves security.txt from the .well-known folder', async () => {
+    const res = await get('/.well-known/security.txt');
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get('content-type')).toBe('text/plain; charset=utf-8');
+    expect(await res.text()).toBe('Contact: mailto:x@example.com');
     expect(handle).not.toHaveBeenCalled();
   });
 
