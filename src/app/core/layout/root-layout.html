@@ -77,18 +77,7 @@
               [isNew]="true"
               routerLink="/trackers/price/margins"
             >
-              <svg
-                class="size-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M7 20V4M3 8l4-4 4 4M17 4v16M13 16l4 4 4-4" />
-              </svg>
+              <svg lucideArrowUpDown class="size-5" strokeWidth="2.5" />
             </a>
           </nav-menu>
         </li>
@@ -103,22 +92,11 @@
                 routerLink="/news"
                 [queryParams]="{ since: lastPlayed.day }"
               >
-                <svg
-                  class="size-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <circle cx="12" cy="12" r="9" />
-                  <path d="M12 7v5l3 2" />
-                </svg>
+                <svg lucideClock class="size-5" strokeWidth="2.5" />
               </a>
             }
             <a nav-menu-row label="Latest news" sub="Every post, or catch up since you last played" routerLink="/news">
-              <svg glyph="newspaper" class="size-5" stroke-width="2.5" />
+              <svg lucideNewspaper class="size-5" strokeWidth="2.5" />
             </a>
             <hr class="my-2 -mx-1.5 sm:-mx-2 border-line" />
             <players-online-card class="block" [active]="navMenus.open() === 'menu-game'" />

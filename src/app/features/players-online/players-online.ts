@@ -6,6 +6,7 @@ import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { PlayerCountHistory } from './player-count-history';
 import { formatShare, locationCounts } from './world-locations';
+import { LucideActivity } from '@lucide/angular';
 
 /**
  * The players online: the count (`PlayerCountStore`: live, rendered on the server and refreshed in the browser), its
@@ -14,7 +15,7 @@ import { formatShare, locationCounts } from './world-locations';
 @Component({
   selector: 'players-online',
   templateUrl: './players-online.html',
-  imports: [DecimalPipe, LoadError, PlayerCountHistory, Skeleton],
+  imports: [DecimalPipe, LoadError, PlayerCountHistory, Skeleton, LucideActivity],
 })
 export default class PlayersOnline {
   private readonly hydrated = signal(false);

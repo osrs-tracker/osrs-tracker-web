@@ -31,6 +31,9 @@
   items, players and players online use the new version too.
 - On a player's page, skills, bosses, clue scrolls and minigames that gained XP or kills in the charted days have a
   clearer outline in their chart colour, so it's easier to see which ones you can pick to compare on the chart.
+- All the small line icons (arrows, search, the favourites star, the theme toggle's sun and moon, the calendar and the
+  rest) now come from one icon set, Lucide, instead of a mix drawn after three different sets, so they share one style.
+  Most look nearly the same; the Retry arrows, the favourites star and the player icon change the most.
 
 ### Behind the scenes
 

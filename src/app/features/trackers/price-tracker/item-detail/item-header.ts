@@ -7,7 +7,7 @@ import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { config } from '@config/config';
 import { PriceTrackerStore } from '../price-tracker-store';
 import { formatSign, formatWhole } from '@app/common/format/number-format';
-import { Glyph } from '@app/common/ui/glyph/glyph';
+import { LucideExternalLink, LucideStar } from '@lucide/angular';
 
 /**
  * The item page's header: icon tile, the name (to the OSRS Wiki), the examine text, the instant sell price with its
@@ -37,7 +37,7 @@ import { Glyph } from '@app/common/ui/glyph/glyph';
         rel="noopener"
         title="Open on the OSRS Wiki"
       ><h1 class="inline">{{ item().name }}</h1>&#8288;<svg
-          glyph="external-link"
+          lucideExternalLink
           class="inline size-4.5 ml-2.5 mt-0.75 align-top text-muted sm:mt-2.25"
         />
         <span class="sr-only">(opens the OSRS Wiki in a new tab)</span>
@@ -95,7 +95,7 @@ import { Glyph } from '@app/common/ui/glyph/glyph';
           [title]="isFavorite() ? 'Remove from favourites' : 'Add to favourites'"
           (click)="toggleFavorite()"
         >
-          <svg glyph="star" class="size-5.5" [attr.fill]="isFavorite() ? 'currentColor' : 'none'" />
+          <svg lucideStar class="size-5.5" [attr.fill]="isFavorite() ? 'currentColor' : 'none'" />
         </button>
       } @placeholder {
         <skeleton class="size-12 shrink-0 rounded-full" tone="ground" />
@@ -103,7 +103,7 @@ import { Glyph } from '@app/common/ui/glyph/glyph';
     </div>
   `,
   host: { class: 'max-w-page mx-auto flex flex-wrap items-center gap-4 px-4 sm:px-6 py-2' },
-  imports: [Icon, LoadError, Skeleton, Glyph],
+  imports: [Icon, LoadError, Skeleton, LucideExternalLink, LucideStar],
 })
 export class ItemHeader {
   private readonly analyticsService = inject(AnalyticsService);

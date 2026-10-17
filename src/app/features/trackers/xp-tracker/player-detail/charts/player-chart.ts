@@ -12,7 +12,7 @@ import { activitySeries, xpGainedSeries } from './log-chart-series';
 import { XpGainedChart } from './xp-gained-chart';
 import { Gains } from '../player-summary';
 import { ActivityView, ChartView, Period, PlayerView } from '../player-view';
-import { Glyph } from '@app/common/ui/glyph/glyph';
+import { LucideClock } from '@lucide/angular';
 
 const TITLES: Record<ChartView, string> = {
   skills: 'XP gained',
@@ -110,7 +110,7 @@ interface ChartHeading {
       @case ('empty') {
         <div class="flex flex-col grow items-center justify-center gap-4 px-8 py-10 text-center">
           <span class="flex items-center justify-center size-16 rounded-full bg-ground text-accent" aria-hidden="true">
-            <svg glyph="clock" class="size-7.5" />
+            <svg lucideClock class="size-7.5" />
           </span>
           <div class="flex flex-col items-center gap-2">
             <h3 class="text-xl font-bold text-strong">No gains yet</h3>
@@ -150,7 +150,7 @@ interface ChartHeading {
     }
   `,
   host: { class: 'flex flex-col min-w-0 rounded-2xl bg-card overflow-hidden lg:h-115.5' },
-  imports: [ActivityChart, Icon, Segmented, Skeleton, XpGainedChart, Glyph],
+  imports: [ActivityChart, Icon, Segmented, Skeleton, XpGainedChart, LucideClock],
 })
 export class PlayerChart {
   readonly playerView = inject(PlayerView);

@@ -3,7 +3,7 @@ import { SkillEnum } from '@osrs-tracker/hiscores';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { Icon } from '@app/common/icon/icon';
 import { Tooltip } from '@app/common/ui/tooltip/tooltip';
-import { Glyph } from '@app/common/ui/glyph/glyph';
+import { LucideUser } from '@lucide/angular';
 
 interface AccountMode {
   label: string;
@@ -46,7 +46,7 @@ const TYPE_LABELS: Record<PlayerType, string> = {
         @if (large()) {
           <img class="size-10" icon eager [name]="SkillEnum.Overall" [skill]="true" />
         } @else {
-          <svg glyph="user" class="size-5.5 max-sm:size-4.5 stroke-text" />
+          <svg lucideUser class="size-5.5 max-sm:size-4.5 stroke-text" />
         }
       } @else {
         <img [class]="large() ? 'size-10' : 'size-6 max-sm:size-5'" icon [eager]="large()" [name]="player.type" />
@@ -54,7 +54,7 @@ const TYPE_LABELS: Record<PlayerType, string> = {
 
       @if (player.status === PlayerStatus.DeIroned) {
         <span [class]="badgeClass() + ' flex items-center justify-center'">
-          <svg glyph="close" [class]="large() ? 'size-4 stroke-down' : 'size-3 stroke-down'" stroke-width="4" />
+          <svg lucideX [class]="large() ? 'size-4 stroke-down' : 'size-3 stroke-down'" strokeWidth="4" />
         </span>
       } @else if (player.status === PlayerStatus.DeUltimated) {
         <img
@@ -92,7 +92,7 @@ const TYPE_LABELS: Record<PlayerType, string> = {
   `,
   // In a row the tile sits inside a link, which may not hold another focusable element: there it isn't focusable
   host: { class: 'shrink-0' },
-  imports: [Icon, Tooltip, Glyph],
+  imports: [Icon, Tooltip, LucideUser],
 })
 export class AccountTile {
   readonly PlayerStatus: typeof PlayerStatus = PlayerStatus;

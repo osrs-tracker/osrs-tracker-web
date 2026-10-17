@@ -48,7 +48,7 @@ import { LogNotice, PlayerLogs } from './player-logs';
 import { statTilesFor } from './stat-tiles';
 import { dailyGains, periodStart, periodSummary, totalGains } from './player-summary';
 import { PlayerView } from './player-view';
-import { Glyph } from '@app/common/ui/glyph/glyph';
+import { LucideArrowLeft, LucideTriangleAlert } from '@lucide/angular';
 
 type LogView = 'days' | 'compare';
 
@@ -75,7 +75,8 @@ const LOG_VIEWS: SegmentedOption<LogView>[] = [
     StatTile,
     StatusPanel,
     TimeAgoPipe,
-    Glyph,
+    LucideArrowLeft,
+    LucideTriangleAlert,
   ],
   providers: [
     PlayerView,

@@ -5,7 +5,7 @@
         class="flex items-center justify-center size-14 shrink-0 rounded-2xl bg-card border border-line text-accent"
         aria-hidden="true"
       >
-        <svg glyph="newspaper" class="size-7" stroke-width="2.5" />
+        <svg lucideNewspaper class="size-7" strokeWidth="2.5" />
       </span>
       <h1 class="text-4xl/none md:text-5xl/none font-bold text-strong">OSRS <span class="text-accent">news</span></h1>
     </div>
@@ -64,7 +64,7 @@
           aria-label="Show every post again"
           (click)="pickDay(null)"
         >
-          <svg glyph="close" class="size-3.5" stroke-width="3" />
+          <svg lucideX class="size-3.5" strokeWidth="3" />
         </button>
       }
     </span>
@@ -101,7 +101,7 @@
                     class="flex items-center justify-center w-26 sm:w-32 lg:w-44 aspect-video shrink-0 rounded-xl border border-line bg-deep text-muted"
                     aria-hidden="true"
                   >
-                    <svg glyph="newspaper" class="size-6" />
+                    <svg lucideNewspaper class="size-6" />
                   </span>
                 }
                 <span class="flex flex-col gap-0.5 flex-1 min-w-0">
@@ -119,18 +119,7 @@
                     }}</time>
                   </span>
                 </span>
-                <svg
-                  class="max-sm:hidden size-4 shrink-0 text-muted"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                </svg>
+                <svg lucideExternalLink class="max-sm:hidden size-4 shrink-0 text-muted" strokeWidth="2.5" />
               </a>
             </li>
           }

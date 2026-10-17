@@ -2,6 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { Component, DestroyRef, ElementRef, afterNextRender, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ConsentStore } from '@app/common/analytics/consent-store';
+import { LucideChartNoAxesColumn } from '@lucide/angular';
 
 /**
  * Asks to allow Google Analytics' cookies. Fixed over the page, so it shifts no layout, and not a modal: the page stays
@@ -22,19 +23,7 @@ import { ConsentStore } from '@app/common/analytics/consent-store';
           class="flex items-center justify-center size-10 shrink-0 rounded-xl bg-deep text-accent"
           aria-hidden="true"
         >
-          <svg
-            class="size-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            aria-hidden="true"
-          >
-            <line x1="6" y1="20" x2="6" y2="13" />
-            <line x1="12" y1="20" x2="12" y2="5" />
-            <line x1="18" y1="20" x2="18" y2="10" />
-          </svg>
+          <svg lucideChartNoAxesColumn class="size-5" strokeWidth="2.5" />
         </span>
         <h2 id="consent-heading" class="grow text-lg/6 font-bold text-strong">Allow analytics cookies?</h2>
         @if (consentStore.choice(); as choice) {
@@ -69,7 +58,7 @@ import { ConsentStore } from '@app/common/analytics/consent-store';
     </section>
   `,
   host: { class: 'fixed z-50 bottom-4 inset-x-4 sm:bottom-6 sm:left-6 sm:right-auto sm:w-100' },
-  imports: [RouterLink],
+  imports: [RouterLink, LucideChartNoAxesColumn],
 })
 export class ConsentBanner {
   readonly consentStore = inject(ConsentStore);
