@@ -125,6 +125,12 @@ every difference. Then:
 If the script itself fails (the Wiki renamed a section or reworded the rate), fix its patterns in
 `scripts/ge-tax/check-ge-tax.mjs`.
 
+## Renew security.txt
+
+`public/.well-known/security.txt` (RFC 9116) carries an `Expires` date, and finders may ignore an expired file. The
+monthly `security.txt check` workflow fails once it's under 45 days away. Move it about 11 months on (the RFC wants it
+under a year ahead), check the contact address still works, add a `CHANGELOG.md` entry and deploy.
+
 ## Known upstream failures
 
 The site keeps working when a data source is down. The affected parts show "Couldn't load…" with a Retry button, and

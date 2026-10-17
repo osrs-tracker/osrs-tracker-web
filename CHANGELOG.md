@@ -35,7 +35,7 @@
 ### Behind the scenes
 
 - The site now publishes a `security.txt` (at `/.well-known/security.txt`, the standard place), so anyone who finds a
-  security problem knows where to report it. A check reminds us a month before it expires to renew it.
+  security problem knows where to report it.
 
 ## 2026-10-15
 
