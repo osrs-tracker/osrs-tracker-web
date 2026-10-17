@@ -1,0 +1,27 @@
+name: security.txt check
+
+# RFC 9116 wants security.txt's Expires under a year ahead, and finders may ignore an expired file. Nothing else
+# notices, so check every month and fail 45 days ahead. A failed run is the reminder: GitHub emails it to the repository
+# owner. See "Renew security.txt" in docs/runbook.md.
+on:
+  schedule:
+    - cron: '0 9 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+      - run: |
+          expires=$(sed -n 's/^Expires: //p' public/.well-known/security.txt)
+          days=$(( ($(date -d "$expires" +%s) - $(date +%s)) / 86400 ))
+          echo "security.txt expires $expires, in $days days"
+          if [ "$days" -lt 45 ]; then
+            echo "::error file=public/.well-known/security.txt::Expires in $days days: move it about 11 months on"
+            exit 1
+          fi

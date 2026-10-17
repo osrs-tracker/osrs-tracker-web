@@ -1,5 +1,5 @@
 import express, { RequestHandler } from 'express';
-import { relative, sep } from 'node:path';
+import { join, relative, sep } from 'node:path';
 import { serverConfig } from '../server-config';
 import { allowCrossOriginEmbedding, LINK_PREVIEW_IMAGE } from './security';
 
@@ -13,10 +13,11 @@ const HASHED_FILE = /^\/[^/]+\.(?:js|css)$/;
  * ETag. Compression is left to Traefik (`osrs-tracker-web.yaml`).
  */
 export function staticFilesMiddleware(): RequestHandler {
-  return express.static(serverConfig.browserDistFolder, {
+  const root = serverConfig.browserDistFolder;
+  const options: Parameters<typeof express.static>[1] = {
     cacheControl: false,
     setHeaders: (res, path) => {
-      const url = '/' + relative(serverConfig.browserDistFolder, path).split(sep).join('/');
+      const url = '/' + relative(root, path).split(sep).join('/');
 
       if (serverConfig.noCacheStaticFiles.includes(url)) res.setHeader('Cache-Control', 'no-cache');
       else if (HASHED_FILE.test(url)) res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
@@ -24,5 +25,14 @@ export function staticFilesMiddleware(): RequestHandler {
 
       if (LINK_PREVIEW_IMAGE.test(url)) allowCrossOriginEmbedding(res);
     },
-  });
+  };
+
+  return (
+    express
+      .Router()
+      .use(express.static(root, options))
+      // express.static ignores dotfiles and dot-folders, so `.well-known` (security.txt) gets its own root, where its
+      // files aren't in one. Other dotfiles stay ignored
+      .use('/.well-known', express.static(join(root, '.well-known'), options))
+  );
 }
