@@ -5,11 +5,13 @@ import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { formatNumberShort, formatWhole } from '@app/common/format/number-format';
 import { capitalise } from '@app/common/format/player-labels';
 import { Icon } from '@app/common/icon/icon';
+import { ThemeStore } from '@app/common/theme/theme-store';
 import { Card } from '@app/common/ui/cards/card';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
 import { Tooltip } from '@app/common/ui/tooltip/tooltip';
+import { ChartSkill, SKILL_COLORS } from '../colors/skill-colors';
 import { Period, PlayerView } from '../player-view';
 import { Milestone, milestones, MilestoneTarget } from './milestones';
 
@@ -26,6 +28,8 @@ const PERIODS: Period[] = [7, 30, 60, 90];
 
 interface MilestoneRow {
   skill: string;
+  /** The icon tile's outline: the skill's chart colour, or `undefined` for a skill without one (a new one) */
+  color?: string;
   /** "84 → 85", or "200M" */
   milestone: string;
   /** For 200M: "17.4M XP now ·", before the pace */
@@ -53,6 +57,7 @@ interface MilestoneRow {
 export class MilestonesCard {
   private readonly analyticsService = inject(AnalyticsService);
   private readonly locale = inject(LOCALE_ID);
+  private readonly darkMode = inject(ThemeStore).darkMode;
   readonly playerView = inject(PlayerView);
 
   /** The player's display name */
@@ -95,7 +100,8 @@ export class MilestonesCard {
   readonly picked = computed(() => this.result()?.targets[this.target()] ?? []);
   readonly rows = computed(() => {
     const picked = this.picked();
-    return (this.expanded() ? picked : picked.slice(0, SHOWN)).map(milestone => this.row(milestone));
+    const theme = this.darkMode() ? 'dark' : 'light';
+    return (this.expanded() ? picked : picked.slice(0, SHOWN)).map(milestone => this.row(milestone, theme));
   });
   readonly hasMore = computed(() => this.picked().length > SHOWN);
 
@@ -120,12 +126,13 @@ export class MilestonesCard {
     this.analyticsService.trackOption('milestone_target', target);
   }
 
-  private row(milestone: Milestone): MilestoneRow {
+  private row(milestone: Milestone, theme: 'dark' | 'light'): MilestoneRow {
     const { skill, goal, level, xp, pace, daysLeft, far } = milestone;
     const days = this.result()!.days;
     const date = far ? '10+ years' : this.dateIn(daysLeft);
     return {
       skill,
+      color: SKILL_COLORS[skill as ChartSkill]?.[theme],
       milestone: goal === '200M' ? goal : `${level} → ${goal}`,
       now: goal === '200M' ? `${formatNumberShort(xp)} XP now ·` : undefined,
       pace: `${formatNumberShort(Math.round(pace))} XP a day`,
