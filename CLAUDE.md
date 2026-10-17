@@ -9,9 +9,9 @@ holds the Angular conventions, SSR rules, deploy and release steps. Keep detail 
 
 ## Commands
 
-- Verify: `.claude/skills/verify/verify.sh` runs lint, Prettier, knip, the tests and the production build at once and
-  reports every failure. The `verify` skill runs it; Claude Code's commit instructions run that before each commit of a
-  code change.
+- Verify: `.claude/skills/verify/verify.sh` runs CI's checks at once (the list is in the `verify` skill) and reports
+  every failure. The `verify` skill runs it; Claude Code's commit instructions run that before each commit of a code
+  change.
 - One spec: `npx ng test --watch=false --include <path>`
 - Dev server: `npm start`, always on port 4200 (the API's CORS allows only that).
 - Worktrees in `.claude/worktrees/` use the main checkout's `node_modules` (found in a parent folder), which match the

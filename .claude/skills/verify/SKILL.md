@@ -1,9 +1,9 @@
 ---
 name: verify
 description:
-  Runs osrs-tracker-web's verify checks (lint, Prettier, knip, unit tests, production build) and reports each one's
-  result. Use right before each commit of a code change, and when asked to verify, check or test the repo before a push
-  or PR.
+  Runs osrs-tracker-web's verify checks (lint, Prettier, knip, ShellCheck, links, unit tests, production build) and
+  reports each one's result. Use right before each commit of a code change, and when asked to verify, check or test the
+  repo before a push or PR.
 ---
 
 # verify
@@ -14,10 +14,10 @@ Run the script from the checkout being committed (the worktree, not the main che
 .claude/skills/verify/verify.sh
 ```
 
-In a worktree whose `package-lock.json` differs from the main checkout's, it runs `npm ci` first. Then it runs these
-checks at once (about 9 s on the dev machine, against 18 s one after another), never stopping at a failure, prints the
-output of each failed check (the last 60 lines of a long log, with the full log's path) and a summary line per check,
-and exits 1 when any failed:
+In a worktree whose `package-lock.json` differs from the main checkout's, or whose shared `node_modules` doesn't match
+it, it runs `npm ci` first. Then it runs these checks at once (about 10 s on the dev machine, against about 30 s one
+after another), never stopping at a failure, prints the output of each failed check (the last 60 lines of a long log,
+with the full log's path) and a summary line per check, and exits 1 when any failed:
 
 1. `npx ng lint`
 2. `npm run prettier:ci`
