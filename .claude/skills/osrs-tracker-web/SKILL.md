@@ -209,11 +209,11 @@ only sees server HTML). If Playwright is unavailable, say so rather than falling
 The `browser-checker` agent does the check, so its screenshots stay out of the main session:
 
 1. Start the server yourself (see Running locally); for production, wait for the deploy.
-2. Take the page URLs from the sitemaps, not from the feature folders' names: `public/sitemap-site.xml` for the fixed
-   pages, and the server's `/sitemap-items.xml` and `/sitemap-players.xml` (built from the API: ask the running server
-   or production) for item and player pages. The trackers live under `/trackers/` (`/trackers/xp/the%20fraking`,
-   `/trackers/price/4151`), not `/xp-tracker/…` or `/price-tracker`. Pages no sitemap lists (`/error`, the link-preview
-   images) are in `src/server/utils/route-label.ts`.
+2. Take the page URLs from production's sitemaps, not from the feature folders' names:
+   `https://osrs-tracker.freekmencke.com/sitemap.xml` lists the fixed pages', items' and players' sitemaps. The paths,
+   item ids and players are the same on a local server, which uses the production API. The trackers live under
+   `/trackers/` (`/trackers/xp/the%20fraking`, `/trackers/price/4151`), not `/xp-tracker/…` or `/price-tracker`. Pages
+   no sitemap lists (`/error`, the link-preview images) are in `src/server/utils/route-label.ts`.
 3. Delegate every round to `browser-checker` (without a `model`), hover, keyboard and width iterations too, with the
    URLs and what changed (theme, colours, phone layout, caching, the state to show, the changed elements). It starts its
    own headless, isolated browser, so checks can run in parallel and beside the session's own Playwright browser. That
