@@ -22,6 +22,8 @@ export class PlayerView {
   readonly bottom = signal<BottomTab>('clues');
   readonly chart = signal<ChartView>('skills');
   readonly period = signal<Period>(7);
+  /** Days the milestones card averages each skill's XP over, apart from the chart's; 7 is what the page loads first */
+  readonly milestonePeriod = signal<Period>(7);
 
   /** Overall alone, or the skills being compared */
   readonly skills = signal<ReadonlySet<string>>(new Set([SkillEnum.Overall]));
@@ -33,6 +35,11 @@ export class PlayerView {
   setPeriod(period: Period): void {
     this.period.set(period);
     this.analyticsService.trackOption('chart_period', period);
+  }
+
+  setMilestonePeriod(period: Period): void {
+    this.milestonePeriod.set(period);
+    this.analyticsService.trackOption('milestone_period', period);
   }
 
   showTop(tab: TopTab): void {

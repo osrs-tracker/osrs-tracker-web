@@ -22,7 +22,7 @@ import { XpTrackerStore } from './xp-tracker-store';
     </label>
     <select
       id="tracking-offset"
-      class="h-8 pl-2 pr-8 py-0 rounded-xl border-line bg-card font-bold text-strong tabular-nums cursor-pointer focus:border-accent focus:ring-accent"
+      class="h-8 pl-2 pr-8 py-0 rounded-xl border-border bg-card font-bold text-strong tabular-nums cursor-pointer focus:border-accent focus:ring-accent"
       name="scrapingOffset"
       [ngModel]="scrapingOffset()"
       (ngModelChange)="setOffset($event)"

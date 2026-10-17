@@ -38,6 +38,8 @@ export interface PlayerHistory {
   readonly hasMore: Signal<boolean>;
   /** The period's history is in (or there's no more, or it failed), so the chart is drawn once, complete */
   readonly periodLoaded: Signal<boolean>;
+  /** The same for the milestones card's period */
+  readonly milestonePeriodLoaded: Signal<boolean>;
   /**
    * `periodLoaded`, and the check the period before starts from is in (or failed), so the stat tiles are drawn once,
    * with their comparison. Only the tiles wait for it: it's the slowest request when the API is slow.
@@ -64,7 +66,8 @@ export interface PlayerHistory {
 
 /**
  * A player's live hiscores and stored history at the visitor's offset: the first page (a week) and the pages loaded
- * after it, by the visitor or because a longer `period` needs them. Call it in an injection context, like a resource.
+ * after it, by the visitor or because a longer `period` or `milestonePeriod` needs them. Call it in an injection
+ * context, like a resource.
  */
 export function playerHistory(params: {
   username: string;
@@ -73,8 +76,10 @@ export function playerHistory(params: {
   enabled: Signal<boolean>;
   /** Days the chart and tiles cover */
   period: Signal<number>;
+  /** Days the milestones card's pace covers, apart from the chart's: only what's loaded follows it */
+  milestonePeriod: Signal<number>;
 }): PlayerHistory {
-  const { username, offset, enabled, period } = params;
+  const { username, offset, enabled, period, milestonePeriod } = params;
   const osrsProxyRepo = inject(OsrsProxyRepo);
   const osrsTrackerRepo = inject(OsrsTrackerRepo);
   const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -121,17 +126,19 @@ export function playerHistory(params: {
     if (lastMorePage) return lastMorePage.entries.length === lastMorePage.size;
     return firstPage.hasValue() && firstPage.value()?.length === DEFAULT_SIZE;
   });
-  /** The entries the period needs: its days and the check they start from, as far as the history goes */
-  const periodSize = computed(() => Math.min(period() + 1, PERIOD_SIZE));
-  const periodLoaded = computed(() => loaded() && (entries().length >= periodSize() || !hasMore() || loadMoreFailed()));
+  /** The entries a period needs: its days and the check they start from, as far as the history goes */
+  const periodSize = (days: number): number => Math.min(days + 1, PERIOD_SIZE);
+  const isLoaded = (days: number): boolean =>
+    loaded() && (entries().length >= periodSize(days) || !hasMore() || loadMoreFailed());
+  const periodLoaded = computed(() => isLoaded(period()));
 
   function loadMore(size: number = MORE_SIZE): void {
     more.load({ offset: offset(), size, skip: entries().length });
   }
 
-  // A longer period loads the history it needs
+  // A longer period, the chart's or the milestones card's, loads the history it needs
   effect(() => {
-    const needed = periodSize();
+    const needed = periodSize(Math.max(period(), milestonePeriod()));
     if (!loaded() || entries().length >= needed || !hasMore()) return;
     untracked(() => {
       if (!loadingMore()) loadMore(needed - entries().length);
@@ -153,6 +160,7 @@ export function playerHistory(params: {
     }),
     hasMore,
     periodLoaded,
+    milestonePeriodLoaded: computed(() => isLoaded(milestonePeriod())),
     comparedLoaded: computed(
       // not while it reloads after failing ('reloading'): the tiles stay, showing the failure until it's in
       () => periodLoaded() && previousPeriodStart.status() !== 'loading',
