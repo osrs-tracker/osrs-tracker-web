@@ -106,7 +106,7 @@ describe('PriceTablePage', () => {
     expect(rowNames()[0]).toBe('Item 00');
   });
 
-  it('loads the lists straight away without transferred rows, shows 25, then 50 more', async () => {
+  it('loads the lists straight away without transferred rows, shows 25 at a time', async () => {
     setUp('browser');
     TestBed.tick();
     expect(fixture.nativeElement.querySelectorAll('skeleton').length).toBeGreaterThan(0);
@@ -118,11 +118,11 @@ describe('PriceTablePage', () => {
     expect(fixture.nativeElement.textContent).toContain('Showing 25 of 60 items');
 
     const more = [...(fixture.nativeElement as HTMLElement).querySelectorAll('button')].find(button =>
-      button.textContent?.includes('Show 50 more'),
+      button.textContent?.includes('Show 25 more'),
     );
     more!.click();
     await fixture.whenStable();
-    expect(rowNames()).toHaveLength(60);
+    expect(rowNames()).toHaveLength(50);
   });
 
   it('hands the browser only the first 25 rows of the default view from the server', async () => {

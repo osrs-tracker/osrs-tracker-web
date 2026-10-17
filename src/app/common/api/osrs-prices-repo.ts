@@ -207,7 +207,9 @@ export class OsrsPricesRepo {
     fetch: () => Observable<ServerLists[K]>,
   ): Observable<ServerLists[K]> {
     const kept = serverLists[name];
-    if (kept && kept.key === key && Date.now() - kept.fetchedAt < SERVER_LIST_TTL[name]) return of(kept.data);
+    // A copy from the future is stale too: a clock set back, or another spec's fake time in the same test worker
+    const age = kept ? Date.now() - kept.fetchedAt : -1;
+    if (kept && kept.key === key && age >= 0 && age < SERVER_LIST_TTL[name]) return of(kept.data);
 
     return (this.serverListRequests[name] ??= fetch().pipe(
       tap(data => (serverLists[name] = { data, key, fetchedAt: Date.now() } as (typeof serverLists)[K])),
