@@ -64,7 +64,7 @@ interface ResultRow {
                   type="text"
                   inputmode="numeric"
                   autocomplete="off"
-                  class="h-11 min-w-0 px-3.5 rounded-xl border border-line bg-inner text-base font-bold text-strong tabular-nums focus:border-accent focus:ring-0"
+                  class="h-11 min-w-0 px-3.5 rounded-xl border border-border bg-inner text-base font-bold text-strong tabular-nums focus:border-accent focus:ring-0"
                   [value]="format(field.value())"
                   (input)="onInput($event, field.value)"
                 />
