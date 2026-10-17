@@ -106,16 +106,16 @@ describe('PriceTablePage', () => {
     expect(rowNames()[0]).toBe('Item 00');
   });
 
-  it('loads the lists straight away without transferred rows, and shows 50 at a time', async () => {
+  it('loads the lists straight away without transferred rows, shows 25, then 50 more', async () => {
     setUp('browser');
     TestBed.tick();
     expect(fixture.nativeElement.querySelectorAll('skeleton').length).toBeGreaterThan(0);
 
     flushLists();
     await fixture.whenStable();
-    expect(rowNames()).toHaveLength(50);
+    expect(rowNames()).toHaveLength(25);
     expect(rowNames()[0]).toBe('Item 00');
-    expect(fixture.nativeElement.textContent).toContain('Showing 50 of 60 items');
+    expect(fixture.nativeElement.textContent).toContain('Showing 25 of 60 items');
 
     const more = [...(fixture.nativeElement as HTMLElement).querySelectorAll('button')].find(button =>
       button.textContent?.includes('Show 50 more'),
@@ -125,7 +125,7 @@ describe('PriceTablePage', () => {
     expect(rowNames()).toHaveLength(60);
   });
 
-  it('hands the browser only the first 50 rows of the default view from the server', async () => {
+  it('hands the browser only the first 25 rows of the default view from the server', async () => {
     setUp('server');
     flushLists();
     await fixture.whenStable();
@@ -134,8 +134,8 @@ describe('PriceTablePage', () => {
       makeStateKey<{ rows: TableRow[]; total: number }>('price-table-high-alch'),
       null,
     );
-    expect(view?.rows).toHaveLength(50);
+    expect(view?.rows).toHaveLength(25);
     expect(view?.total).toBe(60);
-    expect(rowNames()).toHaveLength(50);
+    expect(rowNames()).toHaveLength(25);
   });
 });

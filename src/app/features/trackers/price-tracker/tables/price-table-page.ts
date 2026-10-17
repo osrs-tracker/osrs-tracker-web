@@ -43,8 +43,10 @@ import {
   viewRows,
 } from './price-table';
 
-/** Rows shown at first, and added by "Show 50 more" */
-const PAGE_SIZE = 50;
+/** Rows shown at first: all the server renders and transfers */
+const INITIAL_ROWS = 25;
+/** Rows "Show 50 more" adds */
+const MORE_ROWS = 50;
 
 /** What the server hands the browser: the default view's first page, as the lists themselves are about 1.6 MB */
 interface TableView {
@@ -66,7 +68,7 @@ interface Column {
 /**
  * High-alch profit or Margins (`kind`, from the route): every item at the latest prices, sortable and filtered.
  *
- * The server renders the default view's first 50 rows from its copies of the Wiki's lists and transfers only those, so
+ * The server renders the default view's first 25 rows from its copies of the Wiki's lists and transfers only those, so
  * hydration fetches nothing. The browser loads the lists on the first change of a control (or straight away after a
  * client-side navigation, or when the server's render failed), and from then on works out every view itself.
  */
@@ -85,7 +87,7 @@ export default class PriceTablePage {
 
   readonly options = linkedSignal(() => defaultOptions(this.kind()));
   /** Back to the first page whenever the options change */
-  readonly shown = linkedSignal({ source: this.options, computation: () => PAGE_SIZE });
+  readonly shown = linkedSignal({ source: this.options, computation: () => INITIAL_ROWS });
   /** Browser only: whether the lists are needed, once a control has changed or nothing was transferred */
   private readonly interacted = signal(false);
 
@@ -119,7 +121,7 @@ export default class PriceTablePage {
           const rows = buildRows(kind, options.buyAt, lists.mapping, lists.latest, lists.day);
           this.transferState.set(
             this.stateKey(),
-            this.toView(viewRows(rows, options, lists.loadedAt), lists, options, PAGE_SIZE),
+            this.toView(viewRows(rows, options, lists.loadedAt), lists, options, INITIAL_ROWS),
           );
         }),
       ),
@@ -245,8 +247,8 @@ export default class PriceTablePage {
 
   showMore(): void {
     this.interacted.set(true);
-    // Before the lists load, this shows the server's rows; once they arrive, 100
-    this.shown.update(shown => shown + PAGE_SIZE);
+    // Before the lists load, this shows the server's rows; once they arrive, 75
+    this.shown.update(shown => shown + MORE_ROWS);
   }
 
   /** Sorted columns stay on every width; Buy limit hides below 1024px, the rest but the key column on phones */
