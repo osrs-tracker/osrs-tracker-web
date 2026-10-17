@@ -59,12 +59,7 @@
     @if (rows().length) {
       <ul class="-mx-5 mt-1 divide-y divide-row" [class.-mb-4]="!hasMore()">
         @for (row of rows(); track row.skill) {
-          <li
-            class="flex items-center gap-3 px-5 py-3"
-            [tooltip]="true"
-            [tooltipTemplate]="tip"
-            [tooltipUnderline]="false"
-          >
+          <li class="flex items-center gap-3 px-5 py-3">
             <span
               class="flex items-center justify-center size-8 shrink-0 rounded-xl bg-deep border border-line"
               [style.border-color]="row.color"
@@ -89,11 +84,6 @@
               <span class="text-base/5 font-bold text-strong tabular-nums">{{ row.date }}</span>
               <span class="text-sm/4 text-muted tabular-nums">{{ row.left }}</span>
             </span>
-
-            <ng-template #tip>
-              <div>{{ row.tip }}</div>
-              <div class="text-muted">{{ row.tipPace }}</div>
-            </ng-template>
           </li>
         }
       </ul>

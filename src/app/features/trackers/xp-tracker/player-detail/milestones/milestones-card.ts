@@ -10,7 +10,6 @@ import { Card } from '@app/common/ui/cards/card';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
-import { Tooltip } from '@app/common/ui/tooltip/tooltip';
 import { ChartSkill, SKILL_COLORS } from '../colors/skill-colors';
 import { Period, PlayerView } from '../player-view';
 import { Milestone, milestones, MilestoneTarget } from './milestones';
@@ -38,10 +37,6 @@ interface MilestoneRow {
   pace: string;
   date: string;
   left: string;
-  /** "Sailing 85: 14 Oct" */
-  tip: string;
-  /** "16,000 XP a day over the last 7 days" */
-  tipPace: string;
 }
 
 /**
@@ -51,7 +46,7 @@ interface MilestoneRow {
 @Component({
   selector: 'milestones-card',
   templateUrl: './milestones-card.html',
-  imports: [Card, Icon, InfoTooltip, Segmented, Skeleton, Tooltip],
+  imports: [Card, Icon, InfoTooltip, Segmented, Skeleton],
   host: { class: 'block min-w-0' },
 })
 export class MilestonesCard {
@@ -128,7 +123,6 @@ export class MilestonesCard {
 
   private row(milestone: Milestone, theme: 'dark' | 'light'): MilestoneRow {
     const { skill, goal, level, xp, pace, daysLeft, far } = milestone;
-    const days = this.result()!.days;
     const date = far ? '10+ years' : this.dateIn(daysLeft);
     return {
       skill,
@@ -138,8 +132,6 @@ export class MilestonesCard {
       pace: `${formatNumberShort(Math.round(pace))} XP a day`,
       date,
       left: far ? 'at this pace' : daysLeft === 1 ? 'tomorrow' : `in ${formatWhole(daysLeft)} days`,
-      tip: `${skill} ${goal}: ${date}`,
-      tipPace: `${formatWhole(pace)} XP a day over the last ${days === 1 ? 'day' : `${days} days`}`,
     };
   }
 
