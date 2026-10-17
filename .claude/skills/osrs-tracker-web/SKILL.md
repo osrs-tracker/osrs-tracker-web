@@ -209,9 +209,11 @@ only sees server HTML). If Playwright is unavailable, say so rather than falling
 The `browser-checker` agent does the check, so its screenshots stay out of the main session:
 
 1. Start the server yourself (see Running locally); for production, wait for the deploy.
-2. Take the page URLs from `src/server/utils/route-label.ts`, which lists every route (its spec keeps it in sync), not
-   from the feature folders' names: the trackers live under `/trackers/` (`/trackers/xp/the%20fraking`,
-   `/trackers/price/4151`), not `/xp-tracker/…` or `/price-tracker`.
+2. Take the page URLs from the sitemaps, not from the feature folders' names: `public/sitemap-site.xml` for the fixed
+   pages, and the server's `/sitemap-items.xml` and `/sitemap-players.xml` (built from the API: ask the running server
+   or production) for item and player pages. The trackers live under `/trackers/` (`/trackers/xp/the%20fraking`,
+   `/trackers/price/4151`), not `/xp-tracker/…` or `/price-tracker`. Pages no sitemap lists (`/error`, the link-preview
+   images) are in `src/server/utils/route-label.ts`.
 3. Delegate every round to `browser-checker` (without a `model`), hover, keyboard and width iterations too, with the
    URLs and what changed (theme, colours, phone layout, caching, the state to show, the changed elements). It starts its
    own headless, isolated browser, so checks can run in parallel and beside the session's own Playwright browser. That
