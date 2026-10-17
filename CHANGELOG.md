@@ -32,6 +32,11 @@
 - On a player's page, skills, bosses, clue scrolls and minigames that gained XP or kills in the charted days have a
   clearer outline in their chart colour, so it's easier to see which ones you can pick to compare on the chart.
 
+### Behind the scenes
+
+- The site now publishes a `security.txt` (at `/.well-known/security.txt`, the standard place), so anyone who finds a
+  security problem knows where to report it. A check reminds us a month before it expires to renew it.
+
 ## 2026-10-15
 
 ### Behind the scenes
@@ -43,8 +48,6 @@
   such as a row of the profit calculator, whose name and checks would otherwise be lost, or the page element a part sits
   in and the prices the item search loads, which TypeScript would otherwise stop checking at all. Pages look and work
   the same.
-- The site now publishes a `security.txt` (at `/.well-known/security.txt`, the standard place), so anyone who finds a
-  security problem knows where to report it. A check reminds us a month before it expires to renew it.
 
 ## 2026-10-14
 
