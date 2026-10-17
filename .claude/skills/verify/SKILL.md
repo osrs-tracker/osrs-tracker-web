@@ -23,18 +23,19 @@ and exits 1 when any failed:
 2. `npm run prettier:ci`
 3. `npx knip`: unused files, exports and dependencies. An export only its own file uses loses its `export`; a false
    positive goes in `knip.jsonc` with a comment saying why
-4. `npx ng test --watch=false` (Vitest doesn't type-check the specs, but `ng test` compiles them, so a type error fails
+4. `shellcheck` on `.github/scripts/*.sh`, `.claude/hooks/*.sh` and `.claude/skills/*/*.sh`, as CI does. Where it isn't
+   installed (on the dev machine: `sudo apt install shellcheck`) the summary says it was skipped: then a change to a
+   shell script is checked by CI only, so say so in the report
+5. `npx ng test --watch=false` (Vitest doesn't type-check the specs, but `ng test` compiles them, so a type error fails
    it)
-5. `npx ng build --configuration production`: not `npm run build`, which regenerates sitemaps and icons and so changes
+6. `npx ng build --configuration production`: not `npm run build`, which regenerates sitemaps and icons and so changes
    tracked files
 
-Report one line per check: passed or failed. For each failure, quote the relevant output (the errors, not the whole
-log). Fix every failure that's in the change being committed in one round, then run the script again. Don't commit while
-a check fails, never claim a pass without its output, and don't drop a check to save time: the push gate covers only
-lint and Prettier.
+Report one line per check: passed, failed or skipped. For each failure, quote the relevant output (the errors, not the
+whole log). Fix every failure that's in the change being committed in one round, then run the script again. Don't commit
+while a check fails, never claim a pass without its output, and don't drop a check to save time: the push gate covers
+only lint and Prettier.
 
-CI also runs two checks this script doesn't: `shellcheck` on `.github/scripts/*.sh`, `.claude/hooks/*.sh` and
-`.claude/skills/*/*.sh` (not installed on the dev machine), and a link check (lychee). A change to a shell script or a
-link is checked by CI only: say so in the report.
+CI also runs a link check (lychee) that this script doesn't: a change to a link is checked by CI only.
 
 `npm run prettier:ci` failing on files you changed: `npx prettier --write <files>`.

@@ -27,6 +27,17 @@ commands=(
   # Not `npm run build`, which regenerates the sitemaps and icons and so changes tracked files
   'npx ng build --configuration production'
 )
+summary=()
+
+# The same files as CI's lint job. Skipped, not failed, where ShellCheck isn't installed (a system package, not in
+# package.json): CI runs it anyway.
+if command -v shellcheck >/dev/null; then
+  # After knip, so a failure's output comes with the other fast checks'
+  names=("${names[@]:0:3}" shellcheck "${names[@]:3}")
+  commands=("${commands[@]:0:3}" 'shellcheck .github/scripts/*.sh .claude/hooks/*.sh .claude/skills/*/*.sh' "${commands[@]:3}")
+else
+  summary+=('skipped shellcheck: not installed (sudo apt install shellcheck), so CI checks the shell scripts')
+fi
 
 # Kept when a check fails, so its full log can be read further
 out=$(mktemp -d -t verify.XXXXXX)
@@ -40,7 +51,6 @@ for i in "${!names[@]}"; do
 done
 wait
 
-summary=()
 failed=0
 for i in "${!names[@]}"; do
   log="$out/${names[$i]}.log"
