@@ -38,18 +38,10 @@
             (valueChange)="setSearchMode($event)"
           />
         </item-search>
-        <div class="flex flex-wrap items-center gap-2 min-h-8 text-sm">
-          <span class="max-sm:basis-full text-muted">Your favourites:</span>
-          @for (item of favoriteItems(); track item.id) {
-            <a
-              class="px-3 py-1.5 rounded-full bg-card font-bold text-strong hover:bg-row"
-              [routerLink]="['/trackers/price', item.id]"
-            >
-              {{ item.name }}
-            </a>
-          } @empty {
-            <span class="text-muted">Star an item on its page to pin it here.</span>
-          }
+        <div class="flex flex-wrap gap-x-6 -mt-3">
+          <a class="link inline-flex items-center min-h-11" routerLink="/trackers/price/browse/a">Items A–Z</a>
+          <a class="link inline-flex items-center min-h-11" routerLink="/trackers/price/high-alch">High-alch profit</a>
+          <a class="link inline-flex items-center min-h-11" routerLink="/trackers/price/margins">Margins</a>
         </div>
       }
     </div>

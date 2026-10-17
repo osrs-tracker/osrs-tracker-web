@@ -10,7 +10,6 @@ import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { ItemRow } from '@app/features/trackers/price-tracker/item-row';
 import { ItemSearch } from '@app/features/trackers/price-tracker/item-search';
-import { PriceTrackerStore } from '@app/features/trackers/price-tracker/price-tracker-store';
 import { PlayerRow } from '@app/features/trackers/xp-tracker/player-row';
 import { PlayerSearch } from '@app/features/trackers/xp-tracker/player-search';
 import { TrackingOffset } from '@app/features/trackers/xp-tracker/tracking-offset';
@@ -49,7 +48,6 @@ export default class Home {
   private readonly document = inject(DOCUMENT);
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly injector = inject(Injector);
-  private readonly priceTrackerStore = inject(PriceTrackerStore);
 
   readonly NEWS_SKELETONS: number[] = [0, 1, 2, 3];
   readonly SEARCH_MODES: SegmentedOption<SearchMode>[] = [
@@ -59,8 +57,6 @@ export default class Home {
 
   readonly searchMode = signal<SearchMode>('player');
   readonly scrapingOffset = inject(XpTrackerStore).scrapingOffset;
-  /** The first three, as on the Price Tracker. Only shown in item mode, which the server never renders. */
-  readonly favoriteItems = computed(() => this.priceTrackerStore.favoriteItems().slice(0, 3));
 
   readonly osrsNewsItems = rxResource({
     stream: () => this.osrsTrackerRepo.getNews(),
