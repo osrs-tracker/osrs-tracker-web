@@ -66,7 +66,8 @@ export interface PlayerHistory {
 
 /**
  * A player's live hiscores and stored history at the visitor's offset: the first page (a week) and the pages loaded
- * after it, by the visitor or because a longer `period` or `milestonePeriod` needs them. Call it in an injection context, like a resource.
+ * after it, by the visitor or because a longer `period` or `milestonePeriod` needs them. Call it in an injection
+ * context, like a resource.
  */
 export function playerHistory(params: {
   username: string;

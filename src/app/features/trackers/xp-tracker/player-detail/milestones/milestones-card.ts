@@ -78,10 +78,12 @@ export class MilestonesCard {
     () => !!this.result() && TARGETS.every(({ value }) => !this.result()!.targets[value].length),
   );
 
-  /** Starts on the first target with milestones, and again when another one is first after a change of period */
-  readonly target = linkedSignal(
+  /** The first target with milestones; a computed, so the target below resets only when it changes */
+  private readonly firstTarget = computed(
     () => TARGETS.find(({ value }) => this.result()?.targets[value].length)?.value ?? TARGETS[0].value,
   );
+  /** Starts on the first target with milestones, and again when another one is first after a change of period */
+  readonly target = linkedSignal(() => this.firstTarget());
   /** "Show all"; another period or target shows fewer again */
   readonly expanded = linkedSignal({
     source: () => ({ period: this.period(), target: this.target() }),

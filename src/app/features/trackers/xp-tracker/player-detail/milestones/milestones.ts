@@ -35,7 +35,7 @@ export interface Milestones {
 /**
  * When each skill reaches its next level, 99 and 200M XP at its average XP a day since the check `days` days back
  * (or the oldest one), carried forward. Takes the current stats and the stored entries, newest first. Skills without XP
- * in those days, unranked ones and Overall get none; a skill at a target gets none for it. A skill at 98's next level is
+ * in those days, unranked ones (now or at the start) and Overall get none; a skill at a target gets none for it. A skill at 98's next level is
  * 99, so it's in both.
  */
 export function milestones(current: HiscoreEntry, history: HiscoreEntry[], days: number): Milestones {
@@ -43,10 +43,12 @@ export function milestones(current: HiscoreEntry, history: HiscoreEntry[], days:
   const start = history.length ? periodStart(current, history, days) : undefined;
   if (!start?.days) return { days, targets };
 
-  const gains = hiscoreDiff(current, history[start.index]).skills;
+  const baseline = history[start.index];
+  const gains = hiscoreDiff(current, baseline).skills;
   for (const [skill, now] of Object.entries(current.skills)) {
     const gain = gains[skill]?.xp ?? 0;
-    if (skill === SkillEnum.Overall || !now || gain <= 0) continue;
+    // unranked at the start, all its XP would count as gained
+    if (skill === SkillEnum.Overall || !now || !baseline.skills[skill] || gain <= 0) continue;
 
     const pace = gain / start.days;
     const add = (target: MilestoneTarget, goal: Milestone['goal'], goalXp: number): void => {

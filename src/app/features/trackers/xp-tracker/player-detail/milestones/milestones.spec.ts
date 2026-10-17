@@ -81,6 +81,14 @@ describe('milestones', () => {
     expect(targets.next[1].pace).toBe(16_000);
   });
 
+  // Ranked only now: its XP before the period is unknown, not gained in it
+  it('leaves out a skill that was unranked at the start of the period', () => {
+    const ranked = entry(0, { [SkillEnum.Hunter]: skill(40, 40_000) });
+    const unranked = entry(7, { [SkillEnum.Hunter]: null });
+
+    expect(milestones(ranked, [ranked, unranked], 7).targets).toEqual({ 'next': [], '99': [], '200m': [] });
+  });
+
   it('has nothing to project from a single entry', () => {
     expect(milestones(now, [now], 7).targets).toEqual({ 'next': [], '99': [], '200m': [] });
   });
