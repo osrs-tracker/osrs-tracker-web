@@ -83,8 +83,7 @@ export class NavMenus {
       <svg
         lucideChevronDown
         class="size-4 transition-transform motion-reduce:transition-none"
-        [class.rotate-180]="isOpen()"
-        [class.text-muted]="!current() && !marked()"
+        [class]="chevronClass()"
         strokeWidth="2.5"
       />
     </button>
@@ -123,6 +122,10 @@ export class NavMenu {
   protected readonly tabClass = NAV_TAB;
   readonly isOpen = computed(() => this.navMenus.open() === this.menuId());
   protected readonly marked = computed(() => (this.navMenus.open() ? this.isOpen() : this.current()));
+  /** One `[class]` binding: a Lucide icon rewrites its class attribute and drops `[class.x]` bindings true on creation */
+  protected readonly chevronClass = computed(
+    () => `${this.isOpen() ? 'rotate-180' : ''} ${!this.current() && !this.marked() ? 'text-muted' : ''}`,
+  );
 
   /** Whether hover opened it, so leaving closes it; a mouse click keeps it open */
   private openedByHover = false;

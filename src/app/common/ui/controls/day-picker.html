@@ -18,8 +18,7 @@
   <svg
     lucideChevronDown
     class="size-4 shrink-0 text-muted transition-transform motion-reduce:transition-none"
-    [class.hidden]="variant() === 'inline'"
-    [class.rotate-180]="open()"
+    [class]="(variant() === 'inline' ? 'hidden ' : '') + (open() ? 'rotate-180' : '')"
     strokeWidth="2.5"
   />
 </button>
