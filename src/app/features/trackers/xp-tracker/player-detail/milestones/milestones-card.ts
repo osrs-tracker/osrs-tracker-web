@@ -28,8 +28,10 @@ interface MilestoneRow {
   skill: string;
   /** "84 → 85", or "200M" */
   milestone: string;
-  /** The pace, after the XP now for 200M */
-  sub: string;
+  /** For 200M: "17.4M XP now ·", before the pace */
+  now?: string;
+  /** "16K XP a day" */
+  pace: string;
   date: string;
   left: string;
   /** "Sailing 85: 14 Oct" */
@@ -122,11 +124,11 @@ export class MilestonesCard {
     const { skill, goal, level, xp, pace, daysLeft, far } = milestone;
     const days = this.result()!.days;
     const date = far ? '10+ years' : this.dateIn(daysLeft);
-    const xpADay = `${formatNumberShort(Math.round(pace))} XP a day`;
     return {
       skill,
       milestone: goal === '200M' ? goal : `${level} → ${goal}`,
-      sub: goal === '200M' ? `${formatNumberShort(xp)} XP now · ${xpADay}` : xpADay,
+      now: goal === '200M' ? `${formatNumberShort(xp)} XP now ·` : undefined,
+      pace: `${formatNumberShort(Math.round(pace))} XP a day`,
       date,
       left: far ? 'at this pace' : daysLeft === 1 ? 'tomorrow' : `in ${formatWhole(daysLeft)} days`,
       tip: `${skill} ${goal}: ${date}`,
