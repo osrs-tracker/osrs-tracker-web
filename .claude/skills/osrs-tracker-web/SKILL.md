@@ -209,12 +209,15 @@ only sees server HTML). If Playwright is unavailable, say so rather than falling
 The `browser-checker` agent does the check, so its screenshots stay out of the main session:
 
 1. Start the server yourself (see Running locally); for production, wait for the deploy.
-2. Delegate every round to `browser-checker` (without a `model`), hover, keyboard and width iterations too, with the
+2. Take the page URLs from `src/server/utils/route-label.ts`, which lists every route (its spec keeps it in sync), not
+   from the feature folders' names: the trackers live under `/trackers/` (`/trackers/xp/the%20fraking`,
+   `/trackers/price/4151`), not `/xp-tracker/…` or `/price-tracker`.
+3. Delegate every round to `browser-checker` (without a `model`), hover, keyboard and width iterations too, with the
    URLs and what changed (theme, colours, phone layout, caching, the state to show, the changed elements). It starts its
    own headless, isolated browser, so checks can run in parallel and beside the session's own Playwright browser. That
    one stays headed, for what the agent can't do: sites that need a sign-in, and mocking API responses
    (`browser_run_code_unsafe`).
-3. Pass on its `VERDICT:`, contrast failures, request counts, failed requests and console errors, and send its
+4. Pass on its `VERDICT:`, contrast failures, request counts, failed requests and console errors, and send its
    screenshots with `SendUserFile` without `Read`ing them: it has looked, and a `Read` puts each image back in your
    context. For another look, delegate again. Then delete them and `.playwright-mcp/`, and stop the server.
 
