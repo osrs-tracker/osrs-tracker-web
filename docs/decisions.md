@@ -455,9 +455,11 @@ Choices that look like accidents without their context: what was decided, why, a
   real nonce for rendered and cached pages. Inline event handlers are blocked (`script-src-attr 'none'`).
   `'strict-dynamic'` (2026-10-17) makes current browsers ignore `'self'` and the host allowlist, which Lighthouse calls
   bypassable: a script runs only with the nonce or when a script that has one adds it (the Google tag, lazy chunks,
-  `main.js`'s imports). The allowlist stays for browsers without `'strict-dynamic'`.
-- **Revisit:** any new path that serves HTML must call `applyCspNonce`, or its scripts won't run. A `<script src>` in a
-  template or `index.html` needs `nonce="CSP_NONCE_PLACEHOLDER"`: its host in the allowlist no longer lets it run.
+  `main.js`'s imports). The allowlist stays for browsers without `'strict-dynamic'`. The cost: once analytics is
+  allowed, whatever the Google tag loads runs too, from any host.
+- **Revisit:** any new path that serves HTML must call `applyCspNonce`, or its scripts won't run. A `<script src>` in
+  `index.html` needs `nonce="CSP_NONCE_PLACEHOLDER"`, and a script added from code must be a
+  `document.createElement('script')` (as `consent-store.ts` does): one written as HTML (`innerHTML`) is blocked.
 
 ## Every replica pre-renders its own pages (2026-10-04)
 

@@ -42,7 +42,9 @@ export function securityMiddleware(): RequestHandler {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        // Inline scripts need the response's nonce, see `applyCspNonce`
+        // Scripts need the response's nonce (`applyCspNonce`), or must be added from code by one that has it.
+        // 'strict-dynamic' makes current browsers ignore 'self' and the host, which only older ones still use: adding a
+        // host here doesn't let its scripts run
         scriptSrc: [
           "'self'",
           (req, res) => `'nonce-${getCspNonce(res as Response)}'`,
