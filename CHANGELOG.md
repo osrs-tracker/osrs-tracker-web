@@ -18,6 +18,8 @@
   trades, sort by any column, and filter by name, members or free-to-play and daily volume. Rarely traded items, and
   items without a trade in the last hour, are left out at first, as their prices mislead; pick Any volume to see them,
   with a clock on old prices. Hover or tap a profit or margin to see what it's made of.
+- On an item's page, the price's change since yesterday now starts with a small triangle pointing up or down, as on a
+  stock ticker, instead of a plus or minus sign, so the direction stands out at a glance under the price.
 
 ### Look and feel
 

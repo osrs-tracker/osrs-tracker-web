@@ -6,8 +6,8 @@ import { Icon } from '@app/common/icon/icon';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { config } from '@config/config';
 import { PriceTrackerStore } from '../price-tracker-store';
-import { formatSign, formatWhole } from '@app/common/format/number-format';
-import { LucideExternalLink, LucideStar } from '@lucide/angular';
+import { formatWhole } from '@app/common/format/number-format';
+import { LucideExternalLink, LucideStar, LucideTriangle } from '@lucide/angular';
 
 /**
  * The item page's header: icon tile, the name (to the OSRS Wiki), the examine text, the instant sell price with its
@@ -77,7 +77,14 @@ import { LucideExternalLink, LucideStar } from '@lucide/angular';
               />
             </span>
           } @else if (change(); as change) {
-            <span class="font-bold whitespace-nowrap tabular-nums" [class]="change.up ? 'text-up' : 'text-down'">
+            <span
+              class="flex items-center gap-1.5 font-bold whitespace-nowrap tabular-nums"
+              [class]="change.up ? 'text-up' : 'text-down'"
+            >
+              @if (change.diff !== 0) {
+                <svg lucideTriangle class="size-2.5 fill-current" [class]="change.up ? '' : 'rotate-180'" />
+                <span class="sr-only">{{ change.up ? 'Up' : 'Down' }}</span>
+              }
               {{ change.text }}
             </span>
           }
@@ -103,7 +110,7 @@ import { LucideExternalLink, LucideStar } from '@lucide/angular';
     </div>
   `,
   host: { class: 'max-w-page mx-auto flex flex-wrap items-center gap-4 px-4 sm:px-6 py-2' },
-  imports: [Icon, LoadError, Skeleton, LucideExternalLink, LucideStar],
+  imports: [Icon, LoadError, Skeleton, LucideExternalLink, LucideStar, LucideTriangle],
 })
 export class ItemHeader {
   private readonly analyticsService = inject(AnalyticsService);
@@ -129,7 +136,7 @@ export class ItemHeader {
     () => `${config.wikiBaseUrl}/w/${encodeURIComponent(this.item().name.replaceAll(' ', '_'))}`,
   );
   readonly priceText = computed(() => formatWhole(this.price() ?? 0));
-  /** E.g. "−8,402 (−0.6%)" */
+  /** E.g. "8,402 (0.6%)", after a triangle up or down */
   readonly change = computed(() => {
     const price = this.price();
     const average = this.average();
@@ -137,7 +144,7 @@ export class ItemHeader {
 
     const diff = price - average;
     const percent = (Math.abs(diff) / average) * 100;
-    return { text: `${formatWhole(diff, true)} (${formatSign(diff, 'always')}${percent.toFixed(1)}%)`, up: diff >= 0 };
+    return { text: `${formatWhole(Math.abs(diff))} (${percent.toFixed(1)}%)`, up: diff >= 0, diff };
   });
 
   readonly isFavorite = computed(() => this.priceTrackerStore.isFavoriteItem(this.item().id));
