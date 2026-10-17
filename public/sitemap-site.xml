@@ -7,6 +7,12 @@
     <loc>https://osrs-tracker.freekmencke.com/trackers/price</loc>
   </url>
   <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/high-alch</loc>
+  </url>
+  <url>
+    <loc>https://osrs-tracker.freekmencke.com/trackers/price/margins</loc>
+  </url>
+  <url>
     <loc>https://osrs-tracker.freekmencke.com/trackers/price/browse/a</loc>
   </url>
   <url>
@@ -98,7 +104,7 @@
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/about/changelog</loc>
-    <lastmod>2026-10-17T17:22:30+02:00</lastmod>
+    <lastmod>2026-10-17T17:28:18+02:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.freekmencke.com/about/privacy</loc>
