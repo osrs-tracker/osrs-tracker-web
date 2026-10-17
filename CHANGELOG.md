@@ -38,6 +38,8 @@
   security problem knows where to report it.
 - Pages now tell the browser that the site never uses the camera, microphone, location, payments, motion sensors or
   connected devices, so nothing on a page, including the analytics script, can ask for them.
+- Pages only run scripts the site itself put on the page, and the scripts those load, no longer any script from an
+  allowed address, which closes a known way around the browser's script protection.
 
 ## 2026-10-15
 
