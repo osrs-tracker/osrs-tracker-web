@@ -10,7 +10,7 @@ import { setGridTabStop } from '@app/common/ui/controls/aria-tab-stop';
 import { ThemeStore } from '@app/common/theme/theme-store';
 import { ChartSkill, SKILL_COLORS } from '../colors/skill-colors';
 import { PlayerView } from '../player-view';
-import { pickedCellBackground, pickedCellRing } from './picked-cell';
+import { pickableCellRing, pickedCellBackground, pickedCellRing } from './picked-cell';
 import { RankLines } from './rank-lines';
 
 // The in-game skill grid, read row by row; the total level follows across the full width
@@ -77,13 +77,7 @@ const OVERALL_COLOR = 'var(--accent)';
                 class="flex-1 flex flex-col justify-between bg-inner aria-disabled:cursor-default focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-strong"
                 [class]="r === 0 ? (c === 0 ? 'rounded-tl-xl' : c === 2 ? 'rounded-tr-xl' : '') : ''"
                 [style.background]="cell.on ? tint(cell.color) : null"
-                [style.box-shadow]="
-                  cell.charted
-                    ? cell.on
-                      ? ring(cell.color)
-                      : 'inset 0 0 0 1px color-mix(in oklch, ' + cell.color + ' 45%, transparent)'
-                    : null
-                "
+                [style.box-shadow]="cell.charted ? (cell.on ? ring(cell.color) : pickableRing(cell.color)) : null"
                 [attr.aria-disabled]="!cell.charted"
                 [attr.aria-pressed]="cell.charted ? cell.on : null"
                 [attr.aria-label]="label(cell)"
@@ -223,6 +217,11 @@ export class SkillGrid {
   /** A picked cell's outline, as in the activity grid */
   ring(color: string): string {
     return pickedCellRing(color);
+  }
+
+  /** Outline of a cell that gained XP but isn't picked */
+  pickableRing(color: string): string {
+    return pickableCellRing(color);
   }
 
   xpForNextLevel(level: number): number {

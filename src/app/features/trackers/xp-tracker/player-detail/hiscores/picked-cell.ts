@@ -12,3 +12,8 @@ export function pickedCellBackground(color: string): string {
 export function pickedCellRing(color: string): string {
   return `inset 0 0 0 2px ${color}`;
 }
+
+/** Outline of a hiscores cell that can be picked: its chart colour, thinner than a picked cell's and without the tint */
+export function pickableCellRing(color: string): string {
+  return `inset 0 0 0 1px ${color}`;
+}
