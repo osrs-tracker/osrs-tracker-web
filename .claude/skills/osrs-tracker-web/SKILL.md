@@ -45,7 +45,10 @@ a worktree).
   are the shared code, Home may import the trackers, and `common/api/` is the repository layer.
 - **DI**: `inject()` only; root services use `@Service()`, not `@Injectable({ providedIn: 'root' })`.
 - **State**: the stores include `XpTrackerStore`, `PriceTrackerStore`, `LastPlayedStore` and `ThemeStore`.
-- **Async data**: pages after a list's first one ("Show older posts") load through `paging()` (`common/paging/`).
+- **Async data**: pages after a list's first one ("Show older posts") load through `paging()` (`common/paging/`). A
+  `resource`/`rxResource` loads again whenever a signal its `params` reads changes, even when the params come out the
+  same (Angular 22 wraps them in a new object each time): put a condition that can flip without changing them in its own
+  `computed`, as `listsNeeded` in `price-tracker/tables/price-table-page.ts` does.
 - **Failures**: `value()` throws in the error state, so check `error()` (or `hasValue()`) first and render
   `<load-error source="…" (retry)="resource.reload()" />`: `compact` when it replaces a single value in a row or widget,
   `inline` (amber text, a short message) when it replaces a line under a value, the default when it replaces a list or
