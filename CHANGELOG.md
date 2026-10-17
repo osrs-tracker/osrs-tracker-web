@@ -6,7 +6,7 @@
   its next level, 99 or 200M XP if the player keeps up their pace, with the date and the days left, soonest first, each
   skill's icon outlined in its colour from the chart. The pace is each skill's average XP a day over the last 7, 30, 60
   or 90 days, picked in the card apart from the chart's period; a player tracked for fewer days is averaged over the
-  days there are. Skills without XP in that period are left out, and hovering a row shows the XP a day it counts on.
+  days there are. Skills without XP in that period are left out.
 
 ### Price Tracker
 
