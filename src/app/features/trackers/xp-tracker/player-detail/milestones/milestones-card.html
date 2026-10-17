@@ -1,0 +1,110 @@
+<article card aria-labelledby="milestones-heading" [subtitle]="paceLine()">
+  <h2 id="milestones-heading" title class="flex items-center">
+    Milestones
+    <info-tooltip>
+      Each skill’s average XP a day over the period you pick, carried forward. Skills without XP in that period are left
+      out.
+    </info-tooltip>
+  </h2>
+
+  <!-- The card's own period for the pace, apart from the chart's -->
+  <span actions class="flex">
+    <label for="milestone-period" class="sr-only">Average XP a day over</label>
+    <select
+      id="milestone-period"
+      class="h-10 pl-2 pr-8 py-0 rounded-xl border-line bg-card font-bold text-strong cursor-pointer focus:border-accent focus:ring-accent"
+      (change)="setPeriod($any($event.target).value)"
+    >
+      @for (days of periods; track days) {
+        <option [value]="days" [selected]="days === period()">Last {{ days }} days</option>
+      }
+    </select>
+  </span>
+
+  @if (!result()) {
+    <div aria-busy="true">
+      <span class="sr-only">Loading the milestones</span>
+      <skeleton class="block -mx-1 h-10 rounded-full" />
+      <ul class="-mx-5 -mb-4 mt-1 divide-y divide-row" aria-hidden="true">
+        @for (width of skeletonRows; track $index) {
+          <li class="flex items-center gap-3 px-5 py-3">
+            <skeleton class="size-8 shrink-0 rounded-xl" />
+            <span class="flex-1 flex flex-col gap-2 py-0.5">
+              <skeleton class="h-4" [class]="width" />
+              <skeleton class="h-3 w-32" />
+            </span>
+            <span class="flex flex-col items-end gap-2 py-0.5">
+              <skeleton class="h-4 w-16" />
+              <skeleton class="h-3 w-12" />
+            </span>
+          </li>
+        }
+      </ul>
+    </div>
+  } @else if (empty()) {
+    <div class="flex flex-col items-center gap-1 py-4 text-center">
+      <p class="text-base font-bold text-strong">No XP gained in the last {{ period() }} days</p>
+      <p class="max-w-70 text-sm text-muted">{{ emptyHint() }}</p>
+    </div>
+  } @else {
+    <segmented
+      class="-mx-1"
+      stretch
+      label="Milestone"
+      [options]="targets"
+      [value]="target()"
+      (picked)="pickTarget($event)"
+    />
+
+    @if (rows().length) {
+      <ul class="-mx-5 mt-1 divide-y divide-row" [class.-mb-4]="!hasMore()">
+        @for (row of rows(); track row.skill) {
+          <li
+            class="flex items-center gap-3 px-5 py-3"
+            [tooltip]="true"
+            [tooltipTemplate]="tip"
+            [tooltipUnderline]="false"
+          >
+            <span
+              class="flex items-center justify-center size-8 shrink-0 rounded-xl bg-deep border border-line"
+              aria-hidden="true"
+            >
+              <img class="h-5 w-auto" icon [name]="row.skill" [skill]="true" />
+            </span>
+            <span class="flex-1 flex flex-col gap-1 min-w-0">
+              <span class="flex flex-wrap items-baseline gap-x-1.5 text-base/5 font-bold text-strong">
+                <span>{{ row.skill }}</span>
+                <span class="tabular-nums whitespace-nowrap">{{ row.milestone }}</span>
+              </span>
+              <span class="truncate text-sm/4 text-muted tabular-nums">{{ row.sub }}</span>
+            </span>
+            <span class="shrink-0 flex flex-col items-end gap-1 text-right whitespace-nowrap">
+              <span class="text-base/5 font-bold text-strong tabular-nums">{{ row.date }}</span>
+              <span class="text-sm/4 text-muted tabular-nums">{{ row.left }}</span>
+            </span>
+
+            <ng-template #tip>
+              <div>{{ row.tip }}</div>
+              <div class="text-muted">{{ row.tipPace }}</div>
+            </ng-template>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="pt-3 pb-1 text-sm text-muted">{{ noRowsText() }}</p>
+    }
+
+    @if (hasMore()) {
+      <div class="flex justify-center -mx-5 -mb-4 border-t border-line">
+        <button
+          type="button"
+          class="min-h-11 px-4 text-sm font-bold text-accent hover:text-accent-hover"
+          [attr.aria-expanded]="expanded()"
+          (click)="expanded.set(!expanded())"
+        >
+          {{ expanded() ? 'Show fewer' : 'Show all ' + picked().length + ' milestones' }}
+        </button>
+      </div>
+    }
+  }
+</article>

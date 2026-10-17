@@ -37,6 +37,7 @@ import { MINIGAME_ROWS, UNCHARTED_MINIGAMES } from './activity-categories';
 import { XpTrackerStore } from '../xp-tracker-store';
 import { ActivitiesCard } from './hiscores/activities-card';
 import { ModeRanks } from './hiscores/mode-ranks';
+import { MilestonesCard } from './milestones/milestones-card';
 import { SkillsCard } from './hiscores/skills-card';
 import { PlayerChart } from './charts/player-chart';
 import { CompareDays } from './compare/compare-days';
@@ -64,6 +65,7 @@ const LOG_VIEWS: SegmentedOption<LogView>[] = [
     CapitalizePipe,
     CompareDays,
     LoadError,
+    MilestonesCard,
     PlayerChart,
     PlayerHeader,
     PlayerLogs,
@@ -123,6 +125,7 @@ export default class PlayerDetail implements OnInit {
     // the resolved player, not playerDetail: trackPlayer replacing it mustn't restart the requests
     enabled: computed(() => !!this.player()),
     period: this.playerView.period,
+    milestonePeriod: this.playerView.milestonePeriod,
   });
 
   /** The stats shown are the last tracked ones because the hiscores didn't respond (to the API or the browser) */

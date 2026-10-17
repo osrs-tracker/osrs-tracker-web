@@ -26,6 +26,7 @@ describe('playerHistory', () => {
   let httpTesting: HttpTestingController;
   const offset = signal(0);
   const period = signal<Period>(7);
+  const milestonePeriod = signal<Period>(7);
   let history: PlayerHistory;
 
   const page = (scrapingOffset: number, skip: number, size?: number): TestRequest =>
@@ -52,8 +53,9 @@ describe('playerHistory', () => {
     httpTesting = TestBed.inject(HttpTestingController);
     offset.set(0);
     period.set(7);
+    milestonePeriod.set(7);
     history = runInInjectionContext(TestBed.inject(Injector), () =>
-      playerHistory({ username: 'zezima', offset, enabled: signal(true), period }),
+      playerHistory({ username: 'zezima', offset, enabled: signal(true), period, milestonePeriod }),
     );
     TestBed.tick();
   });
@@ -178,6 +180,42 @@ describe('playerHistory', () => {
     period.set(60);
     await settle();
     expect(history.periodLoaded()).toBe(true);
+    httpTesting.verify();
+  });
+
+  // The milestones card has its own period: it loads more history, but the chart and the tiles stay on theirs
+  it('loads what the milestones period needs without changing the chart’s period', async () => {
+    page(0, 0, 8).flush(entries(8, 0));
+    previousWeekStart(0).flush([]);
+    await settle();
+
+    milestonePeriod.set(30);
+    await settle();
+    expect(history.periodLoaded()).toBe(true);
+    expect(history.milestonePeriodLoaded()).toBe(false);
+    page(0, 8, 23).flush(entries(31, 0).slice(8));
+    await settle();
+    expect(history.milestonePeriodLoaded()).toBe(true);
+    expect(history.entries()).toHaveLength(31);
+
+    // a longer chart period loads only what the card hasn't, and the tiles compare the chart's period
+    period.set(60);
+    await settle();
+    expect(history.periodLoaded()).toBe(false);
+    expect(history.milestonePeriodLoaded()).toBe(true);
+    page(0, 31, 30).flush(entries(61, 0).slice(31));
+    await settle();
+    expect(history.periodLoaded()).toBe(true);
+
+    period.set(7);
+    milestonePeriod.set(90);
+    await settle();
+    previousWeekStart(0).flush([]);
+    expect(history.periodLoaded()).toBe(true);
+    expect(history.milestonePeriodLoaded()).toBe(false);
+    page(0, 61, 30).flush(entries(91, 0).slice(61));
+    await settle();
+    expect(history.milestonePeriodLoaded()).toBe(true);
     httpTesting.verify();
   });
 });

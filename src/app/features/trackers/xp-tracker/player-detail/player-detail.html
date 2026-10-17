@@ -89,6 +89,23 @@
         <article class="order-1 h-115.5 rounded-2xl bg-card" aria-busy="true"></article>
       }
 
+      <!--
+        When each skill reaches its next level, 99 or 200M (#250): on phones after the chart, ahead of Clues or
+        Minigames, so it hydrates when scrolled to. A new player's single entry has nothing to project from.
+      -->
+      @if (!history.firstPageFailed() && (!history.loaded() || history.entries().length > 1)) {
+        @defer (on immediate; hydrate on viewport) {
+          <milestones-card
+            class="order-3"
+            [username]="player.username"
+            [current]="history.current()"
+            [entries]="history.entries()"
+            [loaded]="history.milestonePeriodLoaded()"
+            [lastCheckedAt]="history.lastCheckedAt()"
+          />
+        }
+      }
+
       <!-- Clues or Minigames: on phones after the chart, so it hydrates when scrolled to, like the day log -->
       @defer (on immediate; hydrate on viewport) {
         <article

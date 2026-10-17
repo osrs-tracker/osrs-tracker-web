@@ -1,5 +1,10 @@
 ## 2026-10-17
 
+- A player's page has a new Milestones card, under the Skills card (after the chart on phones): when each skill reaches
+  its next level, 99 or 200M XP if the player keeps up their pace, with the date and the days left, soonest first. The
+  pace is each skill's average XP a day over the last 7, 30, 60 or 90 days, picked in the card apart from the chart's
+  period; a player tracked for fewer days is averaged over the days there are. Skills without XP in that period are left
+  out, and hovering a row shows the XP a day it counts on.
 - Updated the SOLIX font to version 3.03: hyphens, dashes and brackets sit at the middle of lowercase letters, as in
   "Anti-dragon shield" and "(UTC)", instead of floating above them. The dot between details, as in "Last checked 2 hours
   ago · Tracking started 3 days ago", sits a little lower too, so it lines up with words as well as with numbers. Plus,
