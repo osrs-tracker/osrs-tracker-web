@@ -73,6 +73,26 @@ jobs:
           args: --offline --hidden --include-fragments --no-progress './**/*.md'
           fail: true
 
+  # Licences of the runtime dependencies a pull request adds or bumps (the action's default `fail-on-scopes`), so a
+  # copyleft one (AGPL in particular) doesn't slip in unseen. No checkout: it compares the manifests through GitHub's
+  # API. Not a required check: a failure is for the maintainer to judge. The list is what the tree held on 2026-10-18
+  # (`npm sbom`), MPL-2.0 included: file-level copyleft that satori and @resvg/resvg-wasm use unmodified.
+  # DevDependencies aren't checked. Allow a single package with `allow-dependencies-licenses: pkg:npm/<name>`. A missing
+  # licence is reported, not failed; a non-SPDX one fails. No `deny-licenses` (deprecated) and no vulnerability check.
+  dependency-review:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          license-check: true
+          vulnerability-check: false
+          allow-licenses: >-
+            MIT, MIT-0, ISC, Apache-2.0, BSD-2-Clause, BSD-3-Clause, 0BSD, BlueOak-1.0.0, CC0-1.0, MPL-2.0, Unlicense
+
   build:
     needs: changes
     # `!cancelled()` runs it when `changes` itself fails, so a broken check can't skip the build

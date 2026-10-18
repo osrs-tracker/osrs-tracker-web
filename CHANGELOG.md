@@ -17,6 +17,8 @@
   their git credentials, apart from the one that pushes the deploy commit. Dependabot waits 7 days before suggesting a
   new action or base image, so a compromised release is usually pulled before we take it; security updates still arrive
   at once.
+- Every pull request now checks the licences of the packages it adds or updates, and flags one that isn't on a short
+  list of permissive licences, so a copyleft package (AGPL in particular) can't be added unnoticed.
 
 ## 2026-10-17
 
