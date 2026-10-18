@@ -63,7 +63,7 @@ export class Icon implements OnInit {
 
     const scale = this.scale();
     if (this.window && scale && !Number.isInteger(scale)) {
-      this.element.addEventListener('load', () => this.sharpen(scale));
+      this.element.addEventListener('load', () => void this.sharpen(scale));
     }
   }
 

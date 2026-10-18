@@ -23,10 +23,16 @@ export function configureGracefulShutdown(server: Server, metricsServer: Server,
         }
       }
 
-      closeServers(server, metricsServer).then(() => {
-        lifecycleLog.info('Servers closed');
-        process.exit(0);
-      });
+      closeServers(server, metricsServer).then(
+        () => {
+          lifecycleLog.info('Servers closed');
+          process.exit(0);
+        },
+        (err: unknown) => {
+          lifecycleLog.error({ error: err }, 'Error while closing the servers');
+          process.exit(1);
+        },
+      );
 
       // Force close after 10s
       setTimeout(() => {

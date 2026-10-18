@@ -50,6 +50,6 @@ export default class ErrorPage {
   /** Loads the failed page again: the address bar still shows its URL (see `resolverErrorHandler`). */
   retry(): void {
     this.analyticsService.trackEvent('retry', { source: 'page' });
-    this.router.navigateByUrl(this.location.path());
+    void this.router.navigateByUrl(this.location.path());
   }
 }

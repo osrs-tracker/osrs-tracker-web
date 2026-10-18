@@ -2,6 +2,7 @@
 import eslint from '@eslint/js';
 import angular from 'angular-eslint';
 import eslintConfigPrettier from 'eslint-config-prettier';
+import { defineConfig } from 'eslint/config';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 import { importX } from 'eslint-plugin-import-x';
 import { readdirSync } from 'node:fs';
@@ -11,7 +12,7 @@ const FEATURES = readdirSync('src/app/features');
 // Home is a dashboard over the trackers: it shows their search boxes, rows and stored players and items
 const ALLOWED_FEATURE_IMPORTS = { home: ['trackers'] };
 
-export default tseslint.config(
+export default defineConfig(
   {
     files: ['**/*.ts'],
     extends: [
@@ -21,6 +22,12 @@ export default tseslint.config(
       ...angular.configs.tsRecommended,
     ],
     processor: angular.processInlineTemplates,
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
     rules: {
       '@angular-eslint/directive-selector': [
         'error',
@@ -39,6 +46,8 @@ export default tseslint.config(
         },
       ],
       'no-console': 'error',
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-misused-promises': 'error',
     },
   },
   {
