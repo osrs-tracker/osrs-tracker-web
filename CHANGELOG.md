@@ -32,6 +32,9 @@
   instead of passing for one that found problems.
 - Updated the SOLIX font to version 4.0.0. It now asks Windows to smooth its letters at every size, as it has no hints
   of its own; its shapes, widths and spacing are unchanged, so text looks the same elsewhere.
+- The local development server works again: the stricter script protection of 17 October blocked its live-reload script,
+  which can't carry the page's security token. Only the development server relaxes it; the live site still runs only the
+  scripts it put on the page.
 
 ## 2026-10-17
 

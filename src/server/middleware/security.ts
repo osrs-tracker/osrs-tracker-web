@@ -1,3 +1,4 @@
+import { isDevMode } from '@angular/core';
 import { RequestHandler, Response } from 'express';
 import type { ServerResponse } from 'node:http';
 import helmet from 'helmet';
@@ -44,11 +45,12 @@ export function securityMiddleware(): RequestHandler {
         defaultSrc: ["'self'"],
         // Scripts need the response's nonce (`applyCspNonce`), or must be added from code by one that has it.
         // 'strict-dynamic' makes current browsers ignore 'self' and the host, which only older ones still use: adding a
-        // host here doesn't let its scripts run
+        // host here doesn't let its scripts run. Left out on the dev server (`npm start`), whose Vite client script
+        // (`/@vite/client`) is added to the page without a nonce
         scriptSrc: [
           "'self'",
           (req, res) => `'nonce-${getCspNonce(res as Response)}'`,
-          "'strict-dynamic'",
+          ...(isDevMode() ? [] : ["'strict-dynamic'"]),
           'https://www.googletagmanager.com',
         ],
         scriptSrcAttr: ["'none'"],

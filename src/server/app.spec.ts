@@ -79,7 +79,7 @@ describe('createApp', () => {
     const nonces = [];
     for (const path of ['/', '/', '/trackers/xp/ToxSick']) {
       const res = await get(path);
-      const nonce = res.headers.get('content-security-policy')!.match(/'nonce-([^']+)' 'strict-dynamic'/)![1];
+      const nonce = res.headers.get('content-security-policy')!.match(/'nonce-([^']+)'/)![1];
       const body = await res.text();
 
       expect(body).not.toContain('CSP_NONCE_PLACEHOLDER');
