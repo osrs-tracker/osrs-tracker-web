@@ -43,12 +43,18 @@ export function configureGracefulShutdown(server: Server, metricsServer: Server,
   });
 }
 
-/** Closes the main server, then the metrics server, resolving once both have closed */
+/** Closes the main server, then the metrics server, resolving once both have closed and rejecting if either fails */
 export async function closeServers(server: Server, metricsServer: Server): Promise<void> {
   // `close` only closes the connections that are idle right now. With the long keep-alive timeout, a connection whose
   // response is still being sent would then stay open, so close connections as they become idle.
   const closeIdle = setInterval(() => server.closeIdleConnections(), 100);
-  await new Promise(resolve => server.close(resolve));
-  clearInterval(closeIdle);
-  await new Promise(resolve => metricsServer.close(resolve));
+  try {
+    await close(server);
+  } finally {
+    clearInterval(closeIdle);
+  }
+  await close(metricsServer);
 }
+
+const close = (server: Server) =>
+  new Promise<void>((resolve, reject) => server.close(err => (err ? reject(err) : resolve())));
