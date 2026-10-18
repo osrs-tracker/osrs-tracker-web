@@ -1,0 +1,29 @@
+name: zizmor
+
+# Audits the workflows, the composite action and dependabot.yml for security problems: unpinned third-party actions,
+# template injection, broad permissions, persisted checkout credentials and more. Its findings fail the check; what's
+# allowed, and why, is in .github/zizmor.yml.
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+
+permissions: {}
+
+jobs:
+  zizmor:
+    runs-on: ubuntu-slim
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: zizmorcore/zizmor-action@85b2b9fb8e3325e7a23d7d0a9d7ba5ae0f999e3e # v0.7.1
+        with:
+          # Fail on findings: with true (the default) it only uploads them to code scanning and passes
+          advanced-security: false
+          # The default, latest, would let a new zizmor release fail the check by itself
+          version: 1.31.1

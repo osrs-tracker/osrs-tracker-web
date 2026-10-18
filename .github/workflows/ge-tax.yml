@@ -16,6 +16,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       # The script needs no dependencies, only Node 24 to import the .ts helper
       - uses: actions/setup-node@v7
         with:

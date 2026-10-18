@@ -17,6 +17,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - run: |
           expires=$(sed -n 's/^Expires: //p' public/.well-known/security.txt)
           days=$(( ($(date -d "$expires" +%s) - $(date +%s)) / 86400 ))

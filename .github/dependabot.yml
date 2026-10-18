@@ -1,6 +1,8 @@
 # Security updates only for npm: open-pull-requests-limit 0 disables version updates, while Dependabot security updates
 # (enabled in the repository settings) still use this configuration. Other npm updates are done by hand; GitHub Actions
 # and the Docker base image get version updates below.
+# Every version update waits 7 days after a release (cooldown), so a compromised release is usually pulled before we take
+# it. Dependabot never applies a cooldown to security updates.
 version: 2
 
 updates:
@@ -8,6 +10,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     open-pull-requests-limit: 0
     groups:
       # Angular packages must stay on the same version
@@ -25,6 +29,8 @@ updates:
     directories: ['/', '/.github/actions/*']
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     open-pull-requests-limit: 3
     groups:
       # One PR per action across both folders, not one per folder (setup-node is in both)
@@ -39,6 +45,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     commit-message:
       prefix: chore
       include: scope
