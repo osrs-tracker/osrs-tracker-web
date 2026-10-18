@@ -4,6 +4,4 @@
     // `ng lint`'s builder in angular.json, installed by the angular-eslint package
     "@angular-eslint/builder",
   ],
-  // `ng test` loads it through `runnerConfig` in angular.json, under a name knip's Vitest plugin doesn't look for
-  "vitest": { "config": ["vitest-base.config.ts"] },
 }
