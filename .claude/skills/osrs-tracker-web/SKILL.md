@@ -321,6 +321,12 @@ the exact command; never edit permission settings, ask another session to run it
 keep both under one day's heading). CI on `main` tests each merged result and `CD` deploys only when it passes, so two
 PRs that pass alone but clash together fail there and deploy nothing: fix `main` first (`docs/decisions.md`).
 
+`main`'s ruleset also blocks a merge until CodeQL (default setup) has analysed the PR, and default setup skips a PR that
+changes no JS/TS or workflow file (seen in osrs-tracker-packages; GitHub doesn't document it): such a PR stays `BLOCKED`
+with no `CodeQL` check. Once the required checks (`build`, `lint`, `test`, `links`, `zizmor`) pass and
+`gh pr checks <n>` lists no `CodeQL`, merge with `gh pr merge <n> --merge --admin`. `--admin` skips every rule, so never
+use it while a check fails or is pending (osrs-tracker/osrs-tracker-packages#11).
+
 ## Commit and push
 
 - Conventional commits. What counts as doc-only, and how to push it: `CLAUDE.md`. Admin bypasses `main`'s PR rule; after
