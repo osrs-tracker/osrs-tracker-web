@@ -1,8 +1,9 @@
 # osrs-tracker-web
 
 Angular 22 SSR app (zoneless, signals, standalone) on a custom Express server (`src/server/`), deployed to Kubernetes at
-https://osrs-tracker.freekmencke.com. Sibling repos: `~/repos/osrs-tracker-api`, `~/repos/osrs-tracker-aws` (next to the
-main checkout; `../` doesn't reach them from a worktree).
+https://osrs-tracker.freekmencke.com. Sibling repos: `~/repos/osrs-tracker-api`, `~/repos/osrs-tracker-aws`,
+`~/repos/osrs-tracker-packages` (the `@osrs-tracker/*` npm packages; next to the main checkout; `../` doesn't reach them
+from a worktree).
 
 **Load the `osrs-tracker-web` skill before writing, reviewing, running, deploying or committing anything here.** It
 holds the Angular conventions, SSR rules, deploy and release steps. Keep detail there, not in this file.

@@ -21,8 +21,8 @@ skills), say so instead of guessing its rules.
 
 ## Related repos
 
-`~/repos/osrs-tracker-api` and `~/repos/osrs-tracker-aws` have their own skills (`../` from the main checkout, not from
-a worktree).
+`~/repos/osrs-tracker-api`, `~/repos/osrs-tracker-aws` and `~/repos/osrs-tracker-packages` (the `@osrs-tracker/*` npm
+packages) have their own skills (`../` from the main checkout, not from a worktree).
 
 - `src/config/config.ts` (production only): `apiBaseUrl` is the API, called during SSR, so its `Cache-Control` matters.
   `awsBaseUrl` is the API Gateway hiscores proxy, browser only; the API and a Lambda share it, so check changes in all
@@ -148,8 +148,8 @@ hover shows library signatures and docs instead.
   page `renderingPage()` (`server/utils/log.ts`) set (undici's `diagnostics_channel`, so it sees every `fetch`).
 - **Server logs**: request logs match the API's shape: 5xx `error`, 4xx `warn`, else `info`; a client that disconnects
   before the response is `warn` with `aborted: true` and no `status`. Both come from `@osrs-tracker/logger` (in
-  `osrs-tracker-aws`; change the shape there, for both apps). Every server log line is JSON with a `type`: write new
-  ones through a child of `logger` from `src/server/utils/log.ts`
+  `osrs-tracker-packages`; change the shape there, for both apps). Every server log line is JSON with a `type`: write
+  new ones through a child of `logger` from `src/server/utils/log.ts`
   (`logger.child({ type: 'lifecycle' satisfies WebLogType })`), not `console`, and add a type to `WebLogType` when none
   fits. Specs pass their own logger (`testing/log-lines.ts`): pino doesn't write through `process.stdout.write`, so
   spying on it sees nothing.

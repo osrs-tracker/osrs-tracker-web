@@ -38,7 +38,8 @@
 - The XP tracker's level and XP sums (XP left to the next level, a day's XP gained in Compare, a skill's level on the
   link preview card), the news posts and the players online history now come from our shared hiscores packages instead
   of copies in the site, so they can't drift from what the API and the hiscores scraper use. Nothing changes on the
-  page.
+  page. Those packages, and the ones behind the server's logs and metrics, now live in their own repository,
+  osrs-tracker-packages, and the site uses their new versions from there; the logs and metrics look the same.
 
 ## 2026-10-17
 

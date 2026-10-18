@@ -33,14 +33,16 @@
 
 ## How it fits together
 
-This repository is the website. It is one of three parts:
+This repository is the website. It is one of four parts:
 
 - **[osrs-tracker-web](https://github.com/osrs-tracker/osrs-tracker-web)** (this repo): the website at
   [osrs-tracker.freekmencke.com](https://osrs-tracker.freekmencke.com).
 - **[osrs-tracker-api](https://github.com/osrs-tracker/osrs-tracker-api)**: the API that serves player, item and news
   data to the website.
 - **[osrs-tracker-aws](https://github.com/osrs-tracker/osrs-tracker-aws)**: background jobs that save a daily snapshot
-  of every tracked player and keep the item list up to date, plus shared packages.
+  of every tracked player and keep the item list up to date.
+- **[osrs-tracker-packages](https://github.com/osrs-tracker/osrs-tracker-packages)**: the `@osrs-tracker/*` npm packages
+  the other three share (models, hiscores, logging, metrics).
 
 Live hiscores come from the official Old School RuneScape hiscores, and prices come from the
 [OSRS Wiki prices API](https://prices.runescape.wiki).
