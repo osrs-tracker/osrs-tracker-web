@@ -1,9 +1,16 @@
 ## 2026-10-18
 
+### Browsing and search
+
 - Pages no longer opt out of the browser's back/forward cache, so Back and Forward can bring a page back at once in
   Firefox and Safari instead of loading it again, and Chrome keeps them there longer.
 - Pages now let Google show their preview pictures large, such as an item's price card in Discover and image results,
   instead of as a small thumbnail.
+
+### Behind the scenes
+
+- Angular 22.2.3. Its test runner now turns off Vitest's module cache by itself, which could run tests against stale
+  code, so our own workaround for it is gone.
 
 ## 2026-10-17
 
