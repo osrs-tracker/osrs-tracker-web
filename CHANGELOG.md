@@ -1,3 +1,8 @@
+## 2026-10-18
+
+- Pages now let Google show their preview pictures large, such as an item's price card in Discover and image results,
+  instead of as a small thumbnail.
+
 ## 2026-10-17
 
 ### XP Tracker
