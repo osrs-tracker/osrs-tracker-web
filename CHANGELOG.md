@@ -2,8 +2,7 @@
 
 ### XP tracker
 
-- De-ironed players have their red cross back on their account icon, which went missing yesterday and left an empty
-  circle.
+- De-ironed players show their red cross on their account icon again, instead of an empty circle.
 
 ### Browsing and search
 
