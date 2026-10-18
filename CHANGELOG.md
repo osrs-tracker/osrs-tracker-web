@@ -29,6 +29,8 @@
   list of permissive licences, so a copyleft package (AGPL in particular) can't be added unnoticed.
 - The code checks now catch accessibility mistakes in templates, and changed pages are scanned with axe against WCAG 2.2
   AA (touch target size included) and walked by keyboard before they ship.
+- Updated the SOLIX font to version 4.0.0. It now asks Windows to smooth its letters at every size, as it has no hints
+  of its own; its shapes, widths and spacing are unchanged, so text looks the same elsewhere.
 
 ## 2026-10-17
 
