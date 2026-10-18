@@ -1,45 +1,23 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Service, inject } from '@angular/core';
-import { HiscoreEntry, Item, OsrsNewsItem, Player, PlayerCount } from '@osrs-tracker/models';
+import {
+  HiscoreEntry,
+  Item,
+  NewsArchivePage,
+  OsrsNewsItem,
+  Player,
+  PlayerCount,
+  PlayerCountPoint,
+  PlayerCountRange,
+} from '@osrs-tracker/models';
 import { Observable, map } from 'rxjs';
 import { LOADING_INDICATOR } from '@app/core/interceptors/loading-indicator-interceptor';
 import { SSR_TIMEOUT } from '@app/core/interceptors/ssr-timeout-interceptor';
 import { config } from '@config/config';
 
-/** How far back the player count history goes, and its step: 10-minute samples (24h, 7d), hourly (30d), daily (1y, all) */
-export type PlayerCountRange = '24h' | '7d' | '30d' | '1y' | 'all';
-
-/** A sample of the player count history, or the averages over the UTC hour or day starting at `date` */
-export interface PlayerCountPoint {
-  date: Date;
-  total: number;
-  members: number;
-  f2p: number;
-  /** Players per raw location code; in an hour or a day, the average per code */
-  byLocation: Record<string, number>;
-  /** Daily points only: the highest count sampled that day */
-  peak?: number;
-}
-
 /** A news post's image (a `cdn.runescape.com` URL) through the API, as WebP */
 export function newsImageUrl(url: string): string {
   return `${config.apiBaseUrl}/news/image?url=${encodeURIComponent(url)}`;
-}
-
-/** A stored news post; the older ones may have no `description` or `enclosure` (they're being backfilled) */
-export interface NewsPost {
-  title: string;
-  pubDate: Date;
-  category: string;
-  link: string;
-  description?: string;
-  enclosure?: { url: string; type: string };
-}
-
-/** A page of the news archive; `next` is the cursor for the older posts, `null` on the last page */
-export interface NewsArchivePage {
-  posts: NewsPost[];
-  next: string | null;
 }
 
 @Service()
@@ -163,7 +141,7 @@ export class OsrsTrackerRepo {
       .pipe(map(playerCount => ({ ...playerCount, date: new Date(playerCount.date) })));
   }
 
-  /** The players online over `range`, oldest first */
+  /** The players online over `range`, oldest first: 10-minute samples (24h, 7d), hourly (30d), daily (1y, all) */
   getPlayerCountHistory(range: PlayerCountRange): Observable<PlayerCountPoint[]> {
     return this.httpClient
       .get<PlayerCountPoint[]>('/player-counts', { params: { range }, cache: 'no-cache' })

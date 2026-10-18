@@ -2,9 +2,10 @@ import { formatNumber, isPlatformBrowser } from '@angular/common';
 import { Component, computed, inject, input, linkedSignal, PLATFORM_ID, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { format, isToday, isYesterday } from 'date-fns';
+import { PLAYER_COUNT_RANGES, PlayerCountPoint, PlayerCountRange } from '@osrs-tracker/models';
 import { map } from 'rxjs';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
-import { OsrsTrackerRepo, PlayerCountPoint, PlayerCountRange } from '@app/common/api/osrs-tracker-repo';
+import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { PlayerCountStore } from '@app/common/player-count/player-count-store';
 import { Card } from '@app/common/ui/cards/card';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
@@ -115,9 +116,11 @@ export class PlayerCountHistory {
   /** The hero card's order of locations, which the tooltip keeps */
   readonly locationOrder = input.required<readonly string[]>();
 
-  readonly rangeOptions: SegmentedOption<PlayerCountRange>[] = (Object.keys(RANGES) as PlayerCountRange[]).map(
-    range => ({ value: range, label: RANGES[range].label, title: RANGES[range].title }),
-  );
+  readonly rangeOptions: SegmentedOption<PlayerCountRange>[] = PLAYER_COUNT_RANGES.map(range => ({
+    value: range,
+    label: RANGES[range].label,
+    title: RANGES[range].title,
+  }));
   readonly range = signal<PlayerCountRange>('24h');
   readonly daily = computed(() => isDaily(this.range()));
   readonly lineName = computed(() => lineName(this.range()));
