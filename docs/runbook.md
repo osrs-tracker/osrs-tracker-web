@@ -85,7 +85,7 @@ which FreekMencke/home-cluster keeps. Writes such as a rollout restart are for t
 - Metrics: "Express Dashboard" in Grafana Cloud (request rate and status codes, average response time per route label,
   and each pod's memory, event-loop lag, CPU and GC time), exported to FreekMencke/home-cluster's
   `cluster/monitoring/grafana-cloud/dashboards/express-dashboard.json`. The series come from
-  `@osrs-tracker/express-metrics` (osrs-tracker-aws, shared with the API) on the metrics port (9090, `/metrics`):
+  `@osrs-tracker/express-metrics` (osrs-tracker-packages, shared with the API) on the metrics port (9090, `/metrics`):
   `http_request_duration_seconds` and `up`, plus Node's `nodejs_*` and `process_*`; query them in Grafana Cloud. Alloy
   drops histogram buckets on the way, so there are averages (`_sum` / `_count`) but no percentiles.
 - Resources: `kubectl -n osrs-tracker top pods`. The pods request 50m CPU and 128Mi memory, with a 512Mi memory limit
