@@ -1,5 +1,5 @@
 import { accountType, capitalise } from '@app/common/format/player-labels';
-import { type HiscoreEntry, type Player, PlayerStatus, PlayerType, SkillEnum } from '@osrs-tracker/models';
+import { type HiscoreEntry, type Player, PlayerStatus, PlayerType, SkillEnum, skillLevel } from '@osrs-tracker/models';
 import hardcoreIcon from '../../../public/assets/icons/player_type/hardcore_ironman.png';
 import ironmanIcon from '../../../public/assets/icons/player_type/ironman.png';
 import ultimateIcon from '../../../public/assets/icons/player_type/ultimate.png';
@@ -182,7 +182,7 @@ function skillGrid(hiscore: HiscoreEntry): Node {
 
 function skillCell(hiscore: HiscoreEntry, skill: GridSkill, icon: Uint8Array): Node {
   // An untrained skill (`null`) is level 1, as on the page
-  const level = hiscore.skills[skill]?.level ?? 1;
+  const level = skillLevel(hiscore.skills[skill]);
   return el(
     {
       flex: 1,

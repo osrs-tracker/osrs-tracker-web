@@ -1,5 +1,5 @@
-import { hiscoreDiff, SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreDiff, HiscoreEntry, skillLevel } from '@osrs-tracker/models';
+import { hiscoreDiff } from '@osrs-tracker/hiscores';
+import { HiscoreDiff, HiscoreEntry, SkillEnum, skillLevel } from '@osrs-tracker/models';
 import { BOSSES } from './activity-categories';
 
 const DAY = 24 * 60 * 60 * 1000;

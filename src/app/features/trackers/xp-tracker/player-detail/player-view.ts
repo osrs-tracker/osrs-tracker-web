@@ -1,5 +1,5 @@
 import { inject, Service, signal } from '@angular/core';
-import { SkillEnum } from '@osrs-tracker/hiscores';
+import { SkillEnum } from '@osrs-tracker/models';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 
 export type TopTab = 'skills' | 'bosses' | 'raids';

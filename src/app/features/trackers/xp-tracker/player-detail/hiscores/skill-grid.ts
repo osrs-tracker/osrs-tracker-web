@@ -1,8 +1,14 @@
 import { Grid, GridCell, GridCellWidget, GridRow } from '@angular/aria/grid';
 import { DecimalPipe } from '@angular/common';
 import { Component, computed, effect, inject, input, viewChild } from '@angular/core';
-import { calculateXPForSkillLevel, SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreEntry, overallOf, skillProgress } from '@osrs-tracker/models';
+import {
+  calculateXPForSkillLevel,
+  calculateXPToNextLevel,
+  HiscoreEntry,
+  overallOf,
+  SkillEnum,
+  skillProgress,
+} from '@osrs-tracker/models';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Tooltip } from '@app/common/ui/tooltip/tooltip';
 import { Icon } from '@app/common/icon/icon';
@@ -115,8 +121,8 @@ const OVERALL_COLOR = 'var(--accent)';
                 <div class="text-right tabular-nums">
                   <div>{{ cell.xp | number }}</div>
                   @if (cell.progress !== undefined) {
-                    <div>{{ xpForNextLevel(cell.level) | number }}</div>
-                    <div>{{ xpForNextLevel(cell.level) - cell.xp | number }}</div>
+                    <div>{{ xpForLevel(cell.level + 1) | number }}</div>
+                    <div>{{ xpToNextLevel(cell.xp, cell.level) | number }}</div>
                   }
                 </div>
               </div>
@@ -163,6 +169,8 @@ export class SkillGrid {
 
   readonly SkillEnum: typeof SkillEnum = SkillEnum;
   readonly OVERALL_COLOR: string = OVERALL_COLOR;
+  readonly xpForLevel: typeof calculateXPForSkillLevel = calculateXPForSkillLevel;
+  readonly xpToNextLevel: typeof calculateXPToNextLevel = calculateXPToNextLevel;
 
   /** Undefined while the hiscores load */
   readonly hiscore = input.required<HiscoreEntry | undefined>();
@@ -222,10 +230,6 @@ export class SkillGrid {
   /** Outline of a cell that gained XP but isn't picked */
   pickableRing(color: string): string {
     return pickableCellRing(color);
-  }
-
-  xpForNextLevel(level: number): number {
-    return calculateXPForSkillLevel(level + 1);
   }
 
   label(cell: SkillCell): string {

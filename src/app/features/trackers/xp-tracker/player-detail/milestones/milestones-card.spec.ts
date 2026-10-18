@@ -1,7 +1,6 @@
 import { Component, provideZonelessChangeDetection, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreEntry, HiscoreSkill } from '@osrs-tracker/models';
+import { HiscoreEntry, HiscoreSkill, SkillEnum } from '@osrs-tracker/models';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { GTAG_TOKEN } from '@app/common/analytics/gtag-token';
 import { localIcons } from '@app/common/icon/local-icons.generated';

@@ -1,5 +1,4 @@
-import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreActivity, HiscoreEntry, HiscoreSkill } from '@osrs-tracker/models';
+import { ActivityEnum, HiscoreActivity, HiscoreEntry, HiscoreSkill, SkillEnum } from '@osrs-tracker/models';
 import { describe, expect, it } from 'vitest';
 import { activityRows, skillRows } from './compare-rows';
 

@@ -1,4 +1,4 @@
-import { SkillEnum } from '@osrs-tracker/hiscores';
+import { SkillEnum } from '@osrs-tracker/models';
 import { addDays } from 'date-fns';
 import { Gains } from '../player-summary';
 

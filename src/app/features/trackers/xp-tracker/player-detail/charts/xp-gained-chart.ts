@@ -1,6 +1,6 @@
 import { formatNumber } from '@angular/common';
 import { DOCUMENT, Component, computed, inject } from '@angular/core';
-import { SkillEnum } from '@osrs-tracker/hiscores';
+import { SkillEnum } from '@osrs-tracker/models';
 import { Chart, ChartOptions, Point } from 'chart.js';
 import { merge } from 'chart.js/helpers';
 import { BaseChart } from '@app/common/charts/base-chart';

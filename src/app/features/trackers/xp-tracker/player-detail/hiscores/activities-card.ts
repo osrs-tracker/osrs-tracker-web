@@ -1,7 +1,6 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
-import { ActivityEnum } from '@osrs-tracker/hiscores';
-import { HiscoreEntry } from '@osrs-tracker/models';
+import { ActivityEnum, HiscoreEntry } from '@osrs-tracker/models';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { CapitalizePipe } from '@app/common/format/capitalize-pipe';

@@ -1,4 +1,4 @@
-import { ActivityEnum } from '@osrs-tracker/hiscores';
+import { ActivityEnum } from '@osrs-tracker/models';
 import { describe, expect, it } from 'vitest';
 import { ACTIVITY_COLORS } from './activity-colors';
 import { chartColors, distance, MIN_DISTANCE, oklab } from './chart-colors';
