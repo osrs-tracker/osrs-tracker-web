@@ -519,7 +519,9 @@ Choices that look like accidents without their context: what was decided, why, a
   `'strict-dynamic'` (2026-10-17) makes current browsers ignore `'self'` and the host allowlist, which Lighthouse calls
   bypassable: a script runs only with the nonce or when a script that has one adds it (the Google tag, lazy chunks,
   `main.js`'s imports). The allowlist stays for browsers without `'strict-dynamic'`. The cost: once analytics is
-  allowed, whatever the Google tag loads runs too, from any host.
+  allowed, whatever the Google tag loads runs too, from any host. The dev server (`npm start`) leaves `'strict-dynamic'`
+  out (`isDevMode()`, false in the production build): Vite adds its client script (`/@vite/client`) without a nonce, so
+  it would be blocked. Don't allow Vite's URL instead, as `'strict-dynamic'` ignores hosts.
 - **Revisit:** any new path that serves HTML must call `applyCspNonce`, or its scripts won't run. A `<script src>` in
   `index.html` needs `nonce="CSP_NONCE_PLACEHOLDER"`, and a script added from code must be a
   `document.createElement('script')` (as `consent-store.ts` does): one written as HTML (`innerHTML`) is blocked.
