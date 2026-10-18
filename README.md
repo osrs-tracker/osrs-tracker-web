@@ -102,3 +102,6 @@ reliability.
 
 [Elastic License 2.0](LICENSE): you're welcome to read the code, learn from it, change it and run it yourself, but not
 to offer it to others as a hosted service, paid or free.
+
+The font files in `public/assets/fonts/` and `src/server/og/fonts/` are not under the Elastic License 2.0: they are
+proprietary, and their terms are in [`public/assets/fonts/LICENSE.txt`](public/assets/fonts/LICENSE.txt).

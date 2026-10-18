@@ -1,0 +1,10 @@
+SOLIX
+
+Copyright (c) 2023-2026 Freek Mencke. All rights reserved.
+
+SOLIX, including the font files, their sources and the other files in this
+repository, is proprietary. No permission is granted to use, copy, modify,
+merge, publish, distribute, sublicense, embed or sell the fonts or any part of
+them, in any form, without prior written permission from the copyright holder.
+
+Having access to these files does not grant any licence to them.
