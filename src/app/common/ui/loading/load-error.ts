@@ -23,9 +23,10 @@ import { LucideRefreshCw } from '@lucide/angular';
         <svg lucideRefreshCw class="size-5" />
       </button>
     } @else if (inline()) {
+      <!-- 24px tall for touch (WCAG 2.5.8), the negative margin keeps the 18px line -->
       <button
         type="button"
-        class="flex items-center gap-0.5 min-w-0 h-4.5 text-sm/4.5 font-bold text-amber hover:underline"
+        class="flex items-center gap-0.5 min-w-0 h-6 -my-0.75 text-sm/4.5 font-bold text-amber hover:underline"
         [title]="message() + '. Click to retry.'"
         [attr.aria-label]="message() + '. Retry'"
         (click)="onRetry($event)"

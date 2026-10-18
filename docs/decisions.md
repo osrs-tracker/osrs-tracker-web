@@ -2,6 +2,20 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## Focus moves to the new page's heading after a client-side navigation (2026-10-18)
+
+- **Context:** the router doesn't move focus, so after following a link focus stayed on it, or fell to `body` when it
+  was removed, and screen readers got no cue that the page changed (claude-kb ACCESS-012).
+- **Decision:** `RouteFocus` (`core/routing/route-focus.ts`, started in `app.config.ts`) focuses `main h1`, or `main`
+  without one, after every navigation but the first, which keeps the browser's own start on a loaded page. It gives the
+  target `tabindex="-1"` at runtime, so templates don't need it, focuses with `preventScroll`, so
+  `scrollPositionRestoration` still scrolls, and announces `document.title` through CDK's `LiveAnnouncer`, looked up
+  only then, because it adds its live region to the page (and the server HTML) when created. A navigation that keeps the
+  path (the news filters write the query) leaves focus alone while it's inside `main`, as a control there made it.
+  `base.css` drops the focus ring on those script-focused targets.
+- **Revisit:** a page whose `h1` renders only after a browser-side load gets `main` focused instead; give it its `h1` up
+  front if that matters.
+
 ## Accessibility is checked by template lint, an axe scan and a keyboard walk (2026-10-18)
 
 - **Context:** nothing checked accessibility beyond `browser-checker`'s contrast measurements, so accessible names,

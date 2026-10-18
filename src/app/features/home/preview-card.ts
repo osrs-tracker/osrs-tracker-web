@@ -39,8 +39,9 @@ const LINE = CUMULATIVE_XP.map((xp, day) => `L${day * 50} ${Math.round(62 - (xp 
     <a
       class="block rounded-3xl bg-card border border-line shadow-float overflow-hidden rotate-2 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
       routerLink="/trackers/xp"
-      aria-label="Open the XP Tracker (example player stats)"
     >
+      <!-- Its name, as text rather than aria-label: the card's visible sample text isn't a label (WCAG 2.5.3) -->
+      <span class="sr-only">Open the XP Tracker (example player stats)</span>
       <div class="flex items-center gap-3 p-4 border-b border-line" aria-hidden="true">
         <span class="flex items-center justify-center size-10 shrink-0 rounded-xl bg-deep border border-line">
           <svg lucideUser class="size-5.5 stroke-text" />
