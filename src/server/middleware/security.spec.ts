@@ -25,6 +25,8 @@ describe('securityMiddleware', () => {
   });
 
   it("lets the dev server's Vite client script run, which has no nonce", async () => {
+    vi.stubGlobal('ngDevMode', true); // as under `ng serve`
+
     expect(await scriptSrc()).toBe("script-src 'self' 'nonce-abc' https://www.googletagmanager.com");
   });
 });

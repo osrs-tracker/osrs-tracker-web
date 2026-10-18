@@ -524,7 +524,8 @@ Choices that look like accidents without their context: what was decided, why, a
   it would be blocked. Don't allow Vite's URL instead, as `'strict-dynamic'` ignores hosts.
 - **Revisit:** any new path that serves HTML must call `applyCspNonce`, or its scripts won't run. A `<script src>` in
   `index.html` needs `nonce="CSP_NONCE_PLACEHOLDER"`, and a script added from code must be a
-  `document.createElement('script')` (as `consent-store.ts` does): one written as HTML (`innerHTML`) is blocked.
+  `document.createElement('script')` (as `consent-store.ts` does): one written as HTML (`innerHTML`) is blocked. Without
+  `'strict-dynamic'` the dev server runs such scripts anyway, so check a change to them on a production build.
 
 ## Every replica pre-renders its own pages (2026-10-04)
 
