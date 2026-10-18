@@ -229,14 +229,21 @@ The `browser-checker` agent does the check, so its screenshots stay out of the m
    item ids and players are the same on a local server, which uses the production API. The trackers live under
    `/trackers/` (`/trackers/xp/the%20fraking`, `/trackers/price/4151`), not `/xp-tracker/…` or `/price-tracker`. Pages
    no sitemap lists (`/error`, the link-preview images) are in `src/server/utils/route-label.ts`.
-3. Delegate every round to `browser-checker` (without a `model`), hover, keyboard and width iterations too, with the
-   URLs and what changed (theme, colours, phone layout, caching, the state to show, the changed elements). It starts its
-   own headless, isolated browser, so checks can run in parallel and beside the session's own Playwright browser. That
-   one stays headed, for what the agent can't do: sites that need a sign-in, and mocking API responses
-   (`browser_run_code_unsafe`).
-4. Pass on its `VERDICT:`, contrast failures, request counts, failed requests and console errors, and send its
-   screenshots with `SendUserFile` without `Read`ing them: it has looked, and a `Read` puts each image back in your
-   context. For another look, delegate again. Then delete them and `.playwright-mcp/`, and stop the server.
+3. Scan the changed pages with axe yourself, as the agent has no Bash: `npm run a11y -- <url>...` prints one line per
+   WCAG 2.2 AA violation (rule, impact, selectors) and each page's `incomplete` count, and exits 1 on violations.
+   `--click=<selector>` (repeatable, in order) opens a state first, such as a menu
+   (`--click='[aria-controls=menu-game]'`) or a dialog; `--light` scans the light theme. Once per machine:
+   `npx playwright install --only-shell chromium`. Off port 4200 the API's CORS blocks browser-side requests, so the
+   scan sees their error states.
+4. Delegate every round to `browser-checker` (without a `model`), hover, keyboard and width iterations too, with the
+   URLs, what changed (theme, colours, phone layout, caching, the state to show, the changed elements) and the scan's
+   lines. It starts its own headless, isolated browser, so checks can run in parallel and beside the session's own
+   Playwright browser. That one stays headed, for what the agent can't do: sites that need a sign-in, and mocking API
+   responses (`browser_run_code_unsafe`).
+5. Pass on the scan's violations, its `VERDICT:`, contrast failures, keyboard issues, request counts, failed requests,
+   console errors and its "Not checked" list, and send its screenshots with `SendUserFile` without `Read`ing them: it
+   has looked, and a `Read` puts each image back in your context. For another look, delegate again. Then delete them and
+   `.playwright-mcp/`, and stop the server.
 
 The rules it follows (it reads them here):
 
@@ -247,6 +254,10 @@ The rules it follows (it reads them here):
   compare.
 - Click, hover or type into controls picked from a snapshot (`browser_snapshot` refs), not ones found by guessing: a
   stray click toggles favourites or the theme in the test browser.
+- Walk changed focusable parts by keyboard: Tab order, focus visible and not hidden under the sticky nav or the consent
+  banner (WCAG 2.4.11), Enter, Space and Escape, and focus on the new page's `h1` after a client-side navigation.
+- A clean scan and walk don't make a page accessible: list what wasn't checked (alt text and label meaning, reading
+  order, screen-reader output, zoom and reflow).
 - Close the browser as soon as the round of checks is done, even mid-task; open it again for the next one.
 
 ## Deploy
