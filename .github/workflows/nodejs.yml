@@ -30,6 +30,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          persist-credentials: false
       - id: diff
         name: Check for source or dependency changes
         env:
@@ -48,7 +49,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup-deps
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-deps # zizmor: ignore[self-repository]
       - run: npm run lint
       - run: npm run prettier:ci
       # Unused files, exports and dependencies; what it can't see is in knip.jsonc
@@ -63,6 +66,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:
           args: --offline --hidden --include-fragments --no-progress './**/*.md'
@@ -76,7 +81,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup-deps
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-deps # zizmor: ignore[self-repository]
       - run: npm run build
 
   test:
@@ -86,5 +93,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup-deps
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-deps # zizmor: ignore[self-repository]
       - run: npm run test

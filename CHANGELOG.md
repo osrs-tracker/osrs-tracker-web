@@ -13,6 +13,10 @@
   code, so our own workaround for it is gone.
 - The code checks now catch promises whose errors would go unhandled. A server that fails to shut down cleanly now logs
   why and exits with an error, and a failed app start is logged to the browser's console.
+- Every pull request now runs zizmor, a security check of our GitHub Actions workflows, and checkouts no longer keep
+  their git credentials, apart from the one that pushes the deploy commit. Dependabot waits 7 days before suggesting a
+  new action or base image, so a compromised release is usually pulled before we take it; security updates still arrive
+  at once.
 
 ## 2026-10-17
 
