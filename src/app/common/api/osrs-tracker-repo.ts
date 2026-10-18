@@ -153,7 +153,9 @@ export class OsrsTrackerRepo {
   //
 
   getNews(): Observable<OsrsNewsItem[]> {
-    return this.httpClient.get<OsrsNewsItem[]>('/news');
+    return this.httpClient
+      .get<OsrsNewsItem[]>('/news')
+      .pipe(map(items => items.map(item => ({ ...item, pubDate: new Date(item.pubDate) }))));
   }
 
   /**

@@ -1,9 +1,8 @@
 import { config } from '@config/config';
 import type { Logger } from '@osrs-tracker/logger';
-import type { Item, Player } from '@osrs-tracker/models';
+import type { Item, Player, PlayerCountPoint } from '@osrs-tracker/models';
 import express from 'express';
 import { allowCrossOriginEmbedding } from '../middleware/security';
-import type { PlayerCountSample } from '../og/players-online-card';
 import { serverConfig } from '../server-config';
 import type { WebLogType } from '../utils/log';
 
@@ -16,8 +15,8 @@ export type RenderItemCard = (item: Item, iconPng: Uint8Array | undefined) => Pr
 export type GetPlayer = (username: string) => Promise<Player | undefined>;
 export type RenderPlayerCard = (player: Player) => Promise<Uint8Array>;
 /** The players online over the last 24 hours, oldest first. Throws when it failed to load. */
-export type GetPlayerCounts = () => Promise<PlayerCountSample[]>;
-export type RenderPlayersOnlineCard = (samples: PlayerCountSample[]) => Promise<Uint8Array>;
+export type GetPlayerCounts = () => Promise<PlayerCountPoint[]>;
+export type RenderPlayersOnlineCard = (samples: PlayerCountPoint[]) => Promise<Uint8Array>;
 
 const API_TIMEOUT_MS = 5000;
 const MAX_CACHED = 200;
@@ -75,7 +74,8 @@ const fetchPlayerCounts: GetPlayerCounts = async () => {
     signal: AbortSignal.timeout(API_TIMEOUT_MS),
   });
   if (!response.ok) throw new Error(`GET /player-counts answered ${response.status}`);
-  return (await response.json()) as PlayerCountSample[];
+  const points = (await response.json()) as PlayerCountPoint[];
+  return points.map(point => ({ ...point, date: new Date(point.date) }));
 };
 
 /** Loads the renderers on first use, so their large chunk isn't read at startup */
@@ -187,7 +187,7 @@ export function createOgImageRouter({
 
   // One image, so one key
   const playersOnlineCard = cardCache<'players-online'>(async () => {
-    let samples: PlayerCountSample[];
+    let samples: PlayerCountPoint[];
     try {
       samples = await getPlayerCounts();
     } catch (error) {
