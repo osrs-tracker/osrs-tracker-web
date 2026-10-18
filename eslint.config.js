@@ -104,7 +104,7 @@ export default defineConfig(
   },
   {
     files: ['**/*.html'],
-    extends: [...angular.configs.templateRecommended],
+    extends: [...angular.configs.templateRecommended, ...angular.configs.templateAccessibility],
     rules: {
       '@angular-eslint/template/eqeqeq': [
         'error',
@@ -112,6 +112,8 @@ export default defineConfig(
           allowNullOrUndefined: true,
         },
       ],
+      // Row components on an <a> render the link's content from their own template, which the rule can't see
+      '@angular-eslint/template/elements-content': ['error', { allowList: ['player-row', 'item-row'] }],
     },
   },
   eslintConfigPrettier,

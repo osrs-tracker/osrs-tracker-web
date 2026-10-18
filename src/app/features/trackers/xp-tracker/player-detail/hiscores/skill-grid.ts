@@ -88,7 +88,7 @@ const OVERALL_COLOR = 'var(--accent)';
               >
                 <span class="flex items-center justify-between h-9.25 pt-1.75 pb-1.5 px-3">
                   @if (cell.loaded) {
-                    <img class="h-6 w-auto" icon [name]="cell.name" [skill]="true" />
+                    <img class="h-6 w-auto" icon alt="" [name]="cell.name" [skill]="true" />
                     <span class="text-base font-bold text-strong tabular-nums">{{ cell.level }}</span>
                   } @else {
                     <skeleton class="mx-auto h-5 w-16" />
@@ -144,7 +144,7 @@ const OVERALL_COLOR = 'var(--accent)';
             (click)="playerView.toggleSkill(SkillEnum.Overall)"
           >
             @if (overall(); as overall) {
-              <img class="h-5.5 w-auto" icon [name]="SkillEnum.Overall" [skill]="true" />
+              <img class="h-5.5 w-auto" icon alt="" [name]="SkillEnum.Overall" [skill]="true" />
               <span>Total level:</span>
               <span class="text-base font-bold text-strong tabular-nums">{{ overall.level | number }}</span>
             } @else {

@@ -85,7 +85,7 @@ interface ActivityCell {
                         @if (view() === 'minigames') {
                           <!-- minigame icons vary from 16 to 96px, so they're fitted to the box instead of scaled -->
                           <span class="relative flex items-center justify-center size-7 shrink-0">
-                            <img class="size-6" icon [name]="cell.icon.name" [activity]="cell.icon.activity" />
+                            <img class="size-6" icon alt="" [name]="cell.icon.name" [activity]="cell.icon.activity" />
                             @if (cell.badge) {
                               <span
                                 class="absolute -right-1.5 -bottom-1 min-w-3.5 h-3.5 px-0.75 rounded-full bg-line text-strong text-center text-2xs leading-3.5 font-bold"
@@ -96,7 +96,7 @@ interface ActivityCell {
                           </span>
                         } @else {
                           <span class="flex items-center justify-center size-7 shrink-0">
-                            <img icon [name]="cell.icon.name" [activity]="true" [scale]="1.5" />
+                            <img icon alt="" [name]="cell.icon.name" [activity]="true" [scale]="1.5" />
                           </span>
                         }
                         <span class="ml-auto text-base font-bold text-strong tabular-nums">{{

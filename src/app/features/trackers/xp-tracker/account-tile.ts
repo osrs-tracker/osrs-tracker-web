@@ -30,8 +30,9 @@ const TYPE_LABELS: Record<PlayerType, string> = {
   template: `
     @let player = account();
 
-    <!-- a tooltip rather than a title, so the account type also shows on touch -->
+    <!-- a tooltip rather than a title, so the account type also shows on touch; one image, named by its label -->
     <span
+      role="img"
       [class]="
         'relative flex items-center justify-center border border-line bg-deep ' +
         (large() ? 'size-16 rounded-2xl' : 'size-10 max-sm:size-8 rounded-xl')
@@ -44,12 +45,18 @@ const TYPE_LABELS: Record<PlayerType, string> = {
     >
       @if (player.type === PlayerType.Normal) {
         @if (large()) {
-          <img class="size-10" icon eager [name]="SkillEnum.Overall" [skill]="true" />
+          <img class="size-10" icon alt="" eager [name]="SkillEnum.Overall" [skill]="true" />
         } @else {
           <svg lucideUser class="size-5.5 max-sm:size-4.5 stroke-text" />
         }
       } @else {
-        <img [class]="large() ? 'size-10' : 'size-6 max-sm:size-5'" icon [eager]="large()" [name]="player.type" />
+        <img
+          [class]="large() ? 'size-10' : 'size-6 max-sm:size-5'"
+          icon
+          alt=""
+          [eager]="large()"
+          [name]="player.type"
+        />
       }
 
       @if (player.status === PlayerStatus.DeIroned) {
@@ -60,6 +67,7 @@ const TYPE_LABELS: Record<PlayerType, string> = {
         <img
           [class]="badgeClass() + (large() ? ' p-0.75' : ' p-0.5')"
           icon
+          alt=""
           [eager]="large()"
           [name]="PlayerType.Ironman"
         />
@@ -72,6 +80,7 @@ const TYPE_LABELS: Record<PlayerType, string> = {
               : 'absolute -right-1.5 -bottom-1.5 size-5 p-0.5 rounded-full border border-line bg-deep'
           "
           icon
+          alt=""
           [eager]="large()"
           name="dead"
         />

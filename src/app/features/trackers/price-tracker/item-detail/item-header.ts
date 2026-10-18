@@ -21,7 +21,7 @@ import { LucideExternalLink, LucideStar, LucideTriangle } from '@lucide/angular'
       class="flex items-center justify-center size-16 shrink-0 rounded-2xl bg-deep border border-line"
       aria-hidden="true"
     >
-      <img class="max-w-12 max-h-12" icon eager [name]="item().icon" [wiki]="true" [scale]="1.25" />
+      <img class="max-w-12 max-h-12" icon alt="" eager [name]="item().icon" [wiki]="true" [scale]="1.25" />
     </span>
 
     <div class="flex flex-col gap-1.5 flex-1 basis-0 min-w-0 sm:basis-65">

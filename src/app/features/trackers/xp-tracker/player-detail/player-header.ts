@@ -38,7 +38,7 @@ export type TrackingState = 'tracked' | 'started' | 'untracked';
         <!-- on phones the combat level wraps under the name, without the divider -->
         <span class="hidden sm:block self-center w-px h-5.5 bg-border" aria-hidden="true"></span>
         <span class="flex items-baseline gap-1.5 text-lg font-bold text-text tabular-nums" title="Combat level">
-          <img class="size-3.75" icon name="combat" />{{ player.combatLevel }}
+          <img class="size-3.75" icon alt="Combat level" name="combat" />{{ player.combatLevel }}
         </span>
       </div>
       <p class="text-base text-muted">

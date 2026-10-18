@@ -127,6 +127,7 @@ interface ChartHeading {
                 <img
                   class="max-h-7 max-w-7"
                   icon
+                  alt=""
                   [name]="h.icon.name"
                   [skill]="!!h.icon.skill"
                   [activity]="!!h.icon.activity"
