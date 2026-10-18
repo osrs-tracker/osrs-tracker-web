@@ -1,13 +1,5 @@
+import type { PlayerCountPoint } from '@osrs-tracker/models';
 import { COLORS, el, frame, type Node, renderPng } from './card-kit';
-
-/** A 10-minute sample of the players online, as the API sends it */
-export interface PlayerCountSample {
-  /** ISO 8601 */
-  date: string;
-  total: number;
-  members: number;
-  f2p: number;
-}
 
 // The count's column fits six digits at 120px; the line takes the rest of the card's inner width (992px) after the gap.
 // Both columns are a 32px label over a 120px body, 16px apart, so their labels and bottoms line up.
@@ -41,11 +33,11 @@ const TILE_STYLE = {
  * the members and free-to-play split, and the day's peak and low.
  * @param samples The last 24 hours, oldest first; at least two
  */
-export async function renderPlayersOnlineCard(samples: PlayerCountSample[]): Promise<Uint8Array> {
+export async function renderPlayersOnlineCard(samples: PlayerCountPoint[]): Promise<Uint8Array> {
   return renderPng(card(samples));
 }
 
-function card(samples: PlayerCountSample[]): Node {
+function card(samples: PlayerCountPoint[]): Node {
   const latest = samples.at(-1)!;
   const totals = samples.map(sample => sample.total);
 
@@ -68,7 +60,7 @@ function card(samples: PlayerCountSample[]): Node {
         valueTile('24-hour low', format(Math.min(...totals))),
       ]),
     ],
-    `players online on ${TAKEN.format(new Date(latest.date))} UTC`,
+    `players online on ${TAKEN.format(latest.date)} UTC`,
   );
 }
 
@@ -112,16 +104,16 @@ function liveLabel(): Node {
  * The totals as a line over a fading area, placed by time over the 24 hours up to the newest sample (so a gap stays a
  * gap, and a shorter history starts partway), with a dot on the newest
  */
-function line(samples: PlayerCountSample[]): Node {
+function line(samples: PlayerCountPoint[]): Node {
   const totals = samples.map(sample => sample.total);
   const min = Math.min(...totals);
   const range = Math.max(...totals) - min || 1;
-  const end = Date.parse(samples.at(-1)!.date);
+  const end = samples.at(-1)!.date.getTime();
   // Room for the dot at the top, bottom and right, and for the stroke's round cap at the left
   const pad = 9;
   const left = 3;
   const points = samples.map(sample => [
-    left + Math.max(0, 1 - (end - Date.parse(sample.date)) / DAY_MS) * (LINE_WIDTH - pad - left),
+    left + Math.max(0, 1 - (end - sample.date.getTime()) / DAY_MS) * (LINE_WIDTH - pad - left),
     pad + (1 - (sample.total - min) / range) * (LINE_HEIGHT - 2 * pad),
   ]);
   const path = points.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ');

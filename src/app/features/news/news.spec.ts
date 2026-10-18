@@ -3,11 +3,12 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { afterEach, describe, expect, it } from 'vitest';
-import { NewsArchivePage, NewsPost, OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
+import { NewsArchivePage, StoredNewsItem } from '@osrs-tracker/models';
+import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import News from './news';
 
 /** A post on `day`, at midnight UTC as the backfilled ones, or at `time` as the feed's */
-const post = (day: string, time = '00:00'): NewsPost => ({
+const post = (day: string, time = '00:00'): StoredNewsItem => ({
   title: `Post of ${day}`,
   pubDate: new Date(`${day}T${time}:00Z`),
   category: 'Game Updates',

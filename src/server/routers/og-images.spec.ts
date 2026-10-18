@@ -19,10 +19,11 @@ const item = (id: number) => ({ id, name: `Item ${id}`, icon: `Item ${id}.png` }
 const player = (username: string) => ({ username }) as Player;
 const counts = (length: number) =>
   Array.from({ length }, (_, i) => ({
-    date: new Date(i * 600_000).toISOString(),
+    date: new Date(i * 600_000),
     total: 100 + i,
     members: 90 + i,
     f2p: 10,
+    byLocation: {},
   }));
 const PNG = new Uint8Array([137, 80, 78, 71]);
 const ICON = new Uint8Array([1, 2, 3]);

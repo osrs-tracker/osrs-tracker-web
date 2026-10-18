@@ -2,7 +2,8 @@ import { DatePipe, formatDate, isPlatformBrowser } from '@angular/common';
 import { Component, computed, inject, linkedSignal, PLATFORM_ID } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { newsImageUrl, NewsPost, OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
+import { StoredNewsItem } from '@osrs-tracker/models';
+import { newsImageUrl, OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { paging } from '@app/common/paging/paging';
 import { LastPlayedStore, parseDay } from '@app/common/storage/last-played-store';
 import { DayPicker } from '@app/common/ui/controls/day-picker';
@@ -29,7 +30,7 @@ export const NEWS_CATEGORIES: SegmentedOption<string>[] = [
 interface NewsMonth {
   key: string;
   label: string;
-  posts: (NewsPost & { image?: string })[];
+  posts: (StoredNewsItem & { image?: string })[];
 }
 
 /**

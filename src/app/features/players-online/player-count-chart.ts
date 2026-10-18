@@ -1,8 +1,8 @@
 import { formatNumber } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
 import { Chart, ChartOptions, Point, TimeScaleOptions, TooltipModel } from 'chart.js';
+import { PlayerCountPoint, PlayerCountRange } from '@osrs-tracker/models';
 import { format } from 'date-fns';
-import { PlayerCountPoint, PlayerCountRange } from '@app/common/api/osrs-tracker-repo';
 import { BaseChart } from '@app/common/charts/base-chart';
 import { token, withAlpha } from '@app/common/charts/chart-setup';
 import { formatNumberShort } from '@app/common/format/number-format';
