@@ -33,7 +33,10 @@ if (!urls.length) {
 }
 
 let exitCode = 0;
-const browser = await chromium.launch();
+const browser = await chromium.launch().catch(error => {
+  console.error(`Can't start Chromium: ${error.message.split('\n')[0]}`);
+  process.exit(2);
+});
 try {
   const context = await browser.newContext({
     colorScheme: light ? 'light' : 'dark',
