@@ -30,7 +30,7 @@
           >
         }
         <span class="flex items-center gap-1.5 font-bold text-strong tabular-nums">
-          <img class="h-4.5 w-auto" icon [name]="SkillEnum.Overall" [skill]="true" />{{
+          <img class="h-4.5 w-auto" icon alt="Overall" [name]="SkillEnum.Overall" [skill]="true" />{{
             signed(changes.overall.gained!)
           }}
           <span class="sr-only">XP</span>
@@ -54,7 +54,7 @@
           @for (row of diff.skills; track row.name) {
             <li class="flex items-center gap-2.5 min-h-6" [attr.title]="cellTitle(row, true)">
               <span class="flex items-center justify-center size-6 shrink-0">
-                <img class="max-h-6 w-auto" icon [name]="row.name" [skill]="true" />
+                <img class="max-h-6 w-auto" icon alt="" [name]="row.name" [skill]="true" />
               </span>
               <span class="truncate">{{ row.name }}</span>
               <span class="mr-auto text-sm font-bold text-accent tabular-nums">
@@ -74,7 +74,7 @@
           @for (row of diff.activities; track row.name) {
             <li class="flex items-center gap-2.5 min-h-6" [attr.title]="cellTitle(row, false)">
               <span class="flex items-center justify-center size-6 shrink-0">
-                <img class="max-h-6 max-w-6" icon [name]="row.name" [activity]="true" />
+                <img class="max-h-6 max-w-6" icon alt="" [name]="row.name" [activity]="true" />
               </span>
               <span class="mr-auto truncate">{{ row.name }}</span>
               <span class="font-bold text-strong tabular-nums">+{{ row.gained | number }}</span>
@@ -130,6 +130,7 @@
                     <img
                       class="max-h-6 max-w-6"
                       icon
+                      alt=""
                       [name]="row.name"
                       [skill]="tab() === 'skills'"
                       [activity]="tab() === 'activities'"

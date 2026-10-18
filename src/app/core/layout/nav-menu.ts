@@ -92,7 +92,6 @@ export class NavMenus {
       class="absolute z-10 top-full bg-card shadow-float font-normal text-left max-sm:inset-x-0 max-sm:px-1.5 max-sm:pt-1 max-sm:pb-2.5 max-sm:rounded-b-2xl max-sm:border-b max-sm:border-line sm:right-6 sm:mt-1 sm:w-95 sm:p-2 sm:rounded-2xl sm:border sm:border-line"
       [class.hidden]="!isOpen()"
       [id]="menuId()"
-      (click)="closeOnLink($event)"
     >
       <ng-content />
     </div>
@@ -172,11 +171,6 @@ export class NavMenu {
     return event.pointerType === 'mouse' && !!this.window?.matchMedia('(width >= 40rem)').matches;
   }
 
-  protected closeOnLink(event: Event): void {
-    // A link to the page already open doesn't navigate, so it wouldn't close the menu otherwise
-    if ((event.target as Element).closest('a')) this.navMenus.close();
-  }
-
   protected closeOnOutsideClick(event: Event): void {
     if (this.isOpen() && !this.elementRef.nativeElement.contains(event.target as Node)) this.navMenus.close();
   }
@@ -212,15 +206,21 @@ export class NavMenu {
       <span class="flex items-center gap-2 font-bold text-base/5 text-strong">
         {{ label() }}
         @if (isNew()) {
-          <span class="px-2 py-0.5 rounded-full text-xs bg-accent/16 text-accent">New</span>
+          <span class="px-2 py-0.5 rounded-full text-xs bg-accent/12 text-accent">New</span>
         }
       </span>
       <span class="text-sm/4.5 text-muted">{{ sub() }}</span>
     </span>
   `,
-  host: { class: 'flex items-center gap-3 min-h-11 px-2.5 py-2 max-sm:min-h-13 max-sm:py-1.5 rounded-xl hover:bg-row' },
+  host: {
+    'class': 'flex items-center gap-3 min-h-11 px-2.5 py-2 max-sm:min-h-13 max-sm:py-1.5 rounded-xl hover:bg-row',
+    // A link to the page already open doesn't navigate, so it wouldn't close the menu otherwise
+    '(click)': 'navMenus.close()',
+  },
 })
 export class NavMenuRow {
+  protected readonly navMenus = inject(NavMenus);
+
   readonly label = input.required<string>();
   readonly sub = input.required<string>();
   readonly isNew = input(false);

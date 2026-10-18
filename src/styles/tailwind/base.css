@@ -66,6 +66,11 @@
     cursor: pointer;
   }
 
+  /* Focused by script after a navigation (`core/routing/route-focus.ts`), not a control: no focus ring */
+  :is(main, h1)[tabindex='-1']:focus {
+    @apply outline-none;
+  }
+
   /* SOLIX, from the releases of https://github.com/FreekMencke/solix */
   @font-face {
     font-family: 'SOLIX';

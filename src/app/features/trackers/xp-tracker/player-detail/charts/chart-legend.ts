@@ -48,6 +48,7 @@ export interface LegendItem {
           <img
             class="max-h-5.5 max-w-5.5"
             icon
+            alt=""
             [name]="item.name"
             [skill]="kind() === 'skill'"
             [activity]="kind() === 'activity'"

@@ -2,6 +2,43 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## Focus moves to the new page's heading after a client-side navigation (2026-10-18)
+
+- **Context:** the router doesn't move focus, so after following a link focus stayed on it, or fell to `body` when it
+  was removed, and screen readers got no cue that the page changed (claude-kb ACCESS-012).
+- **Decision:** `RouteFocus` (`core/routing/route-focus.ts`, started in `app.config.ts`) focuses `main h1`, or `main`
+  without one, after every navigation but the first, which keeps the browser's own start on a loaded page. It gives the
+  target `tabindex="-1"` at runtime, so templates don't need it, focuses with `preventScroll`, so
+  `scrollPositionRestoration` still scrolls, and announces `document.title` through CDK's `LiveAnnouncer`, looked up
+  only then, because it adds its live region to the page (and the server HTML) when created. A navigation that keeps the
+  path (the news filters write the query) leaves focus alone while it's inside `main`, as a control there made it.
+  `base.css` drops the focus ring on those script-focused targets.
+- **Revisit:** a page whose `h1` renders only after a browser-side load gets `main` focused instead; give it its `h1` up
+  front if that matters.
+
+## Accessibility is checked by template lint, an axe scan and a keyboard walk (2026-10-18)
+
+- **Context:** nothing checked accessibility beyond `browser-checker`'s contrast measurements, so accessible names,
+  roles, focus visibility and WCAG 2.2's target size went unchecked. Automated tools find only part of the issues: axe
+  and Lighthouse passed a clickable `<div>` and a `role="button"` that can't take focus, and nothing automated judges
+  focus order, focus after navigation or what alt text says (claude-kb ACCESS-008, ACCESS-011).
+- **Decision:** three layers, cheapest first. angular-eslint's `templateAccessibility` rules run in `ng lint`, on the
+  source, where they catch handlers on non-interactive elements that axe can't see. `scripts/a11y/a11y-scan.mjs`
+  (`npm run a11y`, `playwright` and `@axe-core/playwright` pinned) runs axe on the WCAG 2.2 AA tags against a running
+  server, per changed page and open state (`--click`); `wcag22aa` is in the list because axe skips `target-size` without
+  it. It prints one line per violation, so the main session runs it itself: `browser-checker` has no Bash (frontmatter
+  can't limit Bash to one command, and a hook that does is skipped in untrusted folders and `claude -p`), and passing
+  axe-core (650 KB minified) through `browser_evaluate` on each check isn't practical. `browser-checker` adds the
+  keyboard walk (Tab order, focus visible and not under the sticky nav, Enter, Space and Escape, focus after a
+  navigation) and lists what nobody checked: alt text and label meaning, reading order, screen-reader output, zoom and
+  reflow. Findings are fixed or turned off with `disableRules([...])` and a reason, never `exclude()`, which turns off
+  every rule for that subtree.
+- **Not chosen:** a Playwright Test suite with axe assertions: `browser-checker` already visits every changed page, and
+  a suite would need its own server setup, fixtures and CI job for checks that change with each page (claude-kb's JSTEST
+  recommendation 4). Lighthouse's accessibility category runs the same axe but sees only the page as loaded, not menus
+  or dialogs.
+- **Revisit:** if regressions reach `main` that the scan would have caught, which makes the scan worth running in CI.
+
 ## Line icons are Lucide's, from `@lucide/angular` (2026-10-17)
 
 - **Context:** the line icons were a mix: 13 shared ones in an `svg[glyph]` component and 11 inline SVGs, drawn after

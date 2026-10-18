@@ -108,7 +108,7 @@ const NAVIGATION_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageUp'
                   (click)="onOptionClick($event)"
                 >
                   <span class="flex items-center justify-center size-8 shrink-0" aria-hidden="true">
-                    <img class="max-w-7 max-h-7" icon [name]="item.icon" [wiki]="true" />
+                    <img class="max-w-7 max-h-7" icon alt="" [name]="item.icon" [wiki]="true" />
                   </span>
                   <span class="flex-1 min-w-0">{{ item.name }}</span>
                   @if (pricesResource.isLoading()) {

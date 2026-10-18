@@ -59,7 +59,7 @@ export interface SegmentedOption<T> {
         (click)="option.disabled || choose(option.value)"
       >
         @if (option.icon; as icon) {
-          <img class="h-4 w-auto" icon [name]="icon.name" [skill]="!!icon.skill" aria-hidden="true" />
+          <img class="h-4 w-auto" icon alt="" [name]="icon.name" [skill]="!!icon.skill" aria-hidden="true" />
         }
         {{ option.label }}
       </button>

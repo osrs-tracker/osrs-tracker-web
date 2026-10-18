@@ -8,11 +8,12 @@ import { Icon, PLACEHOLDER_ICON } from './icon';
 import { LOCAL_ICONS } from './local-icons-token';
 
 @Component({
-  template: '<img icon [name]="name()" [wiki]="wiki()" [skill]="skill()" [activity]="activity()">',
+  template: '<img icon [name]="name()" [alt]="alt()" [wiki]="wiki()" [skill]="skill()" [activity]="activity()">',
   imports: [Icon],
 })
 class TestComponent {
   readonly name = input('coins');
+  readonly alt = input<string>();
   readonly wiki = input(false);
   readonly skill = input(false);
   readonly activity = input(false);
@@ -45,8 +46,19 @@ describe('Icon', () => {
     expect(img.alt).toBe('hardcore ironman icon');
   });
 
+  it('should keep a given alt text, also an empty one', async () => {
+    fixture.componentRef.setInput('alt', '');
+    await fixture.whenStable();
+    expect(img.alt).toBe('');
+    expect(img.hasAttribute('alt')).toBe(true);
+
+    fixture.componentRef.setInput('alt', 'Combat level');
+    await fixture.whenStable();
+    expect(img.alt).toBe('Combat level');
+  });
+
   it('should load eagerly with the eager attribute', async () => {
-    @Component({ template: '<img icon eager name="coins">', imports: [Icon] })
+    @Component({ template: '<img icon eager name="coins" alt="">', imports: [Icon] })
     class EagerComponent {}
 
     const eagerFixture = TestBed.createComponent(EagerComponent);

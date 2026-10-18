@@ -7,6 +7,14 @@
 - Pages now let Google show their preview pictures large, such as an item's price card in Discover and image results,
   instead of as a small thumbnail.
 
+### Accessibility
+
+- After following a link, keyboard focus now moves to the new page's heading and screen readers announce its title,
+  instead of focus staying on the link or falling back to the top of the page.
+- Icons next to their own label are no longer read out a second time by screen readers, the Home page's example player
+  card is named by its link, the small "couldn't load" retry buttons are easier to tap, and the "New" labels in the
+  menus are easier to read in the light theme.
+
 ### Behind the scenes
 
 - Angular 22.2.3. Its test runner now turns off Vitest's module cache by itself, which could run tests against stale
@@ -19,6 +27,8 @@
   at once.
 - Every pull request now checks the licences of the packages it adds or updates, and flags one that isn't on a short
   list of permissive licences, so a copyleft package (AGPL in particular) can't be added unnoticed.
+- The code checks now catch accessibility mistakes in templates, and changed pages are scanned with axe against WCAG 2.2
+  AA (touch target size included) and walked by keyboard before they ship.
 
 ## 2026-10-17
 

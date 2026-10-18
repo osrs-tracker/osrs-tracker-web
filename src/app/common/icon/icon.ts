@@ -31,6 +31,8 @@ export class Icon implements OnInit {
   private readonly localIcons = inject(LOCAL_ICONS, { optional: true });
 
   readonly name = input.required<string>();
+  /** The text alternative: `""` for an icon beside its own label. Without one, the icon's name. */
+  readonly alt = input<string>();
   readonly skill = input(false);
   readonly activity = input(false);
   readonly wiki = input(false);
@@ -49,9 +51,11 @@ export class Icon implements OnInit {
 
   constructor() {
     effect(() => {
-      this.element.alt = `${this.name()
-        .replace(/\.png$/i, '')
-        .replace(/[\s_-]+/g, ' ')} icon`;
+      this.element.alt =
+        this.alt() ??
+        `${this.name()
+          .replace(/\.png$/i, '')
+          .replace(/[\s_-]+/g, ' ')} icon`;
       this.updateUrl();
     });
   }
