@@ -162,13 +162,14 @@ hover shows library signatures and docs instead.
 - **Icons**: after changing `public/assets/icons/{skills,activities}`, run `npm run icons` and commit
   `local-icons.generated.ts`.
 - **Font**: SOLIX comes from the private [FreekMencke/solix](https://github.com/FreekMencke/solix) releases
-  (`gh release download -R FreekMencke/solix`). Cut `variable/SOLIX-Variable.ttf` to the weights the `@font-face`
-  declares (`python3 -m fontTools.varLib.instancer SOLIX-Variable.ttf wght=300:700 -o cut.ttf`; since 3.00 the release
-  spans 100–900, and the full axis makes the preloaded file 62 KB instead of 38 KB), save it as WOFF2
+  (`gh release download -R FreekMencke/solix`). Cut `variable/SOLIX[wght].ttf` (`SOLIX-Variable.ttf` up to 3.03) to the
+  weights the `@font-face` declares (`python3 -m fontTools.varLib.instancer 'SOLIX[wght].ttf' wght=300:700 -o cut.ttf`,
+  quoted for the brackets; since 3.00 the release spans 100–900, and the full axis makes the preloaded file 62 KB
+  instead of 38 KB), save it as WOFF2
   (`python3 -m fontTools.ttLib.woff2 compress cut.ttf -o public/assets/fonts/SOLIX-Variable.woff2`) and bump `?v=` in
   `base.css` and `index.html`. The link preview cards use the release's `ttf/SOLIX-Regular.ttf` and
   `ttf/SOLIX-SemiBold.ttf` as they are: copy them into `src/server/og/fonts/` and bump the cards' `?v=`
-  (`docs/decisions.md`).
+  (`docs/decisions.md`) when the release changes outlines, widths or kerning (4.0.0 changed none, so it kept them).
 - **Missing assets**: `middleware/missing-asset.ts` 404s them, so Angular routes can't end in a build asset extension;
   `/og/item/:id.png` (`routers/og-images.ts`) registers before it in `app.ts`.
 - **Static files and compression**: `middleware/static-files.ts` sets the cache lifetimes (hashed bundles a year,
