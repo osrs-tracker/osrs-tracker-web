@@ -76,9 +76,9 @@ jobs:
   # Licences of the runtime dependencies a pull request adds or bumps (the action's default `fail-on-scopes`), so a
   # copyleft one (AGPL in particular) doesn't slip in unseen. No checkout: it compares the manifests through GitHub's
   # API. Not a required check: a failure is for the maintainer to judge. The list is what the tree held on 2026-10-18
-  # (`npm sbom`), MPL-2.0 included: file-level copyleft that satori, @resvg/resvg-wasm and lightningcss use unmodified.
-  # Allow a single package with `allow-dependencies-licenses: pkg:npm/<name>`. A missing licence is reported, not
-  # failed; a non-SPDX one fails. No `deny-licenses` (deprecated) and no vulnerability check (licences only).
+  # (`npm sbom`), MPL-2.0 included: file-level copyleft that satori and @resvg/resvg-wasm use unmodified.
+  # DevDependencies aren't checked. Allow a single package with `allow-dependencies-licenses: pkg:npm/<name>`. A missing
+  # licence is reported, not failed; a non-SPDX one fails. No `deny-licenses` (deprecated) and no vulnerability check.
   dependency-review:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
