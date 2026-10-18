@@ -39,7 +39,9 @@ holds the Angular conventions, SSR rules, deploy and release steps. Keep detail 
   else, ask: `main` or a PR (unless releasing). `.claude/hooks/` and `.claude/settings.json` are tooling, not docs: they
   get a changelog entry and that question too.
 - Deploying is merging to `main` (GitHub Actions `CD` → Flux). Never build, push or `kubectl apply` by hand.
-- Never `--no-gpg-sign`, never `'unsafe-inline'` in the CSP, never write to disk at runtime (read-only root filesystem).
+- Never `--no-gpg-sign`, never write to disk at runtime (read-only root filesystem).
+- Never loosen the CSP to silence a console error: no `'unsafe-inline'`, `'unsafe-eval'`, wildcard or new host. Set the
+  nonce with `applyCspNonce` or remove the inline code.
 - Read `docs/decisions.md` before "fixing" something that looks odd; many trade-offs are deliberate.
 
 ## Where things live

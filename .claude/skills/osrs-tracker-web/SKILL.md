@@ -44,6 +44,8 @@ packages) have their own skills (`../` from the main checkout, not from a worktr
   subfolders); `@app/…`, `@config/…` or `@server/…` otherwise. In the layers (`eslint.config.js`), `common/` and `core/`
   are the shared code, Home may import the trackers, and `common/api/` is the repository layer.
 - **DI**: `inject()` only; root services use `@Service()`, not `@Injectable({ providedIn: 'root' })`.
+- **Markup**: bind fetched or user-supplied HTML with `[innerHTML]` (Angular sanitizes it, as the news cards do); never
+  `bypassSecurityTrust*` or write `nativeElement.innerHTML` to make what it strips render.
 - **State**: the stores include `XpTrackerStore`, `PriceTrackerStore`, `LastPlayedStore` and `ThemeStore`.
 - **Async data**: pages after a list's first one ("Show older posts") load through `paging()` (`common/paging/`). A
   `resource`/`rxResource` loads again whenever a signal its `params` reads changes, even when the params come out the
@@ -153,6 +155,8 @@ hover shows library signatures and docs instead.
   (`logger.child({ type: 'lifecycle' satisfies WebLogType })`), not `console`, and add a type to `WebLogType` when none
   fits. Specs pass their own logger (`testing/log-lines.ts`): pino doesn't write through `process.stdout.write`, so
   spying on it sees nothing.
+- **Secrets**: no token, `Authorization` header or full request body in a log line or error message: log the fields you
+  need as separate properties. No hard-coded secret as a fallback (`process.env['X'] || '…'`): fail without it.
 - **Writes** (lookups, starting to track a player): check `isHumanVisitor()` (`core/platform/human-visitor.ts`); a
   crawler's would fill the recent lookups.
 - **Chart.js**: shared registrations and the date adapter in `common/charts/chart-setup.ts`; never `Chart.unregister`.
