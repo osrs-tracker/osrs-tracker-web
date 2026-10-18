@@ -14,7 +14,7 @@ const RELOAD_GUARD_MS = 10_000;
 /**
  * Reloads the page when a lazy chunk fails to load. Each deploy renames the chunks and the new image doesn't have the old
  * ones, so a tab opened before the deploy can't load a page or `@defer` block it hasn't loaded yet. A reload gets the
- * new version (page HTML is `no-store`).
+ * new version (page HTML is `no-cache`).
  */
 @Service()
 export class StaleChunkReloader {
