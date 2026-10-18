@@ -1,5 +1,10 @@
 # zizmor's configuration (.github/workflows/zizmor.yml runs it on every pull request and push to main). Every ignore
-# says why; anything else zizmor finds fails the check.
+# says why; anything else zizmor finds fails the check. Single findings are ignored where they are, with a
+# `# zizmor: ignore[<audit>]` comment and the reason beside it:
+# - artipacked and dangerous-triggers in deploy.yml (the deploy checkout's key and the workflow_run trigger)
+# - self-repository on every `uses: ./.github/actions/setup-deps`: `uses: $/...` (GitHub, 2026-07-30) isn't
+#   understood by actionlint yet (1.7.12 rejects it), and `./` only loads this repository's own commits. Revisit when
+#   actionlint and Dependabot support it.
 rules:
   unpinned-uses:
     config:
@@ -8,20 +13,3 @@ rules:
         # guard did on 2026-07-20. Everything else keeps zizmor's implicit `"*": hash-pin` (full SHAs, which Dependabot
         # bumps with their version comment).
         'actions/*': ref-pin
-
-  dangerous-triggers:
-    ignore:
-      # CD deploys once CI passes on main. Its `if:` lets only CI's push runs on main from this repository through, so
-      # pull requests and forks never start a deploy; it checks out main, builds a commit that is on main and takes no
-      # artifacts, outputs or branch names from the CI run, only its head SHA, workflow id and title (the run name).
-      # Turning it into a job of CI (zizmor's suggestion) would redesign the deploy: decide that on its own, not to
-      # quiet a linter.
-      - deploy.yml
-
-  self-repository:
-    ignore:
-      # `uses: $/...` (GitHub, 2026-07-30) isn't understood by actionlint yet (1.7.12 rejects it), and every local
-      # action here runs from a checkout of the same repository's own commits, so `./` loads nothing a step fetched
-      # from elsewhere. Revisit when actionlint and Dependabot support it.
-      - deploy.yml
-      - nodejs.yml

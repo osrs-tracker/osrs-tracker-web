@@ -6,8 +6,11 @@ run-name: ${{ github.event.workflow_run.display_title }}
 # main. Flux in the cluster applies that commit and reports it as the `Flux / sync` commit status; nothing here has
 # cluster access. The digest commit is pushed with the DEPLOY_KEY deploy key, the only bypass of main's PR rule.
 # Rolling back: "Roll back" in docs/runbook.md.
+# zizmor flags `workflow_run` as a dangerous trigger. The job's `if:` lets only CI's push runs on main from this
+# repository through, so pull requests and forks never start a deploy; it checks out main and takes nothing from the CI
+# run but its head SHA, workflow id and title. Making CD a job of CI (zizmor's suggestion) would be a redesign.
 on:
-  workflow_run:
+  workflow_run: # zizmor: ignore[dangerous-triggers]
     workflows: ['CI']
     types: [completed]
     branches: ['main']
@@ -56,7 +59,7 @@ jobs:
         run: .github/scripts/deploy-plan.sh
 
       - if: steps.plan.outputs.deploy == 'true'
-        uses: ./.github/actions/setup-deps
+        uses: ./.github/actions/setup-deps # zizmor: ignore[self-repository]
 
       # What predocker:build runs, so the regenerated sitemaps can be committed with the digest
       - if: steps.plan.outputs.deploy == 'true'
