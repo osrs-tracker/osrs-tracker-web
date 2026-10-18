@@ -2,7 +2,7 @@ import { Component, booleanAttribute, computed, input } from '@angular/core';
 import { Player, PlayerStatus, PlayerType, SkillEnum } from '@osrs-tracker/models';
 import { Icon } from '@app/common/icon/icon';
 import { Tooltip } from '@app/common/ui/tooltip/tooltip';
-import { LucideUser } from '@lucide/angular';
+import { LucideUser, LucideX } from '@lucide/angular';
 
 interface AccountMode {
   label: string;
@@ -100,7 +100,7 @@ const TYPE_LABELS: Record<PlayerType, string> = {
   `,
   // In a row the tile sits inside a link, which may not hold another focusable element: there it isn't focusable
   host: { class: 'shrink-0' },
-  imports: [Icon, Tooltip, LucideUser],
+  imports: [Icon, Tooltip, LucideUser, LucideX],
 })
 export class AccountTile {
   readonly PlayerStatus: typeof PlayerStatus = PlayerStatus;

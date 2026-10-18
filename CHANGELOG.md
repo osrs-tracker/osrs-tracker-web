@@ -1,5 +1,10 @@
 ## 2026-10-18
 
+### XP tracker
+
+- De-ironed players have their red cross back on their account icon, which went missing yesterday and left an empty
+  circle.
+
 ### Browsing and search
 
 - Pages no longer opt out of the browser's back/forward cache, so Back and Forward can bring a page back at once in
