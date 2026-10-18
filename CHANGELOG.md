@@ -9,8 +9,8 @@
 
 ### Accessibility
 
-- After following a link, keyboard focus now moves to the new page's heading and screen readers announce its title,
-  instead of focus staying on the link or falling back to the top of the page.
+- After following a link, keyboard focus now moves to the new page's heading, which screen readers read out, instead of
+  staying on the link or falling back to the top of the page.
 - Icons next to their own label are no longer read out a second time by screen readers, the Home page's example player
   card is named by its link, the small "couldn't load" retry buttons are easier to tap, and the "New" labels in the
   menus are easier to read in the light theme.
