@@ -16,7 +16,8 @@ Choices that look like accidents without their context: what was decided, why, a
   alone while it's inside `main`, as a control there made it. `base.css` drops the focus ring on those script-focused
   targets.
 - **Revisit:** a page whose `h1` renders only after a browser-side load gets `main` focused instead; give it its `h1` up
-  front if that matters.
+  front if that matters. If a screen reader turns out to stay silent on a script-focused `h1` (reported for some iOS
+  VoiceOver versions), announce the title there too rather than drop the focus move, and accept the name read twice.
 
 ## Accessibility is checked by template lint, an axe scan and a keyboard walk (2026-10-18)
 
