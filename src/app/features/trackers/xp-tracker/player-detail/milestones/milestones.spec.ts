@@ -1,5 +1,4 @@
-import { calculateXPForSkillLevel, SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreEntry, HiscoreSkill } from '@osrs-tracker/models';
+import { calculateXPForSkillLevel, HiscoreEntry, HiscoreSkill, SkillEnum } from '@osrs-tracker/models';
 import { describe, expect, it } from 'vitest';
 import { milestones } from './milestones';
 

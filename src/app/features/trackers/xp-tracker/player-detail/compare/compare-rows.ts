@@ -1,5 +1,4 @@
-import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreEntry, skillProgress } from '@osrs-tracker/models';
+import { ActivityEnum, HiscoreEntry, SkillEnum, skillProgress } from '@osrs-tracker/models';
 
 /** One skill or activity on the newer day, and what changed since the older one when there is one */
 export interface CompareRow {

@@ -1,4 +1,4 @@
-import { SkillEnum } from '@osrs-tracker/hiscores';
+import { SkillEnum } from '@osrs-tracker/models';
 
 export type ChartSkill = Exclude<SkillEnum, SkillEnum.Overall>;
 

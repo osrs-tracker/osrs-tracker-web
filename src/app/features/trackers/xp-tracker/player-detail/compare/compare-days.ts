@@ -14,8 +14,8 @@ import {
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreEntry, skillProgress } from '@osrs-tracker/models';
+import { getOverallXpDiff } from '@osrs-tracker/hiscores';
+import { HiscoreEntry, SkillEnum } from '@osrs-tracker/models';
 import { differenceInCalendarDays } from 'date-fns';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { LoadError } from '@app/common/ui/loading/load-error';
@@ -99,9 +99,8 @@ export class CompareDays {
   /** The stored checks, newest first, with the XP each gained since the one before (its strength in the calendar) */
   readonly options = computed<DayOption[]>(() => {
     const entries = this.history.hasValue() ? this.history.value() : [];
-    const overallXp = (entry: HiscoreEntry): number => skillProgress(entry.skills[SkillEnum.Overall]).xp;
     const gains = entries.map((entry, i) =>
-      i + 1 < entries.length ? overallXp(entry) - overallXp(entries[i + 1]) : undefined,
+      i + 1 < entries.length ? getOverallXpDiff(entry, entries[i + 1]) : undefined,
     );
     const most = Math.max(0, ...gains.map(gained => gained ?? 0));
     return entries.map((entry, i) => ({

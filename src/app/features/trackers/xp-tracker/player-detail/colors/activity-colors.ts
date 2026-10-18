@@ -1,4 +1,4 @@
-import { ActivityEnum } from '@osrs-tracker/hiscores';
+import { ActivityEnum } from '@osrs-tracker/models';
 
 export type ChartActivity = Exclude<ActivityEnum, ActivityEnum.ClueScrollsAll>;
 

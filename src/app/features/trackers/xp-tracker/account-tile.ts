@@ -1,6 +1,5 @@
 import { Component, booleanAttribute, computed, input } from '@angular/core';
-import { SkillEnum } from '@osrs-tracker/hiscores';
-import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
+import { Player, PlayerStatus, PlayerType, SkillEnum } from '@osrs-tracker/models';
 import { Icon } from '@app/common/icon/icon';
 import { Tooltip } from '@app/common/ui/tooltip/tooltip';
 import { LucideUser } from '@lucide/angular';

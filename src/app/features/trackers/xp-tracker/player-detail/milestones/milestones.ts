@@ -1,5 +1,5 @@
-import { calculateXPForSkillLevel, hiscoreDiff, SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreEntry, MAX_SKILL_LEVEL } from '@osrs-tracker/models';
+import { hiscoreDiff } from '@osrs-tracker/hiscores';
+import { calculateXPForSkillLevel, HiscoreEntry, MAX_SKILL_LEVEL, SkillEnum } from '@osrs-tracker/models';
 import { periodStart } from '../player-summary';
 
 export type MilestoneTarget = 'next' | '99' | '200m';

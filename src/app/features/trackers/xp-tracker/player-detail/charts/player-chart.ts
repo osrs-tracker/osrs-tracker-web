@@ -1,6 +1,5 @@
 import { Component, computed, inject, input } from '@angular/core';
-import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreEntry, skillProgress } from '@osrs-tracker/models';
+import { ActivityEnum, HiscoreEntry, SkillEnum, skillProgress } from '@osrs-tracker/models';
 import { format } from 'date-fns';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { Skeleton } from '@app/common/ui/loading/skeleton';

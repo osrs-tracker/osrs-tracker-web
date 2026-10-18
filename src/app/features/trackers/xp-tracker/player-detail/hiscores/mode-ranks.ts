@@ -1,8 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { computed, inject, PLATFORM_ID, Service, Signal, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { SkillEnum } from '@osrs-tracker/hiscores';
-import { HiscoreEntry, Player, PlayerStatus, PlayerType, skillLevel } from '@osrs-tracker/models';
+import { HiscoreEntry, Player, PlayerStatus, PlayerType, SkillEnum, skillLevel } from '@osrs-tracker/models';
 import { catchError, of, throwError } from 'rxjs';
 import { JagexHiscoreTable, OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
 import { isNotFound } from '@app/core/routing/resolver-error';

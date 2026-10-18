@@ -1,8 +1,7 @@
 import { Grid, GridCell, GridCellWidget, GridRow } from '@angular/aria/grid';
 import { DecimalPipe } from '@angular/common';
 import { Component, computed, effect, inject, input, viewChild } from '@angular/core';
-import { ActivityEnum } from '@osrs-tracker/hiscores';
-import { HiscoreActivity, HiscoreEntry } from '@osrs-tracker/models';
+import { ActivityEnum, HiscoreActivity, HiscoreEntry } from '@osrs-tracker/models';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Tooltip } from '@app/common/ui/tooltip/tooltip';
 import { Icon } from '@app/common/icon/icon';

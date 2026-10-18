@@ -1,4 +1,4 @@
-import { ActivityEnum } from '@osrs-tracker/hiscores';
+import { ActivityEnum } from '@osrs-tracker/models';
 
 const ACTIVITIES = Object.values(ActivityEnum);
 

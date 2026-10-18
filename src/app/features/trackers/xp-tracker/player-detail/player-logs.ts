@@ -1,6 +1,6 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, computed, input } from '@angular/core';
-import { SkillEnum } from '@osrs-tracker/hiscores';
+import { SkillEnum } from '@osrs-tracker/models';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Icon } from '@app/common/icon/icon';
 import { ShortDatePipe } from './charts/short-date-pipe';

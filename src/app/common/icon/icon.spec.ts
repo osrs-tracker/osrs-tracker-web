@@ -1,8 +1,7 @@
 import { Component, input, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
-import { PlayerType } from '@osrs-tracker/models';
+import { ActivityEnum, PlayerType, SkillEnum } from '@osrs-tracker/models';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { Icon, PLACEHOLDER_ICON } from './icon';
 import { LOCAL_ICONS } from './local-icons-token';

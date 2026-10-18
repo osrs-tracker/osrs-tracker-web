@@ -1,4 +1,4 @@
-import { ActivityEnum, SkillEnum } from '@osrs-tracker/hiscores';
+import { ActivityEnum, SkillEnum } from '@osrs-tracker/models';
 import { describe, expect, it } from 'vitest';
 import { Gains } from '../player-summary';
 import { activitySeries, xpGainedSeries } from './log-chart-series';

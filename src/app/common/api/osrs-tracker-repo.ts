@@ -1,6 +1,6 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Service, inject } from '@angular/core';
-import { HiscoreEntry, Item, Player, PlayerCount } from '@osrs-tracker/models';
+import { HiscoreEntry, Item, OsrsNewsItem, Player, PlayerCount } from '@osrs-tracker/models';
 import { Observable, map } from 'rxjs';
 import { LOADING_INDICATOR } from '@app/core/interceptors/loading-indicator-interceptor';
 import { SSR_TIMEOUT } from '@app/core/interceptors/ssr-timeout-interceptor';
@@ -19,20 +19,6 @@ export interface PlayerCountPoint {
   byLocation: Record<string, number>;
   /** Daily points only: the highest count sampled that day */
   peak?: number;
-}
-
-export class OsrsNewsItem {
-  constructor(
-    public title: string,
-    public pubDate: Date | null,
-    public category: string,
-    public link: string,
-    public description: string,
-    public enclosure: {
-      url: string;
-      type: string;
-    },
-  ) {}
 }
 
 /** A news post's image (a `cdn.runescape.com` URL) through the API, as WebP */
