@@ -1,5 +1,5 @@
-# zizmor's configuration (.github/workflows/zizmor.yml runs it on every pull request and push to main). Every ignore says
-# why; anything else zizmor finds fails the check.
+# zizmor's configuration (.github/workflows/zizmor.yml runs it on every pull request and push to main). Every ignore
+# says why; anything else zizmor finds fails the check.
 rules:
   unpinned-uses:
     config:
@@ -13,15 +13,9 @@ rules:
     ignore:
       # CD deploys once CI passes on main. Its `if:` lets only CI's push runs on main from this repository through, so
       # pull requests and forks never start a deploy; it checks out main, builds a commit that is on main and takes no
-      # artifacts, outputs or branch names from the CI run, only its head SHA, workflow id and title (the run name). Turning it into a job of
-      # CI (zizmor's suggestion) would redesign the deploy: decide that on its own, not to quiet a linter.
-      - deploy.yml
-
-  artipacked:
-    ignore:
-      # The `.deploy` checkout keeps its DEPLOY_KEY credentials on purpose: deploy-commit.sh pushes the digest commit to
-      # main with them. It's checked out after the image is built, and the job uploads no artifacts. The job's other
-      # checkout sets `persist-credentials: false`.
+      # artifacts, outputs or branch names from the CI run, only its head SHA, workflow id and title (the run name).
+      # Turning it into a job of CI (zizmor's suggestion) would redesign the deploy: decide that on its own, not to
+      # quiet a linter.
       - deploy.yml
 
   self-repository:

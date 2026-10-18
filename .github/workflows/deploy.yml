@@ -81,9 +81,10 @@ jobs:
             ${{ env.IMAGE }}:latest
             ${{ env.IMAGE }}:${{ steps.plan.outputs.sha }}
 
-      # Checked out only now, so the key isn't on disk while dependencies install and build
+      # Checked out only now, so the key isn't on disk while dependencies install and build. It keeps the key on
+      # purpose (zizmor's artipacked): deploy-commit.sh pushes the digest commit with it. The job uploads no artifacts
       - if: steps.plan.outputs.deploy == 'true'
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7 # zizmor: ignore[artipacked]
         with:
           ref: main
           path: .deploy
