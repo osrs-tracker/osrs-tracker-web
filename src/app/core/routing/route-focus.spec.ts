@@ -50,21 +50,21 @@ describe('RouteFocus', () => {
     expect(announce).not.toHaveBeenCalled();
   });
 
-  it("focuses the new page's h1 and announces its title", async () => {
+  it("focuses the new page's h1, which names the page, without announcing the title too", async () => {
     await navigate('/heading');
 
     const h1 = document.querySelector('main h1');
     expect(document.activeElement).toBe(h1);
     expect(h1?.getAttribute('tabindex')).toBe('-1');
-    expect(announce).toHaveBeenCalledExactlyOnceWith('With heading');
+    expect(announce).not.toHaveBeenCalled();
   });
 
-  it('focuses main on a page without an h1', async () => {
+  it('focuses main on a page without an h1 and announces its title', async () => {
     await navigate('/heading');
     await navigate('/plain');
 
     expect(document.activeElement).toBe(document.querySelector('main'));
-    expect(announce).toHaveBeenLastCalledWith('Without heading');
+    expect(announce).toHaveBeenCalledExactlyOnceWith('Without heading');
   });
 
   it('leaves focus on a control in the page that only changed the query', async () => {
@@ -75,6 +75,6 @@ describe('RouteFocus', () => {
     await navigate('/heading?category=game-updates');
 
     expect(document.activeElement).toBe(button);
-    expect(announce).toHaveBeenCalledOnce();
+    expect(announce).not.toHaveBeenCalled();
   });
 });

@@ -5,9 +5,9 @@ import { filter, map, pairwise } from 'rxjs';
 import { WINDOW } from '@app/core/platform/window-token';
 
 /**
- * After a client-side navigation, moves focus to the new page's `h1` (or `<main>` on a page without one) and announces
- * its title, so keyboard and screen-reader users start on the new page instead of on the link they followed or the
- * `body`. Not after the first navigation, which keeps the browser's own start on a loaded page. A navigation that only
+ * After a client-side navigation, moves focus to the new page's `h1`, so keyboard and screen-reader users start on the
+ * new page instead of on the link they followed or the `body`; a screen reader reads the heading as it takes focus. On a
+ * page without one it focuses `<main>`, which has no name to read, and announces the page's title instead. Not after the first navigation, which keeps the browser's own start on a loaded page. A navigation that only
  * changes the query or fragment of the same page leaves focus alone while it's in `<main>`: a control there wrote it
  * (the news filters). `preventScroll` leaves the scrolling to the router (`scrollPositionRestoration`).
  */
@@ -41,7 +41,8 @@ export class RouteFocus {
     // Focusable by script only, so it isn't a Tab stop
     if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
     target.focus({ preventScroll: true });
-    // Looked up here, as it adds its live region to the page when created (on the server too)
-    void this.injector.get(LiveAnnouncer).announce(this.document.title);
+    // Only for `<main>`: after a focused h1 the title would repeat the page's name. Looked up here, as it adds its live
+    // region to the page when created (on the server too)
+    if (target === main) void this.injector.get(LiveAnnouncer).announce(this.document.title);
   }
 }

@@ -9,10 +9,12 @@ Choices that look like accidents without their context: what was decided, why, a
 - **Decision:** `RouteFocus` (`core/routing/route-focus.ts`, started in `app.config.ts`) focuses `main h1`, or `main`
   without one, after every navigation but the first, which keeps the browser's own start on a loaded page. It gives the
   target `tabindex="-1"` at runtime, so templates don't need it, focuses with `preventScroll`, so
-  `scrollPositionRestoration` still scrolls, and announces `document.title` through CDK's `LiveAnnouncer`, looked up
-  only then, because it adds its live region to the page (and the server HTML) when created. A navigation that keeps the
-  path (the news filters write the query) leaves focus alone while it's inside `main`, as a control there made it.
-  `base.css` drops the focus ring on those script-focused targets.
+  `scrollPositionRestoration` still scrolls. Only when it focuses `main`, which has no name, does it announce
+  `document.title` through CDK's `LiveAnnouncer`: a screen reader reads a focused `h1` already, and the title after it
+  would say the page's name twice. The announcer is looked up only then, because it adds its live region to the page
+  (and the server HTML) when created. A navigation that keeps the path (the news filters write the query) leaves focus
+  alone while it's inside `main`, as a control there made it. `base.css` drops the focus ring on those script-focused
+  targets.
 - **Revisit:** a page whose `h1` renders only after a browser-side load gets `main` focused instead; give it its `h1` up
   front if that matters.
 
