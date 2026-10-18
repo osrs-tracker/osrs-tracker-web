@@ -24,8 +24,9 @@ with the full log's path) and a summary line per check, and exits 1 when any fai
 3. `npx knip`: unused files, exports and dependencies. An export only its own file uses loses its `export`; a false
    positive goes in `knip.jsonc` with a comment saying why
 4. `shellcheck` on `.github/scripts/*.sh`, `.claude/hooks/*.sh` and `.claude/skills/*/*.sh`, as CI's lint job does
-5. `lychee --offline --hidden --include-fragments './**/*.md'`, CI's links job: local links and `#anchors` in the
-   Markdown
+5. `lychee --offline --hidden --include-fragments --exclude-path node_modules './**/*.md'`, CI's links job: local links
+   and `#anchors` in the Markdown. CI has no `node_modules` to skip; a checkout here does, and its packages' READMEs
+   would fail the check
 6. `npx ng test --watch=false` (Vitest doesn't type-check the specs, but `ng test` compiles them, so a type error fails
    it)
 7. `npx ng build --configuration production`: not `npm run build`, which regenerates sitemaps and icons and so changes

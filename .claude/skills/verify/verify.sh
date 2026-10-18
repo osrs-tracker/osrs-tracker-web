@@ -38,8 +38,9 @@ optional() {
 }
 # The same files as CI's lint job
 optional shellcheck 'shellcheck .github/scripts/*.sh .claude/hooks/*.sh .claude/skills/*/*.sh' 'sudo apt install shellcheck'
-# CI's links job: local links and #anchors in the Markdown
-optional lychee "lychee --offline --hidden --include-fragments --no-progress './**/*.md'" 'the verify skill says how'
+# CI's links job: local links and #anchors in the Markdown. CI checks out without node_modules; here the packages'
+# own READMEs would fail it
+optional lychee "lychee --offline --hidden --include-fragments --no-progress --exclude-path node_modules './**/*.md'" 'the verify skill says how'
 
 names+=(test build)
 commands+=(
