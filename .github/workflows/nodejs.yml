@@ -73,17 +73,12 @@ jobs:
           args: --offline --hidden --include-fragments --no-progress './**/*.md'
           fail: true
 
-  # Licences of the dependencies a pull request adds or bumps, so a copyleft one (AGPL in particular) doesn't slip in
-  # unseen. It compares the PR's manifests with the base through GitHub's API, so it needs no checkout and runs on every
-  # PR (build and test skip docs-only ones, this stays cheap). Not a required check: a failure is for the maintainer to
-  # judge. Only runtime dependencies are checked (the action's default `fail-on-scopes`), as what ships to visitors is
-  # what the Elastic License 2.0 has to live with. The list is what the tree held on 2026-10-18 (`npm sbom --omit dev`:
-  # MIT, ISC, Apache-2.0, MPL-2.0, Unlicense, BSD-3-Clause), plus the other permissive licences in its dev tools, so
-  # widening the scope later doesn't trip over them. MPL-2.0 is file-level copyleft that satori, @resvg/resvg-wasm and
-  # lightningcss already use unmodified. A dependency the action can't read a licence for is reported, not failed
-  # (apart from non-SPDX strings, which it fails). Extend the list for a licence you've judged fine; for one package,
-  # `allow-dependencies-licenses: pkg:npm/<name>` instead. No `deny-licenses`: it's deprecated. The vulnerability
-  # check is off: this job is for licences only.
+  # Licences of the runtime dependencies a pull request adds or bumps (the action's default `fail-on-scopes`), so a
+  # copyleft one (AGPL in particular) doesn't slip in unseen. No checkout: it compares the manifests through GitHub's
+  # API. Not a required check: a failure is for the maintainer to judge. The list is what the tree held on 2026-10-18
+  # (`npm sbom`), MPL-2.0 included: file-level copyleft that satori, @resvg/resvg-wasm and lightningcss use unmodified.
+  # Allow a single package with `allow-dependencies-licenses: pkg:npm/<name>`. A missing licence is reported, not
+  # failed; a non-SPDX one fails. No `deny-licenses` (deprecated) and no vulnerability check (licences only).
   dependency-review:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
@@ -91,7 +86,7 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/dependency-review-action@v5
+      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
         with:
           license-check: true
           vulnerability-check: false
