@@ -6,17 +6,29 @@
 // `npx playwright install --only-shell chromium`.
 // A clean scan doesn't make a page accessible: axe finds only part of the issues (docs/decisions.md).
 import AxeBuilder from '@axe-core/playwright';
+import { parseArgs } from 'node:util';
 import { chromium } from 'playwright';
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']; // without wcag22aa, target-size never runs
 const MAX_SELECTORS = 5;
 
-const args = process.argv.slice(2);
-const light = args.includes('--light');
-const clicks = args.filter(arg => arg.startsWith('--click=')).map(arg => arg.slice('--click='.length));
-const urls = args.filter(arg => !arg.startsWith('--'));
+const USAGE = 'Usage: npm run a11y -- [--light] [--click=<selector>]... <url>...';
+let light, clicks, urls;
+try {
+  // strict: a mistyped flag fails instead of being scanned as if it weren't there
+  const { values, positionals } = parseArgs({
+    options: { light: { type: 'boolean', default: false }, click: { type: 'string', multiple: true, default: [] } },
+    allowPositionals: true,
+    strict: true,
+  });
+  ({ light, click: clicks } = values);
+  urls = positionals;
+} catch (error) {
+  console.error(`${error.message}\n${USAGE}`);
+  process.exit(2);
+}
 if (!urls.length) {
-  console.error('Usage: npm run a11y -- [--light] [--click=<selector>]... <url>...');
+  console.error(USAGE);
   process.exit(2);
 }
 

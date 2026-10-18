@@ -206,7 +206,7 @@ export class NavMenu {
       <span class="flex items-center gap-2 font-bold text-base/5 text-strong">
         {{ label() }}
         @if (isNew()) {
-          <span class="px-2 py-0.5 rounded-full text-xs bg-accent/16 text-accent">New</span>
+          <span class="px-2 py-0.5 rounded-full text-xs bg-accent/12 text-accent">New</span>
         }
       </span>
       <span class="text-sm/4.5 text-muted">{{ sub() }}</span>
