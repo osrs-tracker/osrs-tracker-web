@@ -67,6 +67,7 @@ describe('createApp', () => {
 
     expect(res.status).toBe(200);
     expect(res.headers.get('x-cache')).toBe('MISS');
+    expect(res.headers.get('cache-control')).toBe('no-cache');
     expect(await res.text()).toBe('<html>rendered</html>');
   });
 
