@@ -27,7 +27,7 @@ export function createApp({
   const app = express();
   // Traefik is the only hop in front of the app and overwrites any client-sent X-Forwarded-For, so req.ip is the client
   app.set('trust proxy', 1);
-  // Pages are `no-store` and their nonce changes every response, so an ETag is never used. Static files keep theirs.
+  // Pages are `no-cache` and their nonce changes every response, so an ETag is never used. Static files keep theirs.
   app.set('etag', false);
   const metricsApp = express();
   const angularApp = new AngularNodeAppEngine({

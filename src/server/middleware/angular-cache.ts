@@ -12,8 +12,10 @@ export function angularCacheMiddleware(): RequestHandler {
       return next();
     }
 
-    // Set no-cache headers because this returns the "index.html" file
-    res.appendHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    // Revalidated on every load, but not `no-store`: that keeps pages out of the back/forward cache in Firefox and
+    // Safari, so Back would reload them instead of restoring them. The CSP nonce doesn't need it: a restored page keeps
+    // the DOM its own CSP header matched.
+    res.appendHeader('Cache-Control', 'no-cache');
 
     // Check if the page is in cache first, pages are keyed by path (without query params).
     // The host is not part of the key: the cache only contains pages pre-rendered by the auto generator for the

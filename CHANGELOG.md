@@ -1,5 +1,7 @@
 ## 2026-10-18
 
+- Pages no longer opt out of the browser's back/forward cache, so Back and Forward can bring a page back at once in
+  Firefox and Safari instead of loading it again, and Chrome keeps them there longer.
 - Pages now let Google show their preview pictures large, such as an item's price card in Discover and image results,
   instead of as a small thumbnail.
 

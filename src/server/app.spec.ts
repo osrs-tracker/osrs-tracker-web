@@ -56,7 +56,7 @@ describe('createApp', () => {
     for (const path of ['/', '/?utm_source=x']) {
       const res = await get(path);
       expect(res.headers.get('x-cache')).toBe('HIT');
-      expect(res.headers.get('cache-control')).toContain('no-store');
+      expect(res.headers.get('cache-control')).toBe('no-cache');
       expect(await res.text()).toBe('<html>cached</html>');
     }
     expect(handle).not.toHaveBeenCalled();
@@ -67,6 +67,7 @@ describe('createApp', () => {
 
     expect(res.status).toBe(200);
     expect(res.headers.get('x-cache')).toBe('MISS');
+    expect(res.headers.get('cache-control')).toBe('no-cache');
     expect(await res.text()).toBe('<html>rendered</html>');
   });
 
