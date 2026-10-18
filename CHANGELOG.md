@@ -11,6 +11,8 @@
 
 - Angular 22.2.3. Its test runner now turns off Vitest's module cache by itself, which could run tests against stale
   code, so our own workaround for it is gone.
+- The code checks now catch promises whose errors would go unhandled. A server that fails to shut down cleanly now logs
+  why and exits with an error, and a failed app start is logged to the browser's console.
 
 ## 2026-10-17
 

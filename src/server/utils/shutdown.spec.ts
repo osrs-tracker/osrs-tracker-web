@@ -40,4 +40,12 @@ describe('closeServers', () => {
     expect(performance.now() - start).toBeLessThan(1000); // not the 95 s keep-alive
     expect(closed).toEqual(['main', 'metrics']);
   });
+
+  it('rejects when a server fails to close', async () => {
+    const metrics = await listen(createServer());
+
+    // A server that isn't listening can't be closed
+    await expect(closeServers(createServer(), metrics)).rejects.toMatchObject({ code: 'ERR_SERVER_NOT_RUNNING' });
+    metrics.close();
+  });
 });

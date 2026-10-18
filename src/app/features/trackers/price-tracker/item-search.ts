@@ -249,7 +249,7 @@ export class ItemSearch {
       this.expanded() && this.open() && !this.loading() && !this.error() && !!this.results().length;
     if (showingResults && id !== undefined && (this.navigated() || this.query() === this.searchedQuery())) {
       this.expanded.set(false);
-      this.router.navigate(['/trackers/price', id]);
+      void this.router.navigate(['/trackers/price', id]);
     } else {
       this.searchItems();
     }

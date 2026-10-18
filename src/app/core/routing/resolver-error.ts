@@ -13,7 +13,7 @@ export function resolverErrorHandler(url: string): (err: unknown) => never {
   const router = inject(Router);
 
   return (err: unknown) => {
-    router.navigate([isNotFound(err) ? '**' : '/error']).then(() => {
+    void router.navigate([isNotFound(err) ? '**' : '/error']).then(() => {
       if (router.url !== url) loc.replaceState(url);
     });
     throw err;
