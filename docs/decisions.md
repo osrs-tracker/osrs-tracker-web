@@ -101,9 +101,9 @@ Choices that look like accidents without their context: what was decided, why, a
   same commit twice (in the queue and on the push to `main`), and those duplicate check runs kept the `changes` job from
   ever skipping build and test for the next docs-only push.
 - **Decision:** no merge queue and no "require branches to be up to date": a PR merges once its own `build`, `lint`,
-  `test` and `links` pass, even when `BEHIND`. CI on the push to `main` tests the merged result and `CD` deploys only a
-  `main` that passed, so two PRs that pass alone but clash together fail there and deploy nothing until `main` is fixed.
-  The digest commit and doc-only pushes still go straight to `main` (deploy key, admin bypass).
+  `test`, `links` and `zizmor` pass, even when `BEHIND`. CI on the push to `main` tests the merged result and `CD`
+  deploys only a `main` that passed, so two PRs that pass alone but clash together fail there and deploy nothing until
+  `main` is fixed. The digest commit and doc-only pushes still go straight to `main` (deploy key, admin bypass).
 - **Revisit:** if PRs that each passed start breaking `main` together more than rarely.
 
 ## Google Analytics loads only after consent, from a banner with equal buttons (2026-10-13)
@@ -258,9 +258,9 @@ Choices that look like accidents without their context: what was decided, why, a
   hard to tell apart.
 - **Decision:** every line the server writes is one JSON object with `level`, `time` and a `type` (`incoming`,
   `outgoing`, `lifecycle`, `uncaught`, plus `prerender` from `server/utils/log.ts`), errors with their stack in `error`.
-  The lines, the request log and the `outgoing` log come from `@osrs-tracker/logger` (pino, in `osrs-tracker-aws`),
-  shared with the API so both write the same shape; morgan is gone. Angular's own console output, and the app's
-  `console.error`s (which also run in the browser), stay plain text.
+  The lines, the request log and the `outgoing` log come from `@osrs-tracker/logger` (pino, in
+  `osrs-tracker-packages`), shared with the API so both write the same shape; morgan is gone. Angular's own console
+  output, and the app's `console.error`s (which also run in the browser), stay plain text.
 - **Revisit:** if the API's logs should be queried together with these: they're the same shape and both have `type`.
 
 ## Item pages load the price history in the browser (2026-10-09)
