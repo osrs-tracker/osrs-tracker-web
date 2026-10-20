@@ -9,6 +9,7 @@ export const RAIDS: ReadonlySet<string> = new Set([
   ActivityEnum.TheatreOfBloodHardMode,
   ActivityEnum.TombsOfAmascut,
   ActivityEnum.TombsOfAmascutExpertMode,
+  ActivityEnum.TheFracturedArchive,
 ]);
 
 // Every activity from Chambers of Xeric onwards is a boss (bosses and boss-like minigames such as Wintertodt),
@@ -35,15 +36,19 @@ export const MINIGAMES: ReadonlySet<string> = new Set(
   ),
 );
 
-/** Normal modes on the first row, their harder modes below */
-export const RAID_LAYOUT: ActivityEnum[] = [
+/**
+ * Normal modes on the first row, their harder modes below; The Fractured Archive, which has no harder mode on the
+ * hiscores, on a row of its own.
+ */
+export const RAID_LAYOUT: (string | null)[] = fillRows([
   ActivityEnum.ChambersOfXeric,
   ActivityEnum.TheatreOfBlood,
   ActivityEnum.TombsOfAmascut,
   ActivityEnum.ChambersOfXericChallengeMode,
   ActivityEnum.TheatreOfBloodHardMode,
   ActivityEnum.TombsOfAmascutExpertMode,
-];
+  ActivityEnum.TheFracturedArchive,
+]);
 
 /**
  * The minigames card in rows of three: minigames; Bounty Hunter (Legacy under current) with the PvP ratings; seasonal

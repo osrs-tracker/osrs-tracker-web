@@ -1,3 +1,8 @@
+## 2026-10-20
+
+- The XP tracker now shows The Fractured Archive, the raid Jagex added to the hiscores today, on the raids card and in
+  the raids chart, with its own icon and colour.
+
 ## 2026-10-18
 
 ### XP tracker

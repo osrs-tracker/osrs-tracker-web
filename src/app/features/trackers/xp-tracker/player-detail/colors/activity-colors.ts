@@ -35,6 +35,7 @@ export const ACTIVITY_COLORS: Record<ChartActivity, { light: string; dark: strin
   [ActivityEnum.TheatreOfBloodHardMode]: { light: '#5e5672', dark: '#7f7596' },
   [ActivityEnum.TombsOfAmascut]: { light: '#334784', dark: '#627ac2' },
   [ActivityEnum.TombsOfAmascutExpertMode]: { light: '#b32534', dark: '#d94958' },
+  [ActivityEnum.TheFracturedArchive]: { light: '#55a737', dark: '#5cb53c' },
   [ActivityEnum.AbyssalSire]: { light: '#c8467a', dark: '#d14e81' },
   [ActivityEnum.AlchemicalHydra]: { light: '#3fa38f', dark: '#3fa38f' },
   [ActivityEnum.Amoxliatl]: { light: '#469fc2', dark: '#6cc4e8' },
