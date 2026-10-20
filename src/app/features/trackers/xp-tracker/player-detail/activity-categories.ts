@@ -38,9 +38,9 @@ export const MINIGAMES: ReadonlySet<string> = new Set(
 
 /**
  * Normal modes on the first row, their harder modes below; The Fractured Archive, which has no harder mode on the
- * hiscores, on a row of its own. `null` is an empty cell.
+ * hiscores, on a row of its own.
  */
-export const RAID_LAYOUT: (ActivityEnum | null)[] = [
+export const RAID_LAYOUT: (string | null)[] = fillRows([
   ActivityEnum.ChambersOfXeric,
   ActivityEnum.TheatreOfBlood,
   ActivityEnum.TombsOfAmascut,
@@ -48,9 +48,7 @@ export const RAID_LAYOUT: (ActivityEnum | null)[] = [
   ActivityEnum.TheatreOfBloodHardMode,
   ActivityEnum.TombsOfAmascutExpertMode,
   ActivityEnum.TheFracturedArchive,
-  null,
-  null,
-];
+]);
 
 /**
  * The minigames card in rows of three: minigames; Bounty Hunter (Legacy under current) with the PvP ratings; seasonal
