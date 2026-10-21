@@ -15,7 +15,7 @@ describe('itemPageMeta', () => {
   it("shows the item's preview card, the server's /og/item/:id.png, as a large image", () => {
     const meta = itemPageMeta(whip);
 
-    expect(meta.image).toEqual({ url: '/og/item/4151.png?v=5', width: 1200, height: 630, alt: 'Abyssal whip' });
+    expect(meta.image).toEqual({ url: '/og/item/4151.png?v=6', width: 1200, height: 630, alt: 'Abyssal whip' });
     expect(meta.card).toBe('summary_large_image');
   });
 });
