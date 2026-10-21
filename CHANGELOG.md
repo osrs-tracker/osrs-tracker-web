@@ -1,3 +1,9 @@
+## 2026-10-21
+
+- Updated the SOLIX font to version 4.0.1: smoother curves in many letters and figures (the round letters, `S`, `g`,
+  `&`, `@`, `%`), and in the regular weight `v`, `w`, `z` and `4` now match the other letters' weight. The link preview
+  pictures use it too, so they're drawn again with the new letters.
+
 ## 2026-10-20
 
 - The XP tracker now shows The Fractured Archive, the raid Jagex added to the hiscores today, on the raids card and in
