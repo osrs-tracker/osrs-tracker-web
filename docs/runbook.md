@@ -72,9 +72,9 @@ which FreekMencke/home-cluster keeps. Writes such as a rollout restart are for t
   logs, from 2026-10-13 on (how to reach it: FreekMencke/home-cluster's README, "Grafana Cloud"). The server's own lines
   are JSON with a `type`, written by `@osrs-tracker/logger` (`src/server/utils/log.ts` adds `prerender`, `sitemap` and
   `og-image`): `incoming` (requests it answered), `outgoing` (requests a render made), `lifecycle` (startup, shutdown),
-  `prerender` (auto page generation), `sitemap` (the item and player sitemaps), `og-image` (the item link preview
-  images) and `uncaught` (errors that reached Express' error handler, stack in `error`); Angular's own output is plain
-  text. Pick one with `| json | type="…"`, e.g.
+  `prerender` (auto page generation), `sitemap` (the item and player sitemaps), `og-image` (the link preview images:
+  item, player and players online) and `uncaught` (errors that reached Express' error handler, stack in `error`);
+  Angular's own output is plain text. Pick one with `| json | type="…"`, e.g.
   `{namespace="osrs-tracker", app="osrs-tracker-web"} | json | type="uncaught"`.
 - Requests: `incoming` lines have `status`, `route` and `cache`; a client that gave up before the response is a `warn`
   with `aborted: true` and no `status` (`… | json | type="incoming" | aborted="true"`). `responseTime` runs until the
@@ -120,7 +120,8 @@ every difference. Then:
    to an item is usually a page title that differs from the item name; look the id up on the item's Wiki page.
 2. Read the Wiki section for changes the script can't see, such as the rounding, and update `geTax` and
    `breakEvenSellPrice` (and `ge-tax.spec.ts`) if they changed.
-3. Update the "last checked" date in `ge-tax.ts`, add a `CHANGELOG.md` entry if the numbers changed, and deploy.
+3. Update the "last checked" date in `ge-tax.ts`, add a `CHANGELOG.md` entry (which changes need one: `CLAUDE.md`), and
+   deploy.
 
 If the script itself fails (the Wiki renamed a section or reworded the rate), fix its patterns in
 `scripts/ge-tax/check-ge-tax.mjs`.
@@ -136,11 +137,11 @@ under a year ahead), check the contact address still works, add a `CHANGELOG.md`
 The site keeps working when a data source is down. The affected parts show "Couldn't load…" with a Retry button, and
 opening a player or item page shows an error page (503).
 
-| Source                                                | What breaks                                                  |
-| ----------------------------------------------------- | ------------------------------------------------------------ |
-| osrs-tracker-api (osrs-tracker-api.freekmencke.com)   | Player and item pages (error page), recent lookups, the news |
-| Hiscores proxy (runescape-api.freekmencke.com, AWS)   | Current hiscores on player pages, the player cards           |
-| OSRS Wiki prices (prices.runescape.wiki, third party) | Item price trends and charts                                 |
+| Source                                                | What breaks                                                                                              |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| osrs-tracker-api (osrs-tracker-api.freekmencke.com)   | Player and item pages (error page), recent lookups, the news, players online (the page and the nav card) |
+| Hiscores proxy (runescape-api.freekmencke.com, AWS)   | Current hiscores on player pages, the player cards                                                       |
+| OSRS Wiki prices (prices.runescape.wiki, third party) | Item price trends and charts                                                                             |
 
 The API and the hiscores proxy are maintained in osrs-tracker-api and osrs-tracker-aws. Check them there before changing
 anything here.
