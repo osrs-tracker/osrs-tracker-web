@@ -1,7 +1,8 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { ActivityEnum, HiscoreEntry, SkillEnum, skillProgress } from '@osrs-tracker/models';
 import { format } from 'date-fns';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
+import { ChartDisplay, ChartDisplaySwitch } from '@app/common/charts/chart-display-switch';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Icon } from '@app/common/icon/icon';
 import { formatNumberLegible, formatWhole } from '@app/common/format/number-format';
@@ -14,7 +15,7 @@ import { ActivityView, ChartView, Period, PlayerView } from '../player-view';
 import { LucideClock } from '@lucide/angular';
 
 const TITLES: Record<ChartView, string> = {
-  skills: 'XP gained',
+  skills: 'XP',
   bosses: 'Bosses',
   raids: 'Raids',
   clues: 'Clues',
@@ -78,12 +79,15 @@ interface ChartHeading {
       <h2 class="text-xl font-bold text-strong">{{ title() }}</h2>
       <!-- also while a longer period loads, so the header keeps its place -->
       @if (state() !== 'empty') {
-        <segmented
-          label="Period"
-          [options]="periods"
-          [value]="playerView.period()"
-          (valueChange)="playerView.setPeriod($event)"
-        />
+        <div class="flex flex-wrap gap-2">
+          <segmented
+            label="Period"
+            [options]="periods"
+            [value]="playerView.period()"
+            (valueChange)="playerView.setPeriod($event)"
+          />
+          <chart-display-switch chart="player_chart" [bars]="!!activityView()" [(display)]="display" />
+        </div>
       }
     </div>
 
@@ -146,17 +150,21 @@ interface ChartHeading {
               [category]="category"
               [minigame]="minigame()"
               [tableCaption]="h.title + ' per day, ' + period() + ', newest first'"
+              [display]="display()"
             />
           } @else {
-            <xp-gained-chart [data]="diffs()" [tableCaption]="'XP gained per day, ' + period() + ', newest first'" />
+            <xp-gained-chart
+              [data]="diffs()"
+              [tableCaption]="'XP gained per day, ' + period() + ', newest first'"
+              [display]="display()"
+            />
           }
         </div>
       }
     }
   `,
-  // Grows past the Skills card's height while the chart's data table shows
-  host: { class: 'flex flex-col min-w-0 rounded-2xl bg-card overflow-hidden lg:h-115.5 lg:has-data-open:h-auto' },
-  imports: [ActivityChart, Icon, Segmented, Skeleton, XpGainedChart, LucideClock],
+  host: { class: 'flex flex-col min-w-0 rounded-2xl bg-card overflow-hidden lg:h-115.5' },
+  imports: [ActivityChart, ChartDisplaySwitch, Icon, Segmented, Skeleton, XpGainedChart, LucideClock],
 })
 export class PlayerChart {
   readonly playerView = inject(PlayerView);
@@ -178,6 +186,9 @@ export class PlayerChart {
   readonly emptyText = input('');
   /** The charted minigame */
   readonly minigame = input<string>();
+
+  /** Kept across tabs, skills and periods */
+  readonly display = signal<ChartDisplay>('chart');
 
   readonly title = computed(() => TITLES[this.playerView.chart()]);
   readonly activityView = computed(() => {

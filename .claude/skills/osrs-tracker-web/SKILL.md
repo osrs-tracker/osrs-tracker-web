@@ -129,7 +129,7 @@ Which component to use (in `common/ui/<folder>/` unless noted):
 | A whole page's state: not found, unavailable, error (`page/`) | `status-panel`, with `back-button` or other actions as content                          |
 | Something failed to load (`loading/`)                         | `load-error` (default, `panel`, `compact` or `inline`; see Failures above)              |
 | Something is loading (`loading/`)                             | `skeleton` blocks sized like the content, never a spinner                               |
-| A chart's values as a table (`common/charts/`)                | `chart-table` under every chart (see Chart.js in SSR rules)                             |
+| A chart's values as a table (`common/charts/`)                | `chart-table` behind a `chart-display-switch` (see Chart.js in SSR rules)               |
 | A short explanation (`tooltip/`)                              | `info-tooltip`, or `[tooltip]` on any element                                           |
 | A reading page (`page/`)                                      | `information-page` around `<div class="markdown">`                                      |
 | A line icon                                                   | a Lucide component, `<svg lucideSearch />` (see Icons above)                            |
@@ -168,9 +168,11 @@ hover shows library signatures and docs instead.
 - **Chart.js**: shared registrations and the date adapter in `common/charts/chart-setup.ts`; never `Chart.unregister`.
   Time series charts extend `common/charts/base-chart.ts`; their `setData` may build new datasets, as `BaseChart` keeps
   a drawn one in place when its label and dates match, so only changed points animate (Chart.js redraws a new object
-  from the axis). Every chart gets a `chart-table` under it ("Show the data", `common/charts/chart-table.ts`), as the
-  canvas is otherwise the only way to its values (WCAG 1.1.1); group its rows with `binByTime` and `timeBinLabel`
-  (`common/charts/time-bins.ts`), as `item-volume.ts` does.
+  from the axis). Every chart's card gets a `chart-display-switch` (icon pills, beside its range or period) that shows a
+  `chart-table` in the chart's place, at the chart's height, as the canvas is otherwise the only way to its values (WCAG
+  1.1.1). A `BaseChart` subclass is hidden, not removed, while its table shows: it creates its chart once, on its
+  canvas. Group the table's rows with `binByTime` and `timeBinLabel` (`common/charts/time-bins.ts`), as `item-volume.ts`
+  does.
 - **Icons**: after changing `public/assets/icons/{skills,activities}`, run `npm run icons` and commit
   `local-icons.generated.ts`.
 - **Font**: SOLIX comes from the private [FreekMencke/solix](https://github.com/FreekMencke/solix) releases

@@ -11,6 +11,7 @@ import {
   signal,
   viewChildren,
 } from '@angular/core';
+import { LucideDynamicIcon, LucideIcon } from '@lucide/angular';
 import { Icon } from '@app/common/icon/icon';
 import { setToolbarTabStop } from './aria-tab-stop';
 
@@ -22,6 +23,8 @@ export interface SegmentedOption<T> {
   disabled?: boolean;
   /** A decorative icon before the label */
   icon?: { name: string; skill?: boolean };
+  /** A line icon in place of the label, which names it for screen readers and on hover */
+  lucide?: LucideIcon;
 }
 
 /**
@@ -48,20 +51,26 @@ export interface SegmentedOption<T> {
           variant() === 'slate'
             ? 'h-10 px-3.5 max-sm:flex-1 md:max-xl:flex-1 rounded-xl text-base ' +
               (option.value === value() ? 'bg-line text-strong' : 'text-muted hover:text-strong')
-            : 'h-8 px-3 rounded-full text-sm ' +
+            : (option.lucide ? 'h-8 px-2.5' : 'h-8 px-3') +
+              ' rounded-full text-sm ' +
               (option.value === value()
                 ? 'bg-accent text-on-accent'
                 : 'text-strong hover:bg-row aria-disabled:hover:bg-transparent')
         "
         [attr.aria-checked]="option.value === value()"
-        [attr.title]="option.title ?? null"
+        [attr.title]="option.title ?? (option.lucide ? option.label : null)"
         [disabled]="!!option.disabled"
         (click)="option.disabled || choose(option.value)"
       >
-        @if (option.icon; as icon) {
-          <img class="h-4 w-auto" icon alt="" [name]="icon.name" [skill]="!!icon.skill" aria-hidden="true" />
+        @if (option.lucide; as lucide) {
+          <svg class="size-4.5" [lucideIcon]="lucide" strokeWidth="2.5" aria-hidden="true" />
+          <span class="sr-only">{{ option.label }}</span>
+        } @else {
+          @if (option.icon; as icon) {
+            <img class="h-4 w-auto" icon alt="" [name]="icon.name" [skill]="!!icon.skill" aria-hidden="true" />
+          }
+          {{ option.label }}
         }
-        {{ option.label }}
       </button>
     }
   `,
@@ -76,7 +85,7 @@ export interface SegmentedOption<T> {
       "(stretch() ? 'grid grid-flow-col auto-cols-fr ' : 'flex w-fit max-w-full overflow-x-auto ') + " +
       "(variant() === 'slate' ? 'gap-1 p-1 rounded-2xl bg-ground' : 'p-1 rounded-full bg-inner')",
   },
-  imports: [Icon, ToolbarWidget],
+  imports: [Icon, LucideDynamicIcon, ToolbarWidget],
 })
 export class Segmented<T> {
   readonly options = input.required<SegmentedOption<T>[]>();
