@@ -61,7 +61,12 @@ interface VolumeSummary {
       <h2 class="text-xl/6 font-bold text-strong">Trade volume</h2>
       @if (!error()) {
         <div class="flex flex-wrap gap-2">
-          <segmented label="Range" [options]="RANGE_OPTIONS" [value]="range()" (valueChange)="selectRange($event)" />
+          <segmented
+            label="Volume range"
+            [options]="RANGE_OPTIONS"
+            [value]="range()"
+            (valueChange)="selectRange($event)"
+          />
           <chart-display-switch chart="item_volume" bars [(display)]="display" />
         </div>
       }
@@ -109,18 +114,25 @@ interface VolumeSummary {
           <p class="absolute inset-0 flex items-center justify-center px-5 text-center font-bold text-strong">
             No trades in the last {{ rangeTitle() }}
           </p>
-        } @else if (display() === 'table') {
-          <chart-table
-            class="absolute inset-0"
-            [caption]="tableCaption()"
-            [columns]="tableColumns()"
-            [rows]="table()"
-          />
         } @else {
+          @if (display() === 'table') {
+            <chart-table
+              class="absolute inset-0"
+              [caption]="tableCaption()"
+              [columns]="tableColumns()"
+              [rows]="table()"
+            />
+          }
+          <!-- Hidden, not removed, behind the table: the chart is created once -->
           @defer {
-            <volume-chart class="absolute inset-0" aria-hidden="true" [data]="chartData()" />
+            <volume-chart
+              class="absolute inset-0"
+              [class.hidden]="display() === 'table'"
+              aria-hidden="true"
+              [data]="chartData()"
+            />
           } @placeholder {
-            <skeleton class="absolute inset-0 h-full w-full rounded-xl" />
+            <skeleton class="absolute inset-0 h-full w-full rounded-xl" [class.hidden]="display() === 'table'" />
           }
         }
       </div>

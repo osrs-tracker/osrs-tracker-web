@@ -42,7 +42,7 @@
     <article card>
       <h2 #priceHeading title tabindex="-1">Price</h2>
       <div actions class="flex flex-wrap gap-2">
-        <segmented label="Range" [options]="rangeOptions" [value]="range()" (valueChange)="selectRange($event)" />
+        <segmented label="Price range" [options]="rangeOptions" [value]="range()" (valueChange)="selectRange($event)" />
         <chart-display-switch chart="item_price" [(display)]="priceDisplay" />
       </div>
 
@@ -71,20 +71,23 @@
             </button>
           }
         </div>
-      } @else if (priceDisplay() === 'table') {
-        @let table = priceTable();
-        <chart-table class="h-70" [caption]="table.caption" [columns]="table.columns" [rows]="table.rows" />
       } @else {
+        @if (priceDisplay() === 'table') {
+          @let table = priceTable();
+          <chart-table class="h-70" [caption]="table.caption" [columns]="table.columns" [rows]="table.rows" />
+        }
+        <!-- Hidden, not removed, while the table shows: the chart is created once -->
         @defer {
           <price-chart
             class="block h-70"
+            [class.hidden]="priceDisplay() === 'table'"
             role="img"
             [attr.aria-label]="priceChartLabel()"
             [data]="priceChartData()"
             [hiddenLines]="hiddenLines()"
           />
         } @placeholder {
-          <skeleton class="h-70 w-full rounded-xl" />
+          <skeleton class="h-70 w-full rounded-xl" [class.hidden]="priceDisplay() === 'table'" />
         }
       }
 
@@ -93,7 +96,7 @@
       @let charted = !priceSeries.error() && !priceSeriesLoading() && !priceChartEmpty();
       <ul
         class="flex flex-wrap gap-x-2 -mx-2 mt-2.5 text-sm"
-        [attr.aria-label]="charted ? 'Change over the last ' + rangeTitle() : null"
+        [attr.aria-label]="charted ? 'Show or hide price lines, with their change over the last ' + rangeTitle() : null"
         [attr.aria-hidden]="charted ? null : true"
       >
         @for (line of priceLegend(); track line.name) {

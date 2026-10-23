@@ -19,6 +19,10 @@ export const PRICE_RANGES: Record<
   '1Y': { lookback: '1y', seconds: 365 * 86400, title: 'year', bin: 'month' },
 };
 
+/** The price chart's lines, which its legend shows and hides */
+export type PriceLine = 'Instant buy' | 'Instant sell';
+export const PRICE_LINES: PriceLine[] = ['Instant buy', 'Instant sell'];
+
 export const RANGE_OPTIONS: SegmentedOption<PriceRange>[] = (Object.keys(PRICE_RANGES) as PriceRange[]).map(range => ({
   value: range,
   label: range,

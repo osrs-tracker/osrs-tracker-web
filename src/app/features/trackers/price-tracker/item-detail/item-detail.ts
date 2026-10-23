@@ -32,13 +32,9 @@ import {
 import { ChartTable } from '@app/common/charts/chart-table';
 import { ChartDisplay, ChartDisplaySwitch } from '@app/common/charts/chart-display-switch';
 import { ItemVolume, VolumeChartState } from './item-volume';
-import { PRICE_RANGES, PriceRange, RANGE_OPTIONS } from './price-ranges';
+import { PRICE_LINES, PRICE_RANGES, PriceLine, PriceRange, RANGE_OPTIONS } from './price-ranges';
 import { ProfitCalculator } from './profit-calculator';
 import { LucideArrowLeft, LucideArrowRight } from '@lucide/angular';
-
-/** The price chart's lines, which its legend shows and hides */
-type PriceLine = 'Instant buy' | 'Instant sell';
-const PRICE_LINES: PriceLine[] = ['Instant buy', 'Instant sell'];
 
 /** As many days as the hourly series covers in full, today included: it ends with the last full hour, 168 hours back */
 const VOLUME_DAYS = 7;
