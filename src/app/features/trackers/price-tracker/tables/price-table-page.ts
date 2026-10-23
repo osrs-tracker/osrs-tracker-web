@@ -15,6 +15,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { formatDistanceStrict } from 'date-fns';
 import { forkJoin, map, tap } from 'rxjs';
+import { announceChanges } from '@app/common/a11y/announcer';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { LatestPriceList, OsrsPricesRepo, TimeSpan } from '@app/common/api/osrs-prices-repo';
 import { formatWhole } from '@app/common/format/number-format';
@@ -158,6 +159,33 @@ export default class PriceTablePage {
   /** On the server a failed load renders as loading, and the browser loads the lists itself */
   readonly failed = computed(() => !this.isServer && !!this.lists.error());
 
+  readonly emptyMessage = computed(() =>
+    this.query() ? `No items match “${this.query()}”.` : 'No items match these filters.',
+  );
+  readonly emptyHint = computed(() => {
+    if (!this.query()) return 'Pick a lower volume, or All items.';
+    const { volume, members } = this.options();
+    return volume === 'any' && members === 'all'
+      ? 'Check the spelling.'
+      : 'Check the spelling, or pick Any volume and All items.';
+  });
+
+  /** What a screen reader hears after a filter, sort or "Show 25 more": the count and order, no match, or the failure */
+  private readonly announcement = computed(() => {
+    if (this.failed()) return 'Prices didn’t load.';
+    const view = this.view();
+    if (!view) return null;
+    if (!view.rows.length) return `${this.emptyMessage()} ${this.emptyHint()}`;
+
+    const { sort, dir } = this.options();
+    const column = this.columns().find(column => column.key === sort)?.label ?? '';
+    const matching = this.query() ? ` matching “${this.query()}”` : '';
+    return (
+      `Showing ${formatWhole(view.rows.length)} of ${formatWhole(view.total)} ${view.total === 1 ? 'item' : 'items'}` +
+      `${matching}, by ${column}, ${dir === 'desc' ? 'highest' : 'lowest'} first.`
+    );
+  });
+
   readonly isHighAlch = computed(() => this.kind() === 'high-alch');
   readonly title = computed(() => (this.isHighAlch() ? 'High-alch profit' : 'Margins'));
   readonly query = computed(() => this.options().query.trim());
@@ -226,6 +254,7 @@ export default class PriceTablePage {
 
   constructor() {
     afterNextRender(() => this.transferState.remove(this.stateKey()));
+    announceChanges(this.announcement);
   }
 
   /** Any change to the view: the browser loads the lists, if it hasn't yet */

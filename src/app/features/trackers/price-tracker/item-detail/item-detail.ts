@@ -10,7 +10,7 @@ import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { StatTile } from '@app/common/ui/cards/stat-tile';
 import { StatusPanel } from '@app/common/ui/page/status-panel';
-import { TimeAgoPipe } from '@app/common/format/time-ago-pipe';
+import { timeAgo } from '@app/common/format/time-ago-pipe';
 import { AveragePricesAtTime, Lookback, OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
@@ -69,7 +69,6 @@ export default class ItemDetail implements OnInit {
   private readonly responseInit = inject(RESPONSE_INIT, { optional: true });
   private readonly isHumanVisitor = isHumanVisitor();
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
-  private readonly timeAgo = new TimeAgoPipe();
 
   /** `null` when there's no such item */
   readonly item = input.required<Item | null>();
@@ -158,7 +157,7 @@ export default class ItemDetail implements OnInit {
       hourlyLoading: this.hourlyLoading(),
       hourlyFailed: !!this.hourly.error(),
       now: new Date(),
-      timeAgo: time => this.timeAgo.transform(time),
+      timeAgo,
     }),
   );
 

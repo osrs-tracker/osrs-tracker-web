@@ -25,11 +25,11 @@ import { StatTile } from '@app/common/ui/cards/stat-tile';
 import { StatusPanel } from '@app/common/ui/page/status-panel';
 import { localIcons } from '@app/common/icon/local-icons.generated';
 import { LOCAL_ICONS } from '@app/common/icon/local-icons-token';
-import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
 import { capitalise } from '@app/common/format/player-labels';
-import { TimeAgoPipe } from '@app/common/format/time-ago-pipe';
+import { timeAgo } from '@app/common/format/time-ago-pipe';
 import { OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
+import { announceChanges } from '@app/common/a11y/announcer';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { isHumanVisitor } from '@app/core/platform/human-visitor';
 import { isNotFound, resolverErrorHandler } from '@app/core/routing/resolver-error';
@@ -62,7 +62,6 @@ const LOG_VIEWS: SegmentedOption<LogView>[] = [
   templateUrl: './player-detail.html',
   imports: [
     ActivitiesCard,
-    CapitalizePipe,
     CompareDays,
     LoadError,
     MilestonesCard,
@@ -74,7 +73,6 @@ const LOG_VIEWS: SegmentedOption<LogView>[] = [
     SkillsCard,
     StatTile,
     StatusPanel,
-    TimeAgoPipe,
     LucideArrowLeft,
     LucideTriangleAlert,
   ],
@@ -135,6 +133,11 @@ export default class PlayerDetail implements OnInit {
       !this.history.today() &&
       !!this.history.entries().length &&
       (this.history.todayFailed() || !!this.playerDetail()?.refreshFailed),
+  );
+  readonly staleNotice = computed(
+    () =>
+      `The hiscores aren’t responding, so these are ${capitalise(this.playerDetail()?.username ?? '')}’s stats from ` +
+      `${timeAgo(this.history.lastCheckedAt())}.`,
   );
   /** Without live hiscores the newest tracked entry stands in, so this only fails when there's none either */
   readonly hiscoresFailed = computed(
@@ -221,6 +224,8 @@ export default class PlayerDetail implements OnInit {
   });
 
   constructor() {
+    // The notice appears after the page loaded, when today's hiscores fail: a status region added with it isn't read
+    announceChanges(() => (this.stale() ? this.staleNotice() : null));
     inject(ModeRanks).connect({ username: this.username, player: this.playerDetail, hiscore: this.history.current });
 
     // Only during SSR: the page is a 404 when there's no such player
