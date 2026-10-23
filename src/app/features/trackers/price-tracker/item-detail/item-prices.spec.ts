@@ -224,6 +224,10 @@ describe('priceChange', () => {
     });
   });
 
+  it('groups the digits of a large change', () => {
+    expect(priceChange([1, 1_000])?.percent).toBe('+99,900.0%');
+  });
+
   it('is flat when the change reads 0.0%', () => {
     expect(priceChange([100_000, 100_040])).toEqual({ percent: '0.0%', tone: 'flat', last: '100,040' });
     expect(priceChange([100_000, 99_960])).toEqual({ percent: '0.0%', tone: 'flat', last: '99,960' });

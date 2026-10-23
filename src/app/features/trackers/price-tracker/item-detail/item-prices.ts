@@ -210,6 +210,8 @@ export function priceChartSummary(prices: AveragePricesAtTime[], period: string)
   ].join(' ');
 }
 
+const tenthsFormat = new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
 /** How a price line moved over the chart's range, for its legend entry: "−34.5%" to "3,932,042,211" gp */
 export interface PriceChange {
   percent: string;
@@ -226,7 +228,7 @@ export function priceChange(values: number[]): PriceChange | undefined {
   const tenths = Math.round(((last - first) / first) * 1000);
   const tone = tenths > 0 ? 'up' : tenths < 0 ? 'down' : 'flat';
   return {
-    percent: `${formatSign(tenths, 'exceptZero')}${(Math.abs(tenths) / 10).toFixed(1)}%`,
+    percent: `${formatSign(tenths, 'exceptZero')}${tenthsFormat.format(Math.abs(tenths) / 10)}%`,
     tone,
     last: formatWhole(last),
   };

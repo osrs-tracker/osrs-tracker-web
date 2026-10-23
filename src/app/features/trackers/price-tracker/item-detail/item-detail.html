@@ -82,10 +82,13 @@
         }
       }
 
-      <!-- Each line's change over the range, in both views; each swatch is its line over its area -->
+      <!-- Each line's change over the range, in both views; each swatch is its line over its area. Without a chart it's
+      only a key, hidden from screen readers -->
+      @let charted = !priceSeries.error() && !priceSeriesLoading() && !priceChartEmpty();
       <ul
         class="flex flex-wrap gap-x-6 gap-y-2 mt-4 text-sm"
-        [attr.aria-label]="'Change over the last ' + rangeTitle()"
+        [attr.aria-label]="charted ? 'Change over the last ' + rangeTitle() : null"
+        [attr.aria-hidden]="charted ? null : true"
       >
         @for (line of priceLegend(); track line.name) {
           <li class="flex items-center gap-2">
