@@ -23,6 +23,8 @@ import { LucideChevronDown } from '@lucide/angular';
  */
 export const NAV_TAB =
   'relative flex grow items-center justify-center gap-1 max-sm:min-h-11 whitespace-nowrap max-xs:text-sm font-bold ' +
+  // Edge to edge on phones: an inset ring stays clear of the screen edge
+  'max-sm:focus-visible:-outline-offset-2 ' +
   'sm:hover:text-accent-hover sm:current:text-accent max-sm:data-marked:text-accent ' +
   'max-sm:data-marked:after:absolute max-sm:data-marked:after:inset-x-0 max-sm:data-marked:after:-bottom-1.5 ' +
   'max-sm:data-marked:after:h-0.5 max-sm:data-marked:after:rounded-xs max-sm:data-marked:after:bg-accent';

@@ -24,7 +24,7 @@
     (retry)="latest.reload()"
   ></header>
 
-  <main class="max-w-page mx-auto flex flex-col gap-6 px-4 sm:px-6 pt-6 pb-18">
+  <div class="max-w-page mx-auto flex flex-col gap-6 px-4 sm:px-6 pt-6 pb-18">
     <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
       @for (stat of stats(); track stat.label) {
         <stat-tile
@@ -103,9 +103,9 @@
         (retry)="latest.reload()"
       ></article>
     </div>
-  </main>
+  </div>
 } @else {
-  <main class="max-w-page mx-auto px-4 sm:px-6 pt-12 pb-18">
+  <div class="max-w-page mx-auto px-4 sm:px-6 pt-12 pb-18">
     <status-panel
       icon="search"
       action="search"
@@ -115,5 +115,5 @@
       searchLabel="Item name"
       (searched)="searchItem($event)"
     />
-  </main>
+  </div>
 }

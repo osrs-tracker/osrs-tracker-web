@@ -1,5 +1,14 @@
 <!-- The bottom padding is the consent banner's height while it shows, so the footer can scroll out from under it -->
 <div class="min-h-screen flex flex-col pb-consent sa-t sa-l sa-r">
+  <!-- The first Tab stop, shown over the nav while focused. Without JS (before hydration) the fragment still moves the
+       browser's focus start to main -->
+  <a
+    class="not-focus:sr-only fixed top-3 left-4 z-10000 flex items-center h-11 px-5 rounded-full bg-accent text-on-accent font-bold"
+    href="#main"
+    (click)="skipToContent($event)"
+    >Skip to content</a
+  >
+
   <!-- Sticky from sm up only: on phones the two-row nav would take too much of the screen. Its height there is the
        `nav` token, which the page's scroll padding also reads -->
   <nav class="relative sm:sticky top-0 sm:h-nav z-9999 text-strong bg-ground border-b border-line">
@@ -19,6 +28,10 @@
       </a>
 
       <div class="grow"></div>
+
+      <!-- On phones beside the wordmark, above the tabs, so it comes before them in the Tab order too; from sm up after
+           them (display: none takes the hidden one out of the Tab order) -->
+      <dark-mode class="sm:hidden" />
 
       <!-- On phones the tabs wrap to a second row of three equal-width tabs, edge to edge -->
       <ul class="max-sm:order-3 max-sm:basis-full max-sm:grow max-sm:-mx-4 grid grid-cols-3 sm:flex sm:gap-6">
@@ -106,7 +119,7 @@
         </li>
       </ul>
 
-      <dark-mode />
+      <dark-mode class="max-sm:hidden" />
     </div>
 
     @if (hasOngoingRequests()) {
@@ -132,7 +145,7 @@
     ></div>
   }
 
-  <main class="relative">
+  <main id="main" class="relative">
     <!-- content -->
     <router-outlet />
   </main>

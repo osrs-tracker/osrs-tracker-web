@@ -13,7 +13,7 @@ const RETRY_AFTER_SECONDS = 300;
   selector: 'error-page',
   imports: [BackButton, StatusPanel],
   template: `
-    <main class="max-w-page mx-auto px-4 sm:px-6 pt-12 pb-18">
+    <div class="max-w-page mx-auto px-4 sm:px-6 pt-12 pb-18">
       <status-panel
         icon="alert"
         heading="Something went wrong"
@@ -24,7 +24,7 @@ const RETRY_AFTER_SECONDS = 300;
           <back-button />
         </div>
       </status-panel>
-    </main>
+    </div>
   `,
 })
 export default class ErrorPage {

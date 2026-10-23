@@ -6,7 +6,7 @@ import { StatusPanel } from '@app/common/ui/page/status-panel';
   selector: 'not-found-404',
   imports: [BackButton, StatusPanel],
   template: `
-    <main class="max-w-page mx-auto px-4 sm:px-6 pt-12 pb-18">
+    <div class="max-w-page mx-auto px-4 sm:px-6 pt-12 pb-18">
       <status-panel
         icon="search"
         heading="Page not found"
@@ -14,7 +14,7 @@ import { StatusPanel } from '@app/common/ui/page/status-panel';
       >
         <back-button />
       </status-panel>
-    </main>
+    </div>
   `,
 })
 export default class NotFound {

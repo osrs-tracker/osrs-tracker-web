@@ -10,7 +10,8 @@ import { Announcer } from '@app/common/a11y/announcer';
  * a page without one it focuses `<main>`, which has no name to read, and announces the page's title instead. Not after
  * the first navigation, which keeps the browser's own start on a loaded page. A navigation that only changes the query
  * or fragment of the same page leaves focus alone while it's in `<main>`: a control there wrote it (the news filters).
- * `preventScroll` leaves the scrolling to the router (`scrollPositionRestoration`).
+ * `preventScroll` leaves the scrolling to the router (`scrollPositionRestoration`). The layout's skip link moves focus
+ * the same way, scrolling to it.
  */
 @Service()
 export class RouteFocus {
@@ -36,13 +37,19 @@ export class RouteFocus {
 
   private focusPage(samePage: boolean): void {
     const main = this.document.querySelector('main');
+    if (samePage && main?.contains(this.document.activeElement)) return;
+    this.focusContent({ preventScroll: true });
+  }
+
+  /** Focuses the page's `h1`, or `<main>` (announcing the page's title) on a page without one */
+  focusContent(options?: FocusOptions): void {
+    const main = this.document.querySelector('main');
     if (!main) return;
-    if (samePage && main.contains(this.document.activeElement)) return;
 
     const target = main.querySelector('h1') ?? main;
     // Focusable by script only, so it isn't a Tab stop
     if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
-    target.focus({ preventScroll: true });
+    target.focus(options);
     // Only for `<main>`: after a focused h1 the title would repeat the page's name
     if (target === main) this.announcer.announce(this.document.title);
   }
