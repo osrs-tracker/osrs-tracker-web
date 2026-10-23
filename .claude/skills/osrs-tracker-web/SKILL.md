@@ -171,8 +171,9 @@ hover shows library signatures and docs instead.
   from the axis). Every chart's card gets a `chart-display-switch` (icon pills, beside its range or period) that shows a
   `chart-table` in the chart's place, at the chart's height, as the canvas is otherwise the only way to its values (WCAG
   1.1.1). A `BaseChart` subclass is hidden, not removed, while its table shows: it creates its chart once, on its
-  canvas. Group the table's rows with `binByTime` and `timeBinLabel` (`common/charts/time-bins.ts`), as `item-volume.ts`
-  does.
+  canvas. Group the table's rows in the visitor's time zone with `binByTime` and `timeBinLabel`
+  (`common/charts/time-bins.ts`), as `priceTableRows` (`item-prices.ts`) and Players online's history do. The volume
+  card bins UTC days and months instead, as the Wiki counts its days (`binnedVolumes`).
 - **Icons**: after changing `public/assets/icons/{skills,activities}`, run `npm run icons` and commit
   `local-icons.generated.ts`.
 - **Font**: SOLIX comes from the private [FreekMencke/solix](https://github.com/FreekMencke/solix) releases
