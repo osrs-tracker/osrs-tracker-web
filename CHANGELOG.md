@@ -52,6 +52,12 @@
   are dark too. On an item's page, the "Sold" bars of the daily volume are violet instead of orange, which was too faint
   on white, and the text beside and under the profit calculator's total is easier to read on its green or red
   background.
+- In the price lists, a change that rounds to 0.0% now shows in a grey pill instead of a green "+0.0%", and an item
+  without a change to show gets a grey "—" pill instead of nothing, so on phones every price lines up. Hovering an item
+  name or a stat tile's line that's cut off shows it in full. On phones and tablets, Home's news titles get three lines
+  instead of being cut at two. The Browse items letter keys sit closer together on phones and wide screens, so they're
+  bigger and "0–9" no longer breaks across two lines on small phones. An empty "Your recent lookups" now says it's about
+  this device, so it isn't mixed up with everyone's lookups.
 
 ## 2026-10-21
 

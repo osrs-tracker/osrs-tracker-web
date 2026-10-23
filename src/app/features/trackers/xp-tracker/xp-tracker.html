@@ -46,7 +46,7 @@
         kind="player"
         [state]="xpTrackerStore.recentPlayers().length ? 'ready' : 'empty'"
         [count]="xpTrackerStore.recentPlayers().length"
-        emptyText="No players looked up yet."
+        emptyText="No players looked up on this device yet."
         emptyHint="Search for a player above to start tracking them."
       >
         @for (username of xpTrackerStore.recentPlayers(); track username) {
