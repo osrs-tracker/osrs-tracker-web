@@ -260,7 +260,9 @@ The rules it follows (it reads them here):
 - Click, hover or type into controls picked from a snapshot (`browser_snapshot` refs), not ones found by guessing: a
   stray click toggles favourites or the theme in the test browser.
 - Walk changed focusable parts by keyboard: Tab order, focus visible and not hidden under the sticky nav or the consent
-  banner (WCAG 2.4.11), Enter, Space and Escape, and focus on the new page's `h1` after a client-side navigation.
+  banner (WCAG 2.4.11), also after scrolling the next stop under the nav, Enter, Space and Escape, and focus on the new
+  page's `h1` after a client-side navigation.
+- Endless animations stop under reduced motion; an essential loading indicator may keep an opacity-only pulse.
 - A clean scan and walk don't make a page accessible: list what wasn't checked (alt text and label meaning, reading
   order, screen-reader output, zoom and reflow).
 - Close the browser as soon as the round of checks is done, even mid-task; open it again for the next one.
