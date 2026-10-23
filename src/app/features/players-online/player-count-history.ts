@@ -36,12 +36,12 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
 @Component({
   selector: 'player-count-history',
   template: `
-    <article card [attr.aria-busy]="stale() || null">
+    <article card [attr.aria-busy]="switching() || null">
       <h2 title>History</h2>
       <segmented actions label="Range" [options]="rangeOptions" [value]="range()" (valueChange)="selectRange($event)" />
 
       <!-- Another range's chart stays while this one loads, dimmed after a moment so a quick load doesn't flicker -->
-      <div [class]="stale() ? 'opacity-50 transition-opacity delay-300' : ''">
+      <div [class]="switching() ? 'opacity-50 transition-opacity delay-300' : ''">
         <p class="flex items-center min-h-5 mb-4 text-sm text-muted">
           @if (peak(); as peak) {
             <span
@@ -194,6 +194,9 @@ export class PlayerCountHistory {
   /** An error in place of the chart when the picked range has nothing to draw: a failed refresh keeps the chart */
   readonly failed = computed(() => !!this.history.error() && (!this.shown() || this.stale()));
 
+  /** Another range's chart is drawn while the picked one loads */
+  readonly switching = computed(() => this.stale() && !this.failed());
+
   /** What's drawn; daily ranges leave out the days counted only in part */
   readonly series = computed<PlayerCountSeries | undefined>(() => {
     const shown = this.shown();
@@ -220,10 +223,7 @@ export class PlayerCountHistory {
 
     const peak = points.reduce((top, point) => ((point.peak ?? point.total) > (top.peak ?? top.total) ? point : top));
     const value = fmt(peak.peak ?? peak.total);
-    if (isDaily(range))
-      return points.length === 1
-        ? { label: 'Peak so far', value, when: `on ${format(peak.date, 'd MMMM')}` }
-        : { label: 'Peak', value, when: `on ${format(peak.date, 'd MMMM yyyy')}` };
+    if (isDaily(range)) return { label: 'Peak', value, when: `on ${format(peak.date, 'd MMMM yyyy')}` };
 
     const time = format(peak.date, 'HH:mm');
     const when = isToday(peak.date)
@@ -274,13 +274,13 @@ export class PlayerCountHistory {
 }
 
 /** Whether the points start when counting did: always on All, and on another range while counting is younger */
-function startsCounting(range: PlayerCountRange, points: PlayerCountPoint[]): boolean {
+export function startsCounting(range: PlayerCountRange, points: PlayerCountPoint[]): boolean {
   const { span, slack } = RANGES[range];
   return !!points.length && (span === undefined || points[0].date.getTime() >= Date.now() - span + slack!);
 }
 
 /** Daily points without today's (still counting) and, when counting started that day, the first */
-function fullDays(points: PlayerCountPoint[], startsCounting: boolean): PlayerCountPoint[] {
+export function fullDays(points: PlayerCountPoint[], startsCounting: boolean): PlayerCountPoint[] {
   const today = localDay(new Date()).getTime();
   return points.filter((point, i) => point.date.getTime() !== today && !(i === 0 && startsCounting));
 }
