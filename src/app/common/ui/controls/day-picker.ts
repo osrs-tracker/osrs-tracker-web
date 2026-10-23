@@ -194,6 +194,11 @@ export class DayPicker {
     this.focusDay(event.detail === 0);
   }
 
+  /** Focuses the trigger, e.g. when a control beside it that had focus goes away */
+  focus(): void {
+    this.trigger().nativeElement.focus();
+  }
+
   choose(key: string | null): void {
     if (key !== (this.value() ?? null)) this.picked.emit(key);
     this.close(true);

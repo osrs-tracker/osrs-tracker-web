@@ -62,7 +62,7 @@ export function listCardState(resource: Resource<readonly unknown[] | undefined>
         </div>
       }
       @case ('error') {
-        <load-error [source]="errorSource()" [message]="errorText()" (retry)="retry.emit()" />
+        <load-error [source]="errorSource()" [message]="errorText()" [error]="error()" (retry)="retry.emit()" />
       }
     }
   `,
@@ -86,6 +86,8 @@ export class ListCard {
   /** The `load-error` source for analytics; required for lists that can fail to load. */
   readonly errorSource = input('list-card');
   readonly errorText = input("Couldn't load this list.");
+  /** What failed (the resource's `error()`), for the error state's hint */
+  readonly error = input<unknown>();
 
   readonly retry = output<void>();
 }

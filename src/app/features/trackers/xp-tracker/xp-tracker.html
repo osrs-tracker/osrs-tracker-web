@@ -21,6 +21,7 @@
       emptyText="No players looked up yet."
       errorSource="recent-player-lookups"
       errorText="Global lookups didn't load."
+      [error]="recentPlayerLookups.error()"
       (retry)="recentPlayerLookups.reload()"
     >
       <!-- Projected content is created in every state, and value() throws in the error state -->

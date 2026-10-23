@@ -12,6 +12,11 @@
   do, or that something didn't load, in the item search, the price tables and the news. They also hear the notice when
   the hiscores stop responding on a player's page. The item search no longer tells screen readers a list is open when it
   only shows "No items match".
+- Pressing "Try again" after something didn't load now keeps your place for the keyboard: focus moves to the heading of
+  the card that reloads, or back to the search box, instead of jumping to the top of the page. On the news page, "Show
+  older posts" moves focus to the first older post it adds, and clearing the day or the category moves it to the control
+  you'd use next. When the server fails rather than your connection, the message now says so, instead of asking you to
+  check your connection.
 
 ## 2026-10-21
 

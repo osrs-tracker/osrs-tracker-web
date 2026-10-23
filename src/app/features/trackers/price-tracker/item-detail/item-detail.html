@@ -49,6 +49,7 @@
           class="block h-70"
           source="item-price-chart"
           message="Couldn't load the price chart."
+          [error]="priceSeries.error()"
           (retry)="priceSeries.reload()"
         />
       } @else if (priceSeries.isLoading()) {
