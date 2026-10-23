@@ -61,10 +61,9 @@
   }
 
   /*
-   * A live dot's ring (Players online): an accent disc that grows out of the dot and fades, forever: the
-   * owner's choice, knowingly failing WCAG 2.2.2 (motion that doesn't stop within five seconds). Off under reduced
-   * motion (`motion-reduce:after:animate-none`). Scale and opacity, not box-shadow, so the compositor runs it without
-   * repaints.
+   * A live dot's ring (Players online): an accent disc that grows out of the dot and fades, forever on
+   * purpose (docs/decisions.md). Off under reduced motion (`motion-reduce:after:animate-none`). Scale and opacity, not
+   * box-shadow, so the compositor runs it without repaints.
    */
   --animate-live: live 2.4s ease-out infinite;
 
