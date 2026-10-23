@@ -49,7 +49,7 @@
         kind="item"
         [state]="recentItems().length ? 'ready' : 'empty'"
         [count]="recentItems().length"
-        emptyText="No items looked up yet."
+        emptyText="No items looked up on this device yet."
         emptyHint="Search for an item above to see its price."
       >
         @for (item of recentItems(); track item.id) {

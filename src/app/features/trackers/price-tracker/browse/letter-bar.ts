@@ -3,15 +3,16 @@ import { RouterLink } from '@angular/router';
 import { BROWSE_LETTERS, browseLetterLabel, startingWith } from './browse-letters';
 
 /**
- * Links to every browse page as equal keys: one row on wide screens, two from `sm`, three of nine on phones. The
- * current letter is filled with the accent.
+ * Links to every browse page as equal keys: one row on wide screens, two from `sm`, three of nine on phones. One row
+ * and phones put the keys closer together, so they stay wide enough for "0–9". The current letter is filled with the
+ * accent.
  */
 @Component({
   selector: 'nav[letter-bar]',
   template: `
     @for (letter of LETTERS; track letter) {
       <a
-        class="flex items-center justify-center h-10 rounded-xl font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        class="flex items-center justify-center h-10 rounded-xl font-bold whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         [class]="letter === current() ? 'bg-accent text-on-accent' : 'bg-card text-strong hover:bg-row'"
         [class.text-sm]="letter === '0'"
         [routerLink]="['/trackers/price/browse', letter]"
@@ -22,7 +23,7 @@ import { BROWSE_LETTERS, browseLetterLabel, startingWith } from './browse-letter
     }
   `,
   host: {
-    'class': 'grid grid-cols-9 sm:grid-cols-14 lg:grid-cols-27 gap-2',
+    'class': 'grid grid-cols-9 sm:grid-cols-14 lg:grid-cols-27 gap-1 sm:max-lg:gap-2',
     'aria-label': 'Browse items by first letter',
   },
   imports: [RouterLink],

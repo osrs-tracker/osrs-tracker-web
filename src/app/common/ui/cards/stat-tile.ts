@@ -6,8 +6,8 @@ import { Skeleton } from '../loading/skeleton';
 /**
  * A labelled value with a line below it, e.g. "XP last 7 days · 3.72M · +24% vs previous week". `tone` colours the line
  * for a change; `compact` (24px value instead of 30px) fits six in a row; `loading` shows skeletons of the same size.
- * `subTip` shows a line that may be cut off in full. Content goes below the value, e.g. an `inline` `load-error` in
- * place of the line.
+ * `subTip` shows a line that may be cut off in full; without it, the line's `title` does. Content goes below the value,
+ * e.g. an `inline` `load-error` in place of the line.
  */
 @Component({
   selector: 'stat-tile',
@@ -43,6 +43,7 @@ import { Skeleton } from '../loading/skeleton';
           [tooltipTemplate]="subTipTemplate"
           [tooltipUnderline]="false"
           [attr.tabindex]="subTip() ? 0 : null"
+          [attr.title]="subTip() ? null : sub()"
           >{{ sub() }}</span
         >
         <ng-template #subTipTemplate

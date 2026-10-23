@@ -34,7 +34,9 @@ interface ItemRowPrice {
 
     <!-- On phones the price sits beside the change instead, so a row is one line -->
     <span class="flex flex-1 flex-col gap-1 min-w-0">
-      <span class="truncate text-lg/5 max-sm:text-base/5 font-bold text-strong">{{ item().name }}</span>
+      <span class="truncate text-lg/5 max-sm:text-base/5 font-bold text-strong" [title]="item().name">{{
+        item().name
+      }}</span>
       @if (loading()) {
         <skeleton class="max-sm:hidden h-3 w-16 my-0.5" />
       } @else if (priceResource.error()) {
@@ -61,15 +63,24 @@ interface ItemRowPrice {
           >{{ shortPrice() }} gp</span
         >
       }
-    }
-    @if (!loading() && !priceResource.error() && changePercent() !== null) {
-      <span
-        class="shrink-0 min-w-18 px-2.5 py-1 rounded-full text-center text-sm/4 font-bold whitespace-nowrap tabular-nums"
-        [class]="up() ? 'text-up bg-up/16' : 'text-down bg-down-pill'"
-        [title]="changeTitle()"
-      >
-        {{ sign() }}{{ changePercent() | number: '1.1-1' }}%
-      </span>
+      @if (changePercent() !== null) {
+        <span
+          class="shrink-0 min-w-18 px-2.5 py-1 rounded-full text-center text-sm/4 font-bold whitespace-nowrap tabular-nums"
+          [class]="
+            tone() === 'up' ? 'text-up bg-up/16' : tone() === 'down' ? 'text-down bg-down-pill' : 'text-muted bg-ground'
+          "
+          [title]="changeTitle()"
+        >
+          {{ sign() }}{{ changePercent() | number: '1.1-1' }}%
+        </span>
+      } @else {
+        <!-- Fills the pill's column, so prices line up on phones, without claiming the price didn't move -->
+        <span
+          class="shrink-0 min-w-18 px-2.5 py-1 rounded-full text-center text-sm/4 font-bold text-muted bg-ground"
+          title="No change to show"
+          ><span aria-hidden="true">—</span><span class="sr-only">No change to show</span></span
+        >
+      }
     }
   `,
   host: {
@@ -110,15 +121,21 @@ export class ItemRow {
 
   readonly price = computed(() => this.data()?.price ?? null);
   readonly shortPrice = computed(() => formatNumberLegible(this.price() ?? 0));
-  readonly up = computed(() => (this.data()?.change ?? 0) >= 0);
-  /** The sign as written in the design: a plus or a true minus. */
-  readonly sign = computed(() => formatSign(this.data()?.change ?? 0, 'always'));
   readonly changePercent = computed(() => {
     const { change, average } = this.data() ?? {};
     return change != null && average ? (Math.abs(change) / average) * 100 : null;
   });
+  /** A change shown as 0.0% is neutral, not a rise */
+  readonly tone = computed((): 'up' | 'down' | 'flat' => {
+    const percent = this.changePercent();
+    if (percent === null || percent < 0.05) return 'flat';
+    return (this.data()?.change ?? 0) > 0 ? 'up' : 'down';
+  });
+  /** The sign as written in the design: a plus or a true minus, none on a neutral change. */
+  readonly sign = computed(() => (this.tone() === 'flat' ? '' : formatSign(this.data()?.change ?? 0, 'always')));
   // whole gp, as in the game: the average has decimals
   readonly changeTitle = computed(
-    () => `${this.sign()}${formatWhole(Math.abs(this.data()?.change ?? 0))} gp vs yesterday's average`,
+    () =>
+      `${formatSign(this.data()?.change ?? 0, 'exceptZero')}${formatWhole(Math.abs(this.data()?.change ?? 0))} gp vs yesterday's average`,
   );
 }
