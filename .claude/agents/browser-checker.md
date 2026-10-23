@@ -179,15 +179,16 @@ the flagged elements in your snapshot and screenshots. The walk checks what a sc
 - **Scrolled** (2.4.11, 640px and wider): Tab scrolls only to an element outside the viewport, not to one under the
   sticky nav, so a walk that starts in view never tests the nav. Walk the change's Tab stops a second time, and before
   each press pass the scroll script below to `browser_evaluate`: it scrolls the next focusable element's top to 20px
-  from the viewport's top, under the nav. Then press Tab and run the walk script; `0/5` is an issue. If the script's
-  `top` isn't near 20 (the end of the page), that stop wasn't tested: say so.
+  from the viewport's top, under the nav. Then press Tab and run the walk script; `0/5` is an issue. That stop wasn't
+  tested, say so, when the script's `top` isn't near 20 (the end of the page) or the walk's `el` isn't its `next` (the
+  script guessed the Tab order wrong).
 
 <!-- prettier-ignore -->
 ```js
 () => {
-  // Tab order is DOM order here: the app uses no positive tabindex
-  const all = [...document.querySelectorAll('a[href], button, input, select, textarea, [tabindex]')]
-    .filter((e) => e.tabIndex >= 0 && !e.disabled && e.checkVisibility({ visibilityProperty: true }));
+  // Tab order is DOM order here: the app uses no positive tabindex. A guess: the walk's `el` confirms it
+  const all = [...document.querySelectorAll('a[href], button, input, select, textarea, summary, [tabindex]')]
+    .filter((e) => e.tabIndex >= 0 && !e.matches(':disabled') && !e.closest('[inert]') && e.checkVisibility({ visibilityProperty: true }));
   const next = all[all.indexOf(document.activeElement) + 1];
   if (!next) return 'no next element';
   window.scrollBy(0, next.getBoundingClientRect().top - 20);
