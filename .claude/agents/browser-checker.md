@@ -18,7 +18,8 @@ tools:
 # `disallowedTools` does remove them: run_code_unsafe runs any code in the server, file_upload reads local files.
 disallowedTools: mcp__playwright-headless__browser_run_code_unsafe, mcp__playwright-headless__browser_file_upload
 # Its own browser: headless, so no window opens, and isolated (an in-memory profile), so it never shares the session's
-# Playwright browser or another check's. The osrs-tracker pages need no sign-in; other sites keep the headed plugin one.
+# Playwright browser. Parallel checks in one session do share it, so callers run one at a time. The osrs-tracker pages
+# need no sign-in; other sites keep the headed plugin one.
 mcpServers:
   - playwright-headless:
       type: stdio

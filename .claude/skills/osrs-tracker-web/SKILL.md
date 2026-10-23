@@ -244,9 +244,10 @@ The `browser-checker` agent does the check, so its screenshots stay out of the m
    scan sees their error states.
 4. Delegate every round to `browser-checker` (without a `model`), hover, keyboard and width iterations too, with the
    URLs, what changed (theme, colours, phone layout, caching, the state to show, the changed elements) and the scan's
-   lines. It starts its own headless, isolated browser, so checks can run in parallel and beside the session's own
-   Playwright browser. That one stays headed, for what the agent can't do: sites that need a sign-in, and mocking API
-   responses (`browser_run_code_unsafe`).
+   lines. Its headless browser is apart from the session's own Playwright browser, but every `browser-checker` in a
+   session shares it (two at once navigated each other's tab, 2026-10-23): run one at a time. The session's browser
+   stays headed, for what the agent can't do: sites that need a sign-in, and mocking API responses
+   (`browser_run_code_unsafe`).
 5. Pass on the scan's violations, its `VERDICT:`, contrast failures, keyboard issues, request counts, failed requests,
    console errors and its "Not checked" list, and send its screenshots with `SendUserFile` without `Read`ing them: it
    has looked, and a `Read` puts each image back in your context. For another look, delegate again. Then delete them and

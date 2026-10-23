@@ -314,8 +314,10 @@ Choices that look like accidents without their context: what was decided, why, a
   which aborts the `fetch` (an `aborted` `outgoing` line, `responseTime` about 3 s) and fails the request. An item page
   then shows the prices as loading and the browser loads them. Opt-in, not for every request: a general timeout also
   turned a slow API or GitHub call into the error page (resolvers), a load-error box (player history, Home's news,
-  cached for 5 minutes) or a bare 404 (the changelog's resolver has no error handler), while only the Wiki was ever
+  cached for 5 minutes) or a bare 404 (the changelog's resolver had no error handler then), while only the Wiki was ever
   slow. Crawlers that hit a timeout see no prices in that page's HTML.
+  - **Update (2026-10-23):** the changelog's resolver has had an error handler since #158 (2026-10-09), so a failed
+    GitHub call now shows the error page, not a bare 404.
 - **Update (2026-10-10, #149):** a day of `outgoing` logs (2026-10-09 16:35 to 2026-10-10 17:25 UTC, 1,224 item renders)
   showed the timeout capping renders (max 4.4 s, no more aborts) but not making them fast: p50 264 ms, p90 2.5 s, 12%
   over 1.5 s. The slow call was the item's `latest?id=<item>`: p90 2.2 s, 89 of 1,227 timed out. The nature rune's
