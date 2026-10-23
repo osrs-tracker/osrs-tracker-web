@@ -73,6 +73,7 @@
     "helmet": "^8.1.0",
     "isbot": "^5.2.2",
     "marked": "^18.1.1",
+    "marked-smartypants": "^1.1.12",
     "rxjs": "~7.8.2",
     "satori": "^0.56.2",
     "tslib": "^2.3.0",

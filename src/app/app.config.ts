@@ -25,6 +25,7 @@ import { loadingIndicatorInterceptor } from './core/interceptors/loading-indicat
 import { shareRequestInterceptor } from './core/interceptors/share-request-interceptor';
 import { ssrTimeoutInterceptor } from './core/interceptors/ssr-timeout-interceptor';
 import { ssrUserAgentInterceptor } from './core/interceptors/ssr-user-agent-interceptor';
+import { alignAnchorScrolling } from './core/routing/anchor-offset';
 import { ParamAwareReuseStrategy } from './core/routing/param-aware-reuse-strategy';
 import { RouteFocus } from './core/routing/route-focus';
 import { reloadOnStaleChunk } from './core/routing/stale-chunk-reloader';
@@ -61,6 +62,7 @@ export const appConfig: ApplicationConfig = {
       analyticsService.setupPageAnalytics();
       analyticsService.setupWebVitals();
       inject(RouteFocus).start();
+      alignAnchorScrolling();
     }),
   ],
 };
