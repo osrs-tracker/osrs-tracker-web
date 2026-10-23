@@ -2,6 +2,7 @@ import { Component, inject, input, output } from '@angular/core';
 import { HiscoreEntry } from '@osrs-tracker/models';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { LoadError } from '@app/common/ui/loading/load-error';
+import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
 import { BOSS_LAYOUT, RAID_LAYOUT } from '../activity-categories';
 import { PlayerView, TopTab } from '../player-view';
 import { ActivityGrid } from './activity-grid';
@@ -16,7 +17,7 @@ const TABS: SegmentedOption<TopTab>[] = [
 /** The player page's main hiscores card: skills, bosses or raids, whichever tab `PlayerView` has open. */
 @Component({
   selector: 'article[skills-card]',
-  imports: [ActivityGrid, LoadError, Segmented, SkillGrid],
+  imports: [ActivityGrid, InfoTooltip, LoadError, Segmented, SkillGrid],
   template: `
     <div class="flex items-center min-h-14 px-4 py-1.5 border-b border-line">
       <segmented
@@ -27,6 +28,11 @@ const TABS: SegmentedOption<TopTab>[] = [
         [value]="playerView.top()"
         (picked)="playerView.showTop($event)"
       />
+      @if (!failed()) {
+        <info-tooltip label="About the coloured rings"
+          ><ng-template>{{ ringTip[playerView.top()] }}</ng-template></info-tooltip
+        >
+      }
     </div>
     <div class="px-4 pt-4">
       @if (failed()) {
@@ -64,6 +70,13 @@ const TABS: SegmentedOption<TopTab>[] = [
 })
 export class SkillsCard {
   readonly playerView = inject(PlayerView);
+
+  /** What a tile's coloured inner ring means, per tab */
+  readonly ringTip: Record<TopTab, string> = {
+    skills: 'A coloured ring marks a skill that gained XP in these days: pick it to show it on the chart.',
+    bosses: 'A coloured ring marks a boss killed in these days: pick it to show it on the chart.',
+    raids: 'A coloured ring marks a raid completed in these days: pick it to show it on the chart.',
+  };
 
   /** `undefined` while the hiscores load */
   readonly hiscore = input.required<HiscoreEntry | undefined>();

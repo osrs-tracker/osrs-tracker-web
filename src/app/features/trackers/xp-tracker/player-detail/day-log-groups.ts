@@ -17,11 +17,14 @@ export type LogGroup =
       skills: (HiscoreDiffSkill & { name: string })[];
       activities: (HiscoreDiffActivity & { name: string })[];
     }
-  | { type: 'empty'; from: Date; to: Date; days: number };
+  | { type: 'empty'; from: Date; to: Date; days: number }
+  /** Today, with nothing gained so far: its own card, the size of the one shown while it loads */
+  | { type: 'today'; date: Date; since: string };
 
 /**
  * The day log's cards, newest first: each day's skills and activities that gained (not Overall, which the card shows
- * on its own), with each run of consecutive empty days (including a single day) merged into one group.
+ * on its own), with each run of consecutive empty days (including a single day) merged into one group. Today stays on
+ * its own when nothing was gained yet.
  *
  * @param diffs the daily diffs, newest first
  * @param todayLoading the live hiscores are loading: the first diff (today's) is left out, as it's a skeleton until then
@@ -47,7 +50,9 @@ export function dayLogGroups(diffs: Gains[], todayLoading: boolean, todaySince: 
 
     const to = diff.days > 1 ? addDays(diff.date, diff.days - 1) : undefined;
 
-    if (!skills.length && !activities.length) {
+    if (!skills.length && !activities.length && i === 0 && !to && !todayLoading && todaySince) {
+      groups.push({ type: 'today', date: diff.date, since: todaySince });
+    } else if (!skills.length && !activities.length) {
       // newest first, so each diff extends the run back
       run = { type: 'empty', from: diff.date, to: run?.to ?? to ?? diff.date, days: (run?.days ?? 0) + diff.days };
     } else {

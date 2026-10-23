@@ -21,6 +21,13 @@
   older posts" moves focus to the first older post it adds, and clearing the day or the category moves it to the control
   you'd use next. When the server fails rather than your connection, the message now says so, instead of asking you to
   check your connection.
+- On a player's page, when the history doesn't load, the stat tiles now show the total level and "–" for the rest
+  instead of loading forever, and the message says which parts are missing. When the hiscores don't respond, the line
+  under the player's name now says so, with a "Try again" link, instead of a notice that pushed the whole page down. A
+  quiet day so far keeps its own "Nothing gained yet today" card in the day log, the size of the one shown while it
+  loads, so the log doesn't jump when you scroll to it. Compare fits both days on one line on phones, and its numbers
+  use one decimal like the rest of the page. An ⓘ beside the Skills, Bosses and Raids tabs explains the coloured rings,
+  and "02:00 UTC" no longer breaks across two lines.
 
 ## 2026-10-21
 

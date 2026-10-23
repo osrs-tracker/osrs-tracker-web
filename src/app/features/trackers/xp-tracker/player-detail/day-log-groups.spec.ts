@@ -36,7 +36,9 @@ const shape = (groups: ReturnType<typeof dayLogGroups>): string[] =>
   groups.map(group =>
     group.type === 'day'
       ? `day ${group.date.getUTCDate()}${group.to ? `–${group.to.getUTCDate()}` : ''}`
-      : `empty ${group.from.getUTCDate()}–${group.to.getUTCDate()} (${group.days})`,
+      : group.type === 'today'
+        ? `today ${group.date.getUTCDate()}`
+        : `empty ${group.from.getUTCDate()}–${group.to.getUTCDate()} (${group.days})`,
   );
 
 describe('dayLogGroups', () => {
@@ -73,6 +75,22 @@ describe('dayLogGroups', () => {
       skills: [{ name: SkillEnum.Attack, xp: 1_000 }],
       activities: [{ name: ActivityEnum.ClueScrollsHard, score: 2 }],
     });
+  });
+
+  it('keeps a quiet today on its own, apart from the empty days before it', () => {
+    expect(shape(dayLogGroups([diff(12), diff(11), active(10)], false, '02:00'))).toEqual([
+      'today 12',
+      'empty 11–11 (1)',
+      'day 10',
+    ]);
+    // not while it loads, or when the live hiscores failed and the first diff is the last stored day
+    expect(shape(dayLogGroups([diff(12), diff(11), active(10)], true, '02:00'))).toEqual(['empty 11–11 (1)', 'day 10']);
+    expect(shape(dayLogGroups([diff(12), diff(11), active(10)], false, undefined))).toEqual([
+      'empty 11–12 (2)',
+      'day 10',
+    ]);
+    // nor across a gap, which reaches back before today
+    expect(shape(dayLogGroups([diff(10, {}, 3), active(9)], false, '02:00'))).toEqual(['empty 10–12 (3)', 'day 9']);
   });
 
   it("dates only today's gains from the hour they count from, and leaves them out while they load", () => {

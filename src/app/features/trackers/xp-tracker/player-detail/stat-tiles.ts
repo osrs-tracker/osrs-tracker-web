@@ -27,12 +27,7 @@ export function statTilesFor(
   period: Period,
   comparisonFailed = false,
 ): StatTileView[] {
-  const totalLevel: StatTileView = {
-    label: 'Total level',
-    value: formatWhole(overall.level),
-    sub: overall.rank !== null ? `Rank ${formatWhole(overall.rank)}` : 'Unranked',
-    tone: 'muted',
-  };
+  const totalLevel = totalLevelTile(overall);
   const since = summary?.since;
   const xpLabel = since ? `XP since ${format(since, 'd MMM')}` : `XP last ${period} days`;
   if (!summary) {
@@ -71,6 +66,29 @@ export function statTilesFor(
       tone: 'muted',
     },
   ];
+}
+
+/**
+ * The stat tiles when the history failed to load: the total level when the live hiscores are in, and "–" for the gains,
+ * which need the history.
+ */
+export function failedStatTilesFor(overall: HiscoreSkill | undefined, period: Period): StatTileView[] {
+  const notLoaded = (label: string): StatTileView => ({ label, value: '–', sub: 'Not loaded', tone: 'muted' });
+  return [
+    overall ? totalLevelTile(overall) : notLoaded('Total level'),
+    notLoaded(`XP last ${period} days`),
+    notLoaded('Levels gained'),
+    notLoaded('Boss kills'),
+  ];
+}
+
+function totalLevelTile(overall: HiscoreSkill): StatTileView {
+  return {
+    label: 'Total level',
+    value: formatWhole(overall.level),
+    sub: overall.rank !== null ? `Rank ${formatWhole(overall.rank)}` : 'Unranked',
+    tone: 'muted',
+  };
 }
 
 /** Compared with the period before it, e.g. "+24% vs previous week"; 90 days back is as far as the history goes, so only 7D and 30D compare */

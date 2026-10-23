@@ -45,10 +45,10 @@ import { DAY_PARAM, readComparePicks, writeComparePicks } from './compare/compar
 import { PlayerHeader } from './player-header';
 import { playerHistory } from './player-history';
 import { LogNotice, PlayerLogs } from './player-logs';
-import { statTilesFor } from './stat-tiles';
+import { failedStatTilesFor, statTilesFor } from './stat-tiles';
 import { dailyGains, periodStart, periodSummary, totalGains } from './player-summary';
 import { PlayerView } from './player-view';
-import { LucideArrowLeft, LucideTriangleAlert } from '@lucide/angular';
+import { LucideArrowLeft } from '@lucide/angular';
 
 type LogView = 'days' | 'compare';
 
@@ -74,7 +74,6 @@ const LOG_VIEWS: SegmentedOption<LogView>[] = [
     StatTile,
     StatusPanel,
     LucideArrowLeft,
-    LucideTriangleAlert,
   ],
   providers: [
     PlayerView,
@@ -116,7 +115,7 @@ export default class PlayerDetail implements OnInit {
 
   readonly scrapingOffset = this.xpTrackerStore.scrapingOffset;
   /** The UTC hour the visitor's offset is checked at, e.g. "02:00 UTC" */
-  readonly trackedAt = computed(() => `${String((this.scrapingOffset() + 24) % 24).padStart(2, '0')}:00 UTC`);
+  readonly trackedAt = computed(() => `${String((this.scrapingOffset() + 24) % 24).padStart(2, '0')}:00\u00a0UTC`);
 
   readonly history = playerHistory({
     username: this.username,
@@ -219,6 +218,10 @@ export default class PlayerDetail implements OnInit {
   });
   readonly statTiles = computed(() => {
     const overall = this.overall();
+    // the total level still shows, once the live hiscores are in or failed
+    if (this.history.firstPageFailed() && !this.history.todayLoading()) {
+      return failedStatTilesFor(overall, this.playerView.period());
+    }
     if (!overall || !this.history.comparedLoaded()) return undefined;
     return statTilesFor(overall, this.summary(), this.playerView.period(), this.history.previousPeriodFailed());
   });
@@ -274,7 +277,7 @@ export default class PlayerDetail implements OnInit {
     }
   }
 
-  /** The stale hiscores notice's Try again */
+  /** Try again on the header's line that says the hiscores aren't responding */
   reloadToday(): void {
     this.history.reloadToday();
     this.analyticsService.trackEvent('retry', { source: 'player-stale' });
