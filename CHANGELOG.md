@@ -42,6 +42,11 @@
   and the columns that don't fit, such as the buy and sell prices, the buy limit and the daily volume. Large margins,
   profits and per-limit totals are shortened with one decimal throughout ("12.0K", "195.5M"), so a column reads evenly,
   and per-limit gains get a "+" like the profit beside them. The column names now line up with the numbers below them.
+- Boxes you type in, drop-downs and outlined buttons have a darker outline in both themes, so they stand out from the
+  card around them. In the dark theme, the browser's own parts, such as scrollbars and the search box's clear button,
+  are dark too. On an item's page, the "Sold" bars of the daily volume are violet instead of orange, which was too faint
+  on white, and the text beside and under the profit calculator's total is easier to read on its green or red
+  background.
 
 ## 2026-10-21
 

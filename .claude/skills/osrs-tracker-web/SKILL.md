@@ -84,9 +84,9 @@ value the scale lacks becomes a token in `src/styles/tailwind/theme.css`.
   `deep` hero band and icon tiles, `border` controls, `muted`/`text`/`strong` text, `accent` (+ `accent-hover`,
   `on-accent`) links and primary actions, `up`/`down` changes (a true green in the dark theme, apart from the emerald
   accent), `down-pill` the red change pill's background (a tint in light, solid in dark: a see-through red over slate
-  turns pink), `amber`/`orange` warnings, `scrim` the see-through layer behind the phone nav's menu sheet, `dot` the
-  hero's dot grid (`.dot-grid` in `utilities.css`). Charts read them through `token()` in `chart-setup.ts`, which lists
-  the ones they use.
+  turns pink), `amber` warnings, `sold` the volume chart's sold bars, `scrim` the see-through layer behind the phone
+  nav's menu sheet, `dot` the hero's dot grid (`.dot-grid` in `utilities.css`). Charts read them through `token()` in
+  `chart-setup.ts`, which lists the ones they use.
 - **Tints:** `hiscores/picked-cell.ts` and the chart legend layer one over the surface.
 - **Surfaces:** cards are flat; only floating layers (dropdowns, tooltips, Home's preview card) get `shadow-float`.
 - **Radii:** `rounded-3xl` hero surfaces (search box, preview card), `rounded-2xl` cards, stat tiles and buttons in the

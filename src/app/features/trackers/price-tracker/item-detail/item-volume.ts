@@ -24,7 +24,7 @@ interface VolumeSummary {
           <span class="size-2.5 rounded bg-accent" aria-hidden="true"></span>Bought (instant buy)
         </span>
         <span class="flex items-center gap-1.5">
-          <span class="size-2.5 rounded bg-orange" aria-hidden="true"></span>Sold (instant sell)
+          <span class="size-2.5 rounded bg-sold" aria-hidden="true"></span>Sold (instant sell)
         </span>
       </div>
     </div>

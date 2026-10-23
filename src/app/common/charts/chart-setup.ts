@@ -42,7 +42,7 @@ let colors: { dark: boolean; values: Record<string, string> } | undefined;
  * A theme colour token (`--line`, `--muted`…), read from the page so charts match it in both themes. Cached per theme,
  * since Chart.js asks for colours on every draw. Browser only, like drawing.
  */
-export function token(name: 'line' | 'muted' | 'text' | 'strong' | 'card' | 'border' | 'accent' | 'orange'): string {
+export function token(name: 'line' | 'muted' | 'text' | 'strong' | 'card' | 'border' | 'accent' | 'sold'): string {
   const dark = document.documentElement.classList.contains('dark');
   if (colors?.dark !== dark) colors = { dark, values: {} };
   return (colors.values[name] ??= getComputedStyle(document.documentElement).getPropertyValue(`--${name}`).trim());

@@ -7,7 +7,7 @@ import { formatNumberShort } from '@app/common/format/number-format';
 import { DailyVolume } from '../item-prices';
 
 /**
- * Items bought (accent, above the line) and sold (orange, below it) per UTC day. Both halves share one scale, so the
+ * Items bought (accent, above the line) and sold (violet, below it) per UTC day. Both halves share one scale, so the
  * bars compare; the axis counts both up from the line, and the tooltip has the exact numbers.
  */
 @Component({
@@ -65,7 +65,7 @@ export class VolumeChart extends BaseChart<'bar', DailyVolume[]> {
       {
         label: 'Sold',
         data: volumes.map(({ day, sold }) => ({ x: day * 1000, y: -sold })),
-        backgroundColor: () => token('orange'),
+        backgroundColor: () => token('sold'),
         stack: 'volume',
       },
     ];
