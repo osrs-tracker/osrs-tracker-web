@@ -20,6 +20,8 @@ import { LucideSearch } from '@lucide/angular';
         name="player"
         [(ngModel)]="usernameQuery"
         autocomplete="off"
+        spellcheck="false"
+        enterkeyhint="search"
       />
       <button
         type="submit"

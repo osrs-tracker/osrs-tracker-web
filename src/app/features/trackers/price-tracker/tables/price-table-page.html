@@ -38,6 +38,7 @@
           aria-label="Filter items by name"
           placeholder="Filter by name"
           autocomplete="off"
+          spellcheck="false"
           [value]="options().query"
           (input)="setOptions({ query: $any($event.target).value })"
         />
