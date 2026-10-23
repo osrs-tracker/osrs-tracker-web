@@ -64,6 +64,8 @@ export default class RootLayout {
   /** Home's tab is underlined on phones on Home, unless a menu is open (its tab is underlined then) */
   readonly homeMarked = computed(() => !this.navMenus.open() && this.navMenus.url().split(/[?#]/)[0] === '/');
 
+  readonly skipHref = computed(() => `${this.navMenus.url().split('#')[0]}#main`);
+
   /** Focuses the page's h1 as a navigation does, without writing `#main` into the URL */
   protected skipToContent(event: MouseEvent): void {
     event.preventDefault();
