@@ -20,8 +20,8 @@ const TYPE_LABELS: Record<PlayerType, string> = {
 };
 
 /**
- * The player's account type as an icon tile: the helm of the type they started as, with a badge for each status they
- * lost. Bottom left a red × when de-ironed (no longer iron at all) or the ironman helm when de-ultimated (still iron);
+ * The player's account type as an icon tile: the helm of the type they started as (a person for a regular account), with
+ * a badge for each status they lost. Bottom left a red × when de-ironed (no longer iron at all) or the ironman helm when de-ultimated (still iron);
  * bottom right a skull when a hardcore died. A tooltip, not a title, names the type and what changed.
  */
 @Component({
