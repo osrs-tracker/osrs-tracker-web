@@ -13,7 +13,12 @@
   [disabled]="!days().length && !range()"
   (click)="toggle($event)"
 >
-  <svg lucideCalendar class="size-4 shrink-0" [class]="variant() === 'inline' ? 'text-accent' : 'text-muted'" />
+  <!-- not on phones in the default variant, so Compare's two pickers fit on one line -->
+  <svg
+    lucideCalendar
+    class="size-4 shrink-0"
+    [class]="variant() === 'inline' ? 'text-accent' : 'text-muted max-sm:hidden'"
+  />
   {{ valueLabel() }}
   <svg
     lucideChevronDown
