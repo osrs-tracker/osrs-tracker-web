@@ -125,10 +125,10 @@ export class ItemRow {
     const { change, average } = this.data() ?? {};
     return change != null && average ? (Math.abs(change) / average) * 100 : null;
   });
-  /** A change shown as 0.0% is neutral, not a rise */
+  /** A change shown as 0.0% (one decimal, as in the template) is neutral, not a rise */
   readonly tone = computed((): 'up' | 'down' | 'flat' => {
     const percent = this.changePercent();
-    if (percent === null || percent < 0.05) return 'flat';
+    if (percent === null || Math.round(percent * 10) === 0) return 'flat';
     return (this.data()?.change ?? 0) > 0 ? 'up' : 'down';
   });
   /** The sign as written in the design: a plus or a true minus, none on a neutral change. */

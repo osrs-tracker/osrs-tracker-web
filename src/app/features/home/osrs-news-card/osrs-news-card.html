@@ -1,5 +1,6 @@
-<!-- Compact on phones (a 2×2 grid) and tablets (four in a row): the title first (three lines, as two cut most titles
-     at 375px), then a one-line short date and category, without the excerpt -->
+<!-- Compact on phones (a 2×2 grid) and tablets (four in a row): the title first, three lines high (two cut most
+     titles at 375px; a fixed height lines the dates up across cards), then a one-line short date and category, without
+     the excerpt -->
 <article
   class="group relative flex flex-col h-full rounded-2xl bg-card overflow-hidden hover:bg-row focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent"
 >
@@ -13,7 +14,7 @@
       <span>{{ osrsNewsItem().category }}</span>
     </div>
     <h3
-      class="compact:order-first mb-2 compact:mb-0 compact:min-h-11 text-lg/6 compact:text-base/5.5 font-bold line-clamp-2 compact:line-clamp-3"
+      class="compact:order-first mb-2 compact:mb-0 compact:min-h-16.5 text-lg/6 compact:text-base/5.5 font-bold line-clamp-2 compact:line-clamp-3"
     >
       <a
         class="text-strong group-hover:text-accent after:absolute after:inset-0 focus-visible:outline-none"

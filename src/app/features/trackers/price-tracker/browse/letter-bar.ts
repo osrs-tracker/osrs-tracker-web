@@ -3,9 +3,9 @@ import { RouterLink } from '@angular/router';
 import { BROWSE_LETTERS, browseLetterLabel, startingWith } from './browse-letters';
 
 /**
- * Links to every browse page as equal keys: one row on wide screens, two from `sm`, three of nine on phones. One row
- * and phones put the keys closer together, so they stay wide enough for "0–9". The current letter is filled with the
- * accent.
+ * Links to every browse page as equal keys: one row on wide screens, two from `sm`, three of nine on phones. Keys are
+ * 4px apart on one row and on phones, 8px on two rows, so "0–9" fits on one line. The current letter is filled with
+ * the accent.
  */
 @Component({
   selector: 'nav[letter-bar]',
