@@ -129,6 +129,7 @@ Which component to use (in `common/ui/<folder>/` unless noted):
 | A whole page's state: not found, unavailable, error (`page/`) | `status-panel`, with `back-button` or other actions as content                          |
 | Something failed to load (`loading/`)                         | `load-error` (default, `panel`, `compact` or `inline`; see Failures above)              |
 | Something is loading (`loading/`)                             | `skeleton` blocks sized like the content, never a spinner                               |
+| A chart's values as a table (`common/charts/`)                | `chart-table` under every chart (see Chart.js in SSR rules)                             |
 | A short explanation (`tooltip/`)                              | `info-tooltip`, or `[tooltip]` on any element                                           |
 | A reading page (`page/`)                                      | `information-page` around `<div class="markdown">`                                      |
 | A line icon                                                   | a Lucide component, `<svg lucideSearch />` (see Icons above)                            |
@@ -167,7 +168,9 @@ hover shows library signatures and docs instead.
 - **Chart.js**: shared registrations and the date adapter in `common/charts/chart-setup.ts`; never `Chart.unregister`.
   Time series charts extend `common/charts/base-chart.ts`; their `setData` may build new datasets, as `BaseChart` keeps
   a drawn one in place when its label and dates match, so only changed points animate (Chart.js redraws a new object
-  from the axis).
+  from the axis). Every chart gets a `chart-table` under it ("Show the data", `common/charts/chart-table.ts`), as the
+  canvas is otherwise the only way to its values (WCAG 1.1.1); group its rows with `binByTime` and `timeBinLabel`
+  (`common/charts/time-bins.ts`), as `item-volume.ts` does.
 - **Icons**: after changing `public/assets/icons/{skills,activities}`, run `npm run icons` and commit
   `local-icons.generated.ts`.
 - **Font**: SOLIX comes from the private [FreekMencke/solix](https://github.com/FreekMencke/solix) releases
@@ -351,8 +354,11 @@ use it while a check fails or is pending (osrs-tracker/osrs-tracker-packages#11)
 - `CHANGELOG.md` format (which changes need an entry: `CLAUDE.md`): newest date first. It's shown on `/about/changelog`,
   so write for users, and say why, not only what. Busy days get `###` subtitles (user-facing first, "Behind the scenes"
   last). Extend existing entries over near-duplicates; don't repeat the subtitle in entries. When adding an entry,
-  reread the whole day: add subtitles once it's busy, and merge entries about the same feature. No `# Changelog` title
-  or preamble: the page renders the whole file under its own title (`features/about/changelog/changelog.ts`).
+  reread the whole day: add subtitles once it's busy, and merge entries about the same feature. Each day starts with a
+  line that is exactly `## YYYY-MM-DD`: the page (`features/about/changelog/changelog.ts`) splits the file on those
+  lines, renders their headings itself ("23 October 2026", linked from the year buttons) and drops anything before the
+  first, so no `# Changelog` title or preamble; a heading with more text joins the day before. It also curls quotes and
+  dashes (outside code).
 - GPG "Inappropriate ioctl for device": ask the user to run `echo test | gpg --clearsign > /dev/null`, then commit
   within ~10 min.
 - If `gh pr edit` fails on a Projects (classic) error, use

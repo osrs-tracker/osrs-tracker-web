@@ -52,6 +52,9 @@ Choices that look like accidents without their context: what was decided, why, a
 - **Revisit:** a page whose `h1` renders only after a browser-side load gets `main` focused instead; give it its `h1` up
   front if that matters. If a screen reader turns out to stay silent on a script-focused `h1` (reported for some iOS
   VoiceOver versions), announce the title there too rather than drop the focus move, and accept the name read twice.
+- **Update 2026-10-23:** the title goes through `Announcer` (`common/a11y/announcer.ts`), which wraps the same
+  `LiveAnnouncer`, looked up on its first message, and also reads `announceChanges`' result messages. The layout's skip
+  link focuses the same target through `RouteFocus.focusContent()`, scrolling to it.
 
 ## Accessibility is checked by template lint, an axe scan and a keyboard walk (2026-10-18)
 
