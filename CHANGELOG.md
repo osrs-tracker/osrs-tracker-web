@@ -1,3 +1,10 @@
+## 2026-10-24
+
+- An item's volume card, now called "Trade volume", has its own range beside the table switch, like the price chart: the
+  last day per hour, the last week or month per day (UTC), or the last year per month, instead of only the last 7 days.
+  Its numbers above the bars still cover today and the past week. Clicking an entry of the price chart's legend hides or
+  shows that line, and its column in the table, to look at one price on its own; one line always stays.
+
 ## 2026-10-23
 
 ### Keyboard and screen readers
@@ -43,10 +50,6 @@
   the same colour as the sold bars of the volume chart, with violet shading under it and green shading between the two
   lines, so the gap between buying and selling stands out. A player's chart card is now titled "XP", as the line under
   it already says what's shown.
-- An item's volume card, now called "Trade volume", has its own range beside the table switch, like the price chart: the
-  last day per hour, the last week or month per day (UTC), or the last year per month, instead of only the last 7 days.
-  Its numbers above the bars still cover today and the past week. Clicking an entry of the price chart's legend hides or
-  shows that line, and its column in the table, to look at one price on its own; one line always stays.
 - On Players online, switching the history's range keeps the chart in place until the next one is ready, instead of
   flashing an empty placeholder, and a range you already opened comes back at once. The chart now starts at 0 players,
   so the shaded area's height matches the count. The year and all-time charts leave out today and the first day of
