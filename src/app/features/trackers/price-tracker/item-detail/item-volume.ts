@@ -77,18 +77,22 @@ interface VolumeSummary {
                 chartLabel()
               }}
             </caption>
-            <tr>
-              <th scope="col">Day (UTC)</th>
-              <th scope="col">Bought</th>
-              <th scope="col">Sold</th>
-            </tr>
-            @for (row of table(); track row.day) {
+            <thead>
               <tr>
-                <th scope="row">{{ row.day }}</th>
-                <td>{{ row.bought }}</td>
-                <td>{{ row.sold }}</td>
+                <th scope="col">Day (UTC)</th>
+                <th scope="col">Bought</th>
+                <th scope="col">Sold</th>
               </tr>
-            }
+            </thead>
+            <tbody>
+              @for (row of table(); track row.day) {
+                <tr>
+                  <th scope="row">{{ row.day }}</th>
+                  <td>{{ row.bought }}</td>
+                  <td>{{ row.sold }}</td>
+                </tr>
+              }
+            </tbody>
           </table>
         }
       </div>

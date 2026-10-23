@@ -132,6 +132,9 @@ export default class ItemDetail implements OnInit {
     defaultValue: [],
   });
 
+  /** Never loaded on the server, so it renders as loading there, not as a range without trades */
+  readonly priceSeriesLoading = computed(() => !this.isBrowser || this.priceSeries.isLoading());
+
   readonly priceChartData = computed(() => {
     const since = Date.now() / 1000 - PRICE_RANGES[this.range()].seconds;
     return this.priceSeries.hasValue() ? this.priceSeries.value().filter(price => price.timestamp >= since) : [];

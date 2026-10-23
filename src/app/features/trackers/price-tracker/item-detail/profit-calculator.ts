@@ -226,12 +226,15 @@ export class ProfitCalculator {
   /** The latest prices loaded, but the item has no recent trade to start from */
   readonly noRecentPrices = computed(() => {
     const latest = this.latestPrices();
-    return !!latest && (this.mode() === 'flip' ? !latest.low || !latest.high : !latest.high);
+    return !!latest && (this.mode() === 'flip' ? !latest.low && !latest.high : !latest.high);
   });
 
-  /** A price needed for the profit is empty: the total and the rows that need it show "–" */
+  /**
+   * A price needed for the profit is empty: the total and the rows that need it show "–". Not the nature rune's, which
+   * is 0 for runes you already have (and while its price loads).
+   */
   readonly missingPrices = computed(() =>
-    this.mode() === 'flip' ? !this.buyAt() || !this.sellAt() : !this.alchBuyAt() || !this.natureRuneAt(),
+    this.mode() === 'flip' ? !this.buyAt() || !this.sellAt() : !this.alchBuyAt(),
   );
 
   private readonly taxPerItem = computed(() => geTax(this.item().id, this.sellAt()));
@@ -246,7 +249,7 @@ export class ProfitCalculator {
           : { label: 'Cost per cast', value: formatWhole(-(this.alchBuyAt() + this.natureRuneAt())), tone: 'down' },
         {
           label: 'Max buy price for profit',
-          value: this.natureRuneAt() ? formatWhole(this.highAlch() - this.natureRuneAt()) : '–',
+          value: formatWhole(this.highAlch() - this.natureRuneAt()),
           info: 'The most you can pay for the item and still make a profit, after the nature rune.',
         },
         { label: 'Magic XP', value: formatWhole(HIGH_ALCH_XP * this.alchQuantity()) },
@@ -300,7 +303,7 @@ export class ProfitCalculator {
       sub: this.missingPrices()
         ? flip
           ? 'Enter a buy and a sell price'
-          : 'Enter a buy price and a nature rune price'
+          : 'Enter a buy price'
         : quantity
           ? `${formatWhole(quantity)} × ${formatWhole(perItem, true)} gp ${flip ? 'after tax' : 'per cast'}`
           : 'Enter a quantity',

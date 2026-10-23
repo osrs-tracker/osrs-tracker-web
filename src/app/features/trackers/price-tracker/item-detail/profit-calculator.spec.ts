@@ -72,6 +72,13 @@ describe('ProfitCalculator', () => {
       expect(calculator.rows().every(row => row.value === '–')).toBe(true);
     });
 
+    it('starts from the one recent price an item has', async () => {
+      const calculator = (await render(WHIP, prices(1_100_000, 0))).componentInstance;
+
+      expect(calculator.noRecentPrices()).toBe(false);
+      expect(calculator.missingPrices()).toBe(true);
+    });
+
     it('writes a large total exactly, and shortens a huge return', async () => {
       const calculator = (await render(WHIP, prices(2_147_483_647, 1))).componentInstance;
       calculator.flipQuantity.set(2_147_483_647);
@@ -94,6 +101,16 @@ describe('ProfitCalculator', () => {
       expect(row(calculator, 'Cost per cast')).toBe('−70,100');
       expect(row(calculator, 'Max buy price for profit')).toBe('71,900');
       expect(row(calculator, 'Magic XP')).toBe('4,550');
+    });
+
+    it('takes a nature rune price of 0 as runes you already have', async () => {
+      const fixture = await render(WHIP, prices(70_000, 69_000));
+      const calculator = fixture.componentInstance;
+      calculator.selectMode('alch');
+      calculator.natureRuneAt.set(0);
+
+      expect(calculator.missingPrices()).toBe(false);
+      expect(calculator.profit().perItem).toBe(2_000);
     });
   });
 

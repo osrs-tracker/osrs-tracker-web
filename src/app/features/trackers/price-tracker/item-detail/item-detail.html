@@ -52,7 +52,7 @@
           [error]="priceSeries.error()"
           (retry)="retryTimeSeries()"
         />
-      } @else if (priceSeries.isLoading()) {
+      } @else if (priceSeriesLoading()) {
         <skeleton class="h-70 w-full rounded-xl" />
       } @else if (priceChartEmpty()) {
         <div class="flex flex-col items-center justify-center gap-1 h-70 px-5 text-center">
