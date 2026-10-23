@@ -28,6 +28,15 @@
   loads, so the log doesn't jump when you scroll to it. Compare fits both days on one line on phones, and its numbers
   use one decimal like the rest of the page. An ⓘ beside the Skills, Bosses and Raids tabs explains the coloured rings,
   and "02:00 UTC" no longer breaks across two lines.
+- On an item's page, a range without trades (often the last day of a rarely traded item) now says "No trades in the last
+  day" with a button for the next range up, instead of an empty chart; the daily volume says so too. When the price
+  history doesn't load, the chart's place says so once, with one "Try again", and the change since yesterday, the volume
+  tile and the daily volume show "–" instead of four messages. Without prices, the profit calculator shows "–" rather
+  than a profit of 0 gp, with a retry when they didn't load. On phones its long numbers shrink to fit instead of being
+  cut off or broken across lines, very large totals are exact, and a huge return on investment is shortened ("149.5B%").
+  The volume tile is now called "Volume" (the last 24 hours), so it isn't mixed up with the daily volume card, which
+  counts UTC days, and that card's chart has a scale. Screen readers now hear the price chart's range in words, and each
+  day's volume as a table.
 
 ## 2026-10-21
 

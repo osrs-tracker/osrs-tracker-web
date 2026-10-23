@@ -54,7 +54,8 @@ function priceStat(
   value?: number,
   time?: Date,
 ): ItemStat {
-  if (latestFailed) return { label, info, value: '–', sub: "Couldn't load the price" };
+  // The header says the price didn't load, with a retry; the tiles only mark it
+  if (latestFailed) return { label, info, value: '–', sub: 'Not loaded' };
   if (!value) return { label, info, value: '–', sub: 'No recent trades', loading: latestLoading };
   const ago = timeAgo(time) ?? '';
   // Shortened to fit the tile: "2 min ago"
@@ -77,17 +78,19 @@ function marginStat({ item, latest, latestLoading, latestFailed }: ItemStatsInpu
       ? 'Instant buy minus instant sell. This item is exempt from GE tax.'
       : 'Instant buy minus instant sell, minus the 2% GE tax on the sale.',
     ...(high && low ? amount(high - low - geTax(item.id, high), 'gp') : { value: '–' }),
-    sub: latestFailed ? "Couldn't load the price" : exempt ? 'No tax on this item' : 'Buy − sell − 2% tax',
+    sub: latestFailed ? 'Not loaded' : exempt ? 'No tax on this item' : 'Buy − sell − 2% tax',
     loading: latestLoading,
   };
 }
 
+/** A rolling 24 hours, so not "Daily volume": the volume card below counts UTC days */
 function volumeStat({ hourly, hourlyLoading, hourlyFailed, now }: ItemStatsInput): ItemStat {
   return {
-    label: 'Daily volume',
+    label: 'Volume',
     info: 'The number of times the item has been traded within the last 24 hours.',
     ...(hourlyFailed ? { value: '–' } : amount(last24HourVolume(hourly, now), 'traded')),
-    sub: hourlyFailed ? "Couldn't load the volume" : 'Last 24 hours',
+    // The chart or the volume card says it didn't load, with a retry
+    sub: hourlyFailed ? 'Not loaded' : 'Last 24 hours',
     loading: hourlyLoading,
   };
 }
@@ -172,4 +175,35 @@ export function yesterdayAverageSellPrice(hourly: AveragePricesAtTime[], now: Da
   }
 
   return volume ? Math.round(total / volume) : null;
+}
+
+/** Whether any point in the series has a trade: the Wiki sends points without one as `null` prices */
+export function hasTrades(prices: AveragePricesAtTime[]): boolean {
+  return prices.some(price => price.avgHighPrice || price.avgLowPrice);
+}
+
+/**
+ * The price chart in words, for screen readers, as its values are otherwise only in the hover tooltip: per price, the
+ * first and last trade in the range, and the low and high.
+ */
+export function priceChartSummary(prices: AveragePricesAtTime[], period: string): string {
+  const describe = (name: string, values: number[]): string => {
+    const traded = values.filter(Boolean);
+    if (!traded.length) return `${name}: no trades.`;
+    const [first, last] = [traded[0], traded.at(-1)!].map(value => formatWhole(value));
+    const [low, high] = [Math.min(...traded), Math.max(...traded)].map(value => formatWhole(value));
+    return `${name}: ${first} gp at the start, ${last} gp at the end, low ${low}, high ${high}.`;
+  };
+
+  return [
+    `Instant buy and instant sell price over the last ${period}.`,
+    describe(
+      'Instant buy',
+      prices.map(price => price.avgHighPrice),
+    ),
+    describe(
+      'Instant sell',
+      prices.map(price => price.avgLowPrice),
+    ),
+  ].join(' ');
 }

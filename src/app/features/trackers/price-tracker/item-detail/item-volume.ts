@@ -44,6 +44,8 @@ interface VolumeSummary {
             <dd class="flex items-center h-7 text-xl font-bold text-strong tabular-nums">
               @if (loading()) {
                 <skeleton class="h-5 w-20" />
+              } @else if (notLoaded()) {
+                –
               } @else {
                 {{ stat.value }}
               }
@@ -55,17 +57,49 @@ interface VolumeSummary {
       <div class="relative flex-1 min-h-50 mx-5 mt-4 mb-2">
         @if (loading()) {
           <skeleton class="absolute inset-0 h-full w-full rounded-xl" />
+        } @else if (notLoaded()) {
+          <!-- The price chart says the history didn't load, with a retry -->
+          <p class="absolute inset-0 flex items-center justify-center text-sm text-muted">Not loaded</p>
+        } @else if (empty()) {
+          <p class="absolute inset-0 flex items-center justify-center px-5 text-center font-bold text-strong">
+            No trades in the last {{ volumes().length }} days
+          </p>
         } @else {
           @defer {
-            <volume-chart class="absolute inset-0" role="img" [attr.aria-label]="chartLabel()" [data]="volumes()" />
+            <volume-chart class="absolute inset-0" aria-hidden="true" [data]="volumes()" />
           } @placeholder {
             <skeleton class="absolute inset-0 h-full w-full rounded-xl" />
           }
+          <!-- The chart's numbers are otherwise only in its hover tooltip -->
+          <table class="sr-only">
+            <caption>
+              {{
+                chartLabel()
+              }}
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Day (UTC)</th>
+                <th scope="col">Bought</th>
+                <th scope="col">Sold</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of table(); track row.day) {
+                <tr>
+                  <th scope="row">{{ row.day }}</th>
+                  <td>{{ row.bought }}</td>
+                  <td>{{ row.sold }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
         }
       </div>
-      <div class="flex justify-between px-5 pb-4 text-sm text-muted">
+      <!-- The chart's ends, kept while there's no chart so the card keeps its height -->
+      <div class="flex justify-between px-5 pb-4 text-sm text-muted" [class.invisible]="notLoaded() || empty()">
         <span>{{ firstDay() }}</span>
-        <span>Today</span>
+        <span>Today (UTC)</span>
       </div>
     }
   `,
@@ -76,7 +110,10 @@ export class ItemVolume {
   /** Oldest first, today (so far) last */
   readonly volumes = input.required<DailyVolume[]>();
   readonly loading = input(false);
+  /** A failed load, with a retry */
   readonly error = input(false);
+  /** A failed load that's shown elsewhere with a retry: the values are only marked */
+  readonly notLoaded = input(false);
 
   readonly retry = output();
 
@@ -105,6 +142,16 @@ export class ItemVolume {
     // the days are UTC, whatever the visitor's time zone
     return first ? formatDate(first.day * 1000, 'd MMM', 'en-US', 'UTC') : '';
   });
+
+  readonly empty = computed(() => this.volumes().every(({ bought, sold }) => !bought && !sold));
+
+  readonly table = computed(() =>
+    this.volumes().map(({ day, bought, sold }) => ({
+      day: formatDate(day * 1000, 'd MMM', 'en-US', 'UTC'),
+      bought: formatWhole(bought),
+      sold: formatWhole(sold),
+    })),
+  );
 
   readonly chartLabel = computed(() => `Items bought and sold per day over the last ${this.volumes().length} days`);
 }

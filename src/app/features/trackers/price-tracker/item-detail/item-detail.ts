@@ -19,7 +19,7 @@ import { PriceTrackerStore } from '../price-tracker-store';
 import { browseLetterOf, startingWith } from '../browse/browse-letters';
 import { PriceChart } from './charts/price-chart';
 import { ItemHeader } from './item-header';
-import { dailyVolumes, itemStats, yesterdayAverageSellPrice } from './item-prices';
+import { dailyVolumes, hasTrades, itemStats, priceChartSummary, yesterdayAverageSellPrice } from './item-prices';
 import { ItemVolume } from './item-volume';
 import { ProfitCalculator } from './profit-calculator';
 import { LucideArrowLeft, LucideArrowRight } from '@lucide/angular';
@@ -30,10 +30,10 @@ type PriceRange = '1D' | '1W' | '1M' | '1Y';
  * The Wiki time series behind each range, and how far back the range goes. The 1W series, hourly, also feeds the
  * volume.
  */
-const PRICE_RANGES: Record<PriceRange, { lookback: Lookback; seconds: number; title: string }> = {
-  '1D': { lookback: '24h', seconds: 86400, title: 'day' },
-  '1W': { lookback: '7d', seconds: 7 * 86400, title: 'week' },
-  '1M': { lookback: '30d', seconds: 30 * 86400, title: 'month' },
+const PRICE_RANGES: Record<PriceRange, { lookback: Lookback; seconds: number; title: string; next?: PriceRange }> = {
+  '1D': { lookback: '24h', seconds: 86400, title: 'day', next: '1W' },
+  '1W': { lookback: '7d', seconds: 7 * 86400, title: 'week', next: '1M' },
+  '1M': { lookback: '30d', seconds: 30 * 86400, title: 'month', next: '1Y' },
   '1Y': { lookback: '1y', seconds: 365 * 86400, title: 'year' },
 };
 
@@ -132,13 +132,21 @@ export default class ItemDetail implements OnInit {
     defaultValue: [],
   });
 
+  /** Never loaded on the server, so it renders as loading there, not as a range without trades */
+  readonly priceSeriesLoading = computed(() => !this.isBrowser || this.priceSeries.isLoading());
+
   readonly priceChartData = computed(() => {
     const since = Date.now() / 1000 - PRICE_RANGES[this.range()].seconds;
     return this.priceSeries.hasValue() ? this.priceSeries.value().filter(price => price.timestamp >= since) : [];
   });
-  readonly priceChartLabel = computed(
-    () => `Instant buy and instant sell price over the last ${PRICE_RANGES[this.range()].title}`,
-  );
+  readonly priceChartLabel = computed(() => priceChartSummary(this.priceChartData(), this.rangeTitle()));
+  readonly rangeTitle = computed(() => PRICE_RANGES[this.range()].title);
+  /** Rarely traded items often have no trades on 1D: the chart then says so, and offers the next range up */
+  readonly priceChartEmpty = computed(() => !hasTrades(this.priceChartData()));
+  readonly nextRange = computed(() => {
+    const next = PRICE_RANGES[this.range()].next;
+    return next && { value: next, title: PRICE_RANGES[next].title };
+  });
 
   private readonly latestPrices = computed(() => (this.latest.hasValue() ? this.latest.value() : undefined));
   private readonly hourlySeries = computed(() => (this.hourly.hasValue() ? this.hourly.value() : []));
@@ -178,6 +186,18 @@ export default class ItemDetail implements OnInit {
   selectRange(range: PriceRange): void {
     this.range.set(range);
     this.analyticsService.trackOption('item_range', range);
+  }
+
+  /** From the empty chart's button, which goes away with the change: focus moves to the card's heading */
+  showNextRange(range: PriceRange, heading: HTMLElement): void {
+    heading.focus({ preventScroll: true });
+    this.selectRange(range);
+  }
+
+  /** One retry for both series, as one failure shows once, in the chart's place */
+  retryTimeSeries(): void {
+    if (this.priceSeries.error()) this.priceSeries.reload();
+    if (this.hourly.error()) this.hourly.reload();
   }
 
   searchItem(query: string): void {

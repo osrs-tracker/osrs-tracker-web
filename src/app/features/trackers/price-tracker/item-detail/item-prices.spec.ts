@@ -2,7 +2,15 @@ import { Item } from '@osrs-tracker/models';
 import { describe, expect, it } from 'vitest';
 import { DAY } from '../utc-day';
 import { AveragePricesAtTime } from '@app/common/api/osrs-prices-repo';
-import { ItemStat, ItemStatsInput, dailyVolumes, itemStats, yesterdayAverageSellPrice } from './item-prices';
+import {
+  ItemStat,
+  ItemStatsInput,
+  dailyVolumes,
+  hasTrades,
+  itemStats,
+  priceChartSummary,
+  yesterdayAverageSellPrice,
+} from './item-prices';
 
 const TODAY = 1_791_331_200; // 2026-10-07 00:00 UTC
 const NOW = new Date((TODAY + 17 * 3600 + 300) * 1000);
@@ -98,7 +106,7 @@ describe('itemStats', () => {
         loading: false,
       },
       {
-        label: 'Daily volume',
+        label: 'Volume',
         info: 'The number of times the item has been traded within the last 24 hours.',
         value: '30',
         sub: 'Last 24 hours',
@@ -123,7 +131,7 @@ describe('itemStats', () => {
     const stats = itemStats({ ...LOADED, latest: undefined, latestFailed: true });
 
     for (const label of ['Instant buy', 'Instant sell', 'Margin after tax']) {
-      expect(tile(stats, label)).toMatchObject({ value: '–', sub: "Couldn't load the price" });
+      expect(tile(stats, label)).toMatchObject({ value: '–', sub: 'Not loaded' });
     }
   });
 
@@ -164,7 +172,7 @@ describe('itemStats', () => {
   it('shows a failed volume load', () => {
     const stats = itemStats({ ...LOADED, hourly: [], hourlyFailed: true });
 
-    expect(tile(stats, 'Daily volume')).toMatchObject({ value: '–', sub: "Couldn't load the volume" });
+    expect(tile(stats, 'Volume')).toMatchObject({ value: '–', sub: 'Not loaded' });
   });
 
   it('shortens large amounts, with the whole amount in the tip', () => {
@@ -174,5 +182,32 @@ describe('itemStats', () => {
       value: '786.71M',
       tip: '786,705,873 gp. Last trade was 2 minutes ago.',
     });
+  });
+});
+
+describe('priceChartSummary', () => {
+  const point = (timestamp: number, avgHighPrice: number | null, avgLowPrice: number | null) =>
+    ({ timestamp, avgHighPrice, avgLowPrice, highPriceVolume: 1, lowPriceVolume: 1 }) as AveragePricesAtTime;
+
+  it('gives each price its first, last, low and high, skipping points without trades', () => {
+    const prices = [point(1, 1_000, null), point(2, 1_250, 900), point(3, null, 1_100), point(4, 1_200, 950)];
+
+    expect(priceChartSummary(prices, 'week')).toBe(
+      'Instant buy and instant sell price over the last week. ' +
+        'Instant buy: 1,000 gp at the start, 1,200 gp at the end, low 1,000, high 1,250. ' +
+        'Instant sell: 900 gp at the start, 950 gp at the end, low 900, high 1,100.',
+    );
+  });
+
+  it('says when a price has no trades', () => {
+    expect(priceChartSummary([point(1, 1_000, null)], 'day')).toContain('Instant sell: no trades.');
+  });
+});
+
+describe('hasTrades', () => {
+  it('is false for an empty series or one without prices', () => {
+    expect(hasTrades([])).toBe(false);
+    expect(hasTrades([{ timestamp: 1 } as AveragePricesAtTime])).toBe(false);
+    expect(hasTrades([hour(1, 100, 1)])).toBe(true);
   });
 });

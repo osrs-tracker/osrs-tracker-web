@@ -1,4 +1,4 @@
-import { Component, WritableSignal, computed, inject, input, linkedSignal, signal } from '@angular/core';
+import { Component, WritableSignal, computed, inject, input, linkedSignal, output, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Item } from '@osrs-tracker/models';
 import { LoadError } from '@app/common/ui/loading/load-error';
@@ -8,7 +8,7 @@ import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
 import { LatestPrices, OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { breakEvenSellPrice, geTax, isGeTaxExempt } from './ge-tax';
-import { formatSign, formatWhole } from '@app/common/format/number-format';
+import { formatNumberLegible, formatSign, formatWhole } from '@app/common/format/number-format';
 import { LucideRotateCw } from '@lucide/angular';
 
 type Mode = 'flip' | 'alch';
@@ -17,6 +17,9 @@ const NATURE_RUNE_ID = 561;
 const HIGH_ALCH_XP = 65;
 /** Prices can pass 2,147,483,647 (platinum tokens), but stay well within whole-number precision */
 const MAX_DIGITS = 15;
+
+/** "1,234.56", for a percentage */
+const percent = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 interface Field {
   id: string;
@@ -59,13 +62,14 @@ interface ResultRow {
         <div>
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
             @for (field of fields(); track field.id) {
-              <label class="flex flex-col gap-1.5 text-sm text-muted last:col-span-full sm:last:col-span-1">
+              <label class="@container flex flex-col gap-1.5 text-sm text-muted last:col-span-full sm:last:col-span-1">
                 {{ field.label }}
                 <input
                   type="text"
                   inputmode="numeric"
                   autocomplete="off"
-                  class="h-11 min-w-0 px-3.5 rounded-xl border border-border bg-inner text-base font-bold text-strong tabular-nums focus:border-accent focus:ring-0"
+                  class="fit-input-digits h-11 min-w-0 px-3 rounded-xl border border-border bg-inner font-bold text-strong tabular-nums focus:border-accent focus:ring-0"
+                  [style.--digits]="digitCount(field.value())"
                   [value]="format(field.value())"
                   (input)="onInput($event, field.value)"
                 />
@@ -77,7 +81,7 @@ interface ResultRow {
             <button
               type="button"
               class="flex items-center gap-1.5 text-sm font-bold text-accent hover:text-accent-hover disabled:opacity-40"
-              [disabled]="error()"
+              [disabled]="error() || noRecentPrices()"
               (click)="useLatestPrices()"
             >
               <svg lucideRotateCw class="size-3.5" strokeWidth="2.5" />
@@ -86,6 +90,14 @@ interface ResultRow {
             <p class="flex items-center gap-1 text-sm text-muted">
               @if (error()) {
                 Couldn't load the latest prices.
+                <load-error
+                  compact
+                  source="profit-calculator-latest"
+                  message="Couldn't load the latest prices."
+                  (retry)="retry.emit()"
+                />
+              } @else if (noRecentPrices()) {
+                No recent trades to start from.
               } @else if (mode() === 'alch' && natureRune.error()) {
                 Couldn't load the nature rune price.
                 <load-error
@@ -122,19 +134,31 @@ interface ResultRow {
           }
         </dl>
 
+        <!-- Neutral without the prices, so a missing price doesn't read as a profit of 0 -->
         <div
-          class="mt-auto flex flex-col gap-1 px-4.5 py-4 rounded-xl border"
-          [class]="profit().total >= 0 ? 'bg-up/12 border-up/35' : 'bg-down/12 border-down/35'"
+          class="@container mt-auto flex flex-col gap-1 px-4.5 py-4 rounded-xl border"
+          [class]="
+            missingPrices()
+              ? 'bg-inner border-line'
+              : profit().total >= 0
+                ? 'bg-up/12 border-up/35'
+                : 'bg-down/12 border-down/35'
+          "
           aria-live="polite"
         >
           <span class="text-sm text-text">{{ mode() === 'flip' ? 'Total profit' : 'Total alch profit' }}</span>
           <span class="flex items-baseline gap-1.5">
-            <span
-              class="text-4xl/10 font-bold tabular-nums break-all"
-              [class]="profit().total >= 0 ? 'text-up' : 'text-down'"
-              >{{ format(profit().total, true) }}</span
-            >
-            <span class="font-bold text-muted">gp</span>
+            @if (missingPrices()) {
+              <span class="text-4xl/10 font-bold text-muted">–</span>
+            } @else {
+              <span
+                class="fit-total-digits leading-10 font-bold tabular-nums wrap-anywhere"
+                [class]="profit().total >= 0 ? 'text-up' : 'text-down'"
+                [style.--digits]="totalDigits()"
+                >{{ totalText() }}</span
+              >
+              <span class="font-bold text-muted">gp</span>
+            }
           </span>
           <span class="text-sm text-muted">{{ profit().sub }}</span>
         </div>
@@ -151,7 +175,10 @@ export class ProfitCalculator {
   readonly item = input.required<Item>();
   readonly latestPrices = input<LatestPrices | undefined>();
   readonly loading = input(false);
+  /** The latest prices failed to load: the note says so, with a retry */
   readonly error = input(false);
+
+  readonly retry = output();
 
   readonly natureRune = rxResource({
     stream: () => this.osrsPricesRepo.getLatestPrices(NATURE_RUNE_ID),
@@ -196,13 +223,30 @@ export class ProfitCalculator {
         ],
   );
 
+  /** The latest prices loaded, but the item has no recent trade to start from */
+  readonly noRecentPrices = computed(() => {
+    const latest = this.latestPrices();
+    return !!latest && (this.mode() === 'flip' ? !latest.low && !latest.high : !latest.high);
+  });
+
+  /**
+   * A price needed for the profit is empty: the total and the rows that need it show "–". Not the nature rune's, which
+   * is 0 for runes you already have (and while its price loads).
+   */
+  readonly missingPrices = computed(() =>
+    this.mode() === 'flip' ? !this.buyAt() || !this.sellAt() : !this.alchBuyAt(),
+  );
+
   private readonly taxPerItem = computed(() => geTax(this.item().id, this.sellAt()));
 
   readonly rows = computed<ResultRow[]>(() => {
+    const missing = this.missingPrices();
     if (this.mode() === 'alch') {
       return [
         { label: 'High alch value', value: formatWhole(this.highAlch()) },
-        { label: 'Cost per cast', value: formatWhole(-(this.alchBuyAt() + this.natureRuneAt())), tone: 'down' },
+        missing
+          ? { label: 'Cost per cast', value: '–', tone: 'muted' }
+          : { label: 'Cost per cast', value: formatWhole(-(this.alchBuyAt() + this.natureRuneAt())), tone: 'down' },
         {
           label: 'Max buy price for profit',
           value: formatWhole(this.highAlch() - this.natureRuneAt()),
@@ -216,6 +260,13 @@ export class ProfitCalculator {
     const buy = this.buyAt();
     const perItem = this.profit().perItem;
     const roi = buy ? (perItem / buy) * 100 : 0;
+    if (missing) {
+      return ['Margin per item', 'GE tax per item', 'Return on investment', 'Break-even sell price'].map(label => ({
+        label,
+        value: '–',
+        tone: 'muted',
+      }));
+    }
     return [
       { label: 'Margin per item', value: formatWhole(this.sellAt() - buy) },
       isGeTaxExempt(id)
@@ -228,7 +279,8 @@ export class ProfitCalculator {
           },
       {
         label: 'Return on investment',
-        value: buy ? `${formatSign(roi)}${Math.abs(roi).toFixed(2)}%` : '–',
+        // Shortened past a million percent (a buy price of 1), so it fits beside its label on a phone
+        value: `${formatSign(roi)}${Math.abs(roi) < 1e6 ? percent.format(Math.abs(roi)) : formatNumberLegible(Math.abs(roi))}%`,
       },
       {
         label: 'Break-even sell price',
@@ -248,11 +300,25 @@ export class ProfitCalculator {
     return {
       perItem,
       total: perItem * quantity,
-      sub: quantity
-        ? `${formatWhole(quantity)} × ${formatWhole(perItem, true)} gp ${flip ? 'after tax' : 'per cast'}`
-        : 'Enter a quantity',
+      sub: this.missingPrices()
+        ? flip
+          ? 'Enter a buy and a sell price'
+          : 'Enter a buy price'
+        : quantity
+          ? `${formatWhole(quantity)} × ${formatWhole(perItem, true)} gp ${flip ? 'after tax' : 'per cast'}`
+          : 'Enter a quantity',
     };
   });
+
+  /** Exact however large: a price times a quantity can pass what a number holds without rounding */
+  readonly totalText = computed(() => {
+    const { perItem } = this.profit();
+    const total = BigInt(perItem) * BigInt(this.mode() === 'flip' ? this.flipQuantity() : this.alchQuantity());
+    const sign = formatSign(Number(total), 'exceptZero');
+    return sign + (total < 0n ? -total : total).toLocaleString('en-US');
+  });
+  /** Sizes the total to fit (`fit-total-digits`) */
+  readonly totalDigits = computed(() => this.totalText().replace(/\D/g, '').length);
 
   readonly note = computed(() => {
     const limit = this.item().limit ? `Buy limit ${formatWhole(this.item().limit)} per 4 hours.` : '';
@@ -261,6 +327,11 @@ export class ProfitCalculator {
 
   format(value: number, signed = false): string {
     return formatWhole(value, signed);
+  }
+
+  /** Sizes an input's number to fit (`fit-input-digits`) */
+  digitCount(value: number): number {
+    return String(value).length;
   }
 
   /** Keeps only the digits and shows them with thousands separators, leaving the caret after the same digit. */

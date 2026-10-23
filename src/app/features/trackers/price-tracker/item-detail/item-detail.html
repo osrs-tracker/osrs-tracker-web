@@ -22,7 +22,6 @@
     [error]="latestFailed()"
     [averageError]="!!hourly.error()"
     (retry)="latest.reload()"
-    (retryAverage)="hourly.reload()"
   ></header>
 
   <main class="max-w-page mx-auto flex flex-col gap-6 px-4 sm:px-6 pt-6 pb-18">
@@ -41,19 +40,34 @@
     </div>
 
     <article card>
-      <h2 title>Price</h2>
+      <h2 #priceHeading title tabindex="-1">Price</h2>
       <segmented actions label="Range" [options]="rangeOptions" [value]="range()" (valueChange)="selectRange($event)" />
 
+      <!-- The one message for a failed time series: the change, the volume tile and the volume card only mark it -->
       @if (priceSeries.error()) {
         <load-error
           class="block h-70"
           source="item-price-chart"
-          message="Couldn't load the price chart."
+          message="Couldn't load the price history."
           [error]="priceSeries.error()"
-          (retry)="priceSeries.reload()"
+          (retry)="retryTimeSeries()"
         />
-      } @else if (priceSeries.isLoading()) {
+      } @else if (priceSeriesLoading()) {
         <skeleton class="h-70 w-full rounded-xl" />
+      } @else if (priceChartEmpty()) {
+        <div class="flex flex-col items-center justify-center gap-1 h-70 px-5 text-center">
+          <p class="font-bold text-strong">No trades in the last {{ rangeTitle() }}</p>
+          <p class="text-sm text-muted">Rarely traded items can go a while without one.</p>
+          @if (nextRange(); as next) {
+            <button
+              type="button"
+              class="mt-3 h-9 px-4 rounded-full border border-border text-sm font-bold text-strong hover:bg-row"
+              (click)="showNextRange(next.value, priceHeading)"
+            >
+              Show the last {{ next.title }}
+            </button>
+          }
+        </div>
       } @else {
         @defer {
           <price-chart class="block h-70" role="img" [attr.aria-label]="priceChartLabel()" [data]="priceChartData()" />
@@ -75,7 +89,8 @@
         item-volume
         [volumes]="volumes()"
         [loading]="hourlyLoading()"
-        [error]="!!hourly.error()"
+        [error]="!!hourly.error() && !priceSeries.error()"
+        [notLoaded]="!!hourly.error() && !!priceSeries.error()"
         (retry)="hourly.reload()"
       ></article>
 
@@ -85,6 +100,7 @@
         [latestPrices]="latest.hasValue() ? latest.value() : undefined"
         [loading]="latestLoading()"
         [error]="latestFailed()"
+        (retry)="latest.reload()"
       ></article>
     </div>
   </main>
