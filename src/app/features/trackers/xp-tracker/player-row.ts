@@ -8,7 +8,7 @@ import { Observable, catchError, forkJoin, map, throwError } from 'rxjs';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
-import { TimeAgoPipe } from '@app/common/format/time-ago-pipe';
+import { timeAgo } from '@app/common/format/time-ago-pipe';
 import { OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
@@ -84,7 +84,6 @@ export class PlayerRow implements OnInit {
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly xpTrackerStore = inject(XpTrackerStore);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
-  private readonly timeAgoPipe = new TimeAgoPipe();
 
   readonly username = input<string | null>(null);
   readonly player = input<Player | null>(null);
@@ -110,9 +109,7 @@ export class PlayerRow implements OnInit {
   // The server renders skeletons, the browser fetches
   readonly loading = computed(() => !this.isBrowser || this.overallDiffResource.isLoading());
 
-  private readonly lastTrackedAgo = computed(() =>
-    this.timeAgoPipe.transform(this.playerDetails()?.hiscoreEntries?.[0]?.date),
-  );
+  private readonly lastTrackedAgo = computed(() => timeAgo(this.playerDetails()?.hiscoreEntries?.[0]?.date));
   readonly xpTitle = computed(() =>
     this.lastTrackedAgo()
       ? `XP gained since ${this._username()} was last tracked, ${this.lastTrackedAgo()}.`

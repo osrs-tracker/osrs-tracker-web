@@ -26,7 +26,7 @@ import { StatusPanel } from '@app/common/ui/page/status-panel';
 import { localIcons } from '@app/common/icon/local-icons.generated';
 import { LOCAL_ICONS } from '@app/common/icon/local-icons-token';
 import { capitalise } from '@app/common/format/player-labels';
-import { TimeAgoPipe } from '@app/common/format/time-ago-pipe';
+import { timeAgo } from '@app/common/format/time-ago-pipe';
 import { OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { announceChanges } from '@app/common/a11y/announcer';
@@ -137,7 +137,7 @@ export default class PlayerDetail implements OnInit {
   readonly staleNotice = computed(
     () =>
       `The hiscores aren’t responding, so these are ${capitalise(this.playerDetail()?.username ?? '')}’s stats from ` +
-      `${new TimeAgoPipe().transform(this.history.lastCheckedAt())}.`,
+      `${timeAgo(this.history.lastCheckedAt())}.`,
   );
   /** Without live hiscores the newest tracked entry stands in, so this only fails when there's none either */
   readonly hiscoresFailed = computed(

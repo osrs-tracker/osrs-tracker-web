@@ -279,8 +279,12 @@ export class ItemSearch {
       this.navigated.set(true);
       this.showing.set(true);
     }
-    // The combobox closes the list itself, but a message outside it too
-    if (event.key === 'Escape') this.showing.set(false);
+    // The combobox closes the list itself; a message outside it closes here, without the search input's own Escape,
+    // which would clear the query
+    if (event.key === 'Escape' && this.showing()) {
+      if (!this.listed()) event.preventDefault();
+      this.showing.set(false);
+    }
     if (event.key !== 'Enter' || event.shiftKey || event.ctrlKey || event.altKey || event.metaKey) return;
 
     event.preventDefault();

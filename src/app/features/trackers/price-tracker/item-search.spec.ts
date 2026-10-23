@@ -172,7 +172,8 @@ describe('ItemSearch', () => {
     await new Promise(resolve => setTimeout(resolve, ANNOUNCE_DELAY));
     expect(announce).toHaveBeenCalledExactlyOnceWith('No items match “zzz”.');
 
-    await key('Escape');
+    // Without the input's own Escape, which clears a search field
+    expect(await key('Escape')).toBe(false);
     expect(fixture.nativeElement.textContent).not.toContain('No items match');
   });
 });
