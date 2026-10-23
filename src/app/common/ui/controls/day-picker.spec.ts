@@ -80,4 +80,19 @@ describe('DayPicker', () => {
     expect(cell(weeksOf('2026-11', undefined, '2026-11-10'), 10).day).toBeUndefined();
     expect(cell(weeksOf('2026-11', '2026-11-12', '2026-11-10'), 10).day?.key).toBe('2026-11-10');
   });
+
+  it('names the button by its text alone when a prefix or placeholder already says what it is', () => {
+    const fixture = TestBed.createComponent(DayPicker);
+    fixture.componentRef.setInput('label', 'News since');
+    fixture.componentRef.setInput('range', { from: '2026-01-01', to: '2026-12-31' });
+    fixture.componentRef.setInput('placeholder', 'Since you last played');
+    fixture.componentRef.setInput('value', undefined);
+    expect(fixture.componentInstance.buttonName()).toBe('Since you last played');
+
+    fixture.componentRef.setInput('value', '2026-10-10');
+    expect(fixture.componentInstance.buttonName()).toBe('News since: 10 October 2026');
+
+    fixture.componentRef.setInput('prefix', 'Since ');
+    expect(fixture.componentInstance.buttonName()).toBe('Since 10 October 2026');
+  });
 });

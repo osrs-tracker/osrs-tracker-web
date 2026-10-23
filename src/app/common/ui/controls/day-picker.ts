@@ -98,7 +98,7 @@ export class DayPicker {
   readonly noneLabel = input<string | undefined>();
   /** The button's text and name while no day is picked, without a button for none (e.g. "Since you last played") */
   readonly placeholder = input<string | undefined>();
-  /** Before the picked day's label on the button, e.g. "Since " */
+  /** Before the picked day's label on the button, e.g. "Since "; the button's text then names it without `label` */
   readonly prefix = input('');
   /** The day the calendar opens on while none is picked; else the newest */
   readonly openAt = input<string | undefined>();
@@ -138,6 +138,10 @@ export class DayPicker {
     const day = value && this.dayOf(value);
     return day ? this.prefix() + day.label : (this.placeholder() ?? this.noneLabel() ?? '–');
   });
+  /** The label and the day, or the button's text alone where it names itself: a `placeholder`, or a `prefix` */
+  readonly buttonName = computed(() =>
+    (this.value() ? this.prefix() : this.placeholder()) ? this.valueLabel() : `${this.label()}: ${this.valueLabel()}`,
+  );
   readonly monthTitle = computed(() => monthTitle(this.shownMonth()));
   readonly monthName = computed(() => MONTH_NAMES[Number(this.shownMonth().slice(5)) - 1] ?? '');
   readonly previousMonth = computed(() =>
