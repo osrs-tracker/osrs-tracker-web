@@ -1,5 +1,7 @@
 ## 2026-10-23
 
+### Keyboard and screen readers
+
 - Moving through a page with the Tab key no longer leaves the focused link or button hidden under the menu bar at the
   top (on a tablet or computer), or behind the cookie question at the bottom while it's showing: the page now scrolls it
   into view between them, and the footer links at the very end can scroll clear of the question too.
@@ -8,13 +10,6 @@
   of after the tabs below, and the Home tab's focus outline no longer touches the screen's edge. Each page now has one
   main region instead of two nested ones, so screen readers' landmark lists go straight to the content, and voice
   control can follow the "0–9" key on the Browse items pages by saying what it shows.
-- On Players online, switching the history's range keeps the chart in place until the next one is ready, instead of
-  flashing an empty placeholder, and a range you already opened comes back at once. The chart now starts at 0 players,
-  so the shaded area's height matches the count. The year and all-time charts leave out today and the first day of
-  counting, both only partly counted, so the line no longer dips at the end; all-time now says when counting started
-  too. Screen readers get the daily values as a table, and the chart's summary no longer gives a "now" figure that
-  didn't match the live count. The "By world location" card matches the other cards. The "Online now" dot no longer
-  pulses when your device asks for reduced motion; otherwise it keeps pulsing for as long as the count is shown.
 - The small ⓘ icons with an explanation, such as GE tax on an item's page, can now be reached with the Tab key and open
   their explanation on focus, and screen readers read it. So can the margin, profit and per-limit values in the price
   tables, which show how they add up, and the clock on an old price. Screen readers now also hear how old an old price
@@ -31,6 +26,18 @@
   older posts" moves focus to the first older post it adds, and clearing the day or the category moves it to the control
   you'd use next. When the server fails rather than your connection, the message now says so, instead of asking you to
   check your connection.
+- Links that open another site in a new tab, the news posts on Home and the news page and GitHub in the footer, now tell
+  screen readers so.
+
+### Pages
+
+- On Players online, switching the history's range keeps the chart in place until the next one is ready, instead of
+  flashing an empty placeholder, and a range you already opened comes back at once. The chart now starts at 0 players,
+  so the shaded area's height matches the count. The year and all-time charts leave out today and the first day of
+  counting, both only partly counted, so the line no longer dips at the end; all-time now says when counting started
+  too. Screen readers get the daily values as a table, and the chart's summary no longer gives a "now" figure that
+  didn't match the live count. The "By world location" card matches the other cards. The "Online now" dot no longer
+  pulses when your device asks for reduced motion; otherwise it keeps pulsing for as long as the count is shown.
 - On the news page, "Since you last played" now opens its calendar on a week ago (or the day you last picked) instead of
   today, and today can no longer be picked, as it always gave an empty list. When no posts came after the day you
   picked, the message now has a "Show every post" button. Screen readers no longer hear "since" twice in the button's
@@ -74,6 +81,9 @@
   and terms give their date the same way.
 - The "Page not found" page now links to the player lookup and the item search, besides going back. On a player's page,
   a very long name that isn't found wraps instead of making the page scroll sideways on phones.
+- The landing pages leave a little more room between their top band and what's below it, the same as under the menu bar
+  elsewhere. Long headings, such as item names and news titles, now break into lines of even length instead of leaving a
+  single word on the last line.
 
 ## 2026-10-21
 

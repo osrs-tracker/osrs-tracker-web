@@ -21,8 +21,8 @@
         [href]="osrsNewsItem().link"
         target="_blank"
         rel="noopener"
-        [innerHTML]="osrsNewsItem().title"
-      ></a>
+        ><span [innerHTML]="osrsNewsItem().title"></span><span class="sr-only"> (opens in a new tab)</span></a
+      >
     </h3>
     <p class="compact:hidden line-clamp-2" [innerHTML]="osrsNewsItem().description"></p>
   </div>

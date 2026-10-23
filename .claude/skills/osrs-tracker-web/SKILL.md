@@ -95,8 +95,8 @@ value the scale lacks becomes a token in `src/styles/tailwind/theme.css`.
   heroes `text-4xl md:text-5xl` (Home up to `lg:text-6xl`), card titles `text-xl`. Standalone values (`tabular-nums`):
   prices, XP, levels, tiles, axes.
 - **Spacing:** steps of 4, 8, 12, 16, 24, 32, 48, 72px; card padding 20px (`px-5`). 24px between cards and sections,
-  16px between stat tiles; pages `max-w-page mx-auto px-4 sm:px-6`, 48px from the nav (`pt-12`) and 72px above the
-  footer (`pb-18`); reading pages narrow to `max-w-3xl`.
+  16px between stat tiles; pages `max-w-page mx-auto px-4 sm:px-6`, 48px from the nav or a hero band (`pt-12`) and 72px
+  above the footer (`pb-18`); reading pages narrow to `max-w-3xl`.
 - **Phones** (below `sm`): keep pages symmetric inside the 16px margins and check balance against the cards around a
   change. Pictures are never cropped (Home's news is a 2×2 grid of picture-on-top cards; tablets show four of them in a
   row, the `compact:` variant). List rows are one line: no second line, 32px tiles, 16px names, the item price beside
