@@ -1,5 +1,5 @@
 import { AveragePrices, ItemMapping, LatestPriceList } from '@app/common/api/osrs-prices-repo';
-import { formatNumberLegible, formatNumberShort, formatSign, formatWhole } from '@app/common/format/number-format';
+import { formatNumberTenths, formatSign, formatWhole } from '@app/common/format/number-format';
 import { geTax } from '../item-detail/ge-tax';
 
 /** The two item tables, which share one page */
@@ -170,12 +170,65 @@ export function defaultOptions(kind: TableKind): TableOptions {
   };
 }
 
+/** Each table's columns, in order */
+const TABLE_COLUMNS: Record<TableKind, SortKey[]> = {
+  'high-alch': ['buy', 'alch', 'key', 'limit', 'perLimit', 'volume'],
+  'margins': ['buy', 'sell', 'key', 'limit', 'perLimit', 'volume'],
+};
+
+const MEMBERS: Members[] = ['all', 'members', 'f2p'];
+const VOLUMES: Volume[] = ['any', 100, 1000, 10000];
+const BUY_AT: BuyAt[] = ['instant-buy', 'instant-sell'];
+
+/** A sort key as the URL writes it: the key column by its label */
+function sortParam(kind: TableKind, sort: SortKey): string {
+  if (sort === 'key') return kind === 'high-alch' ? 'profit' : 'margin';
+  return sort === 'perLimit' ? 'per-limit' : sort;
+}
+
 /**
- * A table value short enough for its column: in full below 10,000 ("9,999", "−420"), then compact, with one decimal
- * below a million ("24.8K") and two from there ("8.37M", "−1.2B"). `formatWholeCompact` switches at 10M, too late here.
+ * The options as query params, `null` for a default, so the default view keeps a bare URL:
+ * `?q=rune&members=f2p&volume=any&buy-at=instant-sell&sort=per-limit&dir=asc`
  */
-export function formatTableNumber(value: number): string {
+export function optionsToParams(
+  kind: TableKind,
+  options: TableOptions,
+): Record<'q' | 'members' | 'volume' | 'buy-at' | 'sort' | 'dir', string | null> {
+  const defaults = defaultOptions(kind);
+  const unlessDefault = <K extends keyof TableOptions>(key: K, value = String(options[key])): string | null =>
+    options[key] === defaults[key] ? null : value;
+  return {
+    'q': options.query.trim() || null,
+    'members': unlessDefault('members'),
+    'volume': unlessDefault('volume'),
+    'buy-at': kind === 'high-alch' ? unlessDefault('buyAt') : null,
+    'sort': unlessDefault('sort', sortParam(kind, options.sort)),
+    'dir': unlessDefault('dir'),
+  };
+}
+
+/** The options from query params; a missing or unknown value (`?sort=abc`) reads as the default */
+export function optionsFromParams(kind: TableKind, params: { get(name: string): string | null }): TableOptions {
+  const defaults = defaultOptions(kind);
+  const pick = <T>(values: T[], param: string | null, fallback: T): T =>
+    values.find(value => String(value) === param) ?? fallback;
+  return {
+    query: params.get('q') ?? defaults.query,
+    members: pick(MEMBERS, params.get('members'), defaults.members),
+    volume: pick(VOLUMES, params.get('volume'), defaults.volume),
+    buyAt: kind === 'high-alch' ? pick(BUY_AT, params.get('buy-at'), defaults.buyAt) : defaults.buyAt,
+    sort: TABLE_COLUMNS[kind].find(sort => sortParam(kind, sort) === params.get('sort')) ?? defaults.sort,
+    dir: pick<TableOptions['dir']>(['asc', 'desc'], params.get('dir'), defaults.dir),
+  };
+}
+
+/**
+ * A table value short enough for its column: in full below 10,000 ("9,999", "−420"), then compact with one decimal
+ * ("12.0K", "195.5M", "−1.2B"), so a column reads evenly. `signed` adds a plus to gains ("+24.8K").
+ * `formatWholeCompact` switches at 10M, too late here.
+ */
+export function formatTableNumber(value: number, signed = false): string {
   const abs = Math.abs(Math.round(value));
-  if (abs < 10_000) return formatWhole(value);
-  return formatSign(value) + (abs < 1_000_000 ? formatNumberShort(abs) : formatNumberLegible(abs));
+  if (abs < 10_000) return formatWhole(value, signed);
+  return formatSign(value, signed ? 'exceptZero' : 'negative') + formatNumberTenths(abs);
 }

@@ -102,6 +102,9 @@ Choices that look like accidents without their context: what was decided, why, a
   day with no check at the visitor's tracking offset falls back to the newest or oldest. The whole history is one
   browser-only request (`size=91`, about 40 KB compressed), not in the transfer state.
 - **Revisit:** if the picks need back-button support, or a second feature puts state in the player page's URL.
+- **Update 2026-10-23:** the price tables keep their options (filter, membership, volume, buy at, sort) the same way,
+  through `core/routing/query-state.ts`, which Compare now shares. They read them once when the page is created, also
+  during SSR, so the server renders and transfers the URL's view and hydration still fetches nothing.
 
 ## Pull requests merge without a queue or an up-to-date rule (2026-10-14)
 

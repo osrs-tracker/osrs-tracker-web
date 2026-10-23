@@ -1,5 +1,10 @@
 const legible = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 2 });
 const short = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 });
+const tenths = new Intl.NumberFormat('en-US', {
+  notation: 'compact',
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
 
 /** Intl writes -0, and a negative number that rounds to 0, as "-0" (chart axes can have a -0 tick) */
 const format = (formatter: Intl.NumberFormat, num: number): string => formatter.format(num).replace(/^-0$/, '0');
@@ -12,6 +17,11 @@ export function formatNumberLegible(num: number): string {
 /** A short number with up to one decimal: 18.2K, 1.4M; below 1,000 it stays as is. */
 export function formatNumberShort(num: number): string {
   return format(short, num);
+}
+
+/** A short number with exactly one decimal, for a column that should read evenly: 12.0K, 195.5M, 999.0 */
+export function formatNumberTenths(num: number): string {
+  return format(tenths, num);
 }
 
 /**

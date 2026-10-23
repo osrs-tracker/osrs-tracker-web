@@ -125,6 +125,11 @@
     </div>
 
     <table class="w-full">
+      <caption class="sr-only">
+        {{
+          caption()
+        }}
+      </caption>
       <thead>
         <tr class="border-b border-line text-sm text-muted">
           <th scope="col" class="w-full py-3 pl-5 max-sm:pl-4 pr-3 max-sm:pr-2 text-left font-normal">Item</th>
@@ -132,8 +137,8 @@
             @let sorted = column.key === options().sort;
             <th
               scope="col"
-              class="py-3 px-3 max-sm:px-2 last:pr-5 max-sm:last:pr-4 text-right font-normal whitespace-nowrap"
-              [class]="columnClass(column.key)"
+              class="py-3 px-3 max-sm:pl-2 max-sm:pr-1 text-right font-normal whitespace-nowrap"
+              [class]="columnClass(column.key, $last)"
               [attr.aria-sort]="sorted ? (options().dir === 'desc' ? 'descending' : 'ascending') : 'none'"
             >
               <button
@@ -145,17 +150,19 @@
                 [tooltipUnderline]="false"
                 (click)="sortBy(column.key)"
               >
-                {{ column.label }}
+                <!-- Before the label, so the label lines up with the right-aligned numbers below it -->
                 <svg
                   lucideArrowDown
                   class="size-3.5 shrink-0 transition-transform motion-reduce:transition-none"
                   [class]="sorted ? (options().dir === 'asc' ? 'rotate-180' : '') : 'opacity-0'"
                   strokeWidth="2.5"
                 />
+                {{ column.label }}
               </button>
               <ng-template #headerTip>{{ column.tip }}</ng-template>
             </th>
           }
+          <th scope="col" class="sm:hidden py-3 pr-2.5"><span class="sr-only">Details</span></th>
         </tr>
       </thead>
 
@@ -164,8 +171,10 @@
       } @else if (view(); as view) {
         <tbody>
           @for (row of view.rows; track row.id) {
+            @let open = expanded() === row.id;
             <tr
               class="group border-b border-row hover:bg-row has-focus-visible:outline-2 has-focus-visible:-outline-offset-2 has-focus-visible:outline-accent"
+              [class]="open ? 'max-sm:border-b-0' : ''"
             >
               <th scope="row" class="relative max-w-0 py-3 pl-5 max-sm:pl-4 pr-3 max-sm:pr-2 text-left font-normal">
                 <!-- The row's one link, stretched over it from its cell to the card's edge, which clips it: WebKit
@@ -188,8 +197,8 @@
               </th>
               @for (column of columns(); track column.key) {
                 <td
-                  class="py-3 px-3 max-sm:px-2 last:pr-5 max-sm:last:pr-4 text-right text-base/5 tabular-nums whitespace-nowrap"
-                  [class]="columnClass(column.key)"
+                  class="py-3 px-3 max-sm:pl-2 max-sm:pr-1 text-right text-base/5 tabular-nums whitespace-nowrap"
+                  [class]="columnClass(column.key, $last)"
                 >
                   @switch (column.key) {
                     @case ('key') {
@@ -200,7 +209,7 @@
                         [tooltipTemplate]="breakdown"
                         [tooltipUnderline]="false"
                         tabindex="0"
-                        >{{ formatWhole(row.key, true) }}</span
+                        >{{ formatTableNumber(row.key, true) }}</span
                       >
                       <ng-template #breakdown>
                         <span class="flex flex-col min-w-48 tabular-nums">
@@ -241,7 +250,7 @@
                           [tooltipTemplate]="perLimitTip"
                           [tooltipUnderline]="false"
                           tabindex="0"
-                          >{{ formatTableNumber(row.perLimit) }}</span
+                          >{{ formatTableNumber(row.perLimit, true) }}</span
                         >
                         <ng-template #perLimitTip
                           >{{ formatWhole(row.perLimit) }} gp on a buy limit of
@@ -287,7 +296,46 @@
                   }
                 </td>
               }
+              <td class="sm:hidden py-3 pr-2.5 text-right">
+                <!-- Above the row's stretched link -->
+                <button
+                  type="button"
+                  class="relative z-1 inline-flex items-center justify-center size-7 -my-1 rounded-full text-muted hover:bg-inner hover:text-strong aria-expanded:bg-inner aria-expanded:text-strong"
+                  [attr.aria-label]="'Details for ' + row.name"
+                  [attr.aria-expanded]="open"
+                  [attr.aria-controls]="open ? 'price-row-details-' + row.id : null"
+                  (click)="toggleDetails(row.id)"
+                >
+                  <svg
+                    lucideChevronDown
+                    class="size-4.5 transition-transform motion-reduce:transition-none"
+                    [class]="open ? 'rotate-180' : ''"
+                    strokeWidth="2.5"
+                  />
+                </button>
+              </td>
             </tr>
+            @if (open) {
+              <tr class="sm:hidden border-b border-row" [id]="'price-row-details-' + row.id">
+                <td class="pb-4 pl-15 pr-4" [attr.colspan]="columns().length + 2">
+                  <p class="text-sm font-bold text-strong">{{ row.name }}</p>
+                  <dl class="flex flex-col gap-1.5 mt-2 text-sm">
+                    @for (column of detailColumns(); track column.key) {
+                      <div class="flex justify-between gap-4">
+                        <dt class="text-muted">{{ column.label }}</dt>
+                        <dd class="text-strong tabular-nums">{{ detailValue(row, column.key) }}</dd>
+                      </div>
+                    }
+                  </dl>
+                  @if (staleFor(row, view); as age) {
+                    <p class="flex items-center gap-1.5 mt-2 text-sm text-muted">
+                      <svg lucideClock class="size-3.5 text-amber" strokeWidth="2.5" />
+                      Last traded {{ age }} ago
+                    </p>
+                  }
+                </td>
+              </tr>
+            }
           }
         </tbody>
       } @else {
@@ -301,10 +349,11 @@
                 </span>
               </td>
               @for (column of columns(); track column.key) {
-                <td class="py-3 px-3 max-sm:px-2 last:pr-5 max-sm:last:pr-4" [class]="columnClass(column.key)">
+                <td class="py-3 px-3 max-sm:pl-2 max-sm:pr-1" [class]="columnClass(column.key, $last)">
                   <span class="flex justify-end"><skeleton class="h-4 w-14" /></span>
                 </td>
               }
+              <td class="sm:hidden py-3 pr-2.5"></td>
             </tr>
           }
         </tbody>

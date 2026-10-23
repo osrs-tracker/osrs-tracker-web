@@ -1,4 +1,4 @@
-import { DecimalPipe, isPlatformServer } from '@angular/common';
+import { DecimalPipe, Location, isPlatformServer } from '@angular/common';
 import {
   Component,
   PLATFORM_ID,
@@ -10,9 +10,10 @@ import {
   linkedSignal,
   makeStateKey,
   signal,
+  untracked,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { formatDistanceStrict } from 'date-fns';
 import { forkJoin, map, tap } from 'rxjs';
 import { announceChanges } from '@app/common/a11y/announcer';
@@ -21,7 +22,15 @@ import { LatestPriceList, OsrsPricesRepo, TimeSpan } from '@app/common/api/osrs-
 import { formatWhole } from '@app/common/format/number-format';
 import { Icon } from '@app/common/icon/icon';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
-import { LucideArrowDown, LucideArrowLeft, LucideArrowRight, LucideClock, LucideSearch } from '@lucide/angular';
+import { readQueryParams, replaceQueryParams } from '@app/core/routing/query-state';
+import {
+  LucideArrowDown,
+  LucideArrowLeft,
+  LucideArrowRight,
+  LucideChevronDown,
+  LucideClock,
+  LucideSearch,
+} from '@lucide/angular';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
@@ -37,10 +46,11 @@ import {
   TableRow,
   Volume,
   buildRows,
-  defaultOptions,
   formatTableNumber,
   isStale,
   natureRunePrice,
+  optionsFromParams,
+  optionsToParams,
   viewRows,
 } from './price-table';
 
@@ -79,6 +89,7 @@ interface Column {
     RouterLink,
     LucideArrowLeft,
     LucideArrowRight,
+    LucideChevronDown,
     LucideClock,
     LucideSearch,
     Icon,
@@ -95,12 +106,18 @@ export default class PriceTablePage {
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
   private readonly transferState = inject(TransferState);
   private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly location = inject(Location);
 
   readonly kind = input.required<TableKind>();
 
-  readonly options = linkedSignal(() => defaultOptions(this.kind()));
+  /** From the URL's query params, read once (the server renders that view); changes are written back to them */
+  readonly options = linkedSignal(() => optionsFromParams(this.kind(), readQueryParams(this.router, this.location)));
   /** Back to the first page whenever the options change */
   readonly shown = linkedSignal({ source: this.options, computation: () => PAGE_SIZE });
+  /** Phones: the row whose details are open, closed whenever the options change */
+  readonly expanded = linkedSignal<TableOptions, number | null>({ source: this.options, computation: () => null });
   /** Browser only: whether the lists are needed, once a control has changed or nothing was transferred */
   private readonly interacted = signal(false);
 
@@ -130,7 +147,7 @@ export default class PriceTablePage {
         }),
         tap(lists => {
           if (!this.isServer) return;
-          const options = defaultOptions(kind);
+          const options = untracked(this.options);
           const rows = buildRows(kind, options.buyAt, lists.mapping, lists.latest, lists.day);
           this.transferState.set(
             this.stateKey(),
@@ -189,6 +206,7 @@ export default class PriceTablePage {
   readonly isHighAlch = computed(() => this.kind() === 'high-alch');
   readonly title = computed(() => (this.isHighAlch() ? 'High-alch profit' : 'Margins'));
   readonly query = computed(() => this.options().query.trim());
+  readonly caption = computed(() => `${this.title()} of every item at the latest prices`);
 
   readonly columns = computed((): Column[] => {
     const limit = { key: 'limit', label: 'Buy limit', tip: 'How many you can buy every 4 hours' } as const;
@@ -229,6 +247,11 @@ export default class PriceTablePage {
     ];
   });
 
+  /** The columns phones hide (all but the key and the sorted one), shown in a row's details */
+  readonly detailColumns = computed(() =>
+    this.columns().filter(column => column.key !== 'key' && column.key !== this.options().sort),
+  );
+
   readonly memberOptions: SegmentedOption<Members>[] = [
     { value: 'all', label: 'All items' },
     { value: 'members', label: 'Members' },
@@ -261,6 +284,7 @@ export default class PriceTablePage {
   setOptions(changes: Partial<TableOptions>): void {
     this.interacted.set(true);
     this.options.update(options => ({ ...options, ...changes }));
+    replaceQueryParams(this.router, this.route, this.location, optionsToParams(this.kind(), this.options()));
   }
 
   pickMembers(members: Members): void {
@@ -292,10 +316,35 @@ export default class PriceTablePage {
     this.shown.update(shown => shown + PAGE_SIZE);
   }
 
-  /** Sorted columns stay on every width; Buy limit hides below 1024px, the rest but the key column on phones */
-  columnClass(key: SortKey): string {
+  toggleDetails(id: number): void {
+    this.expanded.update(expanded => (expanded === id ? null : id));
+  }
+
+  /**
+   * Sorted columns stay on every width; Buy limit hides below 1024px, the rest but the key column on phones. The last
+   * column gets the card's padding from 640px; on phones the details button's column comes after it.
+   */
+  columnClass(key: SortKey, last = false): string {
     const sorted = key === this.options().sort;
-    return (key === 'limit' && !sorted ? 'max-lg:hidden ' : '') + (key === 'key' || sorted ? '' : 'max-sm:hidden');
+    return (
+      (key === 'limit' && !sorted ? 'max-lg:hidden ' : '') +
+      (key === 'key' || sorted ? '' : 'max-sm:hidden ') +
+      (last ? 'sm:pr-5' : '')
+    );
+  }
+
+  /** A value in a row's details, in full */
+  detailValue(row: TableRow, key: SortKey): string {
+    switch (key) {
+      case 'key':
+        return formatWhole(row.key, true);
+      case 'perLimit':
+        return row.perLimit === null ? '–' : formatWhole(row.perLimit, true);
+      case 'limit':
+        return row.limit === null ? '–' : formatWhole(row.limit);
+      default:
+        return formatWhole(row[key] ?? 0);
+    }
   }
 
   /** The price's age, shown with a clock when Any volume lets an old price in */
