@@ -4,14 +4,15 @@ import { StorageKey } from './storage';
 import { StorageService } from './storage-service';
 
 /**
- * `value` when it's a real day (`YYYY-MM-DD`) no later than today, as the news catch-up takes it from the link or
- * storage; otherwise `null`
+ * `value` when it's a real day (`YYYY-MM-DD`) before today (UTC), as the news catch-up takes it from the link or
+ * storage; otherwise `null`. Not today: "posts since today" are always none.
  */
 export function parseDay(value: string | null | undefined): string | null {
   if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
   const day = new Date(`${value}T00:00:00Z`);
   // `Date` rolls a day that doesn't exist (2026-02-31) over into the next month
-  if (isNaN(day.getTime()) || day.toISOString().slice(0, 10) !== value || day.getTime() > Date.now()) return null;
+  if (isNaN(day.getTime()) || day.toISOString().slice(0, 10) !== value) return null;
+  if (value >= new Date().toISOString().slice(0, 10)) return null;
   return value;
 }
 

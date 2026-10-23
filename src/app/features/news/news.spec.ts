@@ -67,7 +67,7 @@ describe('News', () => {
     expect(news.historyStart()).toEqual(new Date('2013-02-22T00:00:00Z'));
   });
 
-  it('ignores today, which the calendar no longer offers', async () => {
+  it('ignores today, which the calendar no longer offers: no post is after it', async () => {
     const today = new Date().toISOString().slice(0, 10);
     const news = await render(`/news?since=${today}`, { '': { posts: [post('2026-10-02')], next: null } });
 
@@ -97,8 +97,12 @@ describe('News', () => {
   });
 
   it("loads only the first rows' artwork eagerly", async () => {
-    const days = ['2026-10-05', '2026-10-04', '2026-10-03', '2026-10-02'];
-    const posts = days.map(day => ({ ...post(day), enclosure: { url: `/${day}.png`, type: 'image/png' } }));
+    const days = ['2026-10-06', '2026-10-05', '2026-10-04', '2026-10-03', '2026-10-02'];
+    // The first post has no artwork: only rows with an image count
+    const posts = days.map((day, i) => ({
+      ...post(day),
+      enclosure: i ? { url: `/${day}.png`, type: 'image/png' } : undefined,
+    }));
     const fixture = await renderFixture('/news', { '': { posts, next: null } });
     const images = [...(fixture.nativeElement as HTMLElement).querySelectorAll('img')];
 

@@ -94,11 +94,11 @@
                 @if (post.image; as image) {
                   <img
                     class="w-26 sm:w-32 lg:w-44 aspect-video shrink-0 rounded-xl object-cover bg-deep"
+                    [attr.loading]="post.eager ? 'eager' : 'lazy'"
                     [src]="image"
                     alt=""
                     width="176"
                     height="99"
-                    [attr.loading]="post.eager ? 'eager' : 'lazy'"
                     decoding="async"
                   />
                 } @else {
@@ -133,14 +133,13 @@
     } @empty {
       <div class="flex flex-col items-center gap-4 px-6 py-10 rounded-2xl bg-card text-center">
         <p>{{ emptyText() }}</p>
-        @if (since()) {
-          <button type="button" class="button--default button--rounded" (click)="clearDay()">
-            {{ category() ? 'Show every post in ' + categoryLabel() : 'Show every post' }}
-          </button>
-        } @else if (category()) {
+        <!-- One filter at a time, the category first: with both, every category since the day may have posts -->
+        @if (category()) {
           <button type="button" class="button--default button--rounded" (click)="showEveryCategory()">
             Show every category
           </button>
+        } @else if (since()) {
+          <button type="button" class="button--default button--rounded" (click)="clearDay()">Show every post</button>
         }
       </div>
     }
