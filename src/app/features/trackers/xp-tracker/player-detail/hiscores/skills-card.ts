@@ -28,9 +28,11 @@ const TABS: SegmentedOption<TopTab>[] = [
         [value]="playerView.top()"
         (picked)="playerView.showTop($event)"
       />
-      <info-tooltip label="About the coloured rings"
-        ><ng-template>{{ ringTip[playerView.top()] }}</ng-template></info-tooltip
-      >
+      @if (!failed()) {
+        <info-tooltip label="About the coloured rings"
+          ><ng-template>{{ ringTip[playerView.top()] }}</ng-template></info-tooltip
+        >
+      }
     </div>
     <div class="px-4 pt-4">
       @if (failed()) {

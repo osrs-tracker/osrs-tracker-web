@@ -277,7 +277,7 @@ export default class PlayerDetail implements OnInit {
     }
   }
 
-  /** The stale hiscores notice's Try again */
+  /** Try again on the header's line that says the hiscores aren't responding */
   reloadToday(): void {
     this.history.reloadToday();
     this.analyticsService.trackEvent('retry', { source: 'player-stale' });
