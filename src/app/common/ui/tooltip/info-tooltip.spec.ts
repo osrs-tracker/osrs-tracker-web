@@ -2,6 +2,7 @@ import { Component, provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { InfoTooltip } from './info-tooltip';
+import { Tooltip } from './tooltip';
 
 @Component({
   template: `<info-tooltip label="About GE tax"
@@ -49,5 +50,24 @@ describe('InfoTooltip', () => {
 
     button.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     await eventually(() => expect(overlayText()).toBe(''));
+  });
+});
+
+@Component({
+  template: `<button type="button" tooltip [tooltipTemplate]="tip" [tooltipDescribe]="false">Attack</button>
+    <ng-template #tip>83 XP</ng-template>`,
+  imports: [Tooltip],
+})
+class OptOutHost {}
+
+describe('Tooltip', () => {
+  it("leaves the host undescribed when it opts out, as the grids' cells do", async () => {
+    TestBed.configureTestingModule({ providers: [provideZonelessChangeDetection()] });
+    const fixture = TestBed.createComponent(OptOutHost);
+    await fixture.whenStable();
+    const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+
+    expect(button.hasAttribute('aria-describedby')).toBe(false);
+    expect(button.querySelector('[hidden]')).toBeNull();
   });
 });

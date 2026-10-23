@@ -113,7 +113,11 @@ export class PlayerRow implements OnInit {
   private readonly lastTrackedAgo = computed(() =>
     this.timeAgoPipe.transform(this.playerDetails()?.hiscoreEntries?.[0]?.date),
   );
-  readonly xpTitle = computed(() => `XP gained since ${this._username()} was last tracked, ${this.lastTrackedAgo()}.`);
+  readonly xpTitle = computed(() =>
+    this.lastTrackedAgo()
+      ? `XP gained since ${this._username()} was last tracked, ${this.lastTrackedAgo()}.`
+      : `XP gained since ${this._username()} was last tracked.`,
+  );
   /** The title's time span for screen readers and keyboard users, as part of the row link's name */
   readonly sinceText = computed(() => (this.lastTrackedAgo() ? `, since last tracked ${this.lastTrackedAgo()}` : ''));
 
