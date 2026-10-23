@@ -31,6 +31,10 @@
   older posts" moves focus to the first older post it adds, and clearing the day or the category moves it to the control
   you'd use next. When the server fails rather than your connection, the message now says so, instead of asking you to
   check your connection.
+- On the news page, "Since you last played" now opens its calendar on a week ago (or the day you last picked) instead of
+  today, and today can no longer be picked, as it always gave an empty list. When no posts came after the day you
+  picked, the message now has a "Show every post" button. Screen readers no longer hear "since" twice in the button's
+  name, and the first posts' pictures load straight away instead of a moment after the page.
 - On a player's page, when the history doesn't load, the stat tiles now show the total level and "–" for the rest
   instead of loading forever, and the message says which parts are missing. When the hiscores don't respond, the line
   under the player's name now says so, with a "Try again" link, instead of a notice that pushed the whole page down. A

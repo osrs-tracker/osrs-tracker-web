@@ -27,6 +27,9 @@ import { LucideExternalLink, LucideNewspaper, LucideX } from '@lucide/angular';
 
 /** Posts per page: the first one is rendered on the server, "Show older posts" loads the next */
 const PAGE_SIZE = 30;
+/** The first rows' artwork is in view on load, so it isn't lazy */
+const EAGER_IMAGES = 3;
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 /** The categories to filter on, by Jagex's name; the rare ones (Website, Support…) are only under All */
 export const NEWS_CATEGORIES: SegmentedOption<string>[] = [
@@ -43,7 +46,7 @@ export const NEWS_CATEGORIES: SegmentedOption<string>[] = [
 interface NewsMonth {
   key: string;
   label: string;
-  posts: (StoredNewsItem & { image?: string })[];
+  posts: (StoredNewsItem & { image?: string; eager: boolean })[];
 }
 
 /**
@@ -70,10 +73,10 @@ export default class News {
   private readonly dayPicker = viewChild.required(DayPicker);
 
   readonly categories = NEWS_CATEGORIES;
-  /** Any day from before the first Old School post up to today */
+  /** Any day from before the first Old School post up to yesterday: "since today" would always be empty */
   readonly pickerRange: { from: string; to: string } = {
     from: '2013-01-01',
-    to: new Date().toISOString().slice(0, 10),
+    to: new Date(Date.now() - DAY_MS).toISOString().slice(0, 10),
   };
 
   private readonly queryParams = toSignal(this.route.queryParamMap, { requireSync: true });
@@ -84,8 +87,11 @@ export default class News {
     return NEWS_CATEGORIES.some(option => option.value === category) ? category : '';
   });
 
-  /** The "since you last played" day, `YYYY-MM-DD`, or `null` for every post */
-  readonly since = linkedSignal(() => parseDay(this.queryParams().get('since')));
+  /** The "since you last played" day, `YYYY-MM-DD`, or `null` for every post, also for today (it can't be picked) */
+  readonly since = linkedSignal(() => {
+    const since = parseDay(this.queryParams().get('since'));
+    return since && since <= this.pickerRange.to ? since : null;
+  });
   readonly sinceDate = computed(() => {
     const since = this.since();
     return since ? new Date(`${since}T00:00:00Z`) : null;
@@ -93,11 +99,13 @@ export default class News {
   /** The end of the picked day: the posts "after the day" start here (feed posts carry a time, not only a day) */
   private readonly sinceEnd = computed(() => {
     const sinceDate = this.sinceDate();
-    return sinceDate ? new Date(sinceDate.getTime() + 24 * 60 * 60 * 1000) : null;
+    return sinceDate ? new Date(sinceDate.getTime() + DAY_MS) : null;
   });
 
-  /** With no day in the link, the calendar opens on the one remembered on this device */
-  readonly lastPlayed = this.lastPlayedStore.lastPlayed;
+  /** With no day in the link, the calendar opens on the one remembered on this device, else a week ago */
+  readonly openAt = computed(
+    () => this.lastPlayedStore.lastPlayed() ?? new Date(Date.now() - 7 * DAY_MS).toISOString().slice(0, 10),
+  );
 
   readonly firstPage = rxResource({
     params: () => ({ category: this.category() }),
@@ -144,6 +152,7 @@ export default class News {
   readonly months = computed(() => {
     const sinceEnd = this.sinceEnd();
     const months: NewsMonth[] = [];
+    let shown = 0;
 
     for (const post of this.posts()) {
       if (sinceEnd && post.pubDate < sinceEnd) break;
@@ -153,7 +162,7 @@ export default class News {
       if (months.at(-1)?.key !== key) {
         months.push({ key, label: formatDate(post.pubDate, 'MMMM y', 'en-US', 'UTC'), posts: [] });
       }
-      months.at(-1)!.posts.push({ ...post, image });
+      months.at(-1)!.posts.push({ ...post, image, eager: shown++ < EAGER_IMAGES });
     }
 
     return months;
@@ -212,7 +221,7 @@ export default class News {
     this.updateQuery();
   }
 
-  /** The ✕ removes itself: focus goes to the day picker beside it */
+  /** The ✕, or the empty message's button, removes itself: focus goes to the day picker */
   clearDay(): void {
     this.pickDay(null);
     this.dayPicker().focus();

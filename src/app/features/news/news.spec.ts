@@ -1,5 +1,5 @@
 import { provideZonelessChangeDetection } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -18,6 +18,10 @@ const post = (day: string, time = '00:00'): StoredNewsItem => ({
 // Guards where the catch-up stops paging: at the day picked, or at the oldest stored post
 describe('News', () => {
   async function render(url: string, pages: Record<string, NewsArchivePage>): Promise<News> {
+    return (await renderFixture(url, pages)).componentInstance;
+  }
+
+  async function renderFixture(url: string, pages: Record<string, NewsArchivePage>): Promise<ComponentFixture<News>> {
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
@@ -31,7 +35,7 @@ describe('News', () => {
     await TestBed.inject(Router).navigateByUrl(url);
     const fixture = TestBed.createComponent(News);
     await fixture.whenStable();
-    return fixture.componentInstance;
+    return fixture;
   }
 
   const titles = (news: News): string[] => news.months().flatMap(month => month.posts.map(p => p.title));
@@ -63,10 +67,41 @@ describe('News', () => {
     expect(news.historyStart()).toEqual(new Date('2013-02-22T00:00:00Z'));
   });
 
+  it('ignores today, which the calendar no longer offers', async () => {
+    const today = new Date().toISOString().slice(0, 10);
+    const news = await render(`/news?since=${today}`, { '': { posts: [post('2026-10-02')], next: null } });
+
+    expect(news.since()).toBeNull();
+    expect(titles(news)).toEqual(['Post of 2026-10-02']);
+  });
+
   it('ignores a day that does not exist', async () => {
     const news = await render('/news?since=2026-02-31', { '': { posts: [post('2026-10-02')], next: null } });
 
     expect(news.since()).toBeNull();
     expect(titles(news)).toEqual(['Post of 2026-10-02']);
+  });
+
+  it('offers every post when none came after the day picked, and moves focus to the day picker', async () => {
+    const fixture = await renderFixture('/news?since=2026-10-02', { '': { posts: [post('2026-10-02')], next: null } });
+    const host: HTMLElement = fixture.nativeElement;
+    const button = [...host.querySelectorAll('button')].find(
+      button => button.textContent!.trim() === 'Show every post',
+    );
+
+    button!.click();
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.since()).toBeNull();
+    expect(document.activeElement).toBe(host.querySelector('day-picker button'));
+  });
+
+  it("loads only the first rows' artwork eagerly", async () => {
+    const days = ['2026-10-05', '2026-10-04', '2026-10-03', '2026-10-02'];
+    const posts = days.map(day => ({ ...post(day), enclosure: { url: `/${day}.png`, type: 'image/png' } }));
+    const fixture = await renderFixture('/news', { '': { posts, next: null } });
+    const images = [...(fixture.nativeElement as HTMLElement).querySelectorAll('img')];
+
+    expect(images.map(image => image.getAttribute('loading'))).toEqual(['eager', 'eager', 'eager', 'lazy']);
   });
 });

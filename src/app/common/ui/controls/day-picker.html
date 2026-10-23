@@ -9,7 +9,7 @@
   "
   aria-haspopup="dialog"
   [attr.aria-expanded]="open()"
-  [attr.aria-label]="value() || !placeholder() ? label() + ': ' + valueLabel() : placeholder()"
+  [attr.aria-label]="buttonName()"
   [disabled]="!days().length && !range()"
   (click)="toggle($event)"
 >
