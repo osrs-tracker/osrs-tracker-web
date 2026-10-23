@@ -64,8 +64,9 @@ interface Changes {
 @Component({
   selector: 'compare-days',
   templateUrl: './compare-days.html',
-  // the page's Days/Compare switch sits above it: a shared link scrolls to show both
-  host: { class: 'block scroll-mt-28 sm:scroll-mt-40' },
+  // the page's Days/Compare switch sits above it: a shared link scrolls to show both (from sm up, below the nav's
+  // scroll padding)
+  host: { class: 'block scroll-mt-28 sm:scroll-mt-21' },
   imports: [DayPicker, DecimalPipe, Icon, LoadError, Segmented, Skeleton],
 })
 export class CompareDays {

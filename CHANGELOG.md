@@ -1,5 +1,7 @@
 ## 2026-10-23
 
+- Moving through a page with the Tab key on a tablet or computer no longer leaves the focused link or button hidden
+  under the menu bar at the top: the page now scrolls it into view below the bar.
 - The "Online now" dot on Players online now pulses twice when the count appears and then stays still, instead of
   pulsing forever beside the number, and doesn't pulse at all when your device asks for reduced motion.
 

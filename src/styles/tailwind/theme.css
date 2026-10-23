@@ -7,6 +7,10 @@
   /* The page width: nav, footer and page content (24px gutters, 16px on phones) */
   --container-page: 75rem;
 
+  /* The sticky nav's height from sm up (its 44px theme button, 16px above and below, the 1px border): the nav is set to
+     it, and the page scrolls focused elements and anchors clear of it (`scroll-padding-top` in base.css) */
+  --spacing-nav: 4.8125rem;
+
   /* The big search box on phones, a step tighter than its 24px (rounded-3xl) */
   --radius-search-phone: 1.25rem;
 
