@@ -2,6 +2,16 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## The live dot pulses forever (2026-10-23)
+
+- **Context:** the "Online now" dot on Players online pulses beside the count. osrs-tracker/osrs-tracker-web#391 stopped
+  it after two cycles, so it would end within five seconds (WCAG 2.2.2, Pause, Stop, Hide).
+- **Decision:** the owner prefers the endless pulse and accepts failing 2.2.2 for it, as freekmencke.com does with its
+  cursor and arrow. `--animate-live` in `theme.css` runs `infinite`; `motion-reduce:after:animate-none` on the dot turns
+  it off under reduced motion (2.3.3), and the keyframes animate only `transform` and `opacity`, so the compositor runs
+  them without repaints.
+- **Revisit:** if the site has to pass WCAG 2.2 AA in full, limit the iterations again or add a pause control.
+
 ## Focus moves to the new page's heading after a client-side navigation (2026-10-18)
 
 - **Context:** the router doesn't move focus, so after following a link focus stayed on it, or fell to `body` when it
