@@ -2,6 +2,22 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## List cards keep their layout shifts and one-line rows (2026-10-23)
+
+- **Context:** the UI review (osrs-tracker/osrs-tracker-web#407) flagged the tracker landings' per-device cards, which
+  the server renders as five skeleton rows before the browser reads local storage and shrinks them to the empty message,
+  the 768px grid that leaves favourites under the global card, cut-off item names on phones, and empty states for news
+  and A–Z letters.
+- **Decision:** keep the skeleton placeholders and the plain grid. The measured layout shift on a first visit to
+  `/trackers/xp` is 0 at 375×812 (below the fold), 0.024 at 768×1024 and 0.014 at 1440×900, well under the 0.1 "good"
+  line, and there's no field data for it to affect. Tried and rejected: an empty-card-sized placeholder (regulars' cards
+  jump the other way), fixed-height per-device cards (tall empty cards), and spanning the global card over two rows at
+  768 (the blank only moves to the other column once lists fill). Rows stay one line: stacking the price above the pill
+  on phones and two-line names were mocked up and rejected; names that don't fit carry a `title`. No empty state for the
+  news (Jagex's feed always has posts) or a browse letter (every letter has items), and A–Z keeps reading across rows.
+- **Revisit:** with field data showing a poor CLS on the landings, or when a browse letter or the news can come back
+  empty.
+
 ## The live dot pulses forever (2026-10-23)
 
 - **Context:** the "Online now" dot on Players online pulses beside the count. osrs-tracker/osrs-tracker-web#391 stopped
