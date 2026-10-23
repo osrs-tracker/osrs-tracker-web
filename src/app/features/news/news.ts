@@ -162,7 +162,8 @@ export default class News {
 
     const olderPage = this.older.pages().at(-1);
     if (olderPage) return `${olderPage.posts.length} older ${olderPage.posts.length === 1 ? 'post' : 'posts'} loaded.`;
-    const count = this.posts().length;
+    // What's listed: with a day picked, posts older than it are loaded but not shown
+    const count = this.months().reduce((total, month) => total + month.posts.length, 0);
     return count ? `Showing ${count} ${this.postsLabel()}.` : this.emptyText();
   });
 

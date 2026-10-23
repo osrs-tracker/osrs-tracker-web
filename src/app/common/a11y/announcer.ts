@@ -23,11 +23,13 @@ export class Announcer {
 
 /**
  * Reads `message` out whenever it changes to a new text that stays for `ANNOUNCE_DELAY`, such as a result count after a
- * filter, "No items match" or a failure. The first value isn't read: it's what the page loaded with. Return `null` while
- * there's nothing to say (loading). Call it in an injection context.
+ * filter, "No items match" or a failure. The first value isn't read: it's what the server rendered. Return `null` while
+ * there's nothing to say (loading); a page that loads in the browser (after a client-side navigation) so reads its
+ * first result. Browser only. Call it in an injection context.
  */
 export function announceChanges(message: () => string | null): void {
   const announcer = inject(Announcer);
+  if (!isPlatformBrowser(inject(PLATFORM_ID))) return;
   let first = true;
 
   effect(onCleanup => {
