@@ -22,7 +22,7 @@
   --text-2xs: 0.625rem;
 
   /* No stock colour utilities (`bg-slate-800`, `text-orange-500`): templates use the semantic ones below, which follow
-     the theme. A new colour is a token in base.css, built from the palette under `:root` */
+     the theme. A new colour is a token in base.css, built from a `--palette-*` step below */
   --color-*: initial;
 
   --animate-skeleton: skeleton 1.6s ease-in-out infinite;

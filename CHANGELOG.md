@@ -88,8 +88,8 @@
 ### Behind the scenes
 
 - The site's styles now offer only the colours of its own light and dark themes, not Tailwind's whole stock palette, so
-  a new part of a page can't pick a colour that ignores the theme or skips its contrast checks. Nothing on the page
-  changes.
+  a new part of a page can't pick a stock colour that ignores the theme or skips its contrast checks. Nothing on the
+  page changes.
 
 ## 2026-10-21
 
