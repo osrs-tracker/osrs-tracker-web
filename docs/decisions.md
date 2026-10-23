@@ -517,8 +517,10 @@ Choices that look like accidents without their context: what was decided, why, a
   themes drift apart.
 - **Decision:** Tailwind tokens (`bg-card`, `text-muted`, `border-line`, `text-up`…) backed by CSS variables that swap
   under `.dark` in `base.css`. Templates match the design canvas one to one and stay Tailwind-only (no arbitrary
-  values). The extra slate steps and the true green behind them live in `theme.css`; every other colour is Tailwind's
-  own.
+  values). The palette behind them is plain `--palette-*` variables in `theme.css`: Tailwind's values for the steps in
+  use, plus extra slate steps and a true green. Tailwind's stock colour utilities are switched off
+  (`--color-*: initial`, 2026-10-23, [#422](https://github.com/osrs-tracker/osrs-tracker-web/issues/422)), so a template
+  can't use a stock colour that skips the theme.
 - **Revisit:** if a third theme is added (it's one more variable block), or a component needs a colour that isn't a
   token: add a token rather than a one-off.
 

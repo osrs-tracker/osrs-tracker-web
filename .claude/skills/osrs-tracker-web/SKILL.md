@@ -86,7 +86,10 @@ value the scale lacks becomes a token in `src/styles/tailwind/theme.css`.
   accent), `down-pill` the red change pill's background (a tint in light, solid in dark: a see-through red over slate
   turns pink), `amber` warnings, `sold` the volume chart's sold bars, `scrim` the see-through layer behind the phone
   nav's menu sheet, `dot` the hero's dot grid (`.dot-grid` in `utilities.css`). Charts read them through `token()` in
-  `chart-setup.ts`, which lists the ones they use.
+  `chart-setup.ts`, which lists the ones they use. Tailwind's stock palette is off (`--color-*: initial` in
+  `theme.css`): `bg-slate-800`, `text-orange-500` and `text-white` build to nothing; only these tokens and
+  `transparent`/`current`/`inherit` remain. A new colour is a token in `base.css`, built from a `--palette-*` step in
+  `theme.css` (add the step there if it's missing).
 - **Tints:** `hiscores/picked-cell.ts` and the chart legend layer one over the surface.
 - **Surfaces:** cards are flat; only floating layers (dropdowns, tooltips, Home's preview card) get `shadow-float`.
 - **Radii:** `rounded-3xl` hero surfaces (search box, preview card), `rounded-2xl` cards, stat tiles and buttons in the
