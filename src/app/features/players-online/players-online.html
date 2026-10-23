@@ -70,20 +70,19 @@
       }
     </div>
 
-    <section
-      class="md:w-80 xl:w-105 shrink-0 rounded-3xl bg-card border border-line shadow-float overflow-hidden"
+    <article
+      card
+      class="md:w-80 xl:w-105 shrink-0 border border-line"
+      subtitle="Players on each country's worlds"
       aria-labelledby="locations-heading"
     >
-      <div class="px-5 py-4 border-b border-line">
-        <h2 id="locations-heading" class="text-lg font-bold text-strong">By world location</h2>
-        <p class="text-sm text-muted">Players on each country's worlds</p>
-      </div>
+      <h2 id="locations-heading" title>By world location</h2>
       @if (failed()) {
-        <p class="px-5 py-8 text-center text-sm text-muted">Shown once the count loads.</p>
+        <p class="py-4 text-center text-sm text-muted">Shown once the count loads.</p>
       } @else {
-        <ul class="py-1.5">
+        <ul class="flex flex-col gap-4">
           @for (location of locations(); track location.key) {
-            <li class="flex flex-col gap-1.5 px-5 md:max-xl:px-4 py-2">
+            <li class="flex flex-col gap-1.5">
               <span class="flex items-center gap-3 text-sm">
                 @if (location.flag) {
                   <img class="w-7.5 h-3.75 shrink-0 pixelated ring-1 ring-line" [src]="location.flag" alt="" />
@@ -103,7 +102,7 @@
             </li>
           } @empty {
             @for (row of skeletonRows; track $index) {
-              <li class="flex flex-col gap-1.5 px-5 md:max-xl:px-4 py-2" aria-hidden="true">
+              <li class="flex flex-col gap-1.5" aria-hidden="true">
                 <span class="flex items-center gap-3">
                   <skeleton class="w-7.5 h-3.75 rounded-none" />
                   <skeleton class="h-4 w-28" />
@@ -114,7 +113,7 @@
           }
         </ul>
       }
-    </section>
+    </article>
   </div>
 </header>
 

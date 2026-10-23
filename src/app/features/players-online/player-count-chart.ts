@@ -155,6 +155,8 @@ export class PlayerCountChart extends BaseChart<'line', PlayerCountSeries> {
         },
         y: {
           position: 'right',
+          // From 0, so the filled area's height reads as the count
+          beginAtZero: true,
           // Dashes the gridlines
           border: { dash: [4, 6] },
           ticks: { autoSkipPadding: 20, callback: value => formatNumberShort(Number(value)) },
