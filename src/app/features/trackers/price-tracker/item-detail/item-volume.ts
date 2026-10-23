@@ -2,6 +2,7 @@ import { formatDate } from '@angular/common';
 import { Component, computed, input, output } from '@angular/core';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
+import { ChartTable, ChartTableRow } from '@app/common/charts/chart-table';
 import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
 import { formatWhole } from '@app/common/format/number-format';
 import { VolumeChart } from './charts/volume-chart';
@@ -70,30 +71,6 @@ interface VolumeSummary {
           } @placeholder {
             <skeleton class="absolute inset-0 h-full w-full rounded-xl" />
           }
-          <!-- The chart's numbers are otherwise only in its hover tooltip -->
-          <table class="sr-only">
-            <caption>
-              {{
-                chartLabel()
-              }}
-            </caption>
-            <thead>
-              <tr>
-                <th scope="col">Day (UTC)</th>
-                <th scope="col">Bought</th>
-                <th scope="col">Sold</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (row of table(); track row.day) {
-                <tr>
-                  <th scope="row">{{ row.day }}</th>
-                  <td>{{ row.bought }}</td>
-                  <td>{{ row.sold }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
         }
       </div>
       <!-- The chart's ends, kept while there's no chart so the card keeps its height -->
@@ -101,10 +78,13 @@ interface VolumeSummary {
         <span>{{ firstDay() }}</span>
         <span>Today (UTC)</span>
       </div>
+      @if (!loading() && !notLoaded() && !empty()) {
+        <chart-table class="block mx-5 mb-4" [caption]="tableCaption()" [columns]="TABLE_COLUMNS" [rows]="table()" />
+      }
     }
   `,
   host: { class: 'flex flex-col rounded-2xl bg-card overflow-hidden' },
-  imports: [InfoTooltip, LoadError, Skeleton, VolumeChart],
+  imports: [ChartTable, InfoTooltip, LoadError, Skeleton, VolumeChart],
 })
 export class ItemVolume {
   /** Oldest first, today (so far) last */
@@ -145,13 +125,19 @@ export class ItemVolume {
 
   readonly empty = computed(() => this.volumes().every(({ bought, sold }) => !bought && !sold));
 
-  readonly table = computed(() =>
-    this.volumes().map(({ day, bought, sold }) => ({
-      day: formatDate(day * 1000, 'd MMM', 'en-US', 'UTC'),
-      bought: formatWhole(bought),
-      sold: formatWhole(sold),
-    })),
+  protected readonly TABLE_COLUMNS = ['Day (UTC)', 'Bought (items)', 'Sold (items)'];
+
+  /** Newest first, as the question is usually about the last few days */
+  readonly table = computed<ChartTableRow[]>(() =>
+    this.volumes()
+      .map(({ day, bought, sold }) => ({
+        key: day,
+        cells: [formatDate(day * 1000, 'EEE d MMM', 'en-US', 'UTC'), formatWhole(bought), formatWhole(sold)],
+      }))
+      .reverse(),
   );
 
-  readonly chartLabel = computed(() => `Items bought and sold per day over the last ${this.volumes().length} days`);
+  readonly tableCaption = computed(
+    () => `Items bought and sold per day over the last ${this.volumes().length} days, newest first`,
+  );
 }

@@ -7,6 +7,8 @@ import { map, of, tap } from 'rxjs';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { PlayerCountStore } from '@app/common/player-count/player-count-store';
+import { ChartTable, ChartTableRow } from '@app/common/charts/chart-table';
+import { binByTime, TimeBin, timeBinLabel } from '@app/common/charts/time-bins';
 import { Card } from '@app/common/ui/cards/card';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { LoadError } from '@app/common/ui/loading/load-error';
@@ -17,14 +19,16 @@ const HOUR = 3_600_000;
 const DAY = 24 * HOUR;
 
 /** Each range's name, how far back it reaches and how late its first point may be before it counts as incomplete */
-const RANGES: Record<PlayerCountRange, { label: string; title: string; name: string; span?: number; slack?: number }> =
-  {
-    '24h': { label: '24h', title: 'Last 24 hours', name: 'the last 24 hours', span: DAY, slack: HOUR },
-    '7d': { label: '7D', title: 'Last 7 days', name: 'the last 7 days', span: 7 * DAY, slack: HOUR },
-    '30d': { label: '30D', title: 'Last 30 days', name: 'the last 30 days', span: 30 * DAY, slack: 2 * HOUR },
-    '1y': { label: '1Y', title: 'Last year', name: 'the last year', span: 365 * DAY, slack: 2 * DAY },
-    'all': { label: 'All', title: 'All time', name: 'all time' },
-  };
+const RANGES: Record<
+  PlayerCountRange,
+  { label: string; title: string; name: string; bin: TimeBin; span?: number; slack?: number }
+> = {
+  '24h': { label: '24h', title: 'Last 24 hours', name: 'the last 24 hours', bin: 'hour', span: DAY, slack: HOUR },
+  '7d': { label: '7D', title: 'Last 7 days', name: 'the last 7 days', bin: 'day', span: 7 * DAY, slack: HOUR },
+  '30d': { label: '30D', title: 'Last 30 days', name: 'the last 30 days', bin: 'day', span: 30 * DAY, slack: 2 * HOUR },
+  '1y': { label: '1Y', title: 'Last year', name: 'the last year', bin: 'month', span: 365 * DAY, slack: 2 * DAY },
+  'all': { label: 'All', title: 'All time', name: 'all time', bin: 'month' },
+};
 
 const isDaily = (range: PlayerCountRange) => range === '1y' || range === 'all';
 const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
@@ -75,31 +79,6 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
             } @placeholder {
               <skeleton class="block h-56 sm:h-70 w-full rounded-xl" />
             }
-            @if (daily()) {
-              <table class="sr-only">
-                <caption>
-                  {{
-                    chartLabel()
-                  }}
-                </caption>
-                <thead>
-                  <tr>
-                    <th scope="col">Day (UTC)</th>
-                    <th scope="col">Daily average</th>
-                    <th scope="col">Daily peak</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (row of table(); track row.day) {
-                    <tr>
-                      <th scope="row">{{ row.day }}</th>
-                      <td>{{ row.average }}</td>
-                      <td>{{ row.peak }}</td>
-                    </tr>
-                  }
-                </tbody>
-              </table>
-            }
           } @else {
             <p
               class="flex items-center justify-center h-56 sm:h-70 p-6 rounded-xl border border-dashed border-line text-center text-muted"
@@ -134,11 +113,15 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
             >
           }
         </div>
+        @if (charted()) {
+          @let table = dataTable();
+          <chart-table class="block mt-4" [caption]="table.caption" [columns]="table.columns" [rows]="table.rows" />
+        }
       </div>
     </article>
   `,
   host: { class: 'block' },
-  imports: [Card, LoadError, PlayerCountChart, Segmented, Skeleton],
+  imports: [Card, ChartTable, LoadError, PlayerCountChart, Segmented, Skeleton],
 })
 export class PlayerCountHistory {
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
@@ -251,14 +234,23 @@ export class PlayerCountHistory {
     );
   });
 
-  /** The daily ranges' values, for screen readers */
-  readonly table = computed(() =>
-    (this.daily() ? (this.series()?.points ?? []) : []).map(point => ({
-      day: format(point.date, 'd MMMM yyyy'),
-      average: fmt(point.total),
-      peak: fmt(point.peak ?? point.total),
-    })),
-  );
+  /** The chart's data per hour, day or month, newest first */
+  readonly dataTable = computed(() => {
+    const series = this.series();
+    if (!series) return { caption: '', columns: [], rows: [] };
+    const { range, points } = series;
+    const { bin, name } = RANGES[range];
+    return {
+      // The daily ranges' days are UTC days, drawn at the visitor's midnight
+      caption: `Players online per ${bin} over ${name}, newest first${isDaily(range) ? ', in UTC days' : ', in your time zone'}`,
+      columns: [
+        bin[0].toUpperCase() + bin.slice(1),
+        'Average (players)',
+        range === '30d' ? 'Busiest hour (players)' : 'Peak (players)',
+      ],
+      rows: playerCountRows(points, bin),
+    };
+  });
 
   constructor() {
     inject(PlayerCountStore).watch(() => {
@@ -271,6 +263,18 @@ export class PlayerCountHistory {
     this.range.set(range);
     this.analyticsService.trackOption('player_count_range', range);
   }
+}
+
+/** Per bin, newest first: the average count (the average of the daily averages on daily ranges) and the highest */
+export function playerCountRows(points: PlayerCountPoint[], bin: TimeBin): ChartTableRow[] {
+  return binByTime(points, point => point.date, bin).map(({ start, points }) => ({
+    key: start,
+    cells: [
+      timeBinLabel(start, bin),
+      fmt(points.reduce((sum, point) => sum + point.total, 0) / points.length),
+      fmt(Math.max(...points.map(point => point.peak ?? point.total))),
+    ],
+  }));
 }
 
 /** Whether the points start when counting did: always on All, and on another range while counting is younger */

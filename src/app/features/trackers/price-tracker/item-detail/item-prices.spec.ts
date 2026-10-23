@@ -9,6 +9,8 @@ import {
   hasTrades,
   itemStats,
   priceChartSummary,
+  priceTableRows,
+  priceTakeaway,
   yesterdayAverageSellPrice,
 } from './item-prices';
 
@@ -209,5 +211,63 @@ describe('hasTrades', () => {
     expect(hasTrades([])).toBe(false);
     expect(hasTrades([{ timestamp: 1 } as AveragePricesAtTime])).toBe(false);
     expect(hasTrades([hour(1, 100, 1)])).toBe(true);
+  });
+});
+
+describe('priceTakeaway', () => {
+  const point = (timestamp: number, avgHighPrice: number | null, avgLowPrice: number | null) =>
+    ({ timestamp, avgHighPrice, avgLowPrice, highPriceVolume: 1, lowPriceVolume: 1 }) as AveragePricesAtTime;
+
+  it('moves instant buy from its first trade to its last, skipping points without trades', () => {
+    const prices = [point(1, null, 900), point(2, 1_000, 900), point(3, 1_042, null), point(4, null, 950)];
+    expect(priceTakeaway(prices, 'week')).toBe('Instant buy up 4.2% over the last week, to 1,042 gp');
+    expect(priceTakeaway([point(1, 1_000, 1), point(2, 971, 1)], 'day')).toBe(
+      'Instant buy down 2.9% over the last day, to 971 gp',
+    );
+  });
+
+  it('calls a change under 0.05% unchanged', () => {
+    expect(priceTakeaway([point(1, 100_000, 1), point(2, 100_040, 1)], 'month')).toBe(
+      'Instant buy unchanged over the last month, at 100,040 gp',
+    );
+  });
+
+  it('falls back to instant sell when nothing was bought, and to nothing without trades', () => {
+    expect(priceTakeaway([point(1, null, 200), point(2, null, 100)], 'year')).toBe(
+      'Instant sell down 50% over the last year, to 100 gp',
+    );
+    expect(priceTakeaway([point(1, null, null)], 'year')).toBeUndefined();
+  });
+});
+
+describe('priceTableRows', () => {
+  // local times, as the table bins in the visitor's time zone
+  const at = (day: number, hour: number) => new Date(2026, 9, day, hour).getTime() / 1000;
+  const point = (timestamp: number, high: [number, number] | null, low: [number, number] | null) =>
+    ({
+      timestamp,
+      avgHighPrice: high?.[0] ?? null,
+      highPriceVolume: high?.[1] ?? 0,
+      avgLowPrice: low?.[0] ?? null,
+      lowPriceVolume: low?.[1] ?? 0,
+    }) as AveragePricesAtTime;
+
+  it('averages each day weighted by the number traded, newest first, with a dash without trades', () => {
+    const prices = [
+      point(at(6, 10), [100, 1], [90, 2]),
+      point(at(6, 14), [200, 3], null),
+      point(at(7, 9), null, [80, 1]),
+    ];
+
+    expect(priceTableRows(prices, 'day')).toEqual([
+      { key: new Date(2026, 9, 7).getTime(), cells: ['Wed 7 Oct', '—', '80'] },
+      { key: new Date(2026, 9, 6).getTime(), cells: ['Tue 6 Oct', '175', '90'] },
+    ]);
+  });
+
+  it('labels hours and months', () => {
+    const prices = [point(at(6, 10), [100, 1], [90, 1])];
+    expect(priceTableRows(prices, 'hour')[0].cells[0]).toBe('6 Oct, 10:00');
+    expect(priceTableRows(prices, 'month')[0].cells[0]).toBe('October 2026');
   });
 });

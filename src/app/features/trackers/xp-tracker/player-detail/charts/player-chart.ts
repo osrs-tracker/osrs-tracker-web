@@ -141,15 +141,21 @@ interface ChartHeading {
           </div>
 
           @if (activityView(); as category) {
-            <activity-chart [data]="diffs()" [category]="category" [minigame]="minigame()" />
+            <activity-chart
+              [data]="diffs()"
+              [category]="category"
+              [minigame]="minigame()"
+              [tableCaption]="h.title + ' per day, ' + period() + ', newest first'"
+            />
           } @else {
-            <xp-gained-chart [data]="diffs()" />
+            <xp-gained-chart [data]="diffs()" [tableCaption]="'XP gained per day, ' + period() + ', newest first'" />
           }
         </div>
       }
     }
   `,
-  host: { class: 'flex flex-col min-w-0 rounded-2xl bg-card overflow-hidden lg:h-115.5' },
+  // Grows past the Skills card's height while the chart's data table shows
+  host: { class: 'flex flex-col min-w-0 rounded-2xl bg-card overflow-hidden lg:h-115.5 lg:has-data-open:h-auto' },
   imports: [ActivityChart, Icon, Segmented, Skeleton, XpGainedChart, LucideClock],
 })
 export class PlayerChart {
@@ -179,9 +185,14 @@ export class PlayerChart {
     return chart === 'skills' ? undefined : chart;
   });
 
-  readonly heading = computed(() => {
+  /** "last 30 days", or "since 5 Oct" when the diffs start later */
+  readonly period = computed(() => {
     const since = this.since();
-    const period = since ? `since ${format(since, 'd MMM')}` : `last ${this.playerView.period()} days`;
+    return since ? `since ${format(since, 'd MMM')}` : `last ${this.playerView.period()} days`;
+  });
+
+  readonly heading = computed(() => {
+    const period = this.period();
     const view = this.activityView();
     return view ? this.activityHeading(view, period) : this.xpHeading(period);
   });
