@@ -40,8 +40,8 @@ interface HoveredPoint {
 const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
 
 /**
- * The players online as an accent line over a light area, its newest point drawn; on daily ranges the day's peak as a
- * dashed muted line. Hovering shows a guide line and an HTML tooltip (Chart.js' own can't draw the flags): the count,
+ * The players online as an accent line over a light area, its newest point drawn; on daily ranges, which end on the
+ * last full day, no newest point but the day's peak as a dashed muted line. Hovering shows a guide line and an HTML tooltip (Chart.js' own can't draw the flags): the count,
  * the players per location and the members and free-to-play split.
  */
 @Component({
@@ -155,6 +155,8 @@ export class PlayerCountChart extends BaseChart<'line', PlayerCountSeries> {
         },
         y: {
           position: 'right',
+          // From 0, so the filled area's height reads as the count
+          beginAtZero: true,
           // Dashes the gridlines
           border: { dash: [4, 6] },
           ticks: { autoSkipPadding: 20, callback: value => formatNumberShort(Number(value)) },
@@ -174,6 +176,7 @@ export class PlayerCountChart extends BaseChart<'line', PlayerCountSeries> {
       span > 60 * 86_400_000 ? 'month' : span > 2 * 86_400_000 ? 'day' : 'hour';
     this.hovered.set(null);
 
+    const daily = range === '1y' || range === 'all';
     const last = points.length - 1;
     chart.data.datasets = [
       {
@@ -182,14 +185,14 @@ export class PlayerCountChart extends BaseChart<'line', PlayerCountSeries> {
         borderColor: () => token('accent'),
         backgroundColor: () => withAlpha(token('accent'), 0.14),
         pointBackgroundColor: () => token('accent'),
-        // The newest point, the count now
-        pointRadius: context => (context.dataIndex === last ? 4 : 0),
+        // The newest point, the count now; daily ranges end on the last full day, so they draw none
+        pointRadius: context => (!daily && context.dataIndex === last ? 4 : 0),
         pointBorderWidth: 2,
         borderWidth: 2.5,
         fill: 'start',
         order: 0,
       },
-      ...(range === '1y' || range === 'all'
+      ...(daily
         ? [
             {
               label: 'Daily peak',

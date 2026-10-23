@@ -8,8 +8,13 @@
   of after the tabs below, and the Home tab's focus outline no longer touches the screen's edge. Each page now has one
   main region instead of two nested ones, so screen readers' landmark lists go straight to the content, and voice
   control can follow the "0–9" key on the Browse items pages by saying what it shows.
-- The "Online now" dot on Players online no longer pulses when your device asks for reduced motion; otherwise it keeps
-  pulsing for as long as the count is shown, as before.
+- On Players online, switching the history's range keeps the chart in place until the next one is ready, instead of
+  flashing an empty placeholder, and a range you already opened comes back at once. The chart now starts at 0 players,
+  so the shaded area's height matches the count. The year and all-time charts leave out today and the first day of
+  counting, both only partly counted, so the line no longer dips at the end; all-time now says when counting started
+  too. Screen readers get the daily values as a table, and the chart's summary no longer gives a "now" figure that
+  didn't match the live count. The "By world location" card matches the other cards. The "Online now" dot no longer
+  pulses when your device asks for reduced motion; otherwise it keeps pulsing for as long as the count is shown.
 - The small ⓘ icons with an explanation, such as GE tax on an item's page, can now be reached with the Tab key and open
   their explanation on focus, and screen readers read it. So can the margin, profit and per-limit values in the price
   tables, which show how they add up, and the clock on an old price. Screen readers now also hear how old an old price

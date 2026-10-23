@@ -2,6 +2,7 @@ import { DecimalPipe } from '@angular/common';
 import { afterNextRender, Component, computed, inject, signal } from '@angular/core';
 import { format } from 'date-fns';
 import { PlayerCountStore } from '@app/common/player-count/player-count-store';
+import { Card } from '@app/common/ui/cards/card';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { PlayerCountHistory } from './player-count-history';
@@ -15,7 +16,7 @@ import { LucideActivity } from '@lucide/angular';
 @Component({
   selector: 'players-online',
   templateUrl: './players-online.html',
-  imports: [DecimalPipe, LoadError, PlayerCountHistory, Skeleton, LucideActivity],
+  imports: [Card, DecimalPipe, LoadError, PlayerCountHistory, Skeleton, LucideActivity],
 })
 export default class PlayersOnline {
   private readonly hydrated = signal(false);
