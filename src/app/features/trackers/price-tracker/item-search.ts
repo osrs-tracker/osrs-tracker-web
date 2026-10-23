@@ -121,12 +121,13 @@ const NAVIGATION_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageUp'
             focusMode="activedescendant"
             tabindex="-1"
             [activeDescendant]="listbox.activeDescendant()"
+            [attr.data-enter-opens]="enterOpens() || null"
             [(value)]="selected"
           >
             @for (item of results(); track item.id) {
               <a
                 ngOption
-                class="flex items-center gap-3 min-h-11 px-4 py-1.5 font-bold text-strong hover:bg-row aria-selected:bg-row aria-selected:outline-2 aria-selected:-outline-offset-2 aria-selected:outline-accent"
+                class="flex items-center gap-3 min-h-11 px-4 py-1.5 font-bold text-strong hover:bg-row aria-selected:bg-row in-data-enter-opens:aria-selected:outline-2 in-data-enter-opens:aria-selected:-outline-offset-2 in-data-enter-opens:aria-selected:outline-accent"
                 [value]="item.id"
                 [label]="item.name"
                 [routerLink]="['/trackers/price', item.id]"
@@ -222,6 +223,11 @@ export class ItemSearch {
   readonly selected = signal<number[]>([]);
   /** Whether the arrow keys moved the active option since the input last changed, so Enter opens it. */
   readonly navigated = signal(false);
+  /**
+   * Whether a plain Enter opens the active option (outlined) rather than searching: the arrow keys reached it, or the
+   * results are for what's in the input.
+   */
+  readonly enterOpens = computed(() => this.listed() && (this.navigated() || this.query() === this.searchedQuery()));
 
   /** Name bar widths of the rows shown while searching, varied like `list-row-skeleton`'s */
   readonly skeletonWidths: string[] = ['w-32', 'w-24', 'w-36'];
@@ -298,7 +304,7 @@ export class ItemSearch {
 
     event.preventDefault();
     const [id] = this.selected();
-    if (this.listed() && id !== undefined && (this.navigated() || this.query() === this.searchedQuery())) {
+    if (this.enterOpens() && id !== undefined) {
       this.close();
       void this.router.navigate(['/trackers/price', id]);
     } else {

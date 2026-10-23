@@ -14,8 +14,8 @@
   the hiscores stop responding on a player's page. The item search no longer tells screen readers a list is open when it
   only shows "No items match".
 - In the item search's results, the item Enter opens now has a clear green outline, so you can see where the arrow keys
-  are. The player and item name boxes no longer underline names as spelling mistakes, and a phone's keyboard labels its
-  Enter key "Search".
+  are. The boxes where you type a player or item name, including the price tables' filter, no longer underline names as
+  spelling mistakes, and in the search boxes a phone's keyboard labels its Enter key "Search".
 - Pressing "Try again" after something didn't load now keeps your place for the keyboard: focus moves to the heading of
   the card that reloads, or back to the search box, instead of jumping to the top of the page. On the news page, "Show
   older posts" moves focus to the first older post it adds, and clearing the day or the category moves it to the control

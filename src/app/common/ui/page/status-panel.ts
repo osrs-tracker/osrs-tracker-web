@@ -49,6 +49,8 @@ type StatusPanelIcon = 'search' | 'alert' | 'clock';
             name="query"
             class="grow basis-45 min-w-0 h-12 px-3.5 border-0 bg-transparent text-lg text-strong placeholder:text-muted focus:ring-0"
             autocomplete="off"
+            spellcheck="false"
+            enterkeyhint="search"
             [placeholder]="placeholder()"
             [(ngModel)]="query"
           />
