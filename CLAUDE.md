@@ -56,7 +56,8 @@ holds the Angular conventions, SSR rules, deploy and release steps. Keep detail 
   search, filter or load). Lint enforces these layers.
 - `src/app/core/` app-wide plumbing: the app frame (`layout/`: nav, footer, theme toggle), interceptors (API base URL,
   loading bar, shared GET requests, SSR user agent, SSR timeout for third-party calls), routing (reuse strategy,
-  resolver errors), platform (`WINDOW`, `isHumanVisitor`), the global error handler.
+  resolver errors, query params written without navigating), platform (`WINDOW`, `isHumanVisitor`), the global error
+  handler.
 - `src/server/` the Express server: middleware (CSP nonce, security headers, request logging, metrics, missing assets,
   page cache), routers (the item and player sitemaps, link-preview images, health), `og/` (the link-preview cards), the
   auto-generator that pre-renders pages, `server-config.ts` (env vars).

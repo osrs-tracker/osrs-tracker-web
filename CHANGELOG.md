@@ -37,6 +37,11 @@
   The volume tile is now called "Volume" (the last 24 hours), so it isn't mixed up with the daily volume card, which
   counts UTC days, and that card's chart has a scale. Screen readers now hear the price chart's range in words, and each
   day's volume as a table.
+- The High-alch profit and Margins tables now remember your filters and sort in the page's address, so a reload, Back
+  from an item or a shared link shows the same view. On phones, the arrow at the end of a row opens the item's full name
+  and the columns that don't fit, such as the buy and sell prices, the buy limit and the daily volume. Large margins,
+  profits and per-limit totals are shortened with one decimal throughout ("12.0K", "195.5M"), so a column reads evenly,
+  and per-limit gains get a "+" like the profit beside them. The column names now line up with the numbers below them.
 
 ## 2026-10-21
 

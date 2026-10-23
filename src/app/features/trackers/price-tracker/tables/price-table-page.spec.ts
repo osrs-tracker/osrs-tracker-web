@@ -2,6 +2,8 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { PLATFORM_ID, TransferState, makeStateKey, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Location } from '@angular/common';
+import { provideLocationMocks } from '@angular/common/testing';
 import { provideRouter } from '@angular/router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { GTAG_TOKEN } from '@app/common/analytics/gtag-token';
@@ -31,13 +33,14 @@ describe('PriceTablePage', () => {
   let fixture: ComponentFixture<PriceTablePage>;
   let httpTesting: HttpTestingController;
 
-  function setUp(platform: 'browser' | 'server', transferred?: { rows: TableRow[]; total: number }) {
+  function setUp(platform: 'browser' | 'server', transferred?: { rows: TableRow[]; total: number }, query = '') {
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),
+        provideLocationMocks(),
         { provide: PLATFORM_ID, useValue: platform },
         { provide: GTAG_TOKEN, useValue: null },
       ],
@@ -48,6 +51,7 @@ describe('PriceTablePage', () => {
         natureRune: 143,
         loadedAt: now,
       });
+    TestBed.inject(Location).replaceState(`/trackers/price/high-alch${query && '?'}${query}`);
     httpTesting = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(PriceTablePage);
     fixture.componentRef.setInput('kind', 'high-alch');
@@ -137,5 +141,57 @@ describe('PriceTablePage', () => {
     expect(view?.rows).toHaveLength(25);
     expect(view?.total).toBe(60);
     expect(rowNames()).toHaveLength(25);
+  });
+
+  it("renders the URL's view on the server and transfers it", async () => {
+    setUp('server', undefined, 'q=item%200&sort=volume');
+    // Spied, as with lists kept from an earlier test the view is set during the first render, which the test's
+    // `afterNextRender` then removes (the server runs none)
+    const set = vi.spyOn(TestBed.inject(TransferState), 'set');
+    TestBed.tick();
+    // The server keeps the lists for every render, so an earlier test may have loaded them
+    httpTesting.match(`${config.pricesBaseUrl}/mapping`).forEach(req => req.flush(items));
+    httpTesting.match(`${config.pricesBaseUrl}/latest`).forEach(req => req.flush({ data: latest }));
+    httpTesting
+      .match(req => req.url === `${config.pricesBaseUrl}/24h`)
+      .forEach(req => req.flush({ data: day, timestamp: 0 }));
+    await fixture.whenStable();
+
+    expect(set).toHaveBeenCalledWith('price-table-high-alch', expect.objectContaining({ total: 10 }));
+    expect(rowNames()).toHaveLength(10);
+  });
+
+  it('writes a changed option to the URL, leaving the others', async () => {
+    setUp('browser', undefined, 'q=item%200');
+    flushLists();
+    await fixture.whenStable();
+    expect(rowNames()).toHaveLength(10);
+
+    const volume = (fixture.nativeElement as HTMLElement).querySelector<HTMLSelectElement>('#price-table-volume')!;
+    volume.value = 'any';
+    volume.dispatchEvent(new Event('change'));
+    await fixture.whenStable();
+    // The test has no routes, so the page is the root
+    expect(TestBed.inject(Location).path()).toBe('/?q=item%200&volume=any');
+  });
+
+  it("opens a row's details with the values phones hide", async () => {
+    setUp('browser');
+    flushLists();
+    await fixture.whenStable();
+
+    const button = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('button[aria-expanded]')!;
+    button.click();
+    await fixture.whenStable();
+    expect(button.getAttribute('aria-expanded')).toBe('true');
+    const details = (fixture.nativeElement as HTMLElement).querySelector(`#${button.getAttribute('aria-controls')}`);
+    expect([...details!.querySelectorAll('dt')].map(dt => dt.textContent?.trim())).toEqual([
+      'Buy price',
+      'Alch value',
+      'Buy limit',
+      'Per limit',
+      'Daily volume',
+    ]);
+    expect(details!.textContent).toContain('+339,990');
   });
 });

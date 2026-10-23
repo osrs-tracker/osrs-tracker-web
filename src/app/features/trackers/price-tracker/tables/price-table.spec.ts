@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { ItemMapping } from '@app/common/api/osrs-prices-repo';
-import { buildRows, defaultOptions, formatTableNumber, TableOptions, viewRows } from './price-table';
+import {
+  buildRows,
+  defaultOptions,
+  formatTableNumber,
+  optionsFromParams,
+  optionsToParams,
+  TableOptions,
+  viewRows,
+} from './price-table';
 
 // From the Wiki's prices on 17 Oct 2026 (the design's data): times in Unix seconds, `now` a minute after the last trade
 const now = 1_792_243_860_000;
@@ -28,6 +36,7 @@ const day = {
   9999: { avgHighPrice: 0, avgLowPrice: 0, highPriceVolume: 50, lowPriceVolume: 0 },
 };
 
+const paramMap = (params: Record<string, string | null>) => ({ get: (name: string) => params[name] ?? null });
 const options = (kind: 'high-alch' | 'margins', changes: Partial<TableOptions> = {}): TableOptions => ({
   ...defaultOptions(kind),
   ...changes,
@@ -112,11 +121,59 @@ describe('price tables', () => {
     ]);
   });
 
-  it('writes numbers in full below 10,000 and short from there', () => {
+  it('writes numbers in full below 10,000 and with one decimal from there', () => {
     expect(formatTableNumber(9_999)).toBe('9,999');
     expect(formatTableNumber(-420)).toBe('−420');
+    expect(formatTableNumber(12_000)).toBe('12.0K');
     expect(formatTableNumber(24_766)).toBe('24.8K');
-    expect(formatTableNumber(8_370_000)).toBe('8.37M');
-    expect(formatTableNumber(-1_150_000)).toBe('−1.15M');
+    expect(formatTableNumber(195_450_000)).toBe('195.5M');
+    expect(formatTableNumber(-1_150_000)).toBe('−1.2M');
+    expect(formatTableNumber(7_824, true)).toBe('+7,824');
+    expect(formatTableNumber(13_300, true)).toBe('+13.3K');
+    expect(formatTableNumber(0, true)).toBe('0');
+  });
+
+  it('keeps the options in query params, the defaults left out', () => {
+    expect(optionsToParams('margins', defaultOptions('margins'))).toEqual({
+      'q': null,
+      'members': null,
+      'volume': null,
+      'buy-at': null,
+      'sort': null,
+      'dir': null,
+    });
+
+    const picked = options('high-alch', {
+      query: 'rune',
+      members: 'f2p',
+      volume: 'any',
+      buyAt: 'instant-sell',
+      sort: 'perLimit',
+      dir: 'asc',
+    });
+    const params = optionsToParams('high-alch', picked);
+    expect(params).toEqual({
+      'q': 'rune',
+      'members': 'f2p',
+      'volume': 'any',
+      'buy-at': 'instant-sell',
+      'sort': 'per-limit',
+      'dir': 'asc',
+    });
+    expect(optionsFromParams('high-alch', paramMap(params))).toEqual(picked);
+    expect(optionsToParams('margins', options('margins', { sort: 'key' })).sort).toBe('margin');
+    expect(optionsToParams('high-alch', options('high-alch', { sort: 'volume' })).sort).toBe('volume');
+  });
+
+  it('reads a missing or unknown param as the default', () => {
+    const params = paramMap({
+      'members': 'everyone',
+      'volume': '5',
+      'sort': 'alch',
+      'dir': 'up',
+      'buy-at': 'instant-sell',
+    });
+    // Margins has no Alch value column and no Buy at choice
+    expect(optionsFromParams('margins', params)).toEqual(defaultOptions('margins'));
   });
 });
