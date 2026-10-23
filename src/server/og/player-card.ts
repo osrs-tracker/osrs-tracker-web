@@ -1,4 +1,5 @@
 import { accountType, capitalise } from '@app/common/format/player-labels';
+import { LucideUser } from '@lucide/angular';
 import { type HiscoreEntry, type Player, PlayerStatus, PlayerType, SkillEnum, skillLevel } from '@osrs-tracker/models';
 import hardcoreIcon from '../../../public/assets/icons/player_type/hardcore_ironman.png';
 import ironmanIcon from '../../../public/assets/icons/player_type/ironman.png';
@@ -18,7 +19,6 @@ import hitpoints from '../../../public/assets/icons/skills/skill_icon_hitpoints1
 import hunter from '../../../public/assets/icons/skills/skill_icon_hunter1.gif';
 import magic from '../../../public/assets/icons/skills/skill_icon_magic1.gif';
 import mining from '../../../public/assets/icons/skills/skill_icon_mining1.gif';
-import overall from '../../../public/assets/icons/skills/skill_icon_overall1.gif';
 import prayer from '../../../public/assets/icons/skills/skill_icon_prayer1.gif';
 import ranged from '../../../public/assets/icons/skills/skill_icon_ranged1.gif';
 import runecraft from '../../../public/assets/icons/skills/skill_icon_runecraft1.gif';
@@ -29,7 +29,7 @@ import strength from '../../../public/assets/icons/skills/skill_icon_strength1.g
 import thieving from '../../../public/assets/icons/skills/skill_icon_thieving1.gif';
 import woodcutting from '../../../public/assets/icons/skills/skill_icon_woodcutting1.gif';
 import skull from '../../../public/assets/icons/skull.png';
-import { COLORS, el, frame, img, type Node, renderPng, tile } from './card-kit';
+import { COLORS, el, frame, img, lucideIcon, type Node, renderPng, tile } from './card-kit';
 
 type GridSkill = Exclude<SkillEnum, SkillEnum.Overall>;
 
@@ -77,8 +77,7 @@ const SKILL_ICONS: [GridSkill, Uint8Array][] = [
   ],
 ] as [GridSkill, Uint8Array][];
 
-const HELMS: Record<PlayerType, Uint8Array> = {
-  [PlayerType.Normal]: overall,
+const HELMS: Record<Exclude<PlayerType, PlayerType.Normal>, Uint8Array> = {
   [PlayerType.Ironman]: ironmanIcon,
   [PlayerType.Hardcore]: hardcoreIcon,
   [PlayerType.Ultimate]: ultimateIcon,
@@ -213,7 +212,7 @@ function skillCell(hiscore: HiscoreEntry, skill: GridSkill, icon: Uint8Array): N
 }
 
 /**
- * The account type's helm (the Overall icon for a regular account) on a tile, as on the page: bottom left a red × when
+ * The account type's helm (Lucide's person for a regular account) on a tile, as on the page: bottom left a red × when
  * de-ironed or the ironman helm when de-ultimated, bottom right a skull when a hardcore died
  */
 function accountTile(player: Player, size: number): Node {
@@ -248,8 +247,10 @@ function accountTile(player: Player, size: number): Node {
       backgroundColor: COLORS.deep,
     },
     [
-      // As the page's 40px helm in its 64px tile
-      img(HELMS[player.type], Math.round(size * 0.625)),
+      // As the page's 40px helm, or 36px person, in its 64px tile
+      player.type === PlayerType.Normal
+        ? lucideIcon(LucideUser.icon, Math.round(size * 0.5625), COLORS.text)
+        : img(HELMS[player.type], Math.round(size * 0.625)),
       ...(player.status === PlayerStatus.DeIroned ? [badge('left', cross())] : []),
       ...(player.status === PlayerStatus.DeUltimated ? [badge('left', img(ironmanIcon, 28))] : []),
       ...(player.diedAsHardcore ? [badge('right', img(skull, 28))] : []),

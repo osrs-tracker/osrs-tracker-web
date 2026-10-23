@@ -1,5 +1,6 @@
 import resvgWasm from '@resvg/resvg-wasm/index_bg.wasm';
 import { initWasm, Resvg } from '@resvg/resvg-wasm';
+import type { LucideIconData, LucideIconNode } from '@lucide/angular';
 import satori, { type Font } from 'satori';
 import regular from './fonts/SOLIX-Regular.ttf';
 import semiBold from './fonts/SOLIX-SemiBold.ttf';
@@ -147,6 +148,24 @@ export function img(bytes: Uint8Array, width: number, height = width): Node {
   // Both start with their own signature, which is all the data URI's type needs to name
   const type = bytes[0] === 0x47 ? 'image/gif' : 'image/png';
   return { type: 'img', props: { src: `data:${type};base64,${base64(bytes)}`, width, height } };
+}
+
+/** A Lucide icon (a component's static `icon`, `LucideUser.icon`) as an image, drawn as `@lucide/angular` draws it */
+export function lucideIcon({ node }: LucideIconData, size: number, color: string): Node {
+  const markup = (nodes: LucideIconNode[]): string =>
+    nodes
+      .map(([tag, attributes, children = []]) => {
+        // `key` is Lucide's own, for frameworks' lists
+        const attrs = Object.entries(attributes)
+          .filter(([name]) => name !== 'key')
+          .map(([name, value]) => ` ${name}="${String(value)}"`);
+        return `<${tag}${attrs.join('')}>${markup(children)}</${tag}>`;
+      })
+      .join('');
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" ` +
+    `stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${markup(node)}</svg>`;
+  return { type: 'img', props: { src: `data:image/svg+xml;base64,${btoa(svg)}`, width: size, height: size } };
 }
 
 function base64(bytes: Uint8Array): string {
