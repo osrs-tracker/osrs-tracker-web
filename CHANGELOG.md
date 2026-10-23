@@ -81,9 +81,9 @@
   and terms give their date the same way.
 - The "Page not found" page now links to the player lookup and the item search, besides going back. On a player's page,
   a very long name that isn't found wraps instead of making the page scroll sideways on phones.
-- The landing pages leave a little more room between their top band and what's below it, the same as under the menu bar
-  elsewhere. Long headings, such as item names and news titles, now break into lines of even length instead of leaving a
-  single word on the last line.
+- The landing pages, the news page included, leave a little more room between their top band and what's below it, the
+  same as under the menu bar elsewhere. Long headings, such as item names and news titles, now break into lines of even
+  length instead of leaving a single word on the last line.
 
 ## 2026-10-21
 

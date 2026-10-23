@@ -31,7 +31,7 @@ import { LucideExternalLink, LucideStar, LucideTriangle } from '@lucide/angular'
            the icon on the line (24px, 36px from sm). -->
       <!-- prettier-ignore -->
       <a
-        class="self-start text-2xl/none sm:text-4xl/none font-bold text-strong hover:text-accent"
+        class="self-start text-2xl/none sm:text-4xl/none font-bold text-balance text-strong hover:text-accent"
         [href]="wikiUrl()"
         target="_blank"
         rel="noopener"
