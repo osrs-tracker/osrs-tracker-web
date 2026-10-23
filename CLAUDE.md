@@ -43,6 +43,9 @@ holds the Angular conventions, SSR rules, deploy and release steps. Keep detail 
 - Never loosen the CSP to silence a console error: no `'unsafe-inline'`, `'unsafe-eval'`, wildcard or new host. Set the
   nonce with `applyCspNonce` or remove the inline code.
 - Read `docs/decisions.md` before "fixing" something that looks odd; many trade-offs are deliberate.
+- A change to what a page shows or how it looks (layout, copy, icons, states, data shown) also goes into the design
+  canvas (link and conventions in the skill's "Design system"), in the same session, so it doesn't drift from the live
+  site. Publish it once the change reaches `main`, not before, and say in the report which artboards changed.
 
 ## Where things live
 
