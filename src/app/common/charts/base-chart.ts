@@ -1,3 +1,4 @@
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { isPlatformBrowser } from '@angular/common';
 import {
   Directive,
@@ -13,10 +14,15 @@ import {
   runInInjectionContext,
   viewChild,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Chart, ChartOptions, Point } from 'chart.js';
 import { merge } from 'chart.js/helpers';
+import { map } from 'rxjs';
 import { ThemeStore } from '@app/common/theme/theme-store';
 import './chart-setup';
+
+/** A change between two states of the data: short, as periods and skills are switched often (claude-kb VIZ-026) */
+const ANIMATION = { duration: 300 };
 
 /**
  * Lifecycle, workarounds and shared options of the time series charts. Subclasses render `<canvas #chart></canvas>` and
@@ -27,6 +33,13 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
   private readonly injector = inject(Injector);
   private readonly themeStore = inject(ThemeStore);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  // Chart.js animates regardless of the setting, so the charts follow it themselves (and its changes, without a reload)
+  private readonly reducedMotion = toSignal(
+    inject(BreakpointObserver)
+      .observe('(prefers-reduced-motion: reduce)')
+      .pipe(map(state => state.matches)),
+    { requireSync: true },
+  );
 
   private chart?: Chart<TType, Point[]>;
   private initFrame?: number;
@@ -64,16 +77,22 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
 
   // Workaround for chart.js not closing tooltips when tapping outside the canvas (iOS)
   @HostListener('document:touchend', ['$event.target'])
-  hideTooltip(target: EventTarget | null): void {
-    if (this.chart && target !== this.canvas().nativeElement) {
-      this.canvas().nativeElement.dispatchEvent(new Event('mouseout'));
-    }
+  hideTooltipOnTap(target: EventTarget | null): void {
+    if (target !== this.canvas().nativeElement) this.hideTooltip();
+  }
+
+  // Escape closes the hover tooltip (WCAG 1.4.13); moving the pointer opens it again
+  @HostListener('document:keydown.escape')
+  hideTooltip(): void {
+    this.chart?.canvas.dispatchEvent(new Event('mouseout'));
   }
 
   private initChart(): void {
     this.chart = this.createChart();
 
     runInInjectionContext(this.injector, () => {
+      // Before the data's effect, which it applies to; `false` also turns off the tooltip's movement
+      effect(() => (this.chart!.options!.animation = this.reducedMotion() ? false : ANIMATION));
       effect(() => this.updateChart(this.chart!, this.data()));
       // Redraw on a theme change: the colours come from the theme's tokens (chart-setup.ts)
       effect(() => (this.themeStore.darkMode(), this.chart!.update('none')));
@@ -133,6 +152,7 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
   }
 
   private updateChart(chart: Chart<TType, Point[]>, data: TData): void {
+    const firstData = !chart.data.datasets.length;
     const drawn = new Map(chart.data.datasets.map(dataset => [dataset.label, dataset]));
     this.setData(chart, data);
 
@@ -144,7 +164,8 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
       return previous && sameDates(previous.data, dataset.data) ? Object.assign(previous, dataset) : dataset;
     });
 
-    chart.update();
+    // The first data is drawn at once: growing it in is decoration, while a change animates so it can be followed
+    chart.update(firstData ? 'none' : undefined);
   }
 }
 

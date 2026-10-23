@@ -31,6 +31,10 @@
 
 ### Pages
 
+- The charts (prices, trade volume, XP, activity and players online) now appear at once instead of growing in over a
+  second, and a change, such as switching the period, moves into place in a third of a second. When your device is set
+  to reduce motion they don't animate at all, and changing the setting takes effect without a reload. Escape now closes
+  a chart's hover details.
 - On Players online, switching the history's range keeps the chart in place until the next one is ready, instead of
   flashing an empty placeholder, and a range you already opened comes back at once. The chart now starts at 0 players,
   so the shaded area's height matches the count. The year and all-time charts leave out today and the first day of
