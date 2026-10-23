@@ -208,7 +208,9 @@ Choices that look like accidents without their context: what was decided, why, a
   in `Cache-Control`, not a week. The API is asked with `skipRefresh`, so an image URL never makes it call the hiscores:
   a player it doesn't store answers 404, and their page (the API's live preview) keeps the square app icon. Without
   hiscores at the default offset the card shows only who they are. The skill and account icons are the site's own
-  (`public/assets/icons`), bundled like the fonts; satori and resvg draw their GIFs as they are.
+  (`public/assets/icons`), bundled like the fonts; satori and resvg draw their GIFs as they are. A regular account's
+  person is Lucide's, as on the page: `lucideIcon()` (`og/lucide-icon.ts`) writes a component's static `icon` data
+  (`LucideUser.icon`) as an SVG image with Lucide's default stroke, so the shape comes from `@lucide/angular` itself.
 - **satori 0.56 (2026-10-14):** 0.33 to 0.55 were held back because `harfbuzzjs`'s Emscripten loader read `hb.wasm` from
   `__dirname`, which fails inside the bundle; satori now inlines that wasm. Specs never render a card, so check a bump
   in the production build (render each card route). Like browsers, satori defaults to `content-box`: `el()`

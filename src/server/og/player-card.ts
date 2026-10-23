@@ -29,7 +29,8 @@ import strength from '../../../public/assets/icons/skills/skill_icon_strength1.g
 import thieving from '../../../public/assets/icons/skills/skill_icon_thieving1.gif';
 import woodcutting from '../../../public/assets/icons/skills/skill_icon_woodcutting1.gif';
 import skull from '../../../public/assets/icons/skull.png';
-import { COLORS, el, frame, img, lucideIcon, type Node, renderPng, tile } from './card-kit';
+import { COLORS, el, frame, img, type Node, renderPng, tile } from './card-kit';
+import { lucideIcon } from './lucide-icon';
 
 type GridSkill = Exclude<SkillEnum, SkillEnum.Overall>;
 
