@@ -67,6 +67,13 @@
   instead of being cut at two. The Browse items letter keys sit closer together on phones and wide screens, so they're
   bigger and "0–9" no longer breaks across two lines on small phones. An empty "Your recent lookups" now says it's about
   this device, so it isn't mixed up with everyone's lookups.
+- This changelog now has links to each year at the top, so you no longer scroll through every day to reach last year's
+  changes, and each day can be linked to. Days read as "23 October 2026", like the rest of the site, and stand out more
+  from the headings inside them; code names get a tinted background, lists indent less on phones, and quotes are curly.
+  Opening the changelog shows the loading bar while it's fetched, instead of seeming to do nothing. The privacy policy
+  and terms give their date the same way.
+- The "Page not found" page now links to the player lookup and the item search, besides going back. On a player's page,
+  a very long name that isn't found wraps instead of making the page scroll sideways on phones.
 
 ## 2026-10-21
 

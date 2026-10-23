@@ -29,9 +29,9 @@ type StatusPanelIcon = 'search' | 'alert' | 'clock';
 
     <div class="flex flex-col items-center gap-2">
       @if (headingLevel() === 1) {
-        <h1 class="text-3xl/8.5 font-bold text-strong">{{ heading() }}</h1>
+        <h1 class="text-2xl/8 sm:text-3xl/8.5 font-bold text-strong wrap-anywhere">{{ heading() }}</h1>
       } @else {
-        <h2 class="text-3xl/8.5 font-bold text-strong">{{ heading() }}</h2>
+        <h2 class="text-2xl/8 sm:text-3xl/8.5 font-bold text-strong wrap-anywhere">{{ heading() }}</h2>
       }
       <p class="max-w-md text-base/6 text-muted">{{ message() }}</p>
     </div>

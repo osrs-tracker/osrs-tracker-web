@@ -1,8 +1,10 @@
+import { DatePipe } from '@angular/common';
 import { Component, input } from '@angular/core';
 
 /**
  * A reading page (changelog, privacy, terms): a title and one card, narrowed for reading. Wrap the content in
- * `<div class="markdown">` for the reading styles.
+ * `<div class="markdown">` for the reading styles; an element with the `intro` attribute goes between the title and
+ * the card (the changelog's year links).
  */
 @Component({
   selector: 'information-page',
@@ -10,16 +12,22 @@ import { Component, input } from '@angular/core';
     <div class="max-w-3xl mx-auto px-4 sm:px-6 pt-12 pb-18">
       <h1 class="text-2xl/8 sm:text-3xl/9 font-bold text-strong">{{ title() }}</h1>
       @if (lastUpdated()) {
-        <p class="mt-1 text-sm/5 text-muted">Last updated {{ lastUpdated() }}</p>
+        <p class="mt-1 text-sm/5 text-muted">Last updated {{ lastUpdated() | date: 'd MMMM y' }}</p>
       }
+
+      <div class="empty:hidden mt-4">
+        <ng-content select="[intro]" />
+      </div>
 
       <div class="mt-6 px-5 py-6 sm:px-8 sm:py-8 rounded-2xl bg-card">
         <ng-content />
       </div>
     </div>
   `,
+  imports: [DatePipe],
 })
 export class InformationPage {
   readonly title = input.required<string>();
+  /** The day the text last changed, as `2026-10-13` */
   readonly lastUpdated = input<string>();
 }
