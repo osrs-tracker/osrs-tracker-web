@@ -58,6 +58,8 @@ const NAVIGATION_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageUp'
         placeholder="Item name, e.g. Abyssal whip"
         name="query"
         autocomplete="off"
+        spellcheck="false"
+        enterkeyhint="search"
         [(value)]="query"
         (keydown)="onKeydown($event)"
         (input)="navigated.set(false); showing.set(true)"
@@ -124,7 +126,7 @@ const NAVIGATION_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageUp'
             @for (item of results(); track item.id) {
               <a
                 ngOption
-                class="flex items-center gap-3 min-h-11 px-4 py-1.5 font-bold text-strong hover:bg-row aria-selected:bg-row"
+                class="flex items-center gap-3 min-h-11 px-4 py-1.5 font-bold text-strong hover:bg-row aria-selected:bg-row aria-selected:outline-2 aria-selected:-outline-offset-2 aria-selected:outline-accent"
                 [value]="item.id"
                 [label]="item.name"
                 [routerLink]="['/trackers/price', item.id]"
