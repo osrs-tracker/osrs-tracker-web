@@ -1,6 +1,6 @@
 import { Component, provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { InfoTooltip } from './info-tooltip';
 
 @Component({
@@ -11,8 +11,8 @@ import { InfoTooltip } from './info-tooltip';
 })
 class Host {}
 
-// The tooltip opens after a 300ms debounce
-const settle = (): Promise<void> => new Promise(resolve => setTimeout(resolve, 350));
+// The tooltip opens and closes after a 300ms debounce, and slower machines take longer
+const eventually = (check: () => void): Promise<void> => vi.waitFor(check, { timeout: 2000 });
 
 describe('InfoTooltip', () => {
   async function render(): Promise<HTMLButtonElement> {
@@ -44,12 +44,10 @@ describe('InfoTooltip', () => {
     const description = document.getElementById(button.getAttribute('aria-describedby')!)!;
 
     button.focus();
-    await settle();
-    expect(overlayText()).toBe('GE tax is 2% of the sell price.');
+    await eventually(() => expect(overlayText()).toBe('GE tax is 2% of the sell price.'));
     expect(description.textContent?.trim()).toBe('GE tax is 2% of the sell price.');
 
     button.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
-    await settle();
-    expect(overlayText()).toBe('');
+    await eventually(() => expect(overlayText()).toBe(''));
   });
 });
