@@ -16,7 +16,7 @@ import { BROWSE_LETTERS, browseLetterLabel, startingWith } from './browse-letter
         [class.text-sm]="letter === '0'"
         [routerLink]="['/trackers/price/browse', letter]"
         [attr.aria-current]="letter === current() ? 'page' : null"
-        [attr.aria-label]="'Items ' + startingWith(letter)"
+        [attr.aria-label]="ariaLabel(letter)"
         >{{ label(letter) }}</a
       >
     }
@@ -30,7 +30,13 @@ import { BROWSE_LETTERS, browseLetterLabel, startingWith } from './browse-letter
 export class LetterBar {
   readonly LETTERS = BROWSE_LETTERS;
   readonly label = browseLetterLabel;
-  readonly startingWith = startingWith;
+
+  /** Holds the visible text (WCAG 2.5.3, for voice control): "Items starting with A", "0–9: items starting with a number" */
+  protected ariaLabel(letter: string): string {
+    return letter === '0'
+      ? `${browseLetterLabel(letter)}: items ${startingWith(letter)}`
+      : `Items ${startingWith(letter)}`;
+  }
 
   /** The letter of the page it's on, if any */
   readonly current = input<string>();

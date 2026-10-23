@@ -3,6 +3,11 @@
 - Moving through a page with the Tab key no longer leaves the focused link or button hidden under the menu bar at the
   top (on a tablet or computer), or behind the cookie question at the bottom while it's showing: the page now scrolls it
   into view between them, and the footer links at the very end can scroll clear of the question too.
+- The first press of Tab on any page now shows a "Skip to content" link, which jumps past the menu bar to the page's
+  heading. On phones the light and dark mode button, beside the logo, now comes right after it in the Tab order instead
+  of after the tabs below, and the Home tab's focus outline no longer touches the screen's edge. Each page now has one
+  main region instead of two nested ones, so screen readers' landmark lists go straight to the content, and voice
+  control can follow the "0–9" key on the Browse items pages by saying what it shows.
 - The "Online now" dot on Players online no longer pulses when your device asks for reduced motion; otherwise it keeps
   pulsing for as long as the count is shown, as before.
 - The small ⓘ icons with an explanation, such as GE tax on an item's page, can now be reached with the Tab key and open

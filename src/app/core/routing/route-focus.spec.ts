@@ -77,4 +77,13 @@ describe('RouteFocus', () => {
     expect(document.activeElement).toBe(button);
     expect(announce).not.toHaveBeenCalled();
   });
+
+  it("moves focus to the page's h1 from anywhere for the skip link", async () => {
+    await navigate('/heading');
+    document.querySelector<HTMLElement>('a')!.focus();
+
+    TestBed.inject(RouteFocus).focusContent();
+
+    expect(document.activeElement).toBe(document.querySelector('main h1'));
+  });
 });

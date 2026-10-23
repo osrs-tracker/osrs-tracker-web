@@ -5,6 +5,7 @@ import { ConsentStore } from '@app/common/analytics/consent-store';
 import { Icon } from '@app/common/icon/icon';
 import { LastPlayedStore } from '@app/common/storage/last-played-store';
 import { LoadingIndicatorStore } from '@app/core/interceptors/loading-indicator-store';
+import { RouteFocus } from '@app/core/routing/route-focus';
 import { ConsentBanner } from './consent-banner';
 import { DarkMode } from './dark-mode';
 import { NAV_TAB, NavMenu, NavMenuRow, NavMenus } from './nav-menu';
@@ -39,6 +40,7 @@ export default class RootLayout {
 
   readonly navMenus = inject(NavMenus);
   private readonly lastPlayedStore = inject(LastPlayedStore);
+  private readonly routeFocus = inject(RouteFocus);
   private readonly hydrated = signal(false);
 
   /**
@@ -61,6 +63,14 @@ export default class RootLayout {
 
   /** Home's tab is underlined on phones on Home, unless a menu is open (its tab is underlined then) */
   readonly homeMarked = computed(() => !this.navMenus.open() && this.navMenus.url().split(/[?#]/)[0] === '/');
+
+  readonly skipHref = computed(() => `${this.navMenus.url().split('#')[0]}#main`);
+
+  /** Focuses the page's h1 as a navigation does, without writing `#main` into the URL */
+  protected skipToContent(event: MouseEvent): void {
+    event.preventDefault();
+    this.routeFocus.focusContent();
+  }
 
   constructor() {
     // After hydration: whether the banner stays depends on this device's choice, which the server can't know

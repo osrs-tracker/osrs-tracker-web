@@ -46,7 +46,7 @@
     </div>
   </header>
 
-  <main class="max-w-page mx-auto px-4 sm:px-6 pt-6 pb-18 grid items-start gap-6 md:grid-player-tablet lg:grid-player">
+  <div class="max-w-page mx-auto px-4 sm:px-6 pt-6 pb-18 grid items-start gap-6 md:grid-player-tablet lg:grid-player">
     <aside class="contents md:flex md:flex-col md:gap-6 md:col-start-1 md:row-start-1 md:row-span-2 min-w-0">
       <!--
         Skills, Bosses or Raids: beside the chart, so on phones it comes first. It hydrates when the browser is idle, a
@@ -180,9 +180,9 @@
         </div>
       </div>
     }
-  </main>
+  </div>
 } @else {
-  <main class="max-w-page mx-auto px-4 sm:px-6 pt-12 pb-18">
+  <div class="max-w-page mx-auto px-4 sm:px-6 pt-12 pb-18">
     <status-panel
       icon="search"
       action="search"
@@ -193,5 +193,5 @@
       searchLabel="Player name"
       (searched)="search($event)"
     />
-  </main>
+  </div>
 }
