@@ -1,3 +1,4 @@
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { isPlatformBrowser } from '@angular/common';
 import {
   Directive,
@@ -13,8 +14,10 @@ import {
   runInInjectionContext,
   viewChild,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Chart, ChartOptions, Point } from 'chart.js';
 import { merge } from 'chart.js/helpers';
+import { map } from 'rxjs';
 import { ThemeStore } from '@app/common/theme/theme-store';
 import './chart-setup';
 
@@ -27,6 +30,13 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
   private readonly injector = inject(Injector);
   private readonly themeStore = inject(ThemeStore);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  // Chart.js animates regardless of the setting, so the charts follow it themselves (and its changes, without a reload)
+  private readonly reducedMotion = toSignal(
+    inject(BreakpointObserver)
+      .observe('(prefers-reduced-motion: reduce)')
+      .pipe(map(state => state.matches)),
+    { requireSync: true },
+  );
 
   private chart?: Chart<TType, Point[]>;
   private initFrame?: number;
@@ -74,6 +84,12 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
     this.chart = this.createChart();
 
     runInInjectionContext(this.injector, () => {
+      // Before the data's effect, so the first data isn't animated in either; also turns off the tooltip's movement
+      effect(() => {
+        const options = this.chart!.options!;
+        if (this.reducedMotion()) options.animation = false;
+        else delete options.animation;
+      });
       effect(() => this.updateChart(this.chart!, this.data()));
       // Redraw on a theme change: the colours come from the theme's tokens (chart-setup.ts)
       effect(() => (this.themeStore.darkMode(), this.chart!.update('none')));

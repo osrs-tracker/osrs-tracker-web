@@ -31,6 +31,9 @@
 
 ### Pages
 
+- The charts no longer animate when your device is set to reduce motion: prices, trade volume, XP, activity and players
+  online appear and change at once instead of growing or sliding into place. Changing the setting takes effect without a
+  reload.
 - On Players online, switching the history's range keeps the chart in place until the next one is ready, instead of
   flashing an empty placeholder, and a range you already opened comes back at once. The chart now starts at 0 players,
   so the shaded area's height matches the count. The year and all-time charts leave out today and the first day of
