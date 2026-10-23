@@ -53,9 +53,10 @@
   }
 
   /* Keeps a focused element or a scrolled-to card out from under the sticky nav (WCAG 2.4.11): Tab doesn't scroll to an
-     element that is already in the viewport, even when the nav covers it. Not on phones, where the nav scrolls away. */
+     element that is already in the viewport, even when the nav covers it. Not on phones, where the nav scrolls away.
+     The same at the bottom while the consent banner shows. */
   html {
-    @apply sm:scroll-pt-nav;
+    @apply sm:scroll-pt-nav scroll-pb-consent;
   }
 
   body::-webkit-scrollbar,

@@ -131,7 +131,9 @@ Choices that look like accidents without their context: what was decided, why, a
   withdrawing it doesn't undo (Article 7(3) GDPR), and gtag has no way to drop it. Events from before a choice wait in
   `dataLayer`. The banner (`core/layout/consent-banner.ts`) is fixed over the page (no layout shift), not a modal, and
   has two identical buttons, as regulators count a highlighted Accept beside a faint Reject as steering. Cookies in the
-  footer reopens it.
+  footer reopens it. While it shows, the page keeps its height clear at the bottom (scroll padding, and room after the
+  footer), so it never covers what Tab focuses (WCAG 2.4.11); rendering it after the footer on phones instead would keep
+  most phone visitors from ever seeing it.
 - **The banner is in every page's server HTML:** rendered only after hydration, it painted about a second after the page
   and became the page's largest contentful paint (LCP 3.5 s instead of 2.5 s in PageSpeed Insights). The choice is in
   this device's storage and the page cache serves everyone the same HTML, so the server always renders it, and

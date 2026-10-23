@@ -7,7 +7,9 @@ import { LucideChartNoAxesColumn } from '@lucide/angular';
 /**
  * Asks to allow Google Analytics' cookies. Fixed over the page, so it shifts no layout, and not a modal: the page stays
  * usable and nothing is tracked until a choice is made. Both buttons look the same, so declining is as easy as
- * allowing (docs/decisions.md).
+ * allowing (docs/decisions.md). While it shows, it sets `--consent-reserve` on `<html>` to the height it covers at the
+ * bottom of the viewport, the `consent` spacing token: the page keeps it clear (WCAG 2.4.11), as Tab scrolls a focused
+ * element above it and the page's end gets room to scroll out from under it.
  */
 @Component({
   selector: 'consent-banner',
@@ -65,13 +67,30 @@ export class ConsentBanner {
 
   constructor() {
     const elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    const destroyRef = inject(DestroyRef);
+    const root = inject(DOCUMENT).documentElement;
+
+    afterNextRender(() => {
+      const host = elementRef.nativeElement;
+      // From its top edge to the viewport's bottom, so its offset from the edge counts too, and 8px for a focus ring to
+      // clear it; 0 while index.html hides it
+      const observer = new ResizeObserver(() => {
+        const { top, height } = host.getBoundingClientRect();
+        root.style.setProperty('--consent-reserve', `${height ? Math.ceil(window.innerHeight - top) + 8 : 0}px`);
+      });
+      observer.observe(host);
+      destroyRef.onDestroy(() => {
+        observer.disconnect();
+        root.style.removeProperty('--consent-reserve');
+      });
+    });
 
     // Reopened from the footer: move focus to the banner, so keyboard and screen reader users land on it, and back to
     // the Cookies button once a choice closes it
     if (this.consentStore.choice()) {
       const opener = inject(DOCUMENT).activeElement as HTMLElement | null;
       afterNextRender(() => elementRef.nativeElement.querySelector('section')?.focus());
-      inject(DestroyRef).onDestroy(() => opener?.focus());
+      destroyRef.onDestroy(() => opener?.focus());
     }
   }
 }

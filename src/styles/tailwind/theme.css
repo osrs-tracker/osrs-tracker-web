@@ -11,6 +11,10 @@
      it, and the page scrolls focused elements and anchors clear of it (`scroll-padding-top` in base.css) */
   --spacing-nav: 4.8125rem;
 
+  /* What the consent banner covers at the bottom while it shows, 0 otherwise: set by `core/layout/consent-banner.ts`.
+     The page scrolls focused elements clear of it, and its end has room to scroll the footer out from under it */
+  --spacing-consent: var(--consent-reserve, 0px);
+
   /* The big search box on phones, a step tighter than its 24px (rounded-3xl) */
   --radius-search-phone: 1.25rem;
 

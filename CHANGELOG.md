@@ -1,7 +1,8 @@
 ## 2026-10-23
 
-- Moving through a page with the Tab key on a tablet or computer no longer leaves the focused link or button hidden
-  under the menu bar at the top: the page now scrolls it into view below the bar.
+- Moving through a page with the Tab key no longer leaves the focused link or button hidden under the menu bar at the
+  top (on a tablet or computer), or behind the cookie question at the bottom while it's showing: the page now scrolls it
+  into view between them, and the footer links at the very end can scroll clear of the question too.
 - The "Online now" dot on Players online no longer pulses when your device asks for reduced motion; otherwise it keeps
   pulsing for as long as the count is shown, as before.
 - The small ⓘ icons with an explanation, such as GE tax on an item's page, can now be reached with the Tab key and open
