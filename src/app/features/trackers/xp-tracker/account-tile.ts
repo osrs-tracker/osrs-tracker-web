@@ -29,7 +29,8 @@ const TYPE_LABELS: Record<PlayerType, string> = {
   template: `
     @let player = account();
 
-    <!-- a tooltip rather than a title, so the account type also shows on touch; one image, named by its label -->
+    <!-- a tooltip rather than a title, so the account type also shows on touch; one image, named by its label (the
+         tooltip's text, so it doesn't describe it too) -->
     <span
       role="img"
       [class]="
@@ -41,6 +42,7 @@ const TYPE_LABELS: Record<PlayerType, string> = {
       [tooltip]="true"
       [tooltipTemplate]="modeTooltip"
       [tooltipUnderline]="false"
+      [tooltipDescribe]="false"
     >
       @if (player.type === PlayerType.Normal) {
         @if (large()) {

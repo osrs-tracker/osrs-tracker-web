@@ -370,7 +370,10 @@ Choices that look like accidents without their context: what was decided, why, a
   focus to its new Tab stop, rather than letting it fall back to the page. `hiscores-grids.spec.ts` guards both. Every
   `[tooltip]` opens on keyboard focus (`:focus-visible` only, so a click doesn't) and closes on Escape, as arrowing
   through the grid is how keyboard users read XP and ranks; hover and focus each keep it open, so leaving one doesn't
-  close it while the other remains.
+  close it while the other remains. So a host must take focus: `info-tooltip` is a button, the price tables' values
+  carry `tabindex="0"`. A `[tooltip]` also describes its host (`aria-describedby`) by a `hidden` copy of its text, as
+  the overlay only exists while open; the grids' cells opt out (`[tooltipDescribe]="false"`), as a copy per cell would
+  render every cell's tooltip twice.
 - **Day picker calendar** (`common/ui/controls/day-picker.ts`, Compare and the news catch-up) is a grid too, but renders
   only in the browser after a click, so it needs no `_pattern` call: opening it focuses the picked day, which makes it
   the Tab stop. Only the shown month is rendered, as its own grid, recreated on a month change (tracked by month): a new

@@ -24,7 +24,9 @@ import { Skeleton } from '../loading/skeleton';
       <span class="flex items-center h-5 text-sm text-muted">
         <span class="truncate">{{ label() }}</span>
         @if (info()) {
-          <info-tooltip>{{ info() }}</info-tooltip>
+          <info-tooltip [label]="'About ' + label()"
+            ><ng-template>{{ info() }}</ng-template></info-tooltip
+          >
         }
       </span>
       <span

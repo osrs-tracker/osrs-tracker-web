@@ -59,10 +59,12 @@
         >
           <span class="flex items-center whitespace-nowrap">
             <label for="price-table-volume">Volume</label>
-            <info-tooltip>
-              Prices of rarely traded items mislead, so items traded less often, or without a trade
-              {{ isHighAlch() ? 'at the buy price' : 'on both sides' }} in the last hour, are left out. Pick Any to see
-              them: old prices get a clock.
+            <info-tooltip label="About the volume filter">
+              <ng-template>
+                Prices of rarely traded items mislead, so items traded less often, or without a trade
+                {{ isHighAlch() ? 'at the buy price' : 'on both sides' }} in the last hour, are left out. Pick Any to
+                see them: old prices get a clock.
+              </ng-template>
             </info-tooltip>
           </span>
           <select
@@ -83,9 +85,11 @@
           >
             <span class="flex items-center whitespace-nowrap">
               <label for="price-table-buy-at">Buy at</label>
-              <info-tooltip>
-                Instant buy: the price that buys the item right away. Instant sell: the price sellers take right away,
-                which is lower, but a buy offer at it waits for them and can take hours to fill.
+              <info-tooltip label="About instant buy and sell">
+                <ng-template>
+                  Instant buy: the price that buys the item right away. Instant sell: the price sellers take right away,
+                  which is lower, but a buy offer at it waits for them and can take hours to fill.
+                </ng-template>
               </info-tooltip>
             </span>
             <select
@@ -194,6 +198,7 @@
                         tooltip
                         [tooltipTemplate]="breakdown"
                         [tooltipUnderline]="false"
+                        tabindex="0"
                         >{{ formatWhole(row.key, true) }}</span
                       >
                       <ng-template #breakdown>
@@ -234,6 +239,7 @@
                           tooltip
                           [tooltipTemplate]="perLimitTip"
                           [tooltipUnderline]="false"
+                          tabindex="0"
                           >{{ formatTableNumber(row.perLimit) }}</span
                         >
                         <ng-template #perLimitTip
@@ -265,10 +271,12 @@
                           tooltip
                           [tooltipTemplate]="ageTip"
                           [tooltipUnderline]="false"
+                          [tooltipDescribe]="false"
+                          tabindex="0"
                         >
                           <svg lucideClock class="size-3.5 text-amber" strokeWidth="2.5" />
-                          <span class="sr-only">An old price:</span>
                           {{ price | number }}
+                          <span class="sr-only">, last traded {{ age }} ago</span>
                         </span>
                         <ng-template #ageTip>Last traded {{ age }} ago</ng-template>
                       } @else {

@@ -90,6 +90,7 @@ const OVERALL_COLOR = 'var(--accent)';
                 [tooltip]="cell.loaded"
                 [tooltipTemplate]="tooltipTemplate"
                 [tooltipUnderline]="false"
+                [tooltipDescribe]="false"
                 (click)="cell.charted && playerView.toggleSkill(cell.name)"
               >
                 <span class="flex items-center justify-between h-9.25 pt-1.75 pb-1.5 px-3">

@@ -1,23 +1,31 @@
-import { Component } from '@angular/core';
+import { Component, TemplateRef, contentChild, input } from '@angular/core';
 import { Tooltip } from './tooltip';
 import { LucideInfo } from '@lucide/angular';
 
-/** An info icon that shows its content in a tooltip. */
+/**
+ * An info icon that shows its content in a tooltip: a button named by `label` ("About GE tax") and described by the
+ * content, so Tab reaches it and keyboard focus opens it. Its hit area is 24px around the 14px icon (WCAG 2.5.8).
+ * The content goes in an `<ng-template>`: the tooltip renders it twice (the description and the overlay), and projected
+ * content only renders once, so opening the overlay would empty the description.
+ */
 @Component({
   selector: 'info-tooltip',
   template: `
-    <span
-      class="flex ml-1.5 text-muted cursor-help"
+    <button
+      type="button"
+      class="relative flex ml-1.5 rounded-full text-muted cursor-help before:absolute before:-inset-1.25 before:content-['']"
       tooltip
-      [tooltipTemplate]="tooltipTemplate"
+      [tooltipTemplate]="content()"
       [tooltipUnderline]="false"
-      aria-hidden="true"
+      [attr.aria-label]="label()"
     >
       <svg lucideInfo class="size-3.5" strokeWidth="2.5" />
-    </span>
-    <ng-template #tooltipTemplate><ng-content /></ng-template>
+    </button>
   `,
   host: { class: 'flex items-center' },
   imports: [Tooltip, LucideInfo],
 })
-export class InfoTooltip {}
+export class InfoTooltip {
+  readonly label = input.required<string>();
+  readonly content = contentChild.required(TemplateRef);
+}

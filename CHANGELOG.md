@@ -4,6 +4,10 @@
   under the menu bar at the top: the page now scrolls it into view below the bar.
 - The "Online now" dot on Players online no longer pulses when your device asks for reduced motion; otherwise it keeps
   pulsing for as long as the count is shown, as before.
+- The small ⓘ icons with an explanation, such as GE tax on an item's page, can now be reached with the Tab key and open
+  their explanation on focus, and screen readers read it. So can the margin, profit and per-limit values in the price
+  tables, which show how they add up, and the clock on an old price. Screen readers now also hear how old an old price
+  is, how long ago a player in a list was last tracked, and what each table column means.
 
 ## 2026-10-21
 

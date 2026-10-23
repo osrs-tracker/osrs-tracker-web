@@ -1,3 +1,4 @@
+import { _IdGenerator } from '@angular/cdk/a11y';
 import { Overlay, OverlayModule, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { NgTemplateOutlet } from '@angular/common';
@@ -12,6 +13,7 @@ import {
   OnDestroy,
   TemplateRef,
   ViewContainerRef,
+  computed,
   inject,
   input,
   viewChild,
@@ -24,6 +26,11 @@ import { Subject, debounceTime, fromEvent } from 'rxjs';
   selector: '[tooltip]',
   template: `
     <ng-content />
+
+    <!-- The overlay only exists while open, so screen readers read this copy: hidden, which a description may be -->
+    @if (described()) {
+      <span hidden [id]="descriptionId"><ng-template [ngTemplateOutlet]="tooltipTemplate()" /></span>
+    }
 
     <ng-template #tooltipTemplateContainer>
       <div
@@ -45,6 +52,7 @@ import { Subject, debounceTime, fromEvent } from 'rxjs';
       </div>
     </ng-template>
   `,
+  host: { '[attr.aria-describedby]': 'described() ? descriptionId : null' },
   imports: [NgTemplateOutlet, OverlayModule],
 })
 export class Tooltip implements OnChanges, AfterViewInit, OnDestroy {
@@ -71,6 +79,11 @@ export class Tooltip implements OnChanges, AfterViewInit, OnDestroy {
   readonly tooltip = input<string | boolean>(true);
   readonly tooltipTemplate = input.required<TemplateRef<unknown>>();
   readonly tooltipUnderline = input(true);
+  /** Whether the host is described by the tooltip's text. The grids' cells pass `false` (`docs/decisions.md`) */
+  readonly tooltipDescribe = input(true);
+
+  readonly descriptionId = inject(_IdGenerator).getId('tooltip-');
+  readonly described = computed(() => this.tooltipDescribe() && this.tooltip() !== false);
 
   readonly tooltipTemplateArrow = viewChild.required<TemplateRef<unknown>>('tooltipTemplateArrow');
   readonly tooltipTemplateContainer = viewChild.required<TemplateRef<unknown>>('tooltipTemplateContainer');

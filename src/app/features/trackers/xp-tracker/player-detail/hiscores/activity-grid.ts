@@ -74,6 +74,7 @@ interface ActivityCell {
                     [tooltip]="cell.activity !== undefined"
                     [tooltipTemplate]="tooltipTemplate"
                     [tooltipUnderline]="false"
+                    [tooltipDescribe]="false"
                     (click)="cell.charted && playerView.pickActivity(view(), cell.name)"
                   >
                     @if (cell.activity !== undefined) {

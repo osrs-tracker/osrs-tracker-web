@@ -1,11 +1,14 @@
 <article card aria-labelledby="milestones-heading" [subtitle]="paceLine()">
-  <h2 id="milestones-heading" title class="flex items-center">
-    Milestones
-    <info-tooltip>
-      Each skill’s average XP a day over the period you pick, carried forward. Skills without XP in that period are left
-      out.
+  <!-- The info button sits beside the heading, not in it, so it isn't part of the heading's name -->
+  <div title class="flex items-center">
+    <h2 id="milestones-heading">Milestones</h2>
+    <info-tooltip label="About the milestone pace">
+      <ng-template>
+        Each skill’s average XP a day over the period you pick, carried forward. Skills without XP in that period are
+        left out.
+      </ng-template>
     </info-tooltip>
-  </h2>
+  </div>
 
   <!-- The card's own period for the pace, apart from the chart's -->
   <span actions class="flex">

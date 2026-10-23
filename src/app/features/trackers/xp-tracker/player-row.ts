@@ -60,13 +60,15 @@ interface PlayerRowData {
       />
     } @else if (overallDiff() === null) {
       <span class="shrink-0 text-sm text-muted" title="This player hasn't been tracked at this offset yet.">
-        Not tracked yet
+        Not tracked yet<span class="sr-only"> at this offset</span>
       </span>
     } @else if (overallDiff() === 0) {
-      <span class="shrink-0 text-sm text-muted" [title]="xpTitle()">No XP gained</span>
+      <span class="shrink-0 text-sm text-muted" [title]="xpTitle()"
+        >No XP gained<span class="sr-only">{{ sinceText() }}</span></span
+      >
     } @else {
       <span class="shrink-0 font-bold text-strong tabular-nums" [title]="xpTitle()">
-        +{{ overallDiff() | number }} XP
+        +{{ overallDiff() | number }} XP<span class="sr-only">{{ sinceText() }}</span>
       </span>
     }
   `,
@@ -108,10 +110,16 @@ export class PlayerRow implements OnInit {
   // The server renders skeletons, the browser fetches
   readonly loading = computed(() => !this.isBrowser || this.overallDiffResource.isLoading());
 
-  readonly xpTitle = computed(() => {
-    const lastTracked = this.playerDetails()?.hiscoreEntries?.[0]?.date;
-    return `XP gained since ${this._username()} was last tracked, ${this.timeAgoPipe.transform(lastTracked)}.`;
-  });
+  private readonly lastTrackedAgo = computed(() =>
+    this.timeAgoPipe.transform(this.playerDetails()?.hiscoreEntries?.[0]?.date),
+  );
+  readonly xpTitle = computed(() =>
+    this.lastTrackedAgo()
+      ? `XP gained since ${this._username()} was last tracked, ${this.lastTrackedAgo()}.`
+      : `XP gained since ${this._username()} was last tracked.`,
+  );
+  /** The title's time span for screen readers and keyboard users, as part of the row link's name */
+  readonly sinceText = computed(() => (this.lastTrackedAgo() ? `, since last tracked ${this.lastTrackedAgo()}` : ''));
 
   ngOnInit(): void {
     if (this.player() === null && this.username() === null) {
