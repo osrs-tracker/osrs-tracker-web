@@ -67,15 +67,8 @@ import { LucideExternalLink, LucideStar, LucideTriangle } from '@lucide/angular'
           @if (averageLoading()) {
             <skeleton class="h-4 w-30 my-0.5" tone="ground" />
           } @else if (averageError()) {
-            <span class="flex items-center gap-1 text-sm text-muted">
-              Couldn't load yesterday's average.
-              <load-error
-                compact
-                source="item-header-change"
-                message="Couldn't load yesterday's average."
-                (retry)="retryAverage.emit()"
-              />
-            </span>
+            <!-- The price chart or the volume card says the history didn't load, with a retry -->
+            <span class="text-sm/4.5 text-muted">Change not loaded</span>
           } @else if (change(); as change) {
             <span
               class="flex items-center gap-1.5 font-bold whitespace-nowrap tabular-nums"
@@ -130,7 +123,6 @@ export class ItemHeader {
   readonly averageError = input(false);
 
   readonly retry = output();
-  readonly retryAverage = output();
 
   readonly wikiUrl = computed(
     () => `${config.wikiBaseUrl}/w/${encodeURIComponent(this.item().name.replaceAll(' ', '_'))}`,

@@ -62,6 +62,24 @@ describe('ProfitCalculator', () => {
 
       expect(calculator.profit()).toEqual({ perItem: 78_000, total: 0, sub: 'Enter a quantity' });
     });
+
+    it('shows "–" instead of a profit of 0 without prices', async () => {
+      const calculator = (await render(WHIP, prices(0, 0))).componentInstance;
+
+      expect(calculator.missingPrices()).toBe(true);
+      expect(calculator.noRecentPrices()).toBe(true);
+      expect(calculator.profit().sub).toBe('Enter a buy and a sell price');
+      expect(calculator.rows().every(row => row.value === '–')).toBe(true);
+    });
+
+    it('writes a large total exactly, and shortens a huge return', async () => {
+      const calculator = (await render(WHIP, prices(2_147_483_647, 1))).componentInstance;
+      calculator.flipQuantity.set(2_147_483_647);
+
+      // (2,147,483,647 − 1 − 5,000,000 tax) × 2,147,483,647, past what a number holds exactly
+      expect(calculator.totalText()).toBe('+4,600,948,593,749,936,962');
+      expect(row(calculator, 'Return on investment')).toBe('214.25B%');
+    });
   });
 
   describe('high alch', () => {

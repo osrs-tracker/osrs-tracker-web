@@ -50,3 +50,18 @@
 @utility grid-cols-log {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
 }
+
+/*
+ * Numbers that shrink to fit the width of their container (the nearest `@container`) instead of being cut off: from
+ * their size down to a floor, as `--digits` (their number of digits, set by the component) grows. SOLIX bold's tabular
+ * digit is 0.674em wide and a comma 0.218em, one per three digits: 0.75em a digit; 0.55em more leaves room for a sign.
+ * The rem subtracted is what else takes up the line.
+ */
+/* The profit calculator's inputs (16px to 12px), inside their 12px padding, border and caret */
+@utility fit-input-digits {
+  font-size: max(var(--text-xs), min(var(--text-base), calc((100cqi - 1.75rem) / (var(--digits) * 0.75))));
+}
+/* The profit calculator's total (36px to 16px, then it wraps), beside its "gp" */
+@utility fit-total-digits {
+  font-size: max(var(--text-base), min(var(--text-4xl), calc((100cqi - 1.625rem) / (var(--digits) * 0.75 + 0.55))));
+}

@@ -3,11 +3,12 @@ import { Component } from '@angular/core';
 import { Chart, ChartOptions, Point } from 'chart.js';
 import { BaseChart } from '@app/common/charts/base-chart';
 import { token } from '@app/common/charts/chart-setup';
+import { formatNumberShort } from '@app/common/format/number-format';
 import { DailyVolume } from '../item-prices';
 
 /**
  * Items bought (accent, above the line) and sold (orange, below it) per UTC day. Both halves share one scale, so the
- * bars compare; there's no axis, the tooltip has the numbers.
+ * bars compare; the axis counts both up from the line, and the tooltip has the exact numbers.
  */
 @Component({
   selector: 'volume-chart',
@@ -27,7 +28,17 @@ export class VolumeChart extends BaseChart<'bar', DailyVolume[]> {
       },
       scales: {
         x: { display: false, stacked: true },
-        y: { display: false, stacked: true },
+        y: {
+          position: 'right',
+          stacked: true,
+          // Dashes the gridlines, as on the price chart
+          border: { dash: [4, 6] },
+          ticks: {
+            maxTicksLimit: 5,
+            // Sold counts down from the line, but is a number of items like bought
+            callback: value => formatNumberShort(Math.abs(Number(value))),
+          },
+        },
       },
       plugins: {
         tooltip: {
