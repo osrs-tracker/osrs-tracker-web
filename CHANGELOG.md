@@ -84,6 +84,8 @@
 - The landing pages, the news page included, leave a little more room between their top band and what's below it, the
   same as under the menu bar elsewhere. Long headings, such as item names and news titles, now break into lines of even
   length instead of leaving a single word on the last line.
+- A regular account's page now shows the same person icon as player lists, instead of the Overall skill icon, which made
+  it look like a skill rather than an account type.
 
 ### Behind the scenes
 

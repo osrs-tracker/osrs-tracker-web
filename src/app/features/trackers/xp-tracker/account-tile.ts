@@ -1,5 +1,5 @@
 import { Component, booleanAttribute, computed, input } from '@angular/core';
-import { Player, PlayerStatus, PlayerType, SkillEnum } from '@osrs-tracker/models';
+import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { Icon } from '@app/common/icon/icon';
 import { Tooltip } from '@app/common/ui/tooltip/tooltip';
 import { LucideUser, LucideX } from '@lucide/angular';
@@ -45,11 +45,7 @@ const TYPE_LABELS: Record<PlayerType, string> = {
       [tooltipDescribe]="false"
     >
       @if (player.type === PlayerType.Normal) {
-        @if (large()) {
-          <img class="size-10" icon alt="" eager [name]="SkillEnum.Overall" [skill]="true" />
-        } @else {
-          <svg lucideUser class="size-5.5 max-sm:size-4.5 stroke-text" />
-        }
+        <svg lucideUser [class]="large() ? 'size-9 stroke-text' : 'size-5.5 max-sm:size-4.5 stroke-text'" />
       } @else {
         <img
           [class]="large() ? 'size-10' : 'size-6 max-sm:size-5'"
@@ -107,7 +103,6 @@ const TYPE_LABELS: Record<PlayerType, string> = {
 export class AccountTile {
   readonly PlayerStatus: typeof PlayerStatus = PlayerStatus;
   readonly PlayerType: typeof PlayerType = PlayerType;
-  readonly SkillEnum: typeof SkillEnum = SkillEnum;
 
   readonly account = input.required<Player>();
   /** The player page's 64px tile, focusable; otherwise a list row's 40px (32px on phones) one */
