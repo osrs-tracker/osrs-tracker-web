@@ -206,7 +206,7 @@ export default class PriceTablePage {
   readonly isHighAlch = computed(() => this.kind() === 'high-alch');
   readonly title = computed(() => (this.isHighAlch() ? 'High-alch profit' : 'Margins'));
   readonly query = computed(() => this.options().query.trim());
-  readonly caption = computed(() => `${this.title()} of every item at the latest prices`);
+  readonly caption = computed(() => `${this.title()} at the latest prices`);
 
   readonly columns = computed((): Column[] => {
     const limit = { key: 'limit', label: 'Buy limit', tip: 'How many you can buy every 4 hours' } as const;
