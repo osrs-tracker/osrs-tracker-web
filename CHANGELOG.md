@@ -80,7 +80,8 @@
   Opening the changelog shows the loading bar while it's fetched, instead of seeming to do nothing. The privacy policy
   and terms give their date the same way.
 - The "Page not found" page now links to the player lookup and the item search, besides going back. On a player's page,
-  a very long name wraps instead of making the page scroll sideways on phones, whether the player is found or not.
+  a very long name that isn't found wraps instead of making the page scroll sideways on phones, and so does a long
+  one-word name of a player that is found.
 - The landing pages, the news page included, leave a little more room between their top band and what's below it, the
   same as under the menu bar elsewhere. Long headings, such as item names and news titles, now break into lines of even
   length instead of leaving a single word on the last line.
