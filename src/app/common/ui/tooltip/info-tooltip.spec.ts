@@ -44,6 +44,10 @@ describe('InfoTooltip', () => {
     const button = await render();
     const description = document.getElementById(button.getAttribute('aria-describedby')!)!;
 
+    // jsdom decides :focus-visible from the events it saw before, which differ by test order: make this keyboard focus
+    const matches = button.matches.bind(button);
+    vi.spyOn(button, 'matches').mockImplementation(selector => selector === ':focus-visible' || matches(selector));
+
     button.focus();
     await eventually(() => expect(overlayText()).toBe('GE tax is 2% of the sell price.'));
     expect(description.textContent?.trim()).toBe('GE tax is 2% of the sell price.');
