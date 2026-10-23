@@ -56,16 +56,21 @@
     }
   }
 
-  /* A live dot's slow ring (Players online): an accent shadow that grows and fades */
-  --animate-live: live 2.4s ease-out infinite;
+  /*
+   * A live dot's ring (Players online): an accent disc that grows out of the dot and fades, twice, so it stops within
+   * five seconds (WCAG 2.2.2). Scale and opacity, not box-shadow, so the compositor runs it without repaints.
+   */
+  --animate-live: live 2.4s ease-out 2;
 
   @keyframes live {
     0% {
-      box-shadow: 0 0 0 0 color-mix(in oklch, var(--accent) 55%, transparent);
+      transform: scale(1);
+      opacity: 0.55;
     }
     70%,
     100% {
-      box-shadow: 0 0 0 8px color-mix(in oklch, var(--accent) 0%, transparent);
+      transform: scale(2.6);
+      opacity: 0;
     }
   }
 }

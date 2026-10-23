@@ -28,7 +28,11 @@
       } @else if (count(); as count) {
         <div class="flex flex-col gap-2">
           <span class="flex items-center gap-2.5 font-bold">
-            <span class="size-2.5 shrink-0 rounded-full bg-accent animate-live" aria-hidden="true"></span>Online now
+            <span
+              class="relative size-2.5 shrink-0 rounded-full bg-accent after:absolute after:inset-0 after:rounded-full after:bg-accent after:opacity-0 after:animate-live motion-reduce:after:animate-none"
+              aria-hidden="true"
+            ></span
+            >Online now
           </span>
           <span class="text-5xl/none md:text-7xl/none font-bold text-strong tabular-nums">{{
             count.total | number
