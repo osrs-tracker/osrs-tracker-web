@@ -107,7 +107,9 @@ interface ResultRow {
               <dt class="flex items-center text-muted">
                 {{ row.label }}
                 @if (row.info) {
-                  <info-tooltip>{{ row.info }}</info-tooltip>
+                  <info-tooltip [label]="'About ' + row.label"
+                    ><ng-template>{{ row.info }}</ng-template></info-tooltip
+                  >
                 }
               </dt>
               <dd

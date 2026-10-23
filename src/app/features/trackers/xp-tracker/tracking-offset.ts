@@ -9,17 +9,21 @@ import { XpTrackerStore } from './xp-tracker-store';
 @Component({
   selector: 'tracking-offset',
   template: `
-    <label for="tracking-offset" class="flex items-center">
-      Tracking offset
-      <info-tooltip>
-        <div class="pb-1">
-          The tracking offset picks which set of hiscores is shown: +02:00 UTC only shows hiscores tracked at 02:00 UTC.
-        </div>
-        <div>
-          A player is only tracked from the first time they are looked up, so a new offset may have no hiscores yet.
-        </div>
+    <!-- The info button sits beside the label, not in it, so it isn't part of the select's name -->
+    <span class="flex items-center">
+      <label for="tracking-offset">Tracking offset</label>
+      <info-tooltip label="About the tracking offset">
+        <ng-template>
+          <div class="pb-1">
+            The tracking offset picks which set of hiscores is shown: +02:00 UTC only shows hiscores tracked at 02:00
+            UTC.
+          </div>
+          <div>
+            A player is only tracked from the first time they are looked up, so a new offset may have no hiscores yet.
+          </div>
+        </ng-template>
       </info-tooltip>
-    </label>
+    </span>
     <select
       id="tracking-offset"
       class="h-8 pl-2 pr-8 py-0 rounded-xl border-border bg-card font-bold text-strong tabular-nums cursor-pointer focus:border-accent focus:ring-accent"

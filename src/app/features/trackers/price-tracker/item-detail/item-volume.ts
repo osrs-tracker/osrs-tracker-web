@@ -37,7 +37,9 @@ interface VolumeSummary {
           <div class="flex items-center justify-between gap-1 px-4 py-3 bg-card sm:flex-col sm:items-start sm:px-5">
             <dt class="flex items-center text-sm text-muted">
               {{ stat.label }}
-              <info-tooltip>{{ stat.info }}</info-tooltip>
+              <info-tooltip [label]="'About ' + stat.label"
+                ><ng-template>{{ stat.info }}</ng-template></info-tooltip
+              >
             </dt>
             <dd class="flex items-center h-7 text-xl font-bold text-strong tabular-nums">
               @if (loading()) {

@@ -26,8 +26,10 @@
       errorText="Global lookups didn't load."
       (retry)="recentItemLookups.reload()"
     >
-      <info-tooltip info>
-        The change compares the latest instant-sell price with the previous day's 24-hour average (UTC).
+      <info-tooltip info label="About the price change">
+        <ng-template>
+          The change compares the latest instant-sell price with the previous day's 24-hour average (UTC).
+        </ng-template>
       </info-tooltip>
       <!-- Projected content is created in every state, and value() throws in the error state -->
       @if (recentItemLookups.hasValue()) {

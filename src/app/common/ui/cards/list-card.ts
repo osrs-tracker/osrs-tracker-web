@@ -22,10 +22,11 @@ export function listCardState(resource: Resource<readonly unknown[] | undefined>
     <div class="flex items-center gap-3 px-5 max-sm:px-4 py-4 max-sm:py-3 border-b border-line">
       <ng-content select="[icon]" />
       <div class="flex-1 min-w-0">
-        <h2 class="flex items-center text-xl/6 font-bold text-strong">
-          {{ heading() }}
+        <!-- The info button sits beside the heading, not in it, so it isn't part of the heading's name -->
+        <div class="flex items-center">
+          <h2 class="text-xl/6 font-bold text-strong">{{ heading() }}</h2>
           <ng-content select="[info]" />
-        </h2>
+        </div>
         <p class="mt-1 text-sm/4.5 text-muted">{{ subtitle() }}</p>
       </div>
 
