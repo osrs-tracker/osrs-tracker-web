@@ -75,8 +75,10 @@ Artifact tool); why it looks like this is in `docs/decisions.md`. Try layout ide
 The Artifact tool reads its source but can't render it, nor can Playwright (sign-in), so ask the user for a screenshot.
 Each page row has artboards at 1440, 1100, 820, 390 and 320px; the narrower ones import the 1440 one; component
 artboards are 640px wide with a Layout tweak (auto, desktop, phone); states such as hiscores down are tweaks, not extra
-artboards. A component's `<helmet>` styles apply on every artboard that imports it. Tailwind classes only; a value the
-scale lacks becomes a token in `src/styles/tailwind/theme.css`.
+artboards. A component's `<helmet>` styles apply on every artboard that imports it, so the colour tokens, the font, the
+Tailwind basics and the `.ui-select` classes live once in its `Tokens` component, which every page and component imports
+(wrappers get it through their page): change a token there, and mirror it on the Theme board. Tailwind classes only; a
+value the scale lacks becomes a token in `src/styles/tailwind/theme.css`.
 
 - **Colours** (`base.css`): `ground` page, `card`, `line` dividers, `row` row lines and hover, `inner` inner tiles,
   `deep` hero band and icon tiles, `border` controls, `muted`/`text`/`strong` text, `accent` (+ `accent-hover`,
