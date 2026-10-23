@@ -1,3 +1,8 @@
+## 2026-10-23
+
+- The "Online now" dot on Players online now pulses twice when the count appears and then stays still, instead of
+  pulsing forever beside the number, and doesn't pulse at all when your device asks for reduced motion.
+
 ## 2026-10-21
 
 - Updated the SOLIX font to version 4.0.1: smoother curves in many letters and figures (the round letters, `S`, `g`,
