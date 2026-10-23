@@ -19,7 +19,17 @@ import { PriceTrackerStore } from '../price-tracker-store';
 import { browseLetterOf, startingWith } from '../browse/browse-letters';
 import { PriceChart } from './charts/price-chart';
 import { ItemHeader } from './item-header';
-import { dailyVolumes, hasTrades, itemStats, priceChartSummary, yesterdayAverageSellPrice } from './item-prices';
+import {
+  dailyVolumes,
+  hasTrades,
+  itemStats,
+  priceChartSummary,
+  priceTableRows,
+  priceTakeaway,
+  yesterdayAverageSellPrice,
+} from './item-prices';
+import { ChartTable } from '@app/common/charts/chart-table';
+import { TimeBin } from '@app/common/charts/time-bins';
 import { ItemVolume } from './item-volume';
 import { ProfitCalculator } from './profit-calculator';
 import { LucideArrowLeft, LucideArrowRight } from '@lucide/angular';
@@ -30,11 +40,14 @@ type PriceRange = '1D' | '1W' | '1M' | '1Y';
  * The Wiki time series behind each range, and how far back the range goes. The 1W series, hourly, also feeds the
  * volume.
  */
-const PRICE_RANGES: Record<PriceRange, { lookback: Lookback; seconds: number; title: string; next?: PriceRange }> = {
-  '1D': { lookback: '24h', seconds: 86400, title: 'day', next: '1W' },
-  '1W': { lookback: '7d', seconds: 7 * 86400, title: 'week', next: '1M' },
-  '1M': { lookback: '30d', seconds: 30 * 86400, title: 'month', next: '1Y' },
-  '1Y': { lookback: '1y', seconds: 365 * 86400, title: 'year' },
+const PRICE_RANGES: Record<
+  PriceRange,
+  { lookback: Lookback; seconds: number; title: string; bin: TimeBin; next?: PriceRange }
+> = {
+  '1D': { lookback: '24h', seconds: 86400, title: 'day', bin: 'hour', next: '1W' },
+  '1W': { lookback: '7d', seconds: 7 * 86400, title: 'week', bin: 'day', next: '1M' },
+  '1M': { lookback: '30d', seconds: 30 * 86400, title: 'month', bin: 'day', next: '1Y' },
+  '1Y': { lookback: '1y', seconds: 365 * 86400, title: 'year', bin: 'month' },
 };
 
 /** As many days as the hourly series covers in full, today included: it ends with the last full hour, 168 hours back */
@@ -45,6 +58,7 @@ const VOLUME_DAYS = 7;
   templateUrl: './item-detail.html',
   imports: [
     RouterLink,
+    ChartTable,
     Card,
     LoadError,
     Segmented,
@@ -140,6 +154,15 @@ export default class ItemDetail implements OnInit {
     return this.priceSeries.hasValue() ? this.priceSeries.value().filter(price => price.timestamp >= since) : [];
   });
   readonly priceChartLabel = computed(() => priceChartSummary(this.priceChartData(), this.rangeTitle()));
+  readonly priceTakeaway = computed(() => priceTakeaway(this.priceChartData(), this.rangeTitle()));
+  readonly priceTable = computed(() => {
+    const { bin, title } = PRICE_RANGES[this.range()];
+    return {
+      caption: `Average prices per ${bin} over the last ${title}, newest first, in your time zone`,
+      columns: [bin[0].toUpperCase() + bin.slice(1), 'Instant buy (gp)', 'Instant sell (gp)'],
+      rows: priceTableRows(this.priceChartData(), bin),
+    };
+  });
   readonly rangeTitle = computed(() => PRICE_RANGES[this.range()].title);
   /** Rarely traded items often have no trades on 1D: the chart then says so, and offers the next range up */
   readonly priceChartEmpty = computed(() => !hasTrades(this.priceChartData()));

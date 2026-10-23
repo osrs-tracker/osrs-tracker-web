@@ -35,13 +35,20 @@
   second, and a change, such as switching the period, moves into place in a third of a second. When your device is set
   to reduce motion they don't animate at all, and changing the setting takes effect without a reload. Escape now closes
   a chart's hover details.
+- Every chart now has "Show the data" under it, which opens its numbers as a table, newest first: an item's prices (per
+  hour, day or month, by the range) and daily volume, Players online's history, and a player's XP and activity charts
+  (per day). Screen readers can read them too, instead of only the summary they had before. Above the price chart, a
+  line now says how the instant buy price moved over the range, such as "Instant buy down 2.9% over the last week, to
+  757,526 gp". The price chart's instant sell line is now violet and solid, the same colour as the sold bars of the
+  volume chart, with violet shading under it and green shading between the two lines, so the gap between buying and
+  selling stands out.
 - On Players online, switching the history's range keeps the chart in place until the next one is ready, instead of
   flashing an empty placeholder, and a range you already opened comes back at once. The chart now starts at 0 players,
   so the shaded area's height matches the count. The year and all-time charts leave out today and the first day of
   counting, both only partly counted, so the line no longer dips at the end; all-time now says when counting started
-  too. Screen readers get the daily values as a table, and the chart's summary no longer gives a "now" figure that
-  didn't match the live count. The "By world location" card matches the other cards. The "Online now" dot no longer
-  pulses when your device asks for reduced motion; otherwise it keeps pulsing for as long as the count is shown.
+  too. The chart's summary no longer gives a "now" figure that didn't match the live count. The "By world location" card
+  matches the other cards. The "Online now" dot no longer pulses when your device asks for reduced motion; otherwise it
+  keeps pulsing for as long as the count is shown.
 - On the news page, "Since you last played" now opens its calendar on a week ago (or the day you last picked) instead of
   today, and today can no longer be picked, as it always gave an empty list. When no posts came after the day you
   picked, the message now has a "Show every post" button. Screen readers no longer hear "since" twice in the button's

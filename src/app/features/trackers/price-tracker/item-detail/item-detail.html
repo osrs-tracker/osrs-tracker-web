@@ -39,7 +39,7 @@
       }
     </div>
 
-    <article card>
+    <article card [subtitle]="priceChartEmpty() ? undefined : priceTakeaway()">
       <h2 #priceHeading title tabindex="-1">Price</h2>
       <segmented actions label="Range" [options]="rangeOptions" [value]="range()" (valueChange)="selectRange($event)" />
 
@@ -77,11 +77,18 @@
       }
 
       <div class="flex flex-wrap gap-5 mt-4 text-sm" aria-hidden="true">
-        <span class="flex items-center gap-2"><span class="w-4.5 h-0.75 bg-accent"></span>Instant buy</span>
+        <!-- each swatch is its line over its area: the spread above the sell line, then the area under it -->
         <span class="flex items-center gap-2"
-          ><span class="w-4.5 border-t-2 border-dashed border-muted"></span>Instant sell</span
+          ><span class="w-4.5 h-3 border-t-3 border-accent bg-accent/14"></span>Instant buy</span
+        >
+        <span class="flex items-center gap-2"
+          ><span class="w-4.5 h-3 border-t-3 border-sold bg-sold/14"></span>Instant sell</span
         >
       </div>
+      @if (!priceSeries.error() && !priceSeriesLoading() && !priceChartEmpty()) {
+        @let table = priceTable();
+        <chart-table class="block mt-4" [caption]="table.caption" [columns]="table.columns" [rows]="table.rows" />
+      }
     </article>
 
     <div class="grid lg:grid-cols-2 gap-6">

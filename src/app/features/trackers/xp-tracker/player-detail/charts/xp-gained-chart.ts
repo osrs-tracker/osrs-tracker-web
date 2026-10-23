@@ -1,9 +1,10 @@
 import { formatNumber } from '@angular/common';
-import { DOCUMENT, Component, computed, inject } from '@angular/core';
+import { DOCUMENT, Component, computed, inject, input, signal } from '@angular/core';
 import { SkillEnum } from '@osrs-tracker/models';
 import { Chart, ChartOptions, Point } from 'chart.js';
 import { merge } from 'chart.js/helpers';
 import { BaseChart } from '@app/common/charts/base-chart';
+import { ChartTable } from '@app/common/charts/chart-table';
 import { token, withAlpha } from '@app/common/charts/chart-setup';
 import { LOCAL_ICONS } from '@app/common/icon/local-icons-token';
 import { formatNumberLegible } from '@app/common/format/number-format';
@@ -12,7 +13,7 @@ import { Gains } from '../player-summary';
 import { PlayerView } from '../player-view';
 import { ChartLegend, LegendItem } from './chart-legend';
 import { logChartOptions } from './log-chart-options';
-import { xpGainedSeries } from './log-chart-series';
+import { logTableRows, xpGainedSeries } from './log-chart-series';
 import { TooltipMarkers } from './tooltip-markers';
 
 /** Above this many days, the points crowd the line */
@@ -28,7 +29,8 @@ const CHIPS_SHOWN = 7;
 @Component({
   selector: 'xp-gained-chart',
   template: `
-    <div class="relative h-55 lg:h-auto lg:grow lg:min-h-35">
+    <!-- While the table shows, the card grows (player-chart) and the plot keeps the height it had -->
+    <div #plot class="relative h-55 lg:h-auto lg:grow lg:min-h-35" [style.height.px]="plotHeight()">
       <canvas #chart role="img" [class.invisible]="!series().length" [attr.aria-label]="label()"></canvas>
       @if (!series().length) {
         <p class="absolute inset-0 flex items-center justify-center text-base text-muted">
@@ -43,9 +45,18 @@ const CHIPS_SHOWN = 7;
       [collapseAfter]="CHIPS_SHOWN"
       (toggled)="playerView.toggleSkill($event)"
     />
+    @if (series().length) {
+      <chart-table
+        class="block mt-4"
+        [caption]="tableCaption()"
+        [columns]="tableColumns()"
+        [rows]="tableRows()"
+        (openChange)="plotHeight.set($event ? plot.offsetHeight : undefined)"
+      />
+    }
   `,
   host: { class: 'flex flex-col grow min-h-0' },
-  imports: [ChartLegend],
+  imports: [ChartLegend, ChartTable],
 })
 export class XpGainedChart extends BaseChart<'line', Gains[]> {
   protected readonly type = 'line';
@@ -64,6 +75,11 @@ export class XpGainedChart extends BaseChart<'line', Gains[]> {
     const names = [SkillEnum.Overall, ...xpGainedSeries(this.data()).map(({ name }) => name)];
     return names.map(name => ({ name, color: this.cssColor(name), on: picked.has(name) }));
   });
+  /** What the data table holds, e.g. "XP gained per day, last 30 days, newest first" */
+  readonly tableCaption = input.required<string>();
+  readonly plotHeight = signal<number | undefined>(undefined);
+  readonly tableColumns = computed(() => ['Day', ...this.series().map(({ name }) => `${name} (XP)`)]);
+  readonly tableRows = computed(() => logTableRows(this.series(), true));
   readonly label = computed(() => `${[...this.playerView.skills()].join(', ')} XP gained over the period, cumulative`);
 
   /** For the chips, in CSS: Overall is the accent token, a skill without a colour (newer than the enum) muted */

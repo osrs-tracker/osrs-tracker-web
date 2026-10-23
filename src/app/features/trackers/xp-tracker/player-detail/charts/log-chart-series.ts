@@ -1,5 +1,7 @@
 import { SkillEnum } from '@osrs-tracker/models';
-import { addDays } from 'date-fns';
+import { addDays, format } from 'date-fns';
+import { ChartTableRow } from '@app/common/charts/chart-table';
+import { formatWhole } from '@app/common/format/number-format';
 import { Gains } from '../player-summary';
 
 /** A day's point; gains across a gap in the history go on its last day, with `from` its first */
@@ -44,6 +46,22 @@ export function activitySeries(diffs: Gains[], category: ReadonlySet<string>): C
     })
     .filter(series => series.total > 0)
     .sort((a, b) => b.total - a.total);
+}
+
+/**
+ * The series as a data table, a row per day, newest first, with each series' value that day: for a `cumulative` one
+ * (XP gained so far) the day's gain. A row across a gap in the history spans its days.
+ */
+export function logTableRows(series: ChartSeries[], cumulative = false): ChartTableRow[] {
+  return (series[0]?.points ?? [])
+    .map(({ x, from }, i) => ({
+      key: x,
+      cells: [
+        from === undefined ? format(x, 'EEE d MMM') : `${format(from, 'd MMM')} – ${format(x, 'd MMM')}`,
+        ...series.map(({ points }) => formatWhole(points[i].y - (cumulative ? (points[i - 1]?.y ?? 0) : 0))),
+      ],
+    }))
+    .reverse();
 }
 
 /** The skills in any of the diffs but Overall, in the order they first appear */

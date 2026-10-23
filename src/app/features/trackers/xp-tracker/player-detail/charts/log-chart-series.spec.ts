@@ -1,7 +1,7 @@
 import { ActivityEnum, SkillEnum } from '@osrs-tracker/models';
 import { describe, expect, it } from 'vitest';
 import { Gains } from '../player-summary';
-import { activitySeries, xpGainedSeries } from './log-chart-series';
+import { activitySeries, logTableRows, xpGainedSeries } from './log-chart-series';
 
 const diff = (
   day: number,
@@ -78,5 +78,32 @@ describe('activitySeries', () => {
       [ActivityEnum.Vorkath, 2, [1, 1]],
       [ActivityEnum.Kraken, 2, [0, 2]],
     ]);
+  });
+});
+
+describe('logTableRows', () => {
+  it("gives a row per day, newest first, with each cumulative series' gain that day", () => {
+    const diffs = [
+      diff(3, { [SkillEnum.Attack]: 100, [SkillEnum.Magic]: 2_000 }),
+      diff(2, { [SkillEnum.Attack]: 0, [SkillEnum.Magic]: 0 }),
+      diff(1, { [SkillEnum.Attack]: 50, [SkillEnum.Magic]: 0 }),
+    ];
+
+    expect(logTableRows(xpGainedSeries(diffs), true).map(row => row.cells)).toEqual([
+      ['Sat 3 Oct', '2,000', '100'],
+      ['Fri 2 Oct', '0', '0'],
+      ['Thu 1 Oct', '0', '50'],
+    ]);
+  });
+
+  it('spans a gap in the history, and takes per-day series as they are', () => {
+    const diffs = [diff(5, {}, { [ActivityEnum.Zulrah]: 3 }, 3), diff(1, {}, { [ActivityEnum.Zulrah]: 2 })];
+    const zulrah = activitySeries(diffs, new Set([ActivityEnum.Zulrah]));
+
+    expect(logTableRows(zulrah).map(row => row.cells)).toEqual([
+      ['5 Oct – 7 Oct', '3'],
+      ['Thu 1 Oct', '2'],
+    ]);
+    expect(logTableRows([])).toEqual([]);
   });
 });
