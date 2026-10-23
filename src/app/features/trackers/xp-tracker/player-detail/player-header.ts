@@ -29,7 +29,8 @@ export type TrackingState = 'tracked' | 'started' | 'untracked';
           title="Open on the Old School Hiscores"
           [href]="hiscoreUrl()"
         >
-          <h1 class="text-2xl sm:text-4xl leading-none font-bold">
+          <!-- a one-word name too wide for a narrow phone breaks inside the word, keeping the icon beside it -->
+          <h1 class="min-w-0 wrap-anywhere text-2xl sm:text-4xl leading-none font-bold">
             {{ player.username | capitalizeWords }}
           </h1>
           <svg lucideExternalLink class="size-4.5 shrink-0 text-muted" />
