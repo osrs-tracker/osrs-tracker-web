@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { Icon } from '@app/common/icon/icon';
 import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
@@ -7,7 +7,7 @@ import { TimeAgoPipe } from '@app/common/format/time-ago-pipe';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { AccountTile } from '../account-tile';
 import { XpTrackerStore } from '../xp-tracker-store';
-import { LucideExternalLink, LucideStar } from '@lucide/angular';
+import { LucideExternalLink, LucideStar, LucideTriangleAlert } from '@lucide/angular';
 
 /** Whether the player has a history at the visitor's offset yet, which decides the line under the name */
 export type TrackingState = 'tracked' | 'started' | 'untracked';
@@ -41,30 +41,37 @@ export type TrackingState = 'tracked' | 'started' | 'untracked';
           <img class="size-3.75" icon alt="Combat level" name="combat" />{{ player.combatLevel }}
         </span>
       </div>
-      <p class="text-base text-muted">
-        @switch (trackingState()) {
-          @case ('tracked') {
-            <!-- trackedSince is unknown for a moment on another offset than the resolver's -->
-            @if (player.trackedSince; as trackedSince) {
-              History since {{ trackedSince | date: 'd MMM' }}
-            } @else {
+      <!-- When the hiscores don't respond the line says so, in place: a notice above would push the page down -->
+      @if (stale()) {
+        <p class="flex flex-wrap items-center gap-x-1.5 text-base text-muted">
+          <svg lucideTriangleAlert class="size-4.5 shrink-0 stroke-amber" />
+          <span class="text-strong">Hiscores not responding: stats from {{ lastCheckedAt() | timeAgo }}</span>
+          ·
+          <button type="button" class="link font-bold" (click)="retry.emit()">Try again</button>
+        </p>
+      } @else {
+        <p class="text-base text-muted">
+          @switch (trackingState()) {
+            @case ('tracked') {
+              <!-- trackedSince is unknown for a moment on another offset than the resolver's -->
+              @if (player.trackedSince; as trackedSince) {
+                History since {{ trackedSince | date: 'd MMM' }}
+              } @else {
+                Checked daily at {{ trackedAt() }}
+              }
+            }
+            @case ('started') {
+              @if (player.trackedSince; as trackedSince) {
+                Tracking started {{ trackedSince | timeAgo }} ·
+              }
               Checked daily at {{ trackedAt() }}
             }
-            @if (stale() && lastCheckedAt(); as lastCheckedAt) {
-              · Last checked {{ lastCheckedAt | timeAgo }}
+            @case ('untracked') {
+              Not tracked at {{ trackedAt() }} yet
             }
           }
-          @case ('started') {
-            @if (player.trackedSince; as trackedSince) {
-              Tracking started {{ trackedSince | timeAgo }} ·
-            }
-            Checked daily at {{ trackedAt() }}
-          }
-          @case ('untracked') {
-            Not tracked at {{ trackedAt() }} yet
-          }
-        }
-      </p>
+        </p>
+      }
     </div>
 
     <button
@@ -80,7 +87,16 @@ export type TrackingState = 'tracked' | 'started' | 'untracked';
     </button>
   `,
   host: { class: 'flex flex-wrap items-center gap-4' },
-  imports: [AccountTile, CapitalizePipe, DatePipe, Icon, TimeAgoPipe, LucideExternalLink, LucideStar],
+  imports: [
+    AccountTile,
+    CapitalizePipe,
+    DatePipe,
+    Icon,
+    TimeAgoPipe,
+    LucideExternalLink,
+    LucideStar,
+    LucideTriangleAlert,
+  ],
 })
 export class PlayerHeader {
   private readonly analyticsService = inject(AnalyticsService);
@@ -94,6 +110,8 @@ export class PlayerHeader {
   readonly lastCheckedAt = input.required<Date | undefined>();
   /** The stats shown are the last stored ones, as the hiscores didn't respond: then the header says how old they are */
   readonly stale = input(false);
+  /** Try again on the line that says the hiscores aren't responding */
+  readonly retry = output();
 
   readonly isFavorite = computed(() => this.xpTrackerStore.isFavoritePlayer(this.playerDetail().username));
 

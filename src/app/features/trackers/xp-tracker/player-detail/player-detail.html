@@ -6,24 +6,6 @@
 </div>
 
 @if (playerDetail(); as player) {
-  @if (stale()) {
-    <div class="max-w-page mx-auto px-4 sm:px-6 py-2">
-      <div
-        class="flex flex-wrap items-center gap-x-4 gap-y-3 py-3 pl-4 pr-3 rounded-xl border border-amber/40 bg-amber/12"
-      >
-        <svg lucideTriangleAlert class="size-5 shrink-0 stroke-amber" />
-        <p class="grow basis-70 text-base/6 text-strong">{{ staleNotice() }}</p>
-        <button
-          type="button"
-          class="h-9 px-4 rounded-full border border-border text-sm font-bold text-strong hover:bg-row"
-          (click)="reloadToday()"
-        >
-          Try again
-        </button>
-      </div>
-    </div>
-  }
-
   <header class="max-w-page mx-auto px-4 sm:px-6 pt-2 flex flex-col gap-6">
     <player-header
       [playerDetail]="player"
@@ -31,6 +13,7 @@
       [trackedAt]="trackedAt()"
       [lastCheckedAt]="history.lastCheckedAt()"
       [stale]="stale()"
+      (retry)="reloadToday()"
     />
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
@@ -120,7 +103,7 @@
         class="order-2 md:col-start-2 md:row-start-1"
         panel
         source="player-history"
-        message="Couldn't load the history."
+        message="Couldn't load the history, so the chart, milestones and day log can't show."
         (retry)="history.reloadFirstPage()"
       />
     } @else {

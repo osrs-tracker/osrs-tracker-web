@@ -110,6 +110,23 @@
           </ul>
         }
       </article>
+    } @else if (group.type === 'today') {
+      <!-- The size of the card shown while today loads, so filling it in after hydration doesn't move the page -->
+      <article class="rounded-2xl bg-card">
+        <div class="flex items-center justify-between gap-3 min-h-14 px-5 py-1.5 border-b border-line">
+          <div class="flex items-baseline gap-2">
+            <h3 class="text-xl font-bold text-strong">{{ group.date | shortDate }}</h3>
+            <!-- on phones it would push the totals onto a second line -->
+            <span class="hidden sm:inline text-sm text-muted">since {{ group.since }}</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-log gap-x-6 gap-y-2 px-5 py-4">
+          <p class="min-h-6 text-base text-muted">Nothing gained yet today.</p>
+          @for (cell of [0, 1, 2]; track cell) {
+            <span class="h-6" aria-hidden="true"></span>
+          }
+        </div>
+      </article>
     } @else {
       <article class="rounded-2xl border border-line">
         <div

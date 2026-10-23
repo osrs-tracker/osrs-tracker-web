@@ -9,7 +9,10 @@
         [other]="vs()?.key"
         (picked)="pick({ day: $event! })"
       />
-      <span class="text-sm text-muted">compared with</span>
+      <!-- "vs" on phones, so both days fit on one line and the totals take the second -->
+      <span class="text-sm text-muted"
+        ><span class="max-sm:hidden">compared with</span><span class="sm:hidden">vs</span></span
+      >
       <day-picker
         label="Compared with"
         noneLabel="No other day"

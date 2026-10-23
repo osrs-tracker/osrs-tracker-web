@@ -224,7 +224,7 @@ export class CompareDays {
 
   /** "+1.2M", or with `full` "+1,204,330"; "+0" for no gain */
   signed(value: number, full = false): string {
-    return formatSign(value, 'always') + (full ? formatWhole(Math.abs(value)) : formatNumberLegible(Math.abs(value)));
+    return formatSign(value, 'always') + (full ? formatWhole(Math.abs(value)) : formatNumberShort(Math.abs(value)));
   }
 
   /** "1.2K", without a sign */

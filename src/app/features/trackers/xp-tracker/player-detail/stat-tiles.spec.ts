@@ -1,6 +1,6 @@
 import { HiscoreSkill } from '@osrs-tracker/models';
 import { describe, expect, it } from 'vitest';
-import { statTilesFor } from './stat-tiles';
+import { failedStatTilesFor, statTilesFor } from './stat-tiles';
 import { PeriodSummary } from './player-summary';
 import { Period } from './player-view';
 
@@ -44,6 +44,15 @@ describe('statTilesFor', () => {
     expect(statTilesFor(overall, summary(100, undefined, { since: new Date() }), 7, true)[1].comparisonFailed).toBe(
       undefined,
     );
+  });
+
+  it('shows the total level and no gains when the history failed', () => {
+    const [total, xp, levels, kills] = failedStatTilesFor(overall, 30);
+    expect(total).toMatchObject({ value: '2,277', sub: 'Rank 12,345' });
+    expect(xp).toMatchObject({ label: 'XP last 30 days', value: '–', sub: 'Not loaded' });
+    expect([levels.value, kills.value]).toEqual(['–', '–']);
+    // the live hiscores failed too
+    expect(failedStatTilesFor(undefined, 7)[0]).toMatchObject({ label: 'Total level', value: '–', sub: 'Not loaded' });
   });
 
   it('waits for the next check without a summary', () => {
