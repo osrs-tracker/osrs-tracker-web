@@ -1,5 +1,5 @@
 import { formatNumber } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { Chart, ChartOptions, Point, TimeScaleOptions } from 'chart.js';
 import { fromUnixTime } from 'date-fns';
 import { BaseChart } from '@app/common/charts/base-chart';
@@ -9,7 +9,8 @@ import { AveragePricesAtTime } from '@app/common/api/osrs-prices-repo';
 
 /**
  * The instant buy price as an accent line and the instant sell price as a violet one, both solid: the area between them
- * (the spread) is a light accent, the area under the sell line a light violet.
+ * (the spread) is a light accent, the area under the sell line a light violet. A hidden line's area goes with it: the
+ * buy line's then reaches down to the axis.
  */
 @Component({
   selector: 'price-chart',
@@ -17,6 +18,9 @@ import { AveragePricesAtTime } from '@app/common/api/osrs-prices-repo';
 })
 export class PriceChart extends BaseChart<'line', AveragePricesAtTime[]> {
   protected readonly type = 'line';
+
+  /** The lines' labels to leave out, from the legend */
+  readonly hiddenLines = input<ReadonlySet<string>>(new Set());
 
   protected chartOptions(): ChartOptions<'line'> {
     return {
@@ -73,6 +77,7 @@ export class PriceChart extends BaseChart<'line', AveragePricesAtTime[]> {
         backgroundColor: () => withAlpha(token('accent'), 0.14),
         pointBackgroundColor: () => token('accent'),
         borderWidth: 2.5,
+        hidden: this.hiddenLines().has('Instant buy'),
         fill: '+1',
         order: 0,
       },
@@ -84,6 +89,7 @@ export class PriceChart extends BaseChart<'line', AveragePricesAtTime[]> {
         backgroundColor: () => withAlpha(token('sold'), 0.14),
         pointBackgroundColor: () => token('sold'),
         borderWidth: 2.5,
+        hidden: this.hiddenLines().has('Instant sell'),
         fill: 'start',
         order: 1,
       },

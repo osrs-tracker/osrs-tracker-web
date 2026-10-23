@@ -5,6 +5,7 @@ import { AveragePricesAtTime } from '@app/common/api/osrs-prices-repo';
 import {
   ItemStat,
   ItemStatsInput,
+  binnedVolumes,
   dailyVolumes,
   hasTrades,
   itemStats,
@@ -39,6 +40,55 @@ describe('dailyVolumes', () => {
       { day: TODAY - DAY, bought: 6, sold: 4 },
       { day: TODAY, bought: 20, sold: 10 },
     ]);
+  });
+});
+
+describe('binnedVolumes', () => {
+  const ms = (seconds: number) => seconds * 1000;
+
+  it('sums UTC days the range covers from their start, today last', () => {
+    const volumes = binnedVolumes(
+      [
+        hour(TODAY - 2 * DAY - 3600, 1, 100, 100), // the day the range starts in, only partly covered
+        hour(TODAY - 2 * DAY, 1, 1, 2),
+        hour(TODAY - 2 * DAY + 3600, 1, 3, 4),
+        hour(TODAY + 16 * 3600, 1, 10, 20),
+      ],
+      NOW,
+      3 * DAY,
+      'day',
+    );
+
+    expect(volumes).toEqual([
+      { start: ms(TODAY - 2 * DAY), bought: 6, sold: 4 },
+      { start: ms(TODAY - DAY), bought: 0, sold: 0 },
+      { start: ms(TODAY), bought: 20, sold: 10 },
+    ]);
+  });
+
+  it('sums UTC months, this month last', () => {
+    const volumes = binnedVolumes(
+      [
+        hour(Date.UTC(2025, 9, 20) / 1000, 1, 100, 100), // October 2025, only partly in the year
+        hour(Date.UTC(2025, 10, 1) / 1000, 1, 1, 2),
+        hour(Date.UTC(2026, 9, 6) / 1000, 1, 3, 4),
+      ],
+      NOW,
+      365 * DAY,
+      'month',
+    );
+
+    expect(volumes).toHaveLength(12);
+    expect(volumes[0]).toEqual({ start: Date.UTC(2025, 10, 1), bought: 2, sold: 1 });
+    expect(volumes.at(-1)).toEqual({ start: Date.UTC(2026, 9, 1), bought: 4, sold: 3 });
+  });
+
+  it('sums the hours of a day, this hour last', () => {
+    const fiveMinutes = (offset: number, sold: number) => hour(TODAY + 17 * 3600 + offset, 1, sold);
+    const volumes = binnedVolumes([fiveMinutes(0, 1), fiveMinutes(300, 2)], NOW, DAY, 'hour');
+
+    expect(volumes).toHaveLength(24);
+    expect(volumes.at(-1)).toEqual({ start: ms(TODAY + 17 * 3600), bought: 0, sold: 3 });
   });
 });
 

@@ -76,34 +76,56 @@
         <chart-table class="h-70" [caption]="table.caption" [columns]="table.columns" [rows]="table.rows" />
       } @else {
         @defer {
-          <price-chart class="block h-70" role="img" [attr.aria-label]="priceChartLabel()" [data]="priceChartData()" />
+          <price-chart
+            class="block h-70"
+            role="img"
+            [attr.aria-label]="priceChartLabel()"
+            [data]="priceChartData()"
+            [hiddenLines]="hiddenLines()"
+          />
         } @placeholder {
           <skeleton class="h-70 w-full rounded-xl" />
         }
       }
 
-      <!-- Each line's change over the range, in both views; each swatch is its line over its area. Without a chart it's
-      only a key, hidden from screen readers -->
+      <!-- Each line's change over the range, in both views; each swatch is its line over its area, and each entry shows
+      or hides its line (the last one shown stays). Without a chart it's only a key, hidden from screen readers -->
       @let charted = !priceSeries.error() && !priceSeriesLoading() && !priceChartEmpty();
       <ul
-        class="flex flex-wrap gap-x-6 gap-y-2 mt-4 text-sm"
+        class="flex flex-wrap gap-x-2 -mx-2 mt-2.5 text-sm"
         [attr.aria-label]="charted ? 'Change over the last ' + rangeTitle() : null"
         [attr.aria-hidden]="charted ? null : true"
       >
         @for (line of priceLegend(); track line.name) {
-          <li class="flex items-center gap-2">
-            <span class="w-4.5 h-3 border-t-3" [class]="line.swatch" aria-hidden="true"></span>
-            {{ line.name }}
-            @if (line.change; as change) {
+          <li>
+            <button
+              type="button"
+              class="flex items-center gap-2 h-8 px-2 rounded-full"
+              [class]="(line.on ? '' : 'text-muted ') + (line.only ? 'cursor-default' : 'enabled:hover:bg-row')"
+              [disabled]="!charted"
+              [attr.aria-pressed]="line.on"
+              [attr.aria-disabled]="line.only || null"
+              (click)="toggleLine(line.name)"
+            >
               <span
-                class="font-bold tabular-nums"
-                [class]="change.tone === 'up' ? 'text-up' : change.tone === 'down' ? 'text-down' : 'text-muted'"
-                >{{ change.percent }}</span
-              >
-              <span class="text-muted tabular-nums"
-                >{{ change.tone === 'flat' ? 'at' : 'to' }} {{ change.last }} gp</span
-              >
-            }
+                class="w-4.5 h-3 border-t-3"
+                [class]="line.on ? line.swatch : 'border-border'"
+                aria-hidden="true"
+              ></span>
+              {{ line.name }}
+              @if (line.change; as change) {
+                <span
+                  class="font-bold tabular-nums"
+                  [class]="
+                    !line.on || change.tone === 'flat' ? 'text-muted' : change.tone === 'up' ? 'text-up' : 'text-down'
+                  "
+                  >{{ change.percent }}</span
+                >
+                <span class="text-muted tabular-nums"
+                  >{{ change.tone === 'flat' ? 'at' : 'to' }} {{ change.last }} gp</span
+                >
+              }
+            </button>
           </li>
         }
       </ul>
@@ -116,7 +138,11 @@
         [loading]="hourlyLoading()"
         [error]="!!hourly.error() && !priceSeries.error()"
         [notLoaded]="!!hourly.error() && !!priceSeries.error()"
-        (retry)="hourly.reload()"
+        [(range)]="volumeRange"
+        [bins]="volumeBins()"
+        [chart]="volumeChart()"
+        (retry)="retryVolume()"
+        (retryChart)="volumeSeries.reload()"
       ></article>
 
       <article

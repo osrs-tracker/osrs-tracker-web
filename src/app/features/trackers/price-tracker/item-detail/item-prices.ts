@@ -1,4 +1,4 @@
-import { fromUnixTime, getUnixTime } from 'date-fns';
+import { addHours, fromUnixTime, getUnixTime, startOfHour } from 'date-fns';
 import { Item } from '@osrs-tracker/models';
 import { DAY, utcDayStart } from '../utc-day';
 import { geTax, isGeTaxExempt } from './ge-tax';
@@ -85,7 +85,7 @@ function marginStat({ item, latest, latestLoading, latestFailed }: ItemStatsInpu
   };
 }
 
-/** A rolling 24 hours, so not "Daily volume": the volume card below counts UTC days */
+/** A rolling 24 hours, while the volume card below counts hours, UTC days or UTC months */
 function volumeStat({ hourly, hourlyLoading, hourlyFailed, now }: ItemStatsInput): ItemStat {
   return {
     label: 'Volume',
@@ -151,6 +151,51 @@ export function dailyVolumes(hourly: AveragePricesAtTime[], now: Date, days: num
   }
 
   return result;
+}
+
+/** Items bought and sold in one bar of the volume chart */
+export interface BinVolume {
+  /** The bin's start, in milliseconds */
+  start: number;
+  bought: number;
+  sold: number;
+}
+
+/**
+ * Where a volume bin starts and the next one does, in milliseconds. Hours are the visitor's, as on the price chart; days
+ * and months are UTC, as the Wiki counts its days (its daily points start at UTC midnight).
+ */
+const VOLUME_BINS: Record<TimeBin, { start: (ms: number) => number; next: (ms: number) => number }> = {
+  hour: { start: ms => startOfHour(ms).getTime(), next: ms => addHours(ms, 1).getTime() },
+  day: { start: ms => utcDayStart(ms / 1000) * 1000, next: ms => ms + DAY * 1000 },
+  month: { start: ms => utcMonth(ms, 0), next: ms => utcMonth(ms, 1) },
+};
+
+function utcMonth(ms: number, offset: number): number {
+  const date = new Date(ms);
+  return Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + offset);
+}
+
+/**
+ * Items bought and sold per bin over the `seconds` before `now`, oldest first, the current bin (so far) last, from one
+ * of the Wiki's time series. The first bin is the first the range covers from its start, so it isn't a part of one;
+ * bins without trades count as zero.
+ */
+export function binnedVolumes(series: AveragePricesAtTime[], now: Date, seconds: number, bin: TimeBin): BinVolume[] {
+  const { start, next } = VOLUME_BINS[bin];
+  const from = now.getTime() - seconds * 1000;
+  const bins = new Map<number, BinVolume>();
+  for (let at = start(from) < from ? next(start(from)) : from; at <= now.getTime(); at = next(at))
+    bins.set(at, { start: at, bought: 0, sold: 0 });
+
+  for (const point of series) {
+    const volume = bins.get(start(point.timestamp * 1000));
+    if (!volume) continue;
+    volume.bought += point.highPriceVolume ?? 0;
+    volume.sold += point.lowPriceVolume ?? 0;
+  }
+
+  return [...bins.values()];
 }
 
 /** Items traded (bought and sold) in the last 24 hours, from the hourly time series */
