@@ -21,21 +21,9 @@
   /* Badges on icons only (Legacy Bounty Hunter's "L"); text starts at text-xs */
   --text-2xs: 0.625rem;
 
-  /*
-   * Extra slate steps; the other colours are Tailwind's own. Light theme (inputs, page, card headers): stock slate jumps
-   * too far between 300 and 400; 450 is the lightest control border with 3:1 on slate-150. Dark theme: row lines and
-   * hover, inner tiles, hero band and icon tiles.
-   */
-  --color-slate-150: oklch(0.95 0.01 251.7);
-  --color-slate-250: oklch(0.89 0.018 254.2);
-  --color-slate-350: oklch(0.83 0.028 254.8);
-  --color-slate-450: oklch(0.62 0.045 257);
-  --color-slate-750: oklch(0.32 0.04 258);
-  --color-slate-850: oklch(0.24 0.042 263);
-  --color-slate-925: oklch(0.169 0.042 265.2);
-
-  /* The dark theme's "up": a true green, kept clearly apart from the emerald accent */
-  --color-true-green: oklch(0.79 0.22 142);
+  /* No stock colour utilities (`bg-slate-800`, `text-orange-500`): templates use the semantic ones below, which follow
+     the theme. A new colour is a token in base.css, built from the palette under `:root` */
+  --color-*: initial;
 
   --animate-skeleton: skeleton 1.6s ease-in-out infinite;
 
@@ -84,6 +72,51 @@
       opacity: 0;
     }
   }
+}
+
+/*
+ * The palette the tokens in base.css are built from: plain variables, outside `@theme`, so they make no utilities.
+ * Tailwind's own values for the steps in use (`tailwindcss/theme.css`), plus steps of our own (marked).
+ */
+:root {
+  --palette-white: #fff;
+
+  /*
+   * Our slate steps: light theme (inputs, page, card headers): stock slate jumps too far between 300 and 400; 450 is the
+   * lightest control border with 3:1 on slate-150. Dark theme: row lines and hover, inner tiles, hero band and icon
+   * tiles.
+   */
+  --palette-slate-50: oklch(98.4% 0.003 247.858);
+  --palette-slate-100: oklch(96.8% 0.007 247.896);
+  --palette-slate-150: oklch(0.95 0.01 251.7); /* ours */
+  --palette-slate-200: oklch(92.9% 0.013 255.508);
+  --palette-slate-250: oklch(0.89 0.018 254.2); /* ours */
+  --palette-slate-300: oklch(86.9% 0.022 252.894);
+  --palette-slate-350: oklch(0.83 0.028 254.8); /* ours */
+  --palette-slate-400: oklch(70.4% 0.04 256.788);
+  --palette-slate-450: oklch(0.62 0.045 257); /* ours */
+  --palette-slate-500: oklch(55.4% 0.046 257.417);
+  --palette-slate-600: oklch(44.6% 0.043 257.281);
+  --palette-slate-700: oklch(37.2% 0.044 257.287);
+  --palette-slate-750: oklch(0.32 0.04 258); /* ours */
+  --palette-slate-800: oklch(27.9% 0.041 260.031);
+  --palette-slate-850: oklch(0.24 0.042 263); /* ours */
+  --palette-slate-900: oklch(20.8% 0.042 265.755);
+  --palette-slate-925: oklch(0.169 0.042 265.2); /* ours */
+
+  --palette-emerald-400: oklch(76.5% 0.177 163.223);
+  --palette-emerald-500: oklch(69.6% 0.17 162.48);
+  --palette-emerald-700: oklch(50.8% 0.118 165.612);
+  --palette-emerald-800: oklch(43.2% 0.095 166.913);
+
+  --palette-green-800: oklch(44.8% 0.119 151.328);
+  /* Ours: the dark theme's "up", a true green kept clearly apart from the emerald accent */
+  --palette-true-green: oklch(0.79 0.22 142);
+  --palette-red-800: oklch(44.4% 0.177 26.899);
+  --palette-amber-400: oklch(82.8% 0.189 84.429);
+  --palette-amber-600: oklch(66.6% 0.179 58.318);
+  --palette-violet-400: oklch(70.2% 0.183 293.541);
+  --palette-violet-500: oklch(60.6% 0.25 292.717);
 }
 
 /*

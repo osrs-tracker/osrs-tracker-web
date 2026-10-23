@@ -3,55 +3,55 @@
   :root {
     /* Native parts (the search input's clear button, scrollbars) follow the theme */
     color-scheme: light;
-    --ground: var(--color-slate-100);
-    --card: var(--color-white);
-    --line: var(--color-slate-250);
-    --row: var(--color-slate-200);
-    --inner: var(--color-slate-50);
-    --deep: var(--color-slate-150);
+    --ground: var(--palette-slate-100);
+    --card: var(--palette-white);
+    --line: var(--palette-slate-250);
+    --row: var(--palette-slate-200);
+    --inner: var(--palette-slate-50);
+    --deep: var(--palette-slate-150);
     /* Controls' outlines: 3:1 on card, deep and ground (WCAG 1.4.11) */
-    --border: var(--color-slate-450);
-    --muted: var(--color-slate-600);
-    --text: var(--color-slate-800);
-    --strong: var(--color-slate-900);
-    --accent: var(--color-emerald-700);
-    --accent-hover: var(--color-emerald-800);
-    --on-accent: var(--color-white);
+    --border: var(--palette-slate-450);
+    --muted: var(--palette-slate-600);
+    --text: var(--palette-slate-800);
+    --strong: var(--palette-slate-900);
+    --accent: var(--palette-emerald-700);
+    --accent-hover: var(--palette-emerald-800);
+    --on-accent: var(--palette-white);
     /* One step darker than 700: the change pills' text needs 4.5:1 on their tint, also on a hovered row */
-    --up: var(--color-green-800);
-    --down: var(--color-red-800);
+    --up: var(--palette-green-800);
+    --down: var(--palette-red-800);
     --down-pill: color-mix(in oklch, var(--down) 16%, transparent);
-    --amber: var(--color-amber-600);
+    --amber: var(--palette-amber-600);
     /* The volume chart's sold bars: 500, as 400 is under 3:1 on white */
-    --sold: var(--color-violet-500);
+    --sold: var(--palette-violet-500);
     --float-shadow: oklch(0.208 0.042 265.755 / 0.12);
     /* Behind the nav's menus on phones */
     --scrim: oklch(0.208 0.042 265.755 / 0.25);
     /* The hero dot grid: --row is too close to --deep in the light theme, so the dots get a darker step */
-    --dot: var(--color-slate-350);
+    --dot: var(--palette-slate-350);
   }
 
   .dark {
     color-scheme: dark;
-    --ground: var(--color-slate-900);
-    --card: var(--color-slate-800);
-    --line: var(--color-slate-700);
-    --row: var(--color-slate-750);
-    --inner: var(--color-slate-850);
-    --deep: var(--color-slate-925);
-    --border: var(--color-slate-500);
-    --muted: var(--color-slate-400);
-    --text: var(--color-slate-300);
-    --strong: var(--color-white);
-    --accent: var(--color-emerald-400);
-    --accent-hover: var(--color-emerald-500);
-    --on-accent: var(--color-slate-900);
-    --up: var(--color-true-green);
+    --ground: var(--palette-slate-900);
+    --card: var(--palette-slate-800);
+    --line: var(--palette-slate-700);
+    --row: var(--palette-slate-750);
+    --inner: var(--palette-slate-850);
+    --deep: var(--palette-slate-925);
+    --border: var(--palette-slate-500);
+    --muted: var(--palette-slate-400);
+    --text: var(--palette-slate-300);
+    --strong: var(--palette-white);
+    --accent: var(--palette-emerald-400);
+    --accent-hover: var(--palette-emerald-500);
+    --on-accent: var(--palette-slate-900);
+    --up: var(--palette-true-green);
     --down: oklch(0.74 0.155 28);
     /* Solid: a see-through red over the blue slate turns pink, and too faint for 4.5:1 on a hovered row */
     --down-pill: oklch(0.35 0.065 27);
-    --amber: var(--color-amber-400);
-    --sold: var(--color-violet-400);
+    --amber: var(--palette-amber-400);
+    --sold: var(--palette-violet-400);
     --float-shadow: oklch(0.1 0.03 265 / 0.6);
     --scrim: oklch(0.12 0.03 265 / 0.55);
     --dot: var(--row);
