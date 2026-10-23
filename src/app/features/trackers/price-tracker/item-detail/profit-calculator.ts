@@ -157,10 +157,10 @@ interface ResultRow {
                 [style.--digits]="totalDigits()"
                 >{{ totalText() }}</span
               >
-              <span class="font-bold text-muted">gp</span>
+              <span class="font-bold text-text">gp</span>
             }
           </span>
-          <span class="text-sm text-muted">{{ profit().sub }}</span>
+          <span class="text-sm text-text">{{ profit().sub }}</span>
         </div>
       </div>
     }

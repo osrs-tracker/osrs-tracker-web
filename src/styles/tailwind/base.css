@@ -1,13 +1,16 @@
 @layer base {
   /* The light theme, the default; `.dark` on <html> (set by index.html before render) swaps in the dark one */
   :root {
+    /* Native parts (the search input's clear button, scrollbars) follow the theme */
+    color-scheme: light;
     --ground: var(--color-slate-100);
     --card: var(--color-white);
     --line: var(--color-slate-250);
     --row: var(--color-slate-200);
     --inner: var(--color-slate-50);
     --deep: var(--color-slate-150);
-    --border: var(--color-slate-300);
+    /* Controls' outlines: 3:1 on card, deep and ground (WCAG 1.4.11) */
+    --border: var(--color-slate-450);
     --muted: var(--color-slate-600);
     --text: var(--color-slate-800);
     --strong: var(--color-slate-900);
@@ -19,7 +22,8 @@
     --down: var(--color-red-800);
     --down-pill: color-mix(in oklch, var(--down) 16%, transparent);
     --amber: var(--color-amber-600);
-    --orange: var(--color-orange-500);
+    /* The volume chart's sold bars: 500, as 400 is under 3:1 on white */
+    --sold: var(--color-violet-500);
     --float-shadow: oklch(0.208 0.042 265.755 / 0.12);
     /* Behind the nav's menus on phones */
     --scrim: oklch(0.208 0.042 265.755 / 0.25);
@@ -28,13 +32,14 @@
   }
 
   .dark {
+    color-scheme: dark;
     --ground: var(--color-slate-900);
     --card: var(--color-slate-800);
     --line: var(--color-slate-700);
     --row: var(--color-slate-750);
     --inner: var(--color-slate-850);
     --deep: var(--color-slate-925);
-    --border: var(--color-slate-600);
+    --border: var(--color-slate-500);
     --muted: var(--color-slate-400);
     --text: var(--color-slate-300);
     --strong: var(--color-white);
@@ -46,7 +51,7 @@
     /* Solid: a see-through red over the blue slate turns pink, and too faint for 4.5:1 on a hovered row */
     --down-pill: oklch(0.35 0.065 27);
     --amber: var(--color-amber-400);
-    --orange: var(--color-orange-400);
+    --sold: var(--color-violet-400);
     --float-shadow: oklch(0.1 0.03 265 / 0.6);
     --scrim: oklch(0.12 0.03 265 / 0.55);
     --dot: var(--row);
