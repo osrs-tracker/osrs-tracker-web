@@ -23,6 +23,7 @@ import { formatNumberLegible } from '@app/common/format/number-format';
 import { OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
+import { announceChanges } from '@app/common/a11y/announcer';
 import { LucideSearch } from '@lucide/angular';
 
 /** Keys the combobox passes on to the listbox to move the active option */
@@ -38,7 +39,11 @@ const NAVIGATION_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageUp'
  */
 @Component({
   selector: 'item-search',
-  host: { 'class': 'relative block w-full', '(document:pointerdown)': 'closeOnPointerOutside($event)' },
+  host: {
+    'class': 'relative block w-full',
+    '(document:pointerdown)': 'closeOnPointerOutside($event)',
+    '(focusout)': 'closeOnFocusOutside($event)',
+  },
   template: `
     <form autocomplete="off" class="search-box" (submit)="submit($event)">
       <ng-content select="[leading]" />
@@ -53,10 +58,9 @@ const NAVIGATION_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageUp'
         name="query"
         autocomplete="off"
         [(value)]="query"
-        [(expanded)]="expanded"
         (keydown)="onKeydown($event)"
-        (input)="navigated.set(false)"
-        (click)="expanded.set(true)"
+        (input)="navigated.set(false); showing.set(true)"
+        (click)="showing.set(true)"
       />
 
       <button type="submit" class="button--primary search-box-button">
@@ -65,70 +69,79 @@ const NAVIGATION_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageUp'
       </button>
     </form>
 
-    <!-- Rendered by the combobox while it's expanded (browser only). Pressing inside keeps focus where it is, so the
-         input's focusout doesn't close it before a click lands. -->
+    <!-- The combobox is expanded only while it lists results, so it never claims a list it doesn't have: searching, a
+         failure and no match show here, outside its popup, and are announced. Pressing inside keeps focus where it is,
+         so the input's focusout doesn't close it before a click lands. -->
+    @if (showing() && open() && !hasResults()) {
+      <div
+        class="absolute inset-x-0 top-full z-10 mt-2 rounded-2xl bg-card border border-border shadow-float overflow-hidden"
+        (mousedown)="$event.preventDefault()"
+      >
+        @if (loading()) {
+          <div class="py-1.5" aria-busy="true">
+            <span class="sr-only">Searching…</span>
+            @for (width of skeletonWidths; track $index) {
+              <div class="flex items-center gap-3 min-h-11 px-4 py-1.5" aria-hidden="true">
+                <skeleton class="size-8 rounded-lg" />
+                <span class="flex-1 min-w-0"><skeleton class="h-4" [class]="width" /></span>
+                <skeleton class="h-3 w-14" />
+              </div>
+            }
+          </div>
+        } @else if (error()) {
+          <load-error source="item-search" message="Couldn't search items." (retry)="searchItems()" />
+        } @else {
+          <p class="p-4 text-muted">No items match “{{ searchedQuery() }}”.</p>
+        }
+      </div>
+    }
+
+    <!-- Rendered by the combobox while it's expanded (browser only) -->
     <ng-template ngComboboxPopup [combobox]="combobox">
-      @if (open()) {
+      @if (open() && hasResults()) {
         <div
           class="absolute inset-x-0 top-full z-10 mt-2 rounded-2xl bg-card border border-border shadow-float overflow-hidden"
           (mousedown)="$event.preventDefault()"
         >
-          @if (loading()) {
-            <div class="py-1.5" aria-busy="true">
-              <span class="sr-only">Searching…</span>
-              @for (width of skeletonWidths; track $index) {
-                <div class="flex items-center gap-3 min-h-11 px-4 py-1.5" aria-hidden="true">
-                  <skeleton class="size-8 rounded-lg" />
-                  <span class="flex-1 min-w-0"><skeleton class="h-4" [class]="width" /></span>
+          <div
+            #listbox="ngListbox"
+            ngListbox
+            ngComboboxWidget
+            aria-label="Items"
+            class="py-1.5 max-h-70 overflow-y-auto scroll-bar"
+            focusMode="activedescendant"
+            tabindex="-1"
+            [activeDescendant]="listbox.activeDescendant()"
+            [(value)]="selected"
+          >
+            @for (item of results(); track item.id) {
+              <a
+                ngOption
+                class="flex items-center gap-3 min-h-11 px-4 py-1.5 font-bold text-strong hover:bg-row aria-selected:bg-row"
+                [value]="item.id"
+                [label]="item.name"
+                [routerLink]="['/trackers/price', item.id]"
+                (click)="onOptionClick($event)"
+              >
+                <span class="flex items-center justify-center size-8 shrink-0" aria-hidden="true">
+                  <img class="max-w-7 max-h-7" icon alt="" [name]="item.icon" [wiki]="true" />
+                </span>
+                <span class="flex-1 min-w-0">{{ item.name }}</span>
+                @if (pricesResource.isLoading()) {
                   <skeleton class="h-3 w-14" />
-                </div>
-              }
-            </div>
-          } @else if (error()) {
-            <load-error source="item-search" message="Couldn't search items." (retry)="searchItems()" />
-          } @else if (results().length) {
-            <div
-              #listbox="ngListbox"
-              ngListbox
-              ngComboboxWidget
-              aria-label="Items"
-              class="py-1.5 max-h-70 overflow-y-auto scroll-bar"
-              focusMode="activedescendant"
-              tabindex="-1"
-              [activeDescendant]="listbox.activeDescendant()"
-              [(value)]="selected"
-            >
-              @for (item of results(); track item.id) {
-                <a
-                  ngOption
-                  class="flex items-center gap-3 min-h-11 px-4 py-1.5 font-bold text-strong hover:bg-row aria-selected:bg-row"
-                  [value]="item.id"
-                  [label]="item.name"
-                  [routerLink]="['/trackers/price', item.id]"
-                  (click)="onOptionClick($event)"
-                >
-                  <span class="flex items-center justify-center size-8 shrink-0" aria-hidden="true">
-                    <img class="max-w-7 max-h-7" icon alt="" [name]="item.icon" [wiki]="true" />
-                  </span>
-                  <span class="flex-1 min-w-0">{{ item.name }}</span>
-                  @if (pricesResource.isLoading()) {
-                    <skeleton class="h-3 w-14" />
-                  } @else if (pricesResource.error()) {
-                    <load-error
-                      compact
-                      source="item-search-prices"
-                      message="Couldn't load the price."
-                      (retry)="pricesResource.reload()"
-                    />
-                  } @else if (prices()[item.id]; as price) {
-                    <span class="text-sm font-normal text-muted tabular-nums">{{ shortPrice(price) }} gp</span>
-                  }
-                </a>
-              }
-            </div>
-          } @else {
-            <p class="p-4 text-muted">No items match “{{ searchedQuery() }}”.</p>
-          }
+                } @else if (pricesResource.error()) {
+                  <load-error
+                    compact
+                    source="item-search-prices"
+                    message="Couldn't load the price."
+                    (retry)="pricesResource.reload()"
+                  />
+                } @else if (prices()[item.id]; as price) {
+                  <span class="text-sm font-normal text-muted tabular-nums">{{ shortPrice(price) }} gp</span>
+                }
+              </a>
+            }
+          </div>
         </div>
       }
     </ng-template>
@@ -174,12 +187,28 @@ export class ItemSearch {
   /** The query of the last finished search, for the "No items match" message. */
   readonly searchedQuery = computed(() => (this.search.hasValue() ? (this.submitted()?.query ?? null) : null));
 
-  /** The combobox's state: a search opens it; Escape, focus or a press leaving the search, or clearing it close it. */
-  readonly expanded = signal(false);
+  /**
+   * Whether the dropdown shows: a search, typing or a click open it; Escape, focus or a press leaving the search, or
+   * clearing it close it.
+   */
+  readonly showing = signal(false);
   /** Whether there's something to show: while searching and once a search has finished or failed, until cleared. */
   readonly open = computed(
     () => !!this.query().trim() && (this.loading() || this.error() || this.searchedQuery() !== null),
   );
+  readonly hasResults = computed(() => !this.loading() && !this.error() && !!this.results().length);
+  /** The combobox's `expanded`: only while it shows the result list */
+  readonly listed = computed(() => this.showing() && this.open() && this.hasResults());
+
+  /** Read out when a search ends: how many items match, none, or the failure */
+  private readonly announcement = computed(() => {
+    const query = this.searchedQuery();
+    if (!this.open() || this.loading()) return null;
+    if (this.error()) return "Couldn't search items.";
+    const count = this.results().length;
+    if (!count) return `No items match “${query}”.`;
+    return `${count} ${count === 1 ? 'item matches' : 'items match'} “${query}”.`;
+  });
   /** The active option's item ID (the listbox selects the option the arrow keys reach, the first one at the start) */
   readonly selected = signal<number[]>([]);
   /** Whether the arrow keys moved the active option since the input last changed, so Enter opens it. */
@@ -203,6 +232,7 @@ export class ItemSearch {
   readonly prices = computed(() => (this.pricesResource.hasValue() ? this.pricesResource.value() : {}));
 
   private readonly listbox = viewChild<Listbox<number>>(Listbox);
+  private readonly combobox = viewChild(Combobox);
 
   constructor() {
     // Browser only: the page is cached without its query string, so the server never sees it
@@ -212,10 +242,15 @@ export class ItemSearch {
       this.searchItems();
     });
 
-    // Typing or ArrowDown expand the combobox; with nothing to show, aria-expanded must stay false
+    // Typing or ArrowDown expand the combobox before results arrive, or when there are none. Set on the combobox itself:
+    // through a two-way binding, setting it back in the same tick leaves the binding unchanged, so it never arrives
     effect(() => {
-      if (this.expanded() && !this.open()) this.expanded.set(false);
+      const combobox = this.combobox();
+      const listed = this.listed();
+      if (combobox && combobox.expanded() !== listed) combobox.expanded.set(listed);
     });
+
+    announceChanges(this.announcement);
 
     // Keep the option the arrow keys reach in view in the scrolling list (not when results arrive, which could scroll
     // the page on phones)
@@ -240,15 +275,18 @@ export class ItemSearch {
    * option when the arrow keys reached it or the results are for what's in the input, and searches otherwise.
    */
   onKeydown(event: KeyboardEvent): void {
-    if (NAVIGATION_KEYS.has(event.key)) this.navigated.set(true);
+    if (NAVIGATION_KEYS.has(event.key)) {
+      this.navigated.set(true);
+      this.showing.set(true);
+    }
+    // The combobox closes the list itself, but a message outside it too
+    if (event.key === 'Escape') this.showing.set(false);
     if (event.key !== 'Enter' || event.shiftKey || event.ctrlKey || event.altKey || event.metaKey) return;
 
     event.preventDefault();
     const [id] = this.selected();
-    const showingResults =
-      this.expanded() && this.open() && !this.loading() && !this.error() && !!this.results().length;
-    if (showingResults && id !== undefined && (this.navigated() || this.query() === this.searchedQuery())) {
-      this.expanded.set(false);
+    if (this.listed() && id !== undefined && (this.navigated() || this.query() === this.searchedQuery())) {
+      this.close();
       void this.router.navigate(['/trackers/price', id]);
     } else {
       this.searchItems();
@@ -261,12 +299,22 @@ export class ItemSearch {
    * tab or window, so the dropdown stays.
    */
   onOptionClick(event: MouseEvent): void {
-    if (!event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey) this.expanded.set(false);
+    if (!event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey) this.close();
   }
 
   /** A press outside closes the combobox, also when focus was never in the input (the Search button, `?q=`). */
   closeOnPointerOutside(event: PointerEvent): void {
-    if (!this.elementRef.nativeElement.contains(event.target as Node | null)) this.expanded.set(false);
+    if (!this.elementRef.nativeElement.contains(event.target as Node | null)) this.close();
+  }
+
+  /** Focus leaving the search closes a message; the combobox closes its list itself */
+  closeOnFocusOutside(event: FocusEvent): void {
+    if (!this.elementRef.nativeElement.contains(event.relatedTarget as Node | null)) this.showing.set(false);
+  }
+
+  private close(): void {
+    this.showing.set(false);
+    this.combobox()?.expanded.set(false);
   }
 
   searchItems(): void {
@@ -278,7 +326,7 @@ export class ItemSearch {
     }
 
     this.navigated.set(false);
-    this.expanded.set(true);
+    this.showing.set(true);
     this.submitted.set({ query });
   }
 }

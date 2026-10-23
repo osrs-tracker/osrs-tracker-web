@@ -3,6 +3,7 @@ import { Component, computed, inject, linkedSignal, PLATFORM_ID } from '@angular
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StoredNewsItem } from '@osrs-tracker/models';
+import { announceChanges } from '@app/common/a11y/announcer';
 import { newsImageUrl, OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { paging } from '@app/common/paging/paging';
 import { LastPlayedStore, parseDay } from '@app/common/storage/last-played-store';
@@ -145,7 +146,31 @@ export default class News {
     () => NEWS_CATEGORIES.find(option => option.value === this.category())?.label ?? '',
   );
 
+  /** "Game Updates posts since 1 May 2026", or "posts" without filters */
+  private readonly postsLabel = computed(() => {
+    const since = this.sinceDate();
+    const category = this.category() ? `${this.categoryLabel()} ` : '';
+    return `${category}posts${since ? ` since ${formatDate(since, 'd MMMM y', 'en-US', 'UTC')}` : ''}`;
+  });
+  readonly emptyText = computed(() => `No ${this.postsLabel()}.`);
+
+  /** Read out when a filter or "Show older posts" finishes: how many posts it shows or added, or the failure */
+  private readonly announcement = computed(() => {
+    if (this.firstPageFailed()) return "The news didn't load.";
+    if (this.olderFailed()) return "The older posts didn't load.";
+    if (!this.firstPage.hasValue() || !this.firstPage.value() || this.loadingOlder()) return null;
+
+    const olderPage = this.older.pages().at(-1);
+    if (olderPage) return `${olderPage.posts.length} older ${olderPage.posts.length === 1 ? 'post' : 'posts'} loaded.`;
+    const count = this.posts().length;
+    return count ? `Showing ${count} ${this.postsLabel()}.` : this.emptyText();
+  });
+
   readonly skeletonRows: number[] = Array.from({ length: 8 }, (_, i) => i);
+
+  constructor() {
+    announceChanges(this.announcement);
+  }
 
   pickCategory(category: string): void {
     this.category.set(category);

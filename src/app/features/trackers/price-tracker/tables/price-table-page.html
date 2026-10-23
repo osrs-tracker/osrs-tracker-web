@@ -320,18 +320,8 @@
     } @else if (view(); as view) {
       @if (view.rows.length === 0) {
         <div class="flex flex-col items-center gap-1 px-5 py-8 text-center">
-          <p class="font-bold text-strong">
-            {{ query() ? 'No items match “' + query() + '”.' : 'No items match these filters.' }}
-          </p>
-          <p class="text-sm text-muted">
-            @if (!query()) {
-              Pick a lower volume, or All items.
-            } @else if (options().volume === 'any' && options().members === 'all') {
-              Check the spelling.
-            } @else {
-              Check the spelling, or pick Any volume and All items.
-            }
-          </p>
+          <p class="font-bold text-strong">{{ emptyMessage() }}</p>
+          <p class="text-sm text-muted">{{ emptyHint() }}</p>
         </div>
       } @else {
         <div

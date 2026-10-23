@@ -1,8 +1,8 @@
-import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { DOCUMENT, Injector, Service, afterNextRender, inject } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, map, pairwise } from 'rxjs';
 import { WINDOW } from '@app/core/platform/window-token';
+import { Announcer } from '@app/common/a11y/announcer';
 
 /**
  * After a client-side navigation, moves focus to the new page's `h1`, so keyboard and screen-reader users start on the
@@ -18,6 +18,7 @@ export class RouteFocus {
   private readonly injector = inject(Injector);
   private readonly document = inject(DOCUMENT);
   private readonly window = inject(WINDOW);
+  private readonly announcer = inject(Announcer);
 
   start(): void {
     if (!this.window) return;
@@ -42,8 +43,7 @@ export class RouteFocus {
     // Focusable by script only, so it isn't a Tab stop
     if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
     target.focus({ preventScroll: true });
-    // Only for `<main>`: after a focused h1 the title would repeat the page's name. Looked up here, as it adds its live
-    // region to the page when created (on the server too)
-    if (target === main) void this.injector.get(LiveAnnouncer).announce(this.document.title);
+    // Only for `<main>`: after a focused h1 the title would repeat the page's name
+    if (target === main) this.announcer.announce(this.document.title);
   }
 }

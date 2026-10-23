@@ -52,7 +52,8 @@ holds the Angular conventions, SSR rules, deploy and release steps. Keep detail 
 - `src/app/features/<feature>/` single-feature code; `src/app/common/` shared code by theme: `ui/` the design system's
   components, `api/` the repositories (the only HTTP), `charts/` (Chart.js setup and the base chart), `format/`,
   `icon/`, `analytics/`, `storage/`, `theme/`, `seo/`, `paging/` (pages after a list's first), `player-count/` (the
-  players-online store for the nav card and the page). Lint enforces these layers.
+  players-online store for the nav card and the page), `a11y/` (`announceChanges`: screen-reader messages after a
+  search, filter or load). Lint enforces these layers.
 - `src/app/core/` app-wide plumbing: the app frame (`layout/`: nav, footer, theme toggle), interceptors (API base URL,
   loading bar, shared GET requests, SSR user agent, SSR timeout for third-party calls), routing (reuse strategy,
   resolver errors), platform (`WINDOW`, `isHumanVisitor`), the global error handler.

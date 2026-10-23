@@ -8,6 +8,10 @@
   their explanation on focus, and screen readers read it. So can the margin, profit and per-limit values in the price
   tables, which show how they add up, and the clock on an old price. Screen readers now also hear how old an old price
   is, how long ago a player in a list was last tracked, and what each table column means.
+- Screen readers now say what happened after a search, a filter or "Show older posts": how many items match, that none
+  do, or that something didn't load, in the item search, the price tables and the news. They also hear the notice when
+  the hiscores stop responding on a player's page. The item search no longer tells screen readers a list is open when it
+  only shows "No items match".
 
 ## 2026-10-21
 

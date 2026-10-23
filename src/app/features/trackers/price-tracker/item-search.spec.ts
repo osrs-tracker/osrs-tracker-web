@@ -1,8 +1,10 @@
+import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
 import { delay, of } from 'rxjs';
+import { ANNOUNCE_DELAY } from '@app/common/a11y/announcer';
 import { GTAG_TOKEN } from '@app/common/analytics/gtag-token';
 import { OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
@@ -20,6 +22,7 @@ describe('ItemSearch', () => {
   let input: HTMLInputElement;
   // Async like HTTP: the popup opens on the skeleton rows and gets its listbox once the results are in
   const searchItems = vi.fn(() => of(ITEMS).pipe(delay(0)));
+  const announce = vi.fn(() => Promise.resolve());
 
   const scrollIntoView = Element.prototype.scrollIntoView;
 
@@ -32,6 +35,7 @@ describe('ItemSearch', () => {
         provideRouter([]),
         { provide: OsrsTrackerRepo, useValue: { searchItems } },
         { provide: GTAG_TOKEN, useValue: null },
+        { provide: LiveAnnouncer, useValue: { announce } },
         { provide: OsrsPricesRepo, useValue: { getLatestPrices: () => of({ low: 1_000, high: 1_100 }) } },
       ],
     });
@@ -73,6 +77,7 @@ describe('ItemSearch', () => {
     fixture.nativeElement.remove();
     fixture.destroy();
     searchItems.mockClear();
+    announce.mockClear();
     Element.prototype.scrollIntoView = scrollIntoView;
   });
 
@@ -145,5 +150,29 @@ describe('ItemSearch', () => {
     await key('ArrowDown');
     await type('');
     expect(input.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('announces the result count', async () => {
+    await render();
+    await type('whip');
+    await key('Enter');
+    await new Promise(resolve => setTimeout(resolve, ANNOUNCE_DELAY));
+
+    expect(announce).toHaveBeenCalledExactlyOnceWith('2 items match “whip”.');
+  });
+
+  it("stays collapsed when nothing matches, as there's no list, and announces it", async () => {
+    searchItems.mockReturnValueOnce(of([] as Item[]).pipe(delay(0)));
+    await render();
+    await type('zzz');
+    await key('Enter');
+
+    expect(input.getAttribute('aria-expanded')).toBe('false');
+    expect(fixture.nativeElement.textContent).toContain('No items match “zzz”.');
+    await new Promise(resolve => setTimeout(resolve, ANNOUNCE_DELAY));
+    expect(announce).toHaveBeenCalledExactlyOnceWith('No items match “zzz”.');
+
+    await key('Escape');
+    expect(fixture.nativeElement.textContent).not.toContain('No items match');
   });
 });
