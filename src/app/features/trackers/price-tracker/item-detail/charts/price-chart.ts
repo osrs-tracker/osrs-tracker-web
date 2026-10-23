@@ -1,15 +1,17 @@
 import { formatNumber } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { Chart, ChartOptions, Point, TimeScaleOptions } from 'chart.js';
 import { fromUnixTime } from 'date-fns';
 import { BaseChart } from '@app/common/charts/base-chart';
 import { token, withAlpha } from '@app/common/charts/chart-setup';
 import { formatNumberLegible } from '@app/common/format/number-format';
 import { AveragePricesAtTime } from '@app/common/api/osrs-prices-repo';
+import { PRICE_LINES, PriceLine } from '../price-ranges';
 
 /**
  * The instant buy price as an accent line and the instant sell price as a violet one, both solid: the area between them
- * (the spread) is a light accent, the area under the sell line a light violet.
+ * (the spread) is a light accent, the area under the sell line a light violet. A hidden line's area goes with it: the
+ * buy line's then reaches down to the axis.
  */
 @Component({
   selector: 'price-chart',
@@ -17,6 +19,9 @@ import { AveragePricesAtTime } from '@app/common/api/osrs-prices-repo';
 })
 export class PriceChart extends BaseChart<'line', AveragePricesAtTime[]> {
   protected readonly type = 'line';
+
+  /** The lines' labels to leave out, from the legend */
+  readonly hiddenLines = input<ReadonlySet<PriceLine>>(new Set());
 
   protected chartOptions(): ChartOptions<'line'> {
     return {
@@ -64,26 +69,29 @@ export class PriceChart extends BaseChart<'line', AveragePricesAtTime[]> {
     (chart.options.scales!['x'] as TimeScaleOptions).time.unit =
       span > 60 * 86400 ? 'month' : span > 2 * 86400 ? 'day' : 'hour';
 
+    const [buy, sell] = PRICE_LINES;
     chart.data.datasets = [
       {
-        label: 'Instant buy',
+        label: buy,
         data: priceTimeSeries.map(price => ({ x: fromUnixTime(price.timestamp).getTime(), y: price.avgHighPrice })),
         borderColor: () => token('accent'),
         // The spread, down to the sell line
         backgroundColor: () => withAlpha(token('accent'), 0.14),
         pointBackgroundColor: () => token('accent'),
         borderWidth: 2.5,
+        hidden: this.hiddenLines().has(buy),
         fill: '+1',
         order: 0,
       },
       {
-        label: 'Instant sell',
+        label: sell,
         data: priceTimeSeries.map(price => ({ x: fromUnixTime(price.timestamp).getTime(), y: price.avgLowPrice })),
         // Violet, as the volume chart's sold bars: the same trades
         borderColor: () => token('sold'),
         backgroundColor: () => withAlpha(token('sold'), 0.14),
         pointBackgroundColor: () => token('sold'),
         borderWidth: 2.5,
+        hidden: this.hiddenLines().has(sell),
         fill: 'start',
         order: 1,
       },

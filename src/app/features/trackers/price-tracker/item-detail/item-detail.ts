@@ -6,7 +6,7 @@ import { Item } from '@osrs-tracker/models';
 import { Observable, shareReplay } from 'rxjs';
 import { Card } from '@app/common/ui/cards/card';
 import { LoadError } from '@app/common/ui/loading/load-error';
-import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
+import { Segmented } from '@app/common/ui/controls/segmented';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { StatTile } from '@app/common/ui/cards/stat-tile';
 import { StatusPanel } from '@app/common/ui/page/status-panel';
@@ -20,6 +20,7 @@ import { browseLetterOf, startingWith } from '../browse/browse-letters';
 import { PriceChart } from './charts/price-chart';
 import { ItemHeader } from './item-header';
 import {
+  binnedVolumes,
   dailyVolumes,
   hasTrades,
   itemStats,
@@ -30,26 +31,10 @@ import {
 } from './item-prices';
 import { ChartTable } from '@app/common/charts/chart-table';
 import { ChartDisplay, ChartDisplaySwitch } from '@app/common/charts/chart-display-switch';
-import { TimeBin } from '@app/common/charts/time-bins';
-import { ItemVolume } from './item-volume';
+import { ItemVolume, VolumeChartState } from './item-volume';
+import { PRICE_LINES, PRICE_RANGES, PriceLine, PriceRange, RANGE_OPTIONS } from './price-ranges';
 import { ProfitCalculator } from './profit-calculator';
 import { LucideArrowLeft, LucideArrowRight } from '@lucide/angular';
-
-type PriceRange = '1D' | '1W' | '1M' | '1Y';
-
-/**
- * The Wiki time series behind each range, and how far back the range goes. The 1W series, hourly, also feeds the
- * volume.
- */
-const PRICE_RANGES: Record<
-  PriceRange,
-  { lookback: Lookback; seconds: number; title: string; bin: TimeBin; next?: PriceRange }
-> = {
-  '1D': { lookback: '24h', seconds: 86400, title: 'day', bin: 'hour', next: '1W' },
-  '1W': { lookback: '7d', seconds: 7 * 86400, title: 'week', bin: 'day', next: '1M' },
-  '1M': { lookback: '30d', seconds: 30 * 86400, title: 'month', bin: 'day', next: '1Y' },
-  '1Y': { lookback: '1y', seconds: 365 * 86400, title: 'year', bin: 'month' },
-};
 
 /** As many days as the hourly series covers in full, today included: it ends with the last full hour, 168 hours back */
 const VOLUME_DAYS = 7;
@@ -96,12 +81,9 @@ export default class ItemDetail implements OnInit {
   });
   readonly browseStartingWith = computed(() => startingWith(this.browseLetter() ?? ''));
 
-  readonly rangeOptions: SegmentedOption<PriceRange>[] = (Object.keys(PRICE_RANGES) as PriceRange[]).map(range => ({
-    value: range,
-    label: range,
-    title: `Last ${PRICE_RANGES[range].title}`,
-  }));
+  readonly rangeOptions = RANGE_OPTIONS;
   readonly range = signal<PriceRange>('1W');
+  readonly volumeRange = signal<PriceRange>('1W');
 
   readonly latest = rxResource({
     params: () => this.item()?.id,
@@ -116,7 +98,8 @@ export default class ItemDetail implements OnInit {
   readonly latestFailed = computed(() => this.isBrowser && !!this.latest.error());
 
   /**
-   * Shared per item, so switching back and forth between ranges doesn't refetch. Browser only: the hourly series is
+   * Shared per item and between the price and volume charts, so switching back and forth between ranges doesn't
+   * refetch. Browser only: the hourly series is
    * about 20KB that SSR would wait for and embed in the page, and the chart it feeds isn't rendered on the server.
    */
   private readonly timeSeries = computed<Record<PriceRange, Observable<AveragePricesAtTime[]>> | undefined>(() => {
@@ -151,34 +134,55 @@ export default class ItemDetail implements OnInit {
   /** Never loaded on the server, so it renders as loading there, not as a range without trades */
   readonly priceSeriesLoading = computed(() => !this.isBrowser || this.priceSeries.isLoading());
 
+  readonly volumeSeries = rxResource({
+    params: () => this.timeSeries()?.[this.volumeRange()],
+    stream: ({ params: series$ }) => series$,
+    defaultValue: [],
+  });
+  readonly volumeBins = computed(() => {
+    const { seconds, bin } = PRICE_RANGES[this.volumeRange()];
+    return binnedVolumes(this.volumeSeries.hasValue() ? this.volumeSeries.value() : [], new Date(), seconds, bin);
+  });
+  readonly volumeChart = computed<VolumeChartState>(() => {
+    if (!this.isBrowser || this.volumeSeries.isLoading()) return 'loading';
+    if (!this.volumeSeries.error()) return 'ready';
+    // The same series as the price chart's, which says so with a retry
+    return this.priceSeries.error() && this.range() === this.volumeRange() ? 'not loaded' : 'failed';
+  });
+
   readonly priceChartData = computed(() => {
     const since = Date.now() / 1000 - PRICE_RANGES[this.range()].seconds;
     return this.priceSeries.hasValue() ? this.priceSeries.value().filter(price => price.timestamp >= since) : [];
   });
   readonly priceChartLabel = computed(() => priceChartSummary(this.priceChartData(), this.rangeTitle()));
-  /** The legend: each line's change over the range, from its first trade to its last */
+  /** Lines hidden from the price chart and table by their legend entry; one always stays */
+  readonly hiddenLines = signal<ReadonlySet<PriceLine>>(new Set());
+  /** The legend: each line's change over the range, from its first trade to its last, and whether it's shown */
   readonly priceLegend = computed(() => {
     const prices = this.priceChartData();
+    const hidden = this.hiddenLines();
     return [
       {
-        name: 'Instant buy',
+        name: PRICE_LINES[0],
         swatch: 'border-accent bg-accent/14',
         change: priceChange(prices.map(price => price.avgHighPrice)),
       },
       {
-        name: 'Instant sell',
+        name: PRICE_LINES[1],
         swatch: 'border-sold bg-sold/14',
         change: priceChange(prices.map(price => price.avgLowPrice)),
       },
-    ];
+    ].map(line => ({ ...line, on: !hidden.has(line.name), only: hidden.size > 0 && !hidden.has(line.name) }));
   });
   readonly priceDisplay = signal<ChartDisplay>('chart');
   readonly priceTable = computed(() => {
     const { bin, title } = PRICE_RANGES[this.range()];
+    // The time, then a column per shown line
+    const shown = (_: unknown, i: number) => i === 0 || !this.hiddenLines().has(PRICE_LINES[i - 1]);
     return {
       caption: `Average prices per ${bin} over the last ${title}, newest first, in your time zone`,
-      columns: [bin[0].toUpperCase() + bin.slice(1), 'Instant buy (gp)', 'Instant sell (gp)'],
-      rows: priceTableRows(this.priceChartData(), bin),
+      columns: [bin[0].toUpperCase() + bin.slice(1), ...PRICE_LINES.map(line => `${line} (gp)`)].filter(shown),
+      rows: priceTableRows(this.priceChartData(), bin).map(row => ({ ...row, cells: row.cells.filter(shown) })),
     };
   });
   readonly rangeTitle = computed(() => PRICE_RANGES[this.range()].title);
@@ -235,10 +239,26 @@ export default class ItemDetail implements OnInit {
     this.selectRange(range);
   }
 
-  /** One retry for both series, as one failure shows once, in the chart's place */
+  /** Shows or hides a price line; the last one shown stays */
+  toggleLine(line: PriceLine): void {
+    const hidden = new Set(this.hiddenLines());
+    if (hidden.has(line)) hidden.delete(line);
+    else if (hidden.size < PRICE_LINES.length - 1) hidden.add(line);
+    else return;
+    this.hiddenLines.set(hidden);
+    this.analyticsService.trackOption('item_price_line', `${line}: ${hidden.has(line) ? 'hidden' : 'shown'}`);
+  }
+
+  /** One retry for every series, as one failure shows once, in the chart's place */
   retryTimeSeries(): void {
     if (this.priceSeries.error()) this.priceSeries.reload();
+    this.retryVolume();
+  }
+
+  /** The volume card's retries: its summary's series, and its chart's */
+  retryVolume(): void {
     if (this.hourly.error()) this.hourly.reload();
+    if (this.volumeSeries.error()) this.volumeSeries.reload();
   }
 
   searchItem(query: string): void {

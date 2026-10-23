@@ -1,3 +1,10 @@
+## 2026-10-24
+
+- An item's volume card, now called "Trade volume", has its own range beside the table switch, like the price chart: the
+  last day per hour, the last week or month per day (UTC), or the last year per month, instead of only the last 7 days.
+  Its numbers above the bars still cover today and the past week. Clicking an entry of the price chart's legend hides or
+  shows that line, and its column in the table, to look at one price on its own; one line always stays.
+
 ## 2026-10-23
 
 ### Keyboard and screen readers

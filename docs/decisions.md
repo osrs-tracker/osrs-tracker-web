@@ -552,6 +552,11 @@ Choices that look like accidents without their context: what was decided, why, a
   14 days), which the page loads anyway for the 1W price range: volume-weighted per UTC day, which matches `/24h`
   exactly. The item lists still use `/24h` (in the browser, shared between rows).
 - **Revisit:** if the Wiki shortens the `7d` series or changes its step, or the numbers drift from the lists.
+- **Update 2026-10-24:** the volume chart has its own range, with the price chart's series (shared, so neither fetches
+  twice): per hour of the visitor's for 1D, per UTC day for 1W and 1M (the `30d` series' 6-hour steps start at UTC
+  midnight), per UTC month for 1Y (`binnedVolumes` in `item-prices.ts`). The first bin is the first the range covers
+  from its start. The `1y` series lags a day or two, so its last month is short by those days. The summary above the
+  bars (today, the week's daily average) stays on the hourly series.
 
 ## GE tax rules are hard-coded (2026-10-07)
 
