@@ -50,6 +50,7 @@ const NAVIGATION_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageUp'
       <label for="item-search" class="sr-only">Item name</label>
       <input
         #combobox="ngCombobox"
+        #searchInput
         ngCombobox
         id="item-search"
         type="search"
@@ -89,7 +90,13 @@ const NAVIGATION_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageUp'
             }
           </div>
         } @else if (error()) {
-          <load-error source="item-search" message="Couldn't search items." (retry)="searchItems()" />
+          <load-error
+            source="item-search"
+            message="Couldn't search items."
+            [error]="search.error()"
+            [retryFocus]="searchInput"
+            (retry)="searchItems()"
+          />
         } @else {
           <p class="p-4 text-muted">No items match “{{ searchedQuery() }}”.</p>
         }

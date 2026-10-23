@@ -1,5 +1,17 @@
 import { DatePipe, formatDate, isPlatformBrowser } from '@angular/common';
-import { Component, computed, inject, linkedSignal, PLATFORM_ID } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  DOCUMENT,
+  effect,
+  ElementRef,
+  inject,
+  Injector,
+  linkedSignal,
+  PLATFORM_ID,
+  viewChild,
+} from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StoredNewsItem } from '@osrs-tracker/models';
@@ -50,7 +62,12 @@ export default class News {
   private readonly lastPlayedStore = inject(LastPlayedStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly document = inject(DOCUMENT);
+  private readonly injector = inject(Injector);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
+  private readonly dayPicker = viewChild.required(DayPicker);
 
   readonly categories = NEWS_CATEGORIES;
   /** Any day from before the first Old School post up to today */
@@ -169,8 +186,16 @@ export default class News {
 
   readonly skeletonRows: number[] = Array.from({ length: 8 }, (_, i) => i);
 
+  /** Where focus was when "Show older posts" was pressed, to move on to the first post it adds, or to Try again */
+  private olderFocus: Element | null = null;
+
   constructor() {
     announceChanges(this.announcement);
+    effect(() => {
+      if (this.older.loading()) return;
+      const link = this.older.failed() ? undefined : this.older.pages().at(-1)?.posts[0]?.link;
+      afterNextRender(() => this.focusAfterOlder(link), { injector: this.injector });
+    });
   }
 
   pickCategory(category: string): void {
@@ -187,11 +212,49 @@ export default class News {
     this.updateQuery();
   }
 
+  /** The ✕ removes itself: focus goes to the day picker beside it */
+  clearDay(): void {
+    this.pickDay(null);
+    this.dayPicker().focus();
+  }
+
+  /** The button goes with the empty message: focus goes to the category control shown (a switch, or the dropdown) */
+  showEveryCategory(): void {
+    this.pickCategory('');
+    afterNextRender(
+      () => {
+        const host = this.elementRef.nativeElement;
+        const option = host.querySelector<HTMLElement>('segmented [aria-checked="true"]');
+        option?.focus();
+        if (this.document.activeElement !== option) host.querySelector('select')?.focus();
+      },
+      { injector: this.injector },
+    );
+  }
+
   showOlder(): void {
     const before = this.next();
     if (!before || this.loadingOlder()) return;
 
+    this.olderFocus = this.document.activeElement;
     this.older.load({ before, category: this.category() });
+  }
+
+  /**
+   * After a page loads, focuses the first post it added (`link`), or Try again when it failed, if focus is still where
+   * "Show older posts" left it: on the button, or on `<body>` once the button is gone.
+   */
+  private focusAfterOlder(link: string | undefined): void {
+    const focus = this.olderFocus;
+    this.olderFocus = null;
+    const active = this.document.activeElement;
+    if (!focus || (active !== focus && active !== this.document.body)) return;
+
+    const host = this.elementRef.nativeElement;
+    const target = link
+      ? [...host.querySelectorAll<HTMLElement>('a[href]')].find(anchor => anchor.getAttribute('href') === link)
+      : host.querySelector<HTMLElement>('load-error button');
+    target?.focus();
   }
 
   /** Puts the filters in the link, replacing the history entry and keeping the scroll position */

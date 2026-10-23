@@ -44,6 +44,7 @@
       class="block px-5 py-4"
       source="player-compare"
       message="Couldn't load the history."
+      [error]="history.error()"
       (retry)="history.reload()"
     />
   } @else if (newer()) {

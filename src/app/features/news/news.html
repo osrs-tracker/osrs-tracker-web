@@ -62,7 +62,7 @@
           type="button"
           class="flex items-center justify-center size-7 shrink-0 rounded-full hover:bg-accent/20"
           aria-label="Show every post again"
-          (click)="pickDay(null)"
+          (click)="clearDay()"
         >
           <svg lucideX class="size-3.5" strokeWidth="3" />
         </button>
@@ -71,7 +71,12 @@
   </div>
 
   @if (firstPageFailed()) {
-    <load-error source="news-archive" message="The news didn't load." (retry)="firstPage.reload()" />
+    <load-error
+      source="news-archive"
+      message="The news didn't load."
+      [error]="firstPage.error()"
+      (retry)="firstPage.reload()"
+    />
   } @else if (firstPage.hasValue() && firstPage.value()) {
     @for (month of months(); track month.key) {
       <section [attr.aria-labelledby]="'month-' + month.key">
@@ -129,7 +134,7 @@
       <div class="flex flex-col items-center gap-4 px-6 py-10 rounded-2xl bg-card text-center">
         <p>{{ emptyText() }}</p>
         @if (category()) {
-          <button type="button" class="button--default button--rounded" (click)="pickCategory('')">
+          <button type="button" class="button--default button--rounded" (click)="showEveryCategory()">
             Show every category
           </button>
         }
@@ -139,10 +144,11 @@
     @if (olderFailed()) {
       <load-error source="news-archive-older" message="The older posts didn't load." (retry)="showOlder()" />
     } @else if (hasOlder()) {
+      <!-- Busy, not disabled, while loading: disabling the focused button would drop focus to <body> -->
       <button
         type="button"
-        class="button--default button--rounded self-center px-8 disabled:opacity-60"
-        [disabled]="loadingOlder()"
+        class="button--default button--rounded self-center px-8 aria-disabled:opacity-60 aria-disabled:cursor-default"
+        [attr.aria-disabled]="loadingOlder() || null"
         (click)="showOlder()"
       >
         {{ loadingOlder() ? 'Loading older posts…' : 'Show older posts' }}

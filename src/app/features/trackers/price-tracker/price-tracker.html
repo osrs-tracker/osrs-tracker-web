@@ -24,6 +24,7 @@
       emptyText="No items looked up yet."
       errorSource="recent-item-lookups"
       errorText="Global lookups didn't load."
+      [error]="recentItemLookups.error()"
       (retry)="recentItemLookups.reload()"
     >
       <info-tooltip info label="About the price change">
