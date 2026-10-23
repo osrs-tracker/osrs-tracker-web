@@ -1,9 +1,10 @@
 import { formatNumber } from '@angular/common';
-import { DOCUMENT, Component, computed, inject, input, signal } from '@angular/core';
+import { DOCUMENT, Component, computed, inject, input } from '@angular/core';
 import { Chart, ChartOptions, Point } from 'chart.js';
 import { merge } from 'chart.js/helpers';
 import { BaseChart } from '@app/common/charts/base-chart';
 import { ChartTable } from '@app/common/charts/chart-table';
+import { ChartDisplay } from '@app/common/charts/chart-display-switch';
 import { LOCAL_ICONS } from '@app/common/icon/local-icons-token';
 import { chartColors } from '../colors/chart-colors';
 import { Gains } from '../player-summary';
@@ -24,8 +25,8 @@ const CHIPS_SHOWN = 8;
 @Component({
   selector: 'activity-chart',
   template: `
-    <!-- While the table shows, the card grows (player-chart) and the plot keeps the height it had -->
-    <div #plot class="relative h-55 lg:h-auto lg:grow lg:min-h-35" [style.height.px]="plotHeight()">
+    <!-- Hidden, not removed, while the table shows: the chart is created once, on its canvas -->
+    <div class="relative h-55 lg:h-auto lg:grow lg:min-h-35" [class.hidden]="tableShown()">
       <canvas #chart [class.invisible]="!series().length"></canvas>
       @if (!series().length) {
         <p class="absolute inset-0 flex items-center justify-center px-4 text-center text-base text-muted">
@@ -35,6 +36,14 @@ const CHIPS_SHOWN = 8;
         </p>
       }
     </div>
+    @if (tableShown()) {
+      <chart-table
+        class="h-55 lg:h-auto lg:grow lg:min-h-35"
+        [caption]="tableCaption()"
+        [columns]="tableColumns()"
+        [rows]="tableRows()"
+      />
+    }
     @if (legendItems().length) {
       <chart-legend
         class="mt-4"
@@ -43,15 +52,6 @@ const CHIPS_SHOWN = 8;
         [items]="legendItems()"
         [collapseAfter]="CHIPS_SHOWN"
         (toggled)="toggle($event)"
-      />
-    }
-    @if (series().length) {
-      <chart-table
-        class="block mt-4"
-        [caption]="tableCaption()"
-        [columns]="tableColumns()"
-        [rows]="tableRows()"
-        (openChange)="plotHeight.set($event ? plot.offsetHeight : undefined)"
       />
     }
   `,
@@ -88,7 +88,10 @@ export class ActivityChart extends BaseChart<'bar', Gains[]> {
 
   /** What the data table holds, e.g. "Boss kills per day, last 30 days, newest first" */
   readonly tableCaption = input.required<string>();
-  readonly plotHeight = signal<number | undefined>(undefined);
+  /** Set by the card's Chart/Table switch (player-chart) */
+  readonly display = input<ChartDisplay>('chart');
+  /** The table in the plot's place; with nothing gained, the plot's message stays */
+  readonly tableShown = computed(() => this.display() === 'table' && !!this.series().length);
   readonly tableColumns = computed(() => ['Day', ...this.series().map(({ name }) => name)]);
   readonly tableRows = computed(() => logTableRows(this.series()));
 

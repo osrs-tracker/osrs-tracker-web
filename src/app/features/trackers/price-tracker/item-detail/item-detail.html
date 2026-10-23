@@ -39,9 +39,12 @@
       }
     </div>
 
-    <article card [subtitle]="priceChartEmpty() ? undefined : priceTakeaway()">
+    <article card>
       <h2 #priceHeading title tabindex="-1">Price</h2>
-      <segmented actions label="Range" [options]="rangeOptions" [value]="range()" (valueChange)="selectRange($event)" />
+      <div actions class="flex flex-wrap gap-2">
+        <segmented label="Range" [options]="rangeOptions" [value]="range()" (valueChange)="selectRange($event)" />
+        <chart-display-switch chart="item_price" [(display)]="priceDisplay" />
+      </div>
 
       <!-- The one message for a failed time series: the change, the volume tile and the volume card only mark it -->
       @if (priceSeries.error()) {
@@ -68,6 +71,9 @@
             </button>
           }
         </div>
+      } @else if (priceDisplay() === 'table') {
+        @let table = priceTable();
+        <chart-table class="h-70" [caption]="table.caption" [columns]="table.columns" [rows]="table.rows" />
       } @else {
         @defer {
           <price-chart class="block h-70" role="img" [attr.aria-label]="priceChartLabel()" [data]="priceChartData()" />
@@ -76,19 +82,31 @@
         }
       }
 
-      <div class="flex flex-wrap gap-5 mt-4 text-sm" aria-hidden="true">
-        <!-- each swatch is its line over its area: the spread above the sell line, then the area under it -->
-        <span class="flex items-center gap-2"
-          ><span class="w-4.5 h-3 border-t-3 border-accent bg-accent/14"></span>Instant buy</span
-        >
-        <span class="flex items-center gap-2"
-          ><span class="w-4.5 h-3 border-t-3 border-sold bg-sold/14"></span>Instant sell</span
-        >
-      </div>
-      @if (!priceSeries.error() && !priceSeriesLoading() && !priceChartEmpty()) {
-        @let table = priceTable();
-        <chart-table class="block mt-4" [caption]="table.caption" [columns]="table.columns" [rows]="table.rows" />
-      }
+      <!-- Each line's change over the range, in both views; each swatch is its line over its area. Without a chart it's
+      only a key, hidden from screen readers -->
+      @let charted = !priceSeries.error() && !priceSeriesLoading() && !priceChartEmpty();
+      <ul
+        class="flex flex-wrap gap-x-6 gap-y-2 mt-4 text-sm"
+        [attr.aria-label]="charted ? 'Change over the last ' + rangeTitle() : null"
+        [attr.aria-hidden]="charted ? null : true"
+      >
+        @for (line of priceLegend(); track line.name) {
+          <li class="flex items-center gap-2">
+            <span class="w-4.5 h-3 border-t-3" [class]="line.swatch" aria-hidden="true"></span>
+            {{ line.name }}
+            @if (line.change; as change) {
+              <span
+                class="font-bold tabular-nums"
+                [class]="change.tone === 'up' ? 'text-up' : change.tone === 'down' ? 'text-down' : 'text-muted'"
+                >{{ change.percent }}</span
+              >
+              <span class="text-muted tabular-nums"
+                >{{ change.tone === 'flat' ? 'at' : 'to' }} {{ change.last }} gp</span
+              >
+            }
+          </li>
+        }
+      </ul>
     </article>
 
     <div class="grid lg:grid-cols-2 gap-6">

@@ -8,6 +8,7 @@ import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { PlayerCountStore } from '@app/common/player-count/player-count-store';
 import { ChartTable, ChartTableRow } from '@app/common/charts/chart-table';
+import { ChartDisplay, ChartDisplaySwitch } from '@app/common/charts/chart-display-switch';
 import { binByTime, TimeBin, timeBinLabel } from '@app/common/charts/time-bins';
 import { Card } from '@app/common/ui/cards/card';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
@@ -42,7 +43,10 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
   template: `
     <article card [attr.aria-busy]="switching() || null">
       <h2 title>History</h2>
-      <segmented actions label="Range" [options]="rangeOptions" [value]="range()" (valueChange)="selectRange($event)" />
+      <div actions class="flex flex-wrap gap-2">
+        <segmented label="Range" [options]="rangeOptions" [value]="range()" (valueChange)="selectRange($event)" />
+        <chart-display-switch chart="player_count" [(display)]="display" />
+      </div>
 
       <!-- Another range's chart stays while this one loads, dimmed after a moment so a quick load doesn't flicker -->
       <div [class]="switching() ? 'opacity-50 transition-opacity delay-300' : ''">
@@ -68,7 +72,10 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
         } @else if (loading()) {
           <skeleton class="block h-56 sm:h-70 w-full rounded-xl" />
         } @else if (series(); as series) {
-          @if (charted()) {
+          @if (charted() && display() === 'table') {
+            @let table = dataTable();
+            <chart-table class="h-56 sm:h-70" [caption]="table.caption" [columns]="table.columns" [rows]="table.rows" />
+          } @else if (charted()) {
             @defer {
               <player-count-chart
                 class="block h-56 sm:h-70"
@@ -95,8 +102,9 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
         }
 
         <div class="flex flex-wrap items-center justify-between gap-x-5 gap-y-2 mt-4 text-sm">
+          <!-- The table's columns name what the lines are; kept invisible so the card keeps its height -->
           @if (charted()) {
-            <div class="flex flex-wrap gap-x-5 gap-y-2" aria-hidden="true">
+            <div class="flex flex-wrap gap-x-5 gap-y-2" [class.invisible]="display() === 'table'" aria-hidden="true">
               <span class="flex items-center gap-2"><span class="w-4.5 h-0.75 bg-accent"></span>{{ lineName() }}</span>
               @if (daily()) {
                 <span class="flex items-center gap-2"
@@ -113,15 +121,11 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
             >
           }
         </div>
-        @if (charted()) {
-          @let table = dataTable();
-          <chart-table class="block mt-4" [caption]="table.caption" [columns]="table.columns" [rows]="table.rows" />
-        }
       </div>
     </article>
   `,
   host: { class: 'block' },
-  imports: [Card, ChartTable, LoadError, PlayerCountChart, Segmented, Skeleton],
+  imports: [Card, ChartDisplaySwitch, ChartTable, LoadError, PlayerCountChart, Segmented, Skeleton],
 })
 export class PlayerCountHistory {
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
@@ -137,6 +141,7 @@ export class PlayerCountHistory {
     title: RANGES[range].title,
   }));
   readonly range = signal<PlayerCountRange>('24h');
+  readonly display = signal<ChartDisplay>('chart');
 
   /** Ranges loaded since the last refresh, shown again without a request; each refresh clears them */
   private readonly loaded = new Map<PlayerCountRange, PlayerCountPoint[]>();

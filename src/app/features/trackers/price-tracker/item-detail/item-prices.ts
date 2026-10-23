@@ -3,7 +3,7 @@ import { Item } from '@osrs-tracker/models';
 import { DAY, utcDayStart } from '../utc-day';
 import { geTax, isGeTaxExempt } from './ge-tax';
 import { AveragePricesAtTime, LatestPrices } from '@app/common/api/osrs-prices-repo';
-import { formatWhole, formatWholeCompact } from '@app/common/format/number-format';
+import { formatSign, formatWhole, formatWholeCompact } from '@app/common/format/number-format';
 import { ChartTableRow } from '@app/common/charts/chart-table';
 import { binByTime, TimeBin, timeBinLabel } from '@app/common/charts/time-bins';
 
@@ -210,27 +210,28 @@ export function priceChartSummary(prices: AveragePricesAtTime[], period: string)
   ].join(' ');
 }
 
-const percent = new Intl.NumberFormat('en-US', { style: 'percent', maximumFractionDigits: 1 });
+const tenthsFormat = new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
-/**
- * The price chart's finding in one sentence, shown above it: how instant buy (instant sell when nothing was bought)
- * moved from the range's first trade to its last, e.g. "Instant buy up 4.2% over the last week, to 1,734,512 gp".
- */
-export function priceTakeaway(prices: AveragePricesAtTime[], period: string): string | undefined {
-  for (const [name, values] of [
-    ['Instant buy', prices.map(price => price.avgHighPrice)],
-    ['Instant sell', prices.map(price => price.avgLowPrice)],
-  ] as const) {
-    const traded = values.filter(Boolean);
-    if (!traded.length) continue;
-    const [first, last] = [traded[0], traded.at(-1)!];
-    const change = (last - first) / first;
-    // under 0.05% reads as 0% anyway
-    if (Math.abs(change) < 0.0005) return `${name} unchanged over the last ${period}, at ${formatWhole(last)} gp`;
-    const direction = change > 0 ? 'up' : 'down';
-    return `${name} ${direction} ${percent.format(Math.abs(change))} over the last ${period}, to ${formatWhole(last)} gp`;
-  }
-  return undefined;
+/** How a price line moved over the chart's range, for its legend entry: "−34.5%" to "3,932,042,211" gp */
+export interface PriceChange {
+  percent: string;
+  /** `flat` when the change reads 0.0%, as in the item lists */
+  tone: 'up' | 'down' | 'flat';
+  last: string;
+}
+
+/** From the line's first trade to its last, skipping points without trades; nothing when it has none */
+export function priceChange(values: number[]): PriceChange | undefined {
+  const traded = values.filter(Boolean);
+  if (!traded.length) return undefined;
+  const [first, last] = [traded[0], traded.at(-1)!];
+  const tenths = Math.round(((last - first) / first) * 1000);
+  const tone = tenths > 0 ? 'up' : tenths < 0 ? 'down' : 'flat';
+  return {
+    percent: `${formatSign(tenths, 'exceptZero')}${tenthsFormat.format(Math.abs(tenths) / 10)}%`,
+    tone,
+    last: formatWhole(last),
+  };
 }
 
 /**

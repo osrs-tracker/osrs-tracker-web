@@ -1,8 +1,9 @@
 import { formatDate } from '@angular/common';
-import { Component, computed, input, output } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { ChartTable, ChartTableRow } from '@app/common/charts/chart-table';
+import { ChartDisplay, ChartDisplaySwitch } from '@app/common/charts/chart-display-switch';
 import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
 import { formatWhole } from '@app/common/format/number-format';
 import { VolumeChart } from './charts/volume-chart';
@@ -20,14 +21,9 @@ interface VolumeSummary {
   template: `
     <div class="flex flex-wrap items-center justify-between gap-2 min-h-14 px-5 py-1.5 border-b border-line">
       <h2 class="text-xl/6 font-bold text-strong">Daily volume</h2>
-      <div class="flex flex-wrap gap-x-3.5 gap-y-1 text-sm">
-        <span class="flex items-center gap-1.5">
-          <span class="size-2.5 rounded bg-accent" aria-hidden="true"></span>Bought (instant buy)
-        </span>
-        <span class="flex items-center gap-1.5">
-          <span class="size-2.5 rounded bg-sold" aria-hidden="true"></span>Sold (instant sell)
-        </span>
-      </div>
+      @if (!error()) {
+        <chart-display-switch chart="item_volume" bars [(display)]="display" />
+      }
     </div>
 
     @if (error()) {
@@ -65,6 +61,8 @@ interface VolumeSummary {
           <p class="absolute inset-0 flex items-center justify-center px-5 text-center font-bold text-strong">
             No trades in the last {{ volumes().length }} days
           </p>
+        } @else if (display() === 'table') {
+          <chart-table class="absolute inset-0" [caption]="tableCaption()" [columns]="TABLE_COLUMNS" [rows]="table()" />
         } @else {
           @defer {
             <volume-chart class="absolute inset-0" aria-hidden="true" [data]="volumes()" />
@@ -74,17 +72,25 @@ interface VolumeSummary {
         }
       </div>
       <!-- The chart's ends, kept while there's no chart so the card keeps its height -->
-      <div class="flex justify-between px-5 pb-4 text-sm text-muted" [class.invisible]="notLoaded() || empty()">
+      <div
+        class="flex justify-between px-5 text-sm text-muted"
+        [class.invisible]="notLoaded() || empty() || display() === 'table'"
+      >
         <span>{{ firstDay() }}</span>
         <span>Today (UTC)</span>
       </div>
-      @if (!loading() && !notLoaded() && !empty()) {
-        <chart-table class="block mx-5 mb-4" [caption]="tableCaption()" [columns]="TABLE_COLUMNS" [rows]="table()" />
-      }
+      <div class="flex flex-wrap gap-x-5 gap-y-1 px-5 pt-3 pb-4 text-sm">
+        <span class="flex items-center gap-1.5">
+          <span class="size-2.5 rounded bg-accent" aria-hidden="true"></span>Bought (instant buy)
+        </span>
+        <span class="flex items-center gap-1.5">
+          <span class="size-2.5 rounded bg-sold" aria-hidden="true"></span>Sold (instant sell)
+        </span>
+      </div>
     }
   `,
   host: { class: 'flex flex-col rounded-2xl bg-card overflow-hidden' },
-  imports: [ChartTable, InfoTooltip, LoadError, Skeleton, VolumeChart],
+  imports: [ChartDisplaySwitch, ChartTable, InfoTooltip, LoadError, Skeleton, VolumeChart],
 })
 export class ItemVolume {
   /** Oldest first, today (so far) last */
@@ -96,6 +102,8 @@ export class ItemVolume {
   readonly notLoaded = input(false);
 
   readonly retry = output();
+
+  readonly display = signal<ChartDisplay>('chart');
 
   readonly summary = computed<VolumeSummary[]>(() => {
     const volumes = this.volumes();

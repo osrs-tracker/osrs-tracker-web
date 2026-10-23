@@ -35,13 +35,14 @@
   second, and a change, such as switching the period, moves into place in a third of a second. When your device is set
   to reduce motion they don't animate at all, and changing the setting takes effect without a reload. Escape now closes
   a chart's hover details.
-- Every chart now has "Show the data" under it, which opens its numbers as a table, newest first: an item's prices (per
-  hour, day or month, by the range) and daily volume, Players online's history, and a player's XP and activity charts
-  (per day). Screen readers can read them too, instead of only the summary they had before. Above the price chart, a
-  line now says how the instant buy price moved over the range, such as "Instant buy down 2.9% over the last week, to
-  757,526 gp". The price chart's instant sell line is now violet and solid, the same colour as the sold bars of the
-  volume chart, with violet shading under it and green shading between the two lines, so the gap between buying and
-  selling stands out.
+- Every chart now has a chart and table switch beside its period, which shows its numbers as a table in the chart's
+  place, newest first: an item's prices (per hour, day or month, by the range) and daily volume, Players online's
+  history, and a player's XP and activity charts (per day). Screen readers can read them too, instead of only the
+  summary they had before. Under the price chart, the legend now says how each price moved over the range, such as
+  "Instant buy −2.9% to 757,526 gp", in the table view too. The price chart's instant sell line is now violet and solid,
+  the same colour as the sold bars of the volume chart, with violet shading under it and green shading between the two
+  lines, so the gap between buying and selling stands out. A player's chart card is now titled "XP", as the line under
+  it already says what's shown.
 - On Players online, switching the history's range keeps the chart in place until the next one is ready, instead of
   flashing an empty placeholder, and a range you already opened comes back at once. The chart now starts at 0 players,
   so the shaded area's height matches the count. The year and all-time charts leave out today and the first day of

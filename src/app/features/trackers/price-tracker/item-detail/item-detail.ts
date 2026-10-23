@@ -24,11 +24,12 @@ import {
   hasTrades,
   itemStats,
   priceChartSummary,
+  priceChange,
   priceTableRows,
-  priceTakeaway,
   yesterdayAverageSellPrice,
 } from './item-prices';
 import { ChartTable } from '@app/common/charts/chart-table';
+import { ChartDisplay, ChartDisplaySwitch } from '@app/common/charts/chart-display-switch';
 import { TimeBin } from '@app/common/charts/time-bins';
 import { ItemVolume } from './item-volume';
 import { ProfitCalculator } from './profit-calculator';
@@ -58,6 +59,7 @@ const VOLUME_DAYS = 7;
   templateUrl: './item-detail.html',
   imports: [
     RouterLink,
+    ChartDisplaySwitch,
     ChartTable,
     Card,
     LoadError,
@@ -154,7 +156,23 @@ export default class ItemDetail implements OnInit {
     return this.priceSeries.hasValue() ? this.priceSeries.value().filter(price => price.timestamp >= since) : [];
   });
   readonly priceChartLabel = computed(() => priceChartSummary(this.priceChartData(), this.rangeTitle()));
-  readonly priceTakeaway = computed(() => priceTakeaway(this.priceChartData(), this.rangeTitle()));
+  /** The legend: each line's change over the range, from its first trade to its last */
+  readonly priceLegend = computed(() => {
+    const prices = this.priceChartData();
+    return [
+      {
+        name: 'Instant buy',
+        swatch: 'border-accent bg-accent/14',
+        change: priceChange(prices.map(price => price.avgHighPrice)),
+      },
+      {
+        name: 'Instant sell',
+        swatch: 'border-sold bg-sold/14',
+        change: priceChange(prices.map(price => price.avgLowPrice)),
+      },
+    ];
+  });
+  readonly priceDisplay = signal<ChartDisplay>('chart');
   readonly priceTable = computed(() => {
     const { bin, title } = PRICE_RANGES[this.range()];
     return {

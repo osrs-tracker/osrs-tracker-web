@@ -10,7 +10,7 @@ import {
   itemStats,
   priceChartSummary,
   priceTableRows,
-  priceTakeaway,
+  priceChange,
   yesterdayAverageSellPrice,
 } from './item-prices';
 
@@ -214,29 +214,28 @@ describe('hasTrades', () => {
   });
 });
 
-describe('priceTakeaway', () => {
-  const point = (timestamp: number, avgHighPrice: number | null, avgLowPrice: number | null) =>
-    ({ timestamp, avgHighPrice, avgLowPrice, highPriceVolume: 1, lowPriceVolume: 1 }) as AveragePricesAtTime;
-
-  it('moves instant buy from its first trade to its last, skipping points without trades', () => {
-    const prices = [point(1, null, 900), point(2, 1_000, 900), point(3, 1_042, null), point(4, null, 950)];
-    expect(priceTakeaway(prices, 'week')).toBe('Instant buy up 4.2% over the last week, to 1,042 gp');
-    expect(priceTakeaway([point(1, 1_000, 1), point(2, 971, 1)], 'day')).toBe(
-      'Instant buy down 2.9% over the last day, to 971 gp',
-    );
+describe('priceChange', () => {
+  it('moves from the first trade to the last, skipping points without trades', () => {
+    expect(priceChange([0, 1_000, 1_042, 0])).toEqual({ percent: '+4.2%', tone: 'up', last: '1,042' });
+    expect(priceChange([6_000_000_000, 3_932_042_211])).toEqual({
+      percent: '−34.5%',
+      tone: 'down',
+      last: '3,932,042,211',
+    });
   });
 
-  it('calls a change under 0.05% unchanged', () => {
-    expect(priceTakeaway([point(1, 100_000, 1), point(2, 100_040, 1)], 'month')).toBe(
-      'Instant buy unchanged over the last month, at 100,040 gp',
-    );
+  it('groups the digits of a large change', () => {
+    expect(priceChange([1, 1_000])?.percent).toBe('+99,900.0%');
   });
 
-  it('falls back to instant sell when nothing was bought, and to nothing without trades', () => {
-    expect(priceTakeaway([point(1, null, 200), point(2, null, 100)], 'year')).toBe(
-      'Instant sell down 50% over the last year, to 100 gp',
-    );
-    expect(priceTakeaway([point(1, null, null)], 'year')).toBeUndefined();
+  it('is flat when the change reads 0.0%', () => {
+    expect(priceChange([100_000, 100_040])).toEqual({ percent: '0.0%', tone: 'flat', last: '100,040' });
+    expect(priceChange([100_000, 99_960])).toEqual({ percent: '0.0%', tone: 'flat', last: '99,960' });
+  });
+
+  it('is nothing without trades', () => {
+    expect(priceChange([0, 0])).toBeUndefined();
+    expect(priceChange([])).toBeUndefined();
   });
 });
 
