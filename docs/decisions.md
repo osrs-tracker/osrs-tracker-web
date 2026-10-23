@@ -2,6 +2,14 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## Pixel icons in fixed boxes have no `width` and `height` (2026-10-23)
+
+- **Context:** the UI review (osrs-tracker/osrs-tracker-web#412) counted images without `width`/`height`: 371 on A–Z, 49
+  on a player page. They are the game's pixel icons, item icons and world flags.
+- **Decision:** leave them. Each sits in a box of fixed size (a 32px tile, a set height), so it can't shift the layout
+  while it loads, and item icons vary in size, so one pair of numbers would be wrong for most of them.
+- **Revisit:** if a layout shift is measured on one, or an icon moves out of its fixed box.
+
 ## List cards keep their layout shifts and one-line rows (2026-10-23)
 
 - **Context:** the UI review (osrs-tracker/osrs-tracker-web#407) flagged the tracker landings' per-device cards, which
@@ -236,6 +244,10 @@ Choices that look like accidents without their context: what was decided, why, a
   path: CDK virtual scrolling would drop the item links from the server HTML.
 - **Revisit:** with field data (Core Web Vitals in Search Console) or a visitor's complaint, not from throttled lab runs
   alone.
+- **Update (2026-10-23, #412):** `content-visibility: auto` on the rows keeps the links and skips off-screen rendering,
+  so it was measured on `/trackers/price/browse/a` (397 rows, a local production build, 4× CPU throttling, median of 8
+  loads each): layout 105 ms with it against 110 ms without at 1440px and 129 against 128 ms at 390px, no gain in style
+  or total task time, and a slower LCP (696 against 514 ms at 1440px). Not adopted.
 
 ## Red in the dark theme is solid, not a tint (2026-10-10)
 

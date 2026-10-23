@@ -78,6 +78,13 @@
     cursor: pointer;
   }
 
+  /* Long titles (item names, news posts) break into even lines instead of leaving one word on the last */
+  h1,
+  h2,
+  h3 {
+    @apply text-balance;
+  }
+
   /* Focused by script after a navigation (`core/routing/route-focus.ts`) or a retry (`load-error`), not a control: no
      focus ring */
   :is(main, section, article, h1, h2, h3, h4, h5, h6)[tabindex='-1']:focus {
