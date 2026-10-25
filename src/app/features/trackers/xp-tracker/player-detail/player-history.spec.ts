@@ -29,13 +29,13 @@ describe('playerHistory', () => {
   const milestonePeriod = signal<Period>(7);
   let history: PlayerHistory;
 
-  const page = (scrapingOffset: number, skip: number, size?: number): TestRequest =>
+  const page = (scrapingOffset: number, skip: number, limit?: number): TestRequest =>
     httpTesting.expectOne(
       req =>
         req.url === '/players/zezima/hiscores' &&
         req.params.get('scrapingOffset') === String(scrapingOffset) &&
         req.params.get('skip') === String(skip) &&
-        (size === undefined || req.params.get('size') === String(size)),
+        (limit === undefined || req.params.get('limit') === String(limit)),
     );
   /** The check the week before starts from, for the stat tiles' comparison */
   const previousWeekStart = (scrapingOffset: number): TestRequest => page(scrapingOffset, 14, 1);

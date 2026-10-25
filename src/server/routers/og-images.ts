@@ -53,11 +53,11 @@ const fetchIcon: GetIcon = async item => {
 };
 
 /**
- * The stored player with their newest hiscores at the default offset. `skipRefresh` keeps it read-only: a player the API
+ * The stored player with their newest hiscores at the default offset. `preview=false` keeps it read-only: a player the API
  * doesn't store answers 404 instead of a live preview, so an image URL never makes the API call the hiscores.
  */
 const fetchPlayer: GetPlayer = async username => {
-  const params = new URLSearchParams({ scrapingOffset: '0', includeLatestHiscoreEntry: 'true', skipRefresh: 'true' });
+  const params = new URLSearchParams({ scrapingOffset: '0', includeLatestHiscoreEntry: 'true', preview: 'false' });
   const response = await fetch(`${apiBaseUrl()}/players/${encodeURIComponent(username)}?${params}`, {
     headers: { 'User-Agent': config.userAgent },
     signal: AbortSignal.timeout(API_TIMEOUT_MS),

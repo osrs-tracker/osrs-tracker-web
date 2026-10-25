@@ -127,7 +127,7 @@ export class PlayerRow implements OnInit {
   private fetchFromUsername(username: string, offset: number): Observable<PlayerRowData> {
     return forkJoin([
       this.osrsProxyRepo.getPlayerHiscore(username, offset),
-      this.osrsTrackerRepo.getPlayerInfo(username, offset, { includeLatestHiscoreEntry: true, skipRefresh: true }),
+      this.osrsTrackerRepo.getPlayerInfo(username, offset, { includeLatestHiscoreEntry: true, preview: false }),
     ]).pipe(
       map(([hiscore, player]) => this.toRowData(hiscore, player)),
       catchError(err => {

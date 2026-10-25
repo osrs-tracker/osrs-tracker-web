@@ -308,8 +308,8 @@ Choices that look like accidents without their context: what was decided, why, a
   a sitemap-only commit skips the deploy (`NOT_IN_IMAGE` in `deploy.yml`), so the image keeps the old files.
 - **Decision:** `routers/sitemaps.ts` builds `/sitemap-items.xml` and `/sitemap-players.xml` from the API on request
   (through `API_INTERNAL_URL`), kept in memory per replica for as long as the API caches the lists: items a day, from
-  the 27 `GET /items/browse/:letter` lists, so every listed id resolves (not the Wiki's list, which can be ahead of the
-  API), each dated by its `updatedAt` (since 2026-10-25: when the API's ingester last stored a change to the item's Wiki
+  the 27 `GET /items?letter=` lists, so every listed id resolves (not the Wiki's list, which can be ahead of the API),
+  each dated by its `updatedAt` (since 2026-10-25: when the API's ingester last stored a change to the item's Wiki
   fields, its add included; items stored before then have no date and no `<lastmod>`, as the API kept no history to
   backfill from, and `lastFetch` is when a visitor looked, not a change); players an hour, from `GET /sitemap/players`
   (tracked, not paused, an entry in the last 30 days), at their canonical lower-case name, dated by the newest entry. A

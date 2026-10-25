@@ -4,7 +4,7 @@ import express from 'express';
 import { serverConfig } from '../server-config';
 import type { WebLogType } from '../utils/log';
 
-/** A JSON response from the API, at a path such as `/items/browse/a` */
+/** A JSON response from the API, at a path such as `/items?letter=a` */
 export type GetJson = (path: string) => Promise<unknown>;
 
 interface SitemapUrl {
@@ -42,7 +42,7 @@ function urlset(urls: SitemapUrl[]): string {
  */
 async function itemsSitemap(getJson: GetJson): Promise<string> {
   const letters = await Promise.all(
-    BROWSE_LETTERS.map(letter => getJson(`/items/browse/${letter}`) as Promise<{ id: number; updatedAt?: string }[]>),
+    BROWSE_LETTERS.map(letter => getJson(`/items?letter=${letter}`) as Promise<{ id: number; updatedAt?: string }[]>),
   );
   // An item in two letters' lists is the same document, so either row's date will do
   const items = new Map(letters.flat().map(({ id, updatedAt }) => [id, updatedAt]));
