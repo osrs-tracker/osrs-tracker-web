@@ -16,8 +16,8 @@ describe('createSitemapRouter', () => {
   const api = (players: unknown[]) =>
     getJson.mockImplementation(async path => {
       if (path === '/sitemap/players') return players;
-      if (path === '/items/browse/a') return [{ id: 4151, updatedAt: '2026-10-28T11:00:04.120Z' }, { id: 2 }];
-      if (path === '/items/browse/0') return [{ id: 2 }]; // Each item is listed once
+      if (path === '/items?letter=a') return [{ id: 4151, updatedAt: '2026-10-28T11:00:04.120Z' }, { id: 2 }];
+      if (path === '/items?letter=0') return [{ id: 2 }]; // Each item is listed once
       return [];
     });
 

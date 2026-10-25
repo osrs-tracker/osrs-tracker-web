@@ -224,10 +224,10 @@ Choices that look like accidents without their context: what was decided, why, a
   (gold only on the card: on the page a 99 already shows as an empty progress bar, and gold bars there drew too much
   attention). No progress bars on the card: at chat size they shrink to 2px, and progress is what goes stale first. The
   footer dates the stats, as previews are kept for weeks. Stats change daily, so an image lives an hour, in memory and
-  in `Cache-Control`, not a week. The API is asked with `skipRefresh`, so an image URL never makes it call the hiscores:
-  a player it doesn't store answers 404, and their page (the API's live preview) keeps the square app icon. Without
-  hiscores at the default offset the card shows only who they are. The skill and account icons are the site's own
-  (`public/assets/icons`), bundled like the fonts; satori and resvg draw their GIFs as they are. A regular account's
+  in `Cache-Control`, not a week. The API is asked with `preview=false`, so an image URL never makes it call the
+  hiscores: a player it doesn't store answers 404, and their page (the API's live preview) keeps the square app icon.
+  Without hiscores at the default offset the card shows only who they are. The skill and account icons are the site's
+  own (`public/assets/icons`), bundled like the fonts; satori and resvg draw their GIFs as they are. A regular account's
   person is Lucide's, as on the page: `lucideIcon()` (`og/lucide-icon.ts`) writes a component's static `icon` data
   (`LucideUser.icon`) as an SVG image with Lucide's default stroke, so the shape comes from `@lucide/angular` itself.
 - **satori 0.56 (2026-10-14):** 0.33 to 0.55 were held back because `harfbuzzjs`'s Emscripten loader read `hb.wasm` from
@@ -308,8 +308,8 @@ Choices that look like accidents without their context: what was decided, why, a
   a sitemap-only commit skips the deploy (`NOT_IN_IMAGE` in `deploy.yml`), so the image keeps the old files.
 - **Decision:** `routers/sitemaps.ts` builds `/sitemap-items.xml` and `/sitemap-players.xml` from the API on request
   (through `API_INTERNAL_URL`), kept in memory per replica for as long as the API caches the lists: items a day, from
-  the 27 `GET /items/browse/:letter` lists, so every listed id resolves (not the Wiki's list, which can be ahead of the
-  API), each dated by its `updatedAt` (since 2026-10-25: when the API's ingester last stored a change to the item's Wiki
+  the 27 `GET /items?letter=` lists, so every listed id resolves (not the Wiki's list, which can be ahead of the API),
+  each dated by its `updatedAt` (since 2026-10-25: when the API's ingester last stored a change to the item's Wiki
   fields, its add included; items stored before then have no date and no `<lastmod>`, as the API kept no history to
   backfill from, and `lastFetch` is when a visitor looked, not a change); players an hour, from `GET /sitemap/players`
   (tracked, not paused, an entry in the last 30 days), at their canonical lower-case name, dated by the newest entry. A

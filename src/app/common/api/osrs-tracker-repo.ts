@@ -27,7 +27,7 @@ export interface TopGainer {
   date: Date;
 }
 
-/** An item from `GET /new-items`: only these fields, and always dated */
+/** An item from `GET /items?sort=added`: only these fields, and always dated */
 export type NewItem = Pick<Item, 'id' | 'name' | 'icon'> & Required<Pick<Item, 'addedAt'>>;
 
 @Service()
@@ -41,7 +41,7 @@ export class OsrsTrackerRepo {
   getPlayerInfo(
     username: string,
     scrapingOffset: number,
-    options?: { includeLatestHiscoreEntry?: boolean; loadingIndicator?: boolean; skipRefresh?: boolean },
+    options?: { includeLatestHiscoreEntry?: boolean; loadingIndicator?: boolean; preview?: boolean },
   ): Observable<Player> {
     return this.httpClient
       .get<Player>(`/players/${encodeURIComponent(username)}`, {
@@ -49,7 +49,7 @@ export class OsrsTrackerRepo {
         params: {
           scrapingOffset,
           ...(options?.includeLatestHiscoreEntry ? { includeLatestHiscoreEntry: true } : {}),
-          ...(options?.skipRefresh ? { skipRefresh: true } : {}),
+          ...(options?.preview === false ? { preview: false } : {}),
         },
       })
       .pipe(map(player => this.#parsePlayer(player)));
@@ -65,10 +65,10 @@ export class OsrsTrackerRepo {
       .pipe(map(player => (player ? this.#parsePlayer(player) : null)));
   }
 
-  getPlayerHiscores(username: string, scrapingOffset: number, size: number, skip: number): Observable<HiscoreEntry[]> {
+  getPlayerHiscores(username: string, scrapingOffset: number, limit: number, skip: number): Observable<HiscoreEntry[]> {
     return this.httpClient // Returns `null` when no hiscores have been scraped yet.
       .get<HiscoreEntry[] | null>(`/players/${encodeURIComponent(username)}/hiscores`, {
-        params: { scrapingOffset, size, skip },
+        params: { scrapingOffset, limit, skip },
       })
       .pipe(map(hiscoreEntries => (hiscoreEntries ?? []).map(entry => ({ ...entry, date: new Date(entry.date) }))));
   }
@@ -85,11 +85,11 @@ export class OsrsTrackerRepo {
 
   /**
    * The tracked players with the largest Overall XP gain over the newest day the 00:00 UTC scrape covers, largest first
-   * (at most 50). Not under `/players`, where `top-gainers` would be a player's name.
+   * (at most 50)
    */
   getTopGainers(limit: number): Observable<TopGainer[]> {
     return this.httpClient
-      .get<TopGainer[]>('/top-gainers', { params: { limit } })
+      .get<TopGainer[]>('/players', { params: { sort: 'gain', limit } })
       .pipe(map(gainers => gainers.map(gainer => ({ ...gainer, date: new Date(gainer.date) }))));
   }
 
@@ -105,7 +105,7 @@ export class OsrsTrackerRepo {
   //
 
   searchItems(query: string): Observable<Item[] | void> {
-    return this.httpClient.get<Item[]>(`/items/search/${encodeURIComponent(query)}`);
+    return this.httpClient.get<Item[]>('/items', { params: { search: query } });
   }
 
   /**
@@ -113,18 +113,18 @@ export class OsrsTrackerRepo {
    * for any other letter.
    */
   getItemsByLetter(letter: string): Observable<Pick<Item, 'id' | 'name' | 'icon'>[]> {
-    return this.httpClient.get<Pick<Item, 'id' | 'name' | 'icon'>[]>(`/items/browse/${encodeURIComponent(letter)}`, {
+    return this.httpClient.get<Pick<Item, 'id' | 'name' | 'icon'>[]>('/items', {
+      params: { letter },
       context: new HttpContext().set(LOADING_INDICATOR, true),
     });
   }
 
   /**
-   * The items the API added since it began dating them (25 October 2026), newest first, at most `limit` (1–100). Not
-   * under `/items`, where `/items/:id` would take `new` for an id.
+   * The items the API added since it began dating them (25 October 2026), newest first, at most `limit` (1–100)
    */
   getNewItems(limit: number): Observable<NewItem[]> {
     return this.httpClient
-      .get<NewItem[]>('/new-items', { params: { limit } })
+      .get<NewItem[]>('/items', { params: { sort: 'added', limit } })
       .pipe(map(items => items.map(item => ({ ...item, addedAt: new Date(item.addedAt) }))));
   }
 

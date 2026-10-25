@@ -43,7 +43,9 @@ describe('NewItemsPage', () => {
 
   function flushItems(items: unknown[] = newItems) {
     TestBed.tick();
-    httpTesting.expectOne(req => req.url === '/new-items' && req.params.get('limit') === '100').flush(items);
+    httpTesting
+      .expectOne(req => req.url === '/items' && req.params.get('sort') === 'added' && req.params.get('limit') === '100')
+      .flush(items);
   }
 
   /** The prices load once the list has: its value lands a task after the flush */
@@ -142,7 +144,9 @@ describe('NewItemsPage', () => {
   it('shows the error with a retry when the list fails', async () => {
     setUp('browser');
     TestBed.tick();
-    httpTesting.expectOne(req => req.url === '/new-items').flush(null, { status: 500, statusText: 'Error' });
+    httpTesting
+      .expectOne(req => req.url === '/items' && req.params.get('sort') === 'added')
+      .flush(null, { status: 500, statusText: 'Error' });
     await fixture.whenStable();
 
     expect(text()).toContain('New items didn’t load.');

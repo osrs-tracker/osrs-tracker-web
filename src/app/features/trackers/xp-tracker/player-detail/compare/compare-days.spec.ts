@@ -47,7 +47,7 @@ describe('CompareDays', () => {
     harness = await RouterTestingHarness.create();
     await harness.navigateByUrl(url);
     TestBed.inject(HttpTestingController)
-      .expectOne(req => req.url === '/players/zezima/hiscores' && req.params.get('size') === '91')
+      .expectOne(req => req.url === '/players/zezima/hiscores' && req.params.get('limit') === '91')
       .flush(history);
     await settle();
     return harness.fixture.debugElement.query(By.directive(CompareDays)).componentInstance;

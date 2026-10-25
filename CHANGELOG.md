@@ -23,6 +23,9 @@
 - The A–Z item list's address without a letter now tells search engines that it moved to the "A" page for good.
 - The item list for search engines now says when each item was added or last changed, for the items the site has dated,
   so they find new items sooner.
+- Item search, the A–Z lists, New on the GE, the top gainers, the XP Tracker's player rows and a player's history now
+  ask the API in its new, tidier form, so the old one can go. The top gainers and New on the GE, which couldn't load
+  after the API changed this afternoon, show again.
 
 ## 2026-10-24
 
