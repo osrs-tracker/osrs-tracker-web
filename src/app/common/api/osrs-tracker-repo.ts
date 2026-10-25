@@ -20,6 +20,13 @@ export function newsImageUrl(url: string): string {
   return `${config.apiBaseUrl}/news/image?url=${encodeURIComponent(url)}`;
 }
 
+/** A player in the top gainers: `gain` is the Overall XP between their two newest offset-0 entries, `date` the newer one's */
+export interface TopGainer {
+  username: string;
+  gain: number;
+  date: Date;
+}
+
 @Service()
 export class OsrsTrackerRepo {
   private readonly httpClient = inject(HttpClient);
@@ -71,6 +78,16 @@ export class OsrsTrackerRepo {
     return this.httpClient
       .get<Player[]>('/players', { params: { limit: config.maxStoredPlayers, scrapingOffset, entry: 'overall' } })
       .pipe(map(players => players.map(player => this.#parsePlayer(player))));
+  }
+
+  /**
+   * The tracked players with the largest Overall XP gain over the newest day the 00:00 UTC scrape covers, largest first
+   * (at most 50). Not under `/players`, where `top-gainers` would be a player's name.
+   */
+  getTopGainers(limit: number): Observable<TopGainer[]> {
+    return this.httpClient
+      .get<TopGainer[]>('/top-gainers', { params: { limit } })
+      .pipe(map(gainers => gainers.map(gainer => ({ ...gainer, date: new Date(gainer.date) }))));
   }
 
   #parsePlayer(player: Player): Player {

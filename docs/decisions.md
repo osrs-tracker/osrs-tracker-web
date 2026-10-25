@@ -526,9 +526,13 @@ Choices that look like accidents without their context: what was decided, why, a
   - **Segmented:** the active pill is accent-filled, except beside an accent button (Home's Player/Item switch), where
     two accent fills would compete.
   - **Tabular figures on values only:** in a line of text ("Regular · Total 2,316") they look spaced out.
-  - **Tracker landings keep three equal cards** (global lookups, your lookups, your favourites), each list scrolling in
-    its card. Favourites as hero tiles, to avoid identical cards, was tried and reverted: three parallel lists read more
-    clearly. The hero accents the subject ("XP", "Price"), not "Tracker".
+  - **Tracker landings keep equal cards**, each list scrolling in its card: the Price Tracker's three (global lookups,
+    your lookups, your favourites) in a row from 1280px; the XP Tracker's four two by two from 768px since
+    [#445](https://github.com/osrs-tracker/osrs-tracker-web/issues/445) (yesterday's top gainers beside your favourites,
+    the global and your recent lookups below). The top gainers spanning the page above or below the lists, and in the
+    global lookups' place beside them, were mocked up and not picked. Favourites as hero tiles, to avoid identical
+    cards, was tried and reverted: parallel lists read more clearly. The hero accents the subject ("XP", "Price"), not
+    "Tracker".
 - **Revisit:** when a component needs a value the scales lack: add a token, don't make a one-off.
 
 ## Semantic colour tokens instead of `dark:` pairs (2026-10-07)
