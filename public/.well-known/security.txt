@@ -1,4 +1,4 @@
 Contact: mailto:freek_mencke.dev@outlook.com
 Expires: 2027-09-30T00:00:00.000Z
 Preferred-Languages: en
-Canonical: https://osrs-tracker.freekmencke.com/.well-known/security.txt
+Canonical: https://osrs-tracker.net/.well-known/security.txt

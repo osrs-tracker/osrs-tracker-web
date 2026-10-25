@@ -9,6 +9,7 @@ import { protocolRelativeMiddleware } from './middleware/protocol-relative';
 import { securityMiddleware } from './middleware/security';
 import { staticFilesMiddleware } from './middleware/static-files';
 import { trailingSlashMiddleware } from './middleware/trailing-slash';
+import { createCarryOverRouter } from './routers/carry-over';
 import { createHealthRouter } from './routers/health';
 import { createOgImageRouter } from './routers/og-images';
 import { createSitemapRouter } from './routers/sitemaps';
@@ -54,6 +55,8 @@ export function createApp({
     angularCacheMiddleware(), // Cache rendered pages in memory for faster subsequent responses
   );
 
+  // The page that hands visitors' saved data from the old host to the new one
+  app.use(createCarryOverRouter());
   // The item and player sitemaps come from the API; the site sitemap and the index are static files
   app.use(createSitemapRouter({ logger }));
   // The item link preview images are drawn on demand; the page cache skips paths with an extension

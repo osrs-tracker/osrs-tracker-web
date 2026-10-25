@@ -1,5 +1,5 @@
 export const config = {
-  siteUrl: 'https://osrs-tracker.freekmencke.com',
+  siteUrl: 'https://osrs-tracker.net',
   apiBaseUrl: 'https://osrs-tracker-api.freekmencke.com',
   awsBaseUrl: 'https://runescape-api.freekmencke.com',
   /** The OSRS Wiki's real-time prices API, used as its guidelines ask: https://oldschool.runescape.wiki/w/RS:PRICES */

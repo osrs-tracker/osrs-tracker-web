@@ -94,9 +94,9 @@ describe('PageMetaStrategy', () => {
 
     expect(document.title).toBe('Whip');
     expect(description()).toBe('Abyssal whip prices');
-    expect(canonical()).toBe('https://osrs-tracker.freekmencke.com/items/4151');
+    expect(canonical()).toBe('https://osrs-tracker.net/items/4151');
     expect(meta.getTag('property="og:title"')?.content).toBe('Whip');
-    expect(meta.getTag('property="og:url"')?.content).toBe('https://osrs-tracker.freekmencke.com/items/4151');
+    expect(meta.getTag('property="og:url"')?.content).toBe('https://osrs-tracker.net/items/4151');
     expect(meta.getTag('name="twitter:card"')?.content).toBe('summary_large_image');
   });
 
@@ -105,7 +105,7 @@ describe('PageMetaStrategy', () => {
     await router.navigateByUrl('/items');
 
     expect(description()).toBe('All item prices');
-    expect(canonical()).toBe('https://osrs-tracker.freekmencke.com/items');
+    expect(canonical()).toBe('https://osrs-tracker.net/items');
     expect(meta.getTags('name="description"')).toHaveLength(1);
     expect(document.head.querySelectorAll('link[rel="canonical"]')).toHaveLength(1);
   });
@@ -128,7 +128,7 @@ describe('PageMetaStrategy', () => {
     expect(TestBed.inject(TitleStrategy).buildTitle(router.routerState.snapshot)).toBe('zezima stats');
     expect(meta.getTag('property="og:title"')?.content).toBe('zezima stats');
     expect(description()).toBe('Stats of zezima');
-    expect(canonical()).toBe('https://osrs-tracker.freekmencke.com/players/zezima');
+    expect(canonical()).toBe('https://osrs-tracker.net/players/zezima');
   });
 
   it("uses the route's title and no canonical when the meta function returns none", async () => {

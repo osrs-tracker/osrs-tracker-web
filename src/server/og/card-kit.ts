@@ -115,7 +115,7 @@ function footer(text: string): Node {
       el({ fontWeight: 600, color: COLORS.accent }, 'Tracker'),
       el({ color: COLORS.muted, whiteSpace: 'pre' }, `, ${text}`),
     ]),
-    el({ color: COLORS.faint }, 'osrs-tracker.freekmencke.com'),
+    el({ color: COLORS.faint }, 'osrs-tracker.net'),
   ]);
 }
 

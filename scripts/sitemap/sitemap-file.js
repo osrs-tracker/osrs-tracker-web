@@ -2,7 +2,7 @@ import xmlFormatter from 'xml-formatter';
 import { execFileSync } from 'node:child_process';
 import { readFile, writeFile } from 'node:fs/promises';
 
-export const SITE_URL = 'https://osrs-tracker.freekmencke.com';
+export const SITE_URL = 'https://osrs-tracker.net';
 
 export const git = args => execFileSync('git', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
 

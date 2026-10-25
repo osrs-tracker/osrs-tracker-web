@@ -31,7 +31,7 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: HOST
-              value: osrs-tracker.freekmencke.com
+              value: osrs-tracker.net
             # Traefik sets these and overwrites any sent by clients.
             - name: TRUST_PROXY_HEADERS
               value: x-forwarded-for,x-forwarded-host,x-forwarded-port,x-forwarded-proto,x-forwarded-server
@@ -115,41 +115,14 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: osrs-tracker-web-ingress
+  name: osrs-tracker-net-ingress
   namespace: osrs-tracker
   annotations:
+    # Also issues the certificate for www (osrs-tracker-net-www-ingress): Flux may manage Ingresses, not Certificates
     cert-manager.io/cluster-issuer: 'letsencrypt-prod'
     # The Middlewares below: per-client-IP rate limits, Forwarded header stripping, then compression (last, so rejected
     # requests cost none).
     traefik.ingress.kubernetes.io/router.middlewares: osrs-tracker-osrs-tracker-web-ratelimit@kubernetescrd,osrs-tracker-osrs-tracker-web-inflight@kubernetescrd,osrs-tracker-osrs-tracker-web-strip-forwarded@kubernetescrd,osrs-tracker-osrs-tracker-web-compress@kubernetescrd
-spec:
-  ingressClassName: traefik
-  tls:
-    - hosts:
-        - osrs-tracker.freekmencke.com
-      secretName: osrs-tracker-web-tls
-  rules:
-    - host: osrs-tracker.freekmencke.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: osrs-tracker-web-service
-                port:
-                  number: 80
----
-# The new domain, osrs-tracker.net and www, until the switch (#451): cert-manager issues its certificate from this Ingress
-# (Flux may manage Ingresses, not Certificates), and visitors are sent to the current host for now, temporarily (302)
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: osrs-tracker-net-ingress
-  namespace: osrs-tracker
-  annotations:
-    cert-manager.io/cluster-issuer: 'letsencrypt-prod'
-    traefik.ingress.kubernetes.io/router.middlewares: osrs-tracker-osrs-tracker-web-ratelimit@kubernetescrd,osrs-tracker-osrs-tracker-net-to-current-host@kubernetescrd
 spec:
   ingressClassName: traefik
   tls:
@@ -168,6 +141,21 @@ spec:
                 name: osrs-tracker-web-service
                 port:
                   number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: osrs-tracker-net-www-ingress
+  namespace: osrs-tracker
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: osrs-tracker-osrs-tracker-web-ratelimit@kubernetescrd,osrs-tracker-osrs-tracker-net-www-redirect@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - www.osrs-tracker.net
+      secretName: osrs-tracker-net-tls
+  rules:
     - host: www.osrs-tracker.net
       http:
         paths:
@@ -182,13 +170,79 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
-  name: osrs-tracker-net-to-current-host
+  name: osrs-tracker-net-www-redirect
   namespace: osrs-tracker
 spec:
   redirectRegex:
-    regex: ^https?://(?:www\.)?osrs-tracker\.net/(.*)
-    replacement: https://osrs-tracker.freekmencke.com/${1}
-    permanent: false
+    regex: ^https?://www\.osrs-tracker\.net/(.*)
+    replacement: https://osrs-tracker.net/${1}
+    permanent: true
+---
+# The old host, kept by this name so cert-manager keeps renewing its certificate. Every path 301s to the same one on
+# osrs-tracker.net, with #from-old so index.html can carry the visitor's saved data across (see the next Ingress).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: osrs-tracker-web-ingress
+  namespace: osrs-tracker
+  annotations:
+    cert-manager.io/cluster-issuer: 'letsencrypt-prod'
+    traefik.ingress.kubernetes.io/router.middlewares: osrs-tracker-osrs-tracker-web-ratelimit@kubernetescrd,osrs-tracker-osrs-tracker-web-new-domain-redirect@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - osrs-tracker.freekmencke.com
+      secretName: osrs-tracker-web-tls
+  rules:
+    - host: osrs-tracker.freekmencke.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: osrs-tracker-web-service
+                port:
+                  number: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: osrs-tracker-web-new-domain-redirect
+  namespace: osrs-tracker
+spec:
+  redirectRegex:
+    regex: ^https?://osrs-tracker\.freekmencke\.com/(.*)
+    replacement: https://osrs-tracker.net/${1}#from-old
+    permanent: true
+---
+# The one page the old host still serves (src/server/routers/carry-over.ts): it hands the visitor's saved data to
+# osrs-tracker.net. Its rule is longer than the redirect's, so Traefik picks it. Until osrs-tracker-web#453.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: osrs-tracker-web-carry-over-ingress
+  namespace: osrs-tracker
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: osrs-tracker-osrs-tracker-web-ratelimit@kubernetescrd,osrs-tracker-osrs-tracker-web-strip-forwarded@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - osrs-tracker.freekmencke.com
+      secretName: osrs-tracker-web-tls
+  rules:
+    - host: osrs-tracker.freekmencke.com
+      http:
+        paths:
+          - path: /carry-over
+            pathType: Exact
+            backend:
+              service:
+                name: osrs-tracker-web-service
+                port:
+                  number: 80
 ---
 apiVersion: traefik.io/v1alpha1
 kind: Middleware

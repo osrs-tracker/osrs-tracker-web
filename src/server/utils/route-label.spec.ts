@@ -69,4 +69,8 @@ describe('routeLabel', () => {
     expect(label('/og/player/the%20fraking.png?v=1')).toBe('/og/player/:username.png');
     expect(label('/og/players-online.png?v=1')).toBe('/og/players-online.png');
   });
+
+  it('labels the carry-over page without its target', () => {
+    expect(label('/carry-over?to=%2Ftrackers%2Fxp')).toBe('/carry-over');
+  });
 });

@@ -43,7 +43,7 @@ export const ConsentStore = signalStore(
       patchState(store, { choice, bannerOpen: false });
     }
 
-    /** `_ga` and `_ga_<id>`, set on the widest domain the tag could use (`.freekmencke.com`) */
+    /** `_ga` and `_ga_<id>`, set on the widest domain the tag could use (`.osrs-tracker.net`) */
     function deleteAnalyticsCookies(): void {
       const names = document.cookie
         .split(';')

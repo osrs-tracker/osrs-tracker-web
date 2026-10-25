@@ -241,10 +241,10 @@ The `browser-checker` agent does the check, so its screenshots stay out of the m
 
 1. Start the server yourself (see Running locally); for production, wait for the deploy.
 2. Take the page URLs from production's sitemaps, not from the feature folders' names:
-   `https://osrs-tracker.freekmencke.com/sitemap.xml` lists the fixed pages', items' and players' sitemaps. The paths,
-   item ids and players are the same on a local server, which uses the production API. The trackers live under
-   `/trackers/` (`/trackers/xp/the%20fraking`, `/trackers/price/4151`), not `/xp-tracker/…` or `/price-tracker`. Pages
-   no sitemap lists (`/error`, the link-preview images) are in `src/server/utils/route-label.ts`.
+   `https://osrs-tracker.net/sitemap.xml` lists the fixed pages', items' and players' sitemaps. The paths, item ids and
+   players are the same on a local server, which uses the production API. The trackers live under `/trackers/`
+   (`/trackers/xp/the%20fraking`, `/trackers/price/4151`), not `/xp-tracker/…` or `/price-tracker`. Pages no sitemap
+   lists (`/error`, the link-preview images) are in `src/server/utils/route-label.ts`.
 3. Scan the changed pages with axe yourself, as the agent has no Bash: `npm run a11y -- <url>...` prints one line per
    WCAG 2.2 AA violation (rule, impact, selectors) and each page's `incomplete` count, and exits 1 on violations.
    `--click=<selector>` (repeatable, in order) opens a state first, such as a menu

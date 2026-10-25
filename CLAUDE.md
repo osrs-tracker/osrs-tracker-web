@@ -1,7 +1,7 @@
 # osrs-tracker-web
 
 Angular 22 SSR app (zoneless, signals, standalone) on a custom Express server (`src/server/`), deployed to Kubernetes at
-https://osrs-tracker.freekmencke.com. Sibling repos: `~/repos/osrs-tracker-api`, `~/repos/osrs-tracker-aws`,
+https://osrs-tracker.net. Sibling repos: `~/repos/osrs-tracker-api`, `~/repos/osrs-tracker-aws`,
 `~/repos/osrs-tracker-packages` (the `@osrs-tracker/*` npm packages; next to the main checkout; `../` doesn't reach them
 from a worktree).
 
