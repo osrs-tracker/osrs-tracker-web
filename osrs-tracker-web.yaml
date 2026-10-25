@@ -150,7 +150,7 @@ spec:
   secretName: osrs-tracker-net-tls
   dnsNames:
     - osrs-tracker.net
-    - www.osrs-tracker.net # redirected to the apex
+    - www.osrs-tracker.net # to be redirected to the apex (#451)
   issuerRef:
     kind: ClusterIssuer
     name: letsencrypt-prod

@@ -52,9 +52,10 @@ FreekMencke/home-cluster's `cluster/osrs-tracker/flux.yaml`, not here.
 - **A page shows stale data after an API change:** pre-rendered pages are served from the page cache until their next
   refresh (`/` every 5 min, the changelog hourly, privacy and terms daily). Wait, or have the user run
   `kubectl -n osrs-tracker rollout restart deploy/osrs-tracker-web`; see "Page cache" in the project skill.
-- **Certificate errors:** cert-manager renews `osrs-tracker-web-tls`
-  (`kubectl -n osrs-tracker describe certificate osrs-tracker-web-tls`); issuer problems are fixed in
-  FreekMencke/home-cluster.
+- **Certificate errors:** cert-manager renews `osrs-tracker-web-tls` (osrs-tracker.freekmencke.com, from the Ingress)
+  and `osrs-tracker-net-tls` (osrs-tracker.net and www, a standalone `Certificate` in the manifest):
+  `kubectl -n osrs-tracker describe certificate <name>`. A pending HTTP-01 challenge usually means the name's DNS no
+  longer reaches the cluster. Issuer problems are fixed in FreekMencke/fremen-cluster.
 
 ## Look around
 
