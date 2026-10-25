@@ -12,7 +12,7 @@ import { UNCHARTED_MINIGAMES } from '../activity-categories';
 import { CHART_CATEGORIES } from '../charts/chart-categories';
 import { chartColors } from '../colors/chart-colors';
 import { ActivityView, PlayerView } from '../player-view';
-import { pickableCellRing, pickedCellBackground, pickedCellRing } from './picked-cell';
+import { pickableCellRing, pickedCellBackground, pickedCellRing, rowsOfThree } from './picked-cell';
 import { RankLines } from './rank-lines';
 
 const GRID_LABELS: Record<ActivityView, string> = {
@@ -188,31 +188,16 @@ export class ActivityGrid {
     });
   });
 
-  /** The cells in rows of three, as the grid reads them */
-  readonly rows = computed(() => {
-    const cells = this.cells();
-    return Array.from({ length: Math.ceil(cells.length / 3) }, (_, i) => cells.slice(i * 3, i * 3 + 3));
-  });
+  readonly rows = computed(() => rowsOfThree(this.cells()));
 
   private readonly grid = viewChild(Grid);
 
+  protected readonly tint = pickedCellBackground;
+  protected readonly ring = pickedCellRing;
+  protected readonly pickableRing = pickableCellRing;
+
   constructor() {
     effect(() => setGridTabStop(this.grid()));
-  }
-
-  /** A picked cell's background, as in the skill grid */
-  tint(color: string): string {
-    return pickedCellBackground(color);
-  }
-
-  /** A picked cell's outline, as in the skill grid */
-  ring(color: string): string {
-    return pickedCellRing(color);
-  }
-
-  /** Outline of a cell that gained XP but isn't picked */
-  pickableRing(color: string): string {
-    return pickableCellRing(color);
   }
 
   /** Corner cells follow the grid's rounded corners, so their selection ring isn't clipped */

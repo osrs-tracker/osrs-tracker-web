@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { formatNumberLegible, formatNumberShort, formatSign, formatWhole, formatWholeCompact } from './number-format';
+import {
+  formatNumberLegible,
+  formatNumberShort,
+  formatPercentChange,
+  formatSign,
+  formatWhole,
+  formatWholeCompact,
+} from './number-format';
 
 describe('formatNumberLegible', () => {
   it('shortens with an upper case unit and up to two decimals', () => {
@@ -96,5 +103,28 @@ describe('formatWholeCompact', () => {
     expect(formatWholeCompact(-1_000_000)).toBe('−1M');
     expect(formatWholeCompact(-1_756_095)).toBe('−1.76M');
     expect(formatWholeCompact(-2_147_483_647)).toBe('−2.15B');
+  });
+});
+
+describe('formatPercentChange', () => {
+  it('writes one decimal, with a plus or a true minus', () => {
+    expect(formatPercentChange(1_042, 1_000)).toEqual({ percent: '4.2%', signed: '+4.2%', tone: 'up' });
+    expect(formatPercentChange(3_932_042_211, 6_000_000_000)).toEqual({
+      percent: '34.5%',
+      signed: '−34.5%',
+      tone: 'down',
+    });
+    expect(formatPercentChange(1_000, 1).percent).toBe('99,900.0%');
+  });
+
+  it('is flat, without a sign, when the change reads 0.0%', () => {
+    expect(formatPercentChange(100_040, 100_000)).toEqual({ percent: '0.0%', signed: '0.0%', tone: 'flat' });
+    expect(formatPercentChange(99_960, 100_000)).toEqual({ percent: '0.0%', signed: '0.0%', tone: 'flat' });
+    expect(formatPercentChange(100, 100).tone).toBe('flat');
+  });
+
+  it('is up or down from 0.1%', () => {
+    expect(formatPercentChange(100_050, 100_000)).toEqual({ percent: '0.1%', signed: '+0.1%', tone: 'up' });
+    expect(formatPercentChange(99_940, 100_000)).toEqual({ percent: '0.1%', signed: '−0.1%', tone: 'down' });
   });
 });

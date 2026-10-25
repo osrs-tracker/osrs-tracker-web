@@ -25,6 +25,8 @@
   so "New" keeps meaning new.
 - The shortcuts under the item search (Items A–Z, High-alch profit, Margins, New on the GE) on Home and the Price
   Tracker are now pills with a solid background, so the dotted pattern behind them no longer makes them hard to read.
+- On an item's page, a price that barely moved since yesterday (a change that rounds to 0.0%) now shows in grey without
+  an arrow, as the item lists already showed it, instead of in green as a rise.
 
 ### Behind the scenes
 
@@ -34,6 +36,10 @@
 - Item search, the A–Z lists, New on the GE, the top gainers, the XP Tracker's player rows and a player's history now
   ask the API in its new, tidier form, so the old one can go. The top gainers and New on the GE, which couldn't load
   after the API changed this afternoon, show again.
+- Code that was written out more than once now lives in one place: the price change in percent, the stale-price clock
+  and the phone details button of the price tables and New on the GE, the order of the skills (the page and the link
+  preview cards), the hiscores grids' rows, the trackers' saved recent and favourite lists and the settings of the
+  requests to the OSRS Wiki. Nothing looks different, and a fix to one now reaches all of them.
 
 ## 2026-10-24
 

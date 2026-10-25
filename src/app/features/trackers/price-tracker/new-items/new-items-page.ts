@@ -11,7 +11,6 @@ import {
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { formatDistanceStrict } from 'date-fns';
 import { forkJoin, map, of, tap } from 'rxjs';
 import { announceChanges } from '@app/common/a11y/announcer';
 import { OsrsPricesRepo, TimeSpan } from '@app/common/api/osrs-prices-repo';
@@ -20,8 +19,10 @@ import { Icon } from '@app/common/icon/icon';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Tooltip } from '@app/common/ui/tooltip/tooltip';
-import { LucideArrowLeft, LucideChevronDown, LucideClock } from '@lucide/angular';
-import { STALE_AFTER, formatTableNumber } from '../tables/price-table';
+import { LucideArrowLeft } from '@lucide/angular';
+import { formatTableNumber, staleAge } from '../tables/price-table';
+import { DetailsToggle } from '../tables/details-toggle';
+import { StaleNote, StalePrice } from '../tables/stale-price';
 import { yesterdayStart } from '../utc-day';
 
 /** All the API sends; the page shows them 25 at a time */
@@ -65,11 +66,12 @@ const PRICES_KEY = makeStateKey<NewItemPrices>('new-items-prices');
     DecimalPipe,
     RouterLink,
     LucideArrowLeft,
-    LucideChevronDown,
-    LucideClock,
+    DetailsToggle,
     Icon,
     LoadError,
     Skeleton,
+    StaleNote,
+    StalePrice,
     Tooltip,
   ],
 })
@@ -180,9 +182,6 @@ export default class NewItemsPage {
 
   /** How long ago the price last traded, when that's an hour or more */
   staleFor(prices: ItemPrices): string | null {
-    const { loadedAt } = this.prices.value()!;
-    return prices.tradedAt !== null && loadedAt - prices.tradedAt > STALE_AFTER
-      ? formatDistanceStrict(prices.tradedAt, loadedAt)
-      : null;
+    return prices.tradedAt !== null ? staleAge(prices.tradedAt, this.prices.value()!.loadedAt) : null;
   }
 }

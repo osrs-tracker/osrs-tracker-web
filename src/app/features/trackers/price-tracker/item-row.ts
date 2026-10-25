@@ -6,7 +6,7 @@ import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Icon } from '@app/common/icon/icon';
 import { yesterdayStart } from './utc-day';
-import { formatNumberLegible, formatSign, formatWhole } from '@app/common/format/number-format';
+import { formatNumberLegible, formatPercentChange, formatSign, formatWhole } from '@app/common/format/number-format';
 import { OsrsPricesRepo, TimeSpan } from '@app/common/api/osrs-prices-repo';
 import { RecentItem } from './price-tracker-store';
 
@@ -63,15 +63,19 @@ interface ItemRowPrice {
           >{{ shortPrice() }} gp</span
         >
       }
-      @if (changePercent() !== null) {
+      @if (change(); as change) {
         <span
           class="shrink-0 min-w-18 px-2.5 py-1 rounded-full text-center text-sm/4 font-bold whitespace-nowrap tabular-nums"
           [class]="
-            tone() === 'up' ? 'text-up bg-up/16' : tone() === 'down' ? 'text-down bg-down-pill' : 'text-muted bg-ground'
+            change.tone === 'up'
+              ? 'text-up bg-up/16'
+              : change.tone === 'down'
+                ? 'text-down bg-down-pill'
+                : 'text-muted bg-ground'
           "
           [title]="changeTitle()"
         >
-          {{ sign() }}{{ changePercent() | number: '1.1-1' }}%
+          {{ change.signed }}
         </span>
       } @else {
         <!-- Fills the pill's column, so prices line up on phones, without claiming the price didn't move -->
@@ -121,18 +125,10 @@ export class ItemRow {
 
   readonly price = computed(() => this.data()?.price ?? null);
   readonly shortPrice = computed(() => formatNumberLegible(this.price() ?? 0));
-  readonly changePercent = computed(() => {
-    const { change, average } = this.data() ?? {};
-    return change != null && average ? (Math.abs(change) / average) * 100 : null;
+  readonly change = computed(() => {
+    const { price, average } = this.data() ?? {};
+    return price != null && average ? formatPercentChange(price, average) : null;
   });
-  /** A change shown as 0.0% (one decimal, as in the template) is neutral, not a rise */
-  readonly tone = computed((): 'up' | 'down' | 'flat' => {
-    const percent = this.changePercent();
-    if (percent === null || Math.round(percent * 10) === 0) return 'flat';
-    return (this.data()?.change ?? 0) > 0 ? 'up' : 'down';
-  });
-  /** The sign as written in the design: a plus or a true minus, none on a neutral change. */
-  readonly sign = computed(() => (this.tone() === 'flat' ? '' : formatSign(this.data()?.change ?? 0, 'always')));
   // whole gp, as in the game: the average has decimals
   readonly changeTitle = computed(
     () =>

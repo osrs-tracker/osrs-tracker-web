@@ -14,7 +14,6 @@ import {
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { formatDistanceStrict } from 'date-fns';
 import { forkJoin, map, tap } from 'rxjs';
 import { announceChanges } from '@app/common/a11y/announcer';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
@@ -23,14 +22,7 @@ import { formatWhole } from '@app/common/format/number-format';
 import { Icon } from '@app/common/icon/icon';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { readQueryParams, replaceQueryParams } from '@app/core/routing/query-state';
-import {
-  LucideArrowDown,
-  LucideArrowLeft,
-  LucideArrowRight,
-  LucideChevronDown,
-  LucideClock,
-  LucideSearch,
-} from '@lucide/angular';
+import { LucideArrowDown, LucideArrowLeft, LucideArrowRight, LucideSearch } from '@lucide/angular';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
@@ -47,12 +39,14 @@ import {
   Volume,
   buildRows,
   formatTableNumber,
-  isStale,
   natureRunePrice,
   optionsFromParams,
   optionsToParams,
+  staleAge,
   viewRows,
 } from './price-table';
+import { DetailsToggle } from './details-toggle';
+import { StaleNote, StalePrice } from './stale-price';
 
 /** Rows shown at first (all the server renders and transfers), and added by "Show 25 more" */
 const PAGE_SIZE = 25;
@@ -89,14 +83,15 @@ interface Column {
     RouterLink,
     LucideArrowLeft,
     LucideArrowRight,
-    LucideChevronDown,
-    LucideClock,
     LucideSearch,
+    DetailsToggle,
     Icon,
     InfoTooltip,
     LoadError,
     Segmented,
     Skeleton,
+    StaleNote,
+    StalePrice,
     Tooltip,
     LucideArrowDown,
   ],
@@ -349,9 +344,7 @@ export default class PriceTablePage {
 
   /** The price's age, shown with a clock when Any volume lets an old price in */
   staleFor(row: TableRow, view: TableView): string | null {
-    return this.options().volume === 'any' && isStale(row, view.loadedAt)
-      ? formatDistanceStrict(row.tradedAt, view.loadedAt)
-      : null;
+    return this.options().volume === 'any' ? staleAge(row.tradedAt, view.loadedAt) : null;
   }
 
   private toView(

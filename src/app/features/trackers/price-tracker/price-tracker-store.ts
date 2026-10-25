@@ -2,6 +2,7 @@ import { inject } from '@angular/core';
 import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals';
 import { StorageKey } from '@app/common/storage/storage';
 import { StorageService } from '@app/common/storage/storage-service';
+import { pushToFront, readStoredList, toggleInList, writeStoredList } from '@app/common/storage/stored-list';
 import { config } from '@config/config';
 
 export interface RecentItem {
@@ -9,6 +10,8 @@ export interface RecentItem {
   name: string;
   icon: string;
 }
+
+const sameItem = (a: RecentItem, b: RecentItem): boolean => a.id === b.id;
 
 class PriceTrackerState {
   recentItems: RecentItem[] = [];
@@ -18,43 +21,20 @@ class PriceTrackerState {
 export const PriceTrackerStore = signalStore(
   { providedIn: 'root' },
   withState(new PriceTrackerState()),
-  withMethods(() => ({
-    readStoredItems(key: StorageKey): RecentItem[] {
-      const storageService = inject(StorageService);
-      const storedValue = storageService.getItem(key);
-
-      if (!storedValue) return [];
-
-      // Stored values can be corrupted or edited by hand, fall back to no items instead of breaking the page
-      try {
-        const items: unknown = JSON.parse(storedValue);
-        return Array.isArray(items) ? items : [];
-      } catch {
-        return [];
-      }
-    },
-  })),
   withMethods(store => {
     const storageService = inject(StorageService);
 
     return {
       loadFromStorage(): void {
         patchState(store, {
-          recentItems: store.readStoredItems(StorageKey.PriceTrackerRecentItems),
-          favoriteItems: store.readStoredItems(StorageKey.PriceTrackerFavoriteItems),
+          recentItems: readStoredList<RecentItem>(storageService, StorageKey.PriceTrackerRecentItems),
+          favoriteItems: readStoredList<RecentItem>(storageService, StorageKey.PriceTrackerFavoriteItems),
         });
       },
 
       pushRecentItem(recentItem: RecentItem): void {
-        const recentItems = store.recentItems().filter(item => item.id !== recentItem.id);
-
-        recentItems.unshift(recentItem);
-
-        if (recentItems.length > config.maxStoredItems) {
-          recentItems.pop();
-        }
-
-        storageService.setItem(StorageKey.PriceTrackerRecentItems, JSON.stringify(recentItems));
+        const recentItems = pushToFront(store.recentItems(), recentItem, sameItem, config.maxStoredItems);
+        writeStoredList(storageService, StorageKey.PriceTrackerRecentItems, recentItems);
         patchState(store, { recentItems });
       },
 
@@ -63,13 +43,8 @@ export const PriceTrackerStore = signalStore(
       },
 
       toggleFavoriteItem(recentItem: RecentItem): void {
-        const favoriteItems = store.favoriteItems().filter(item => item.id !== recentItem.id);
-
-        if (favoriteItems.length === store.favoriteItems().length) {
-          favoriteItems.unshift(recentItem);
-        }
-
-        storageService.setItem(StorageKey.PriceTrackerFavoriteItems, JSON.stringify(favoriteItems));
+        const favoriteItems = toggleInList(store.favoriteItems(), recentItem, sameItem);
+        writeStoredList(storageService, StorageKey.PriceTrackerFavoriteItems, favoriteItems);
         patchState(store, { favoriteItems });
       },
     };

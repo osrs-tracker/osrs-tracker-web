@@ -51,3 +51,22 @@ export function formatWholeCompact(value: number): string {
   if (whole < 10_000_000 && whole > -1_000_000) return formatWhole(whole);
   return formatSign(whole) + formatNumberLegible(Math.abs(whole));
 }
+
+const percentTenths = new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+export interface PercentChange {
+  percent: string;
+  signed: string;
+  tone: 'up' | 'down' | 'flat';
+}
+
+export function formatPercentChange(value: number, base: number): PercentChange {
+  // Rounded once, so a change that reads 0.0% is also flat
+  const tenths = Math.round(((value - base) / base) * 1000);
+  const percent = `${percentTenths.format(Math.abs(tenths) / 10)}%`;
+  return {
+    percent,
+    signed: formatSign(tenths, 'exceptZero') + percent,
+    tone: tenths > 0 ? 'up' : tenths < 0 ? 'down' : 'flat',
+  };
+}

@@ -76,6 +76,9 @@ const serverLists: { [K in keyof ServerLists]?: { data: ServerLists[K]; key: str
  * The OSRS Wiki's prices API (v2), as its guidelines ask: bulk lists over single items, and time series by `lookback`,
  * which its CDN caches for everyone, unlike the old `timestep` series that waited on its database (`docs/decisions.md`).
  */
+const wikiContext = (loadingIndicator = false): HttpContext =>
+  new HttpContext().set(BASE_URL_PREFIX, false).set(SSR_TIMEOUT, true).set(LOADING_INDICATOR, loadingIndicator);
+
 @Service()
 export class OsrsPricesRepo {
   private readonly httpClient = inject(HttpClient);
@@ -156,10 +159,7 @@ export class OsrsPricesRepo {
     return this.httpClient
       .get<{ data: AveragePricesAtTime[]; itemId: string }>(`${config.pricesBaseUrl}/timeseries`, {
         params: { id, lookback },
-        context: new HttpContext()
-          .set(BASE_URL_PREFIX, false)
-          .set(SSR_TIMEOUT, true)
-          .set(LOADING_INDICATOR, options?.loadingIndicator),
+        context: wikiContext(options?.loadingIndicator),
       })
       .pipe(map(response => response.data));
   }
@@ -222,7 +222,7 @@ export class OsrsPricesRepo {
     return this.httpClient
       .get<(ItemMapping & Record<string, unknown>)[]>(`${config.pricesBaseUrl}/mapping`, {
         transferCache: options?.transferCache,
-        context: new HttpContext().set(BASE_URL_PREFIX, false).set(SSR_TIMEOUT, true),
+        context: wikiContext(),
       })
       .pipe(
         // About a third of the response is `examine`, which nothing shows
@@ -239,10 +239,7 @@ export class OsrsPricesRepo {
     return this.httpClient
       .get<{ data: LatestPriceList }>(`${config.pricesBaseUrl}/latest`, {
         transferCache: options?.transferCache,
-        context: new HttpContext()
-          .set(BASE_URL_PREFIX, false)
-          .set(SSR_TIMEOUT, true)
-          .set(LOADING_INDICATOR, options?.loadingIndicator),
+        context: wikiContext(options?.loadingIndicator),
       })
       .pipe(map(response => response.data));
   }
@@ -257,7 +254,7 @@ export class OsrsPricesRepo {
       {
         transferCache: options?.transferCache,
         ...(timestamp && { params: { timestamp: getUnixTime(timestamp) } }), // Only add the timestamp param if it's defined
-        context: new HttpContext().set(BASE_URL_PREFIX, false).set(SSR_TIMEOUT, true),
+        context: wikiContext(),
       },
     );
   }

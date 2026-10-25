@@ -276,19 +276,7 @@
                     @default {
                       @let price = column.key === 'sell' ? row.sell : row.buy;
                       @if (staleFor(row, view); as age) {
-                        <span
-                          class="relative z-1 inline-flex items-center gap-1.5 cursor-help decoration-dotted underline-offset-6 group-hover:underline pointer-coarse:underline"
-                          tooltip
-                          [tooltipTemplate]="ageTip"
-                          [tooltipUnderline]="false"
-                          [tooltipDescribe]="false"
-                          tabindex="0"
-                        >
-                          <svg lucideClock class="size-3.5 text-amber" strokeWidth="2.5" />
-                          {{ price | number }}
-                          <span class="sr-only">, last traded {{ age }} ago</span>
-                        </span>
-                        <ng-template #ageTip>Last traded {{ age }} ago</ng-template>
+                        <stale-price [age]="age">{{ price | number }}</stale-price>
                       } @else {
                         {{ price | number }}
                       }
@@ -299,20 +287,12 @@
               <td class="sm:hidden py-3 pr-2.5 text-right">
                 <!-- Above the row's stretched link -->
                 <button
-                  type="button"
-                  class="relative z-1 inline-flex items-center justify-center size-7 -my-1 rounded-full text-muted hover:bg-inner hover:text-strong aria-expanded:bg-inner aria-expanded:text-strong"
+                  details-toggle
                   [attr.aria-label]="'Details for ' + row.name"
-                  [attr.aria-expanded]="open"
-                  [attr.aria-controls]="open ? 'price-row-details-' + row.id : null"
+                  [open]="open"
+                  [detailsId]="'price-row-details-' + row.id"
                   (click)="toggleDetails(row.id)"
-                >
-                  <svg
-                    lucideChevronDown
-                    class="size-4.5 transition-transform motion-reduce:transition-none"
-                    [class]="open ? 'rotate-180' : ''"
-                    strokeWidth="2.5"
-                  />
-                </button>
+                ></button>
               </td>
             </tr>
             @if (open) {
@@ -328,10 +308,7 @@
                     }
                   </dl>
                   @if (staleFor(row, view); as age) {
-                    <p class="flex items-center gap-1.5 mt-2 text-sm text-muted">
-                      <svg lucideClock class="size-3.5 text-amber" strokeWidth="2.5" />
-                      Last traded {{ age }} ago
-                    </p>
+                    <p stale-note [age]="age"></p>
                   }
                 </td>
               </tr>

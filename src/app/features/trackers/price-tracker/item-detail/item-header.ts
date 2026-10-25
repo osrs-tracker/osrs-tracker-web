@@ -6,7 +6,7 @@ import { Icon } from '@app/common/icon/icon';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { config } from '@config/config';
 import { PriceTrackerStore } from '../price-tracker-store';
-import { formatWhole } from '@app/common/format/number-format';
+import { formatPercentChange, formatWhole } from '@app/common/format/number-format';
 import { LucideExternalLink, LucideStar, LucideTriangle } from '@lucide/angular';
 
 /**
@@ -72,11 +72,11 @@ import { LucideExternalLink, LucideStar, LucideTriangle } from '@lucide/angular'
           } @else if (change(); as change) {
             <span
               class="flex items-center gap-1.5 font-bold whitespace-nowrap tabular-nums"
-              [class]="change.up ? 'text-up' : 'text-down'"
+              [class]="change.tone === 'up' ? 'text-up' : change.tone === 'down' ? 'text-down' : 'text-muted'"
             >
-              @if (change.diff !== 0) {
-                <svg lucideTriangle class="size-2.5 fill-current" [class]="change.up ? '' : 'rotate-180'" />
-                <span class="sr-only">{{ change.up ? 'Up' : 'Down' }}</span>
+              @if (change.tone !== 'flat') {
+                <svg lucideTriangle class="size-2.5 fill-current" [class]="change.tone === 'up' ? '' : 'rotate-180'" />
+                <span class="sr-only">{{ change.tone === 'up' ? 'Up' : 'Down' }}</span>
               }
               {{ change.text }}
             </span>
@@ -134,9 +134,8 @@ export class ItemHeader {
     const average = this.average();
     if (price === null || !average) return null;
 
-    const diff = price - average;
-    const percent = (Math.abs(diff) / average) * 100;
-    return { text: `${formatWhole(Math.abs(diff))} (${percent.toFixed(1)}%)`, up: diff >= 0, diff };
+    const { percent, tone } = formatPercentChange(price, average);
+    return { text: `${formatWhole(Math.abs(price - average))} (${percent})`, tone };
   });
 
   readonly isFavorite = computed(() => this.priceTrackerStore.isFavoriteItem(this.item().id));
