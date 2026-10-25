@@ -21,7 +21,9 @@ export type TrackingState = 'tracked' | 'started' | 'untracked';
     <account-tile large [account]="player" />
 
     <div class="flex flex-col gap-1.5 grow basis-0 sm:basis-60 min-w-0">
-      <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+      <!-- On phones the combat level always sits under the name: whether it fits beside it changes when SOLIX loads,
+           which shifted the page on a slow first visit -->
+      <div class="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-baseline gap-x-3 gap-y-1">
         <a
           class="flex items-center gap-2.5 min-w-0 text-strong hover:text-accent"
           target="_blank"
@@ -36,7 +38,7 @@ export type TrackingState = 'tracked' | 'started' | 'untracked';
           <svg lucideExternalLink class="size-4.5 shrink-0 text-muted" />
           <span class="sr-only">(opens the Old School Hiscores in a new tab)</span>
         </a>
-        <!-- on phones the combat level wraps under the name, without the divider -->
+        <!-- the divider only beside the name -->
         <span class="hidden sm:block self-center w-px h-5.5 bg-border" aria-hidden="true"></span>
         <span class="flex items-baseline gap-1.5 text-lg font-bold text-text tabular-nums" title="Combat level">
           <img class="size-3.75" icon alt="Combat level" name="combat" />{{ player.combatLevel }}

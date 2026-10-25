@@ -12,6 +12,7 @@ import { trailingSlashMiddleware } from './middleware/trailing-slash';
 import { createCarryOverRouter } from './routers/carry-over';
 import { createHealthRouter } from './routers/health';
 import { createOgImageRouter } from './routers/og-images';
+import { createRedirectRouter } from './routers/redirects';
 import { createSitemapRouter } from './routers/sitemaps';
 import { serverConfig } from './server-config';
 import { logger as serverLogger, renderingPage, type WebLogType } from './utils/log';
@@ -55,6 +56,8 @@ export function createApp({
     angularCacheMiddleware(), // Cache rendered pages in memory for faster subsequent responses
   );
 
+  // Paths that moved, answered with a 301 instead of Angular's 302
+  app.use(createRedirectRouter());
   // The page that hands visitors' saved data from the old host to the new one
   app.use(createCarryOverRouter());
   // The item and player sitemaps come from the API; the site sitemap and the index are static files
