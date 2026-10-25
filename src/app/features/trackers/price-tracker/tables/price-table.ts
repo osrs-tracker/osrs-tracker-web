@@ -1,3 +1,4 @@
+import { formatDistanceStrict } from 'date-fns';
 import { AveragePrices, ItemMapping, LatestPriceList } from '@app/common/api/osrs-prices-repo';
 import { formatNumberTenths, formatSign, formatWhole } from '@app/common/format/number-format';
 import { geTax } from '../item-detail/ge-tax';
@@ -52,7 +53,7 @@ export interface TableRow {
 
 const NATURE_RUNE_ID = 561;
 /** A row needs a trade this recent at the price it uses, unless the volume filter is `any`; older prices get a clock */
-export const STALE_AFTER = 3_600_000;
+const STALE_AFTER = 3_600_000;
 
 /** The nature rune's price on the `buyAt` side; it trades all day, so a missing one is a failed load */
 export function natureRunePrice(latest: LatestPriceList, buyAt: BuyAt): number {
@@ -126,9 +127,14 @@ function perLimit(key: number, limit: number | undefined): number | null {
   return limit ? key * limit : null;
 }
 
-/** Whether the row's price is too old to trust: shown with a clock when the volume filter lets it in */
-export function isStale(row: TableRow, now: number): boolean {
-  return now - row.tradedAt > STALE_AFTER;
+/** Whether a price is too old to trust: shown with a clock when the volume filter lets it in */
+function isStale(tradedAt: number, now: number): boolean {
+  return now - tradedAt > STALE_AFTER;
+}
+
+/** How long ago a price last traded ("3 hours"), when it's too old to trust; `null` otherwise */
+export function staleAge(tradedAt: number, now: number): string | null {
+  return isStale(tradedAt, now) ? formatDistanceStrict(tradedAt, now) : null;
 }
 
 /**
@@ -144,7 +150,7 @@ export function viewRows(rows: TableRow[], options: TableOptions, now: number): 
     .filter(
       row =>
         (members === 'all' || row.members === (members === 'members')) &&
-        (volume === 'any' || (row.volume >= volume && !isStale(row, now))) &&
+        (volume === 'any' || (row.volume >= volume && !isStale(row.tradedAt, now))) &&
         (!query || row.name.toLowerCase().includes(query)),
     )
     .sort((a, b) => {

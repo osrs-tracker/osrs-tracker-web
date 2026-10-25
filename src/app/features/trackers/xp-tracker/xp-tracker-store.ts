@@ -2,7 +2,10 @@ import { inject } from '@angular/core';
 import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals';
 import { StorageKey } from '@app/common/storage/storage';
 import { StorageService } from '@app/common/storage/storage-service';
+import { pushToFront, readStoredList, toggleInList, writeStoredList } from '@app/common/storage/stored-list';
 import { config } from '@config/config';
+
+const samePlayer = (a: string, b: string): boolean => a === b;
 
 class XpTrackerState {
   scrapingOffset = 0;
@@ -13,21 +16,6 @@ class XpTrackerState {
 export const XpTrackerStore = signalStore(
   { providedIn: 'root' },
   withState(new XpTrackerState()),
-  withMethods(() => ({
-    readStoredPlayers(key: StorageKey): string[] {
-      const storageService = inject(StorageService);
-      const storedValue = storageService.getItem(key);
-
-      if (!storedValue) return [];
-
-      try {
-        const players: unknown = JSON.parse(storedValue);
-        return Array.isArray(players) ? players : [];
-      } catch {
-        return [];
-      }
-    },
-  })),
   withMethods(store => {
     const storageService = inject(StorageService);
 
@@ -38,8 +26,8 @@ export const XpTrackerStore = signalStore(
 
         patchState(store, {
           scrapingOffset: Number.isInteger(scrapingOffset) ? scrapingOffset : 0,
-          recentPlayers: store.readStoredPlayers(StorageKey.XpTrackerRecentPlayers),
-          favoritePlayers: store.readStoredPlayers(StorageKey.XpTrackerFavoritePlayers),
+          recentPlayers: readStoredList<string>(storageService, StorageKey.XpTrackerRecentPlayers),
+          favoritePlayers: readStoredList<string>(storageService, StorageKey.XpTrackerFavoritePlayers),
         });
       },
 
@@ -49,27 +37,15 @@ export const XpTrackerStore = signalStore(
       },
 
       pushRecentPlayer(username: string): void {
-        const recentPlayers = [...store.recentPlayers()];
-        const existingIndex = recentPlayers.indexOf(username);
-
-        if (existingIndex >= 0) {
-          recentPlayers.splice(existingIndex, 1);
-        }
-
-        recentPlayers.unshift(username);
-
-        if (recentPlayers.length > config.maxStoredPlayers) {
-          recentPlayers.pop();
-        }
-
-        storageService.setItem(StorageKey.XpTrackerRecentPlayers, JSON.stringify(recentPlayers));
+        const recentPlayers = pushToFront(store.recentPlayers(), username, samePlayer, config.maxStoredPlayers);
+        writeStoredList(storageService, StorageKey.XpTrackerRecentPlayers, recentPlayers);
         patchState(store, { recentPlayers });
       },
 
       removeRecentPlayer(username: string): void {
         const recentPlayers = store.recentPlayers().filter(player => player !== username);
 
-        storageService.setItem(StorageKey.XpTrackerRecentPlayers, JSON.stringify(recentPlayers));
+        writeStoredList(storageService, StorageKey.XpTrackerRecentPlayers, recentPlayers);
         patchState(store, { recentPlayers });
       },
 
@@ -78,16 +54,8 @@ export const XpTrackerStore = signalStore(
       },
 
       toggleFavoritePlayer(username: string): void {
-        const favoritePlayers = [...store.favoritePlayers()];
-        const favoriteIndex = favoritePlayers.indexOf(username);
-
-        if (favoriteIndex >= 0) {
-          favoritePlayers.splice(favoriteIndex, 1);
-        } else {
-          favoritePlayers.unshift(username);
-        }
-
-        storageService.setItem(StorageKey.XpTrackerFavoritePlayers, JSON.stringify(favoritePlayers));
+        const favoritePlayers = toggleInList(store.favoritePlayers(), username, samePlayer);
+        writeStoredList(storageService, StorageKey.XpTrackerFavoritePlayers, favoritePlayers);
         patchState(store, { favoritePlayers });
       },
     };

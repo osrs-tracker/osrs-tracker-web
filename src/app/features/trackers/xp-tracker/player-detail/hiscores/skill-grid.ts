@@ -12,24 +12,13 @@ import {
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Tooltip } from '@app/common/ui/tooltip/tooltip';
 import { Icon } from '@app/common/icon/icon';
+import { SKILL_LAYOUT } from '@app/common/format/skill-layout';
 import { setGridTabStop } from '@app/common/ui/controls/aria-tab-stop';
 import { ThemeStore } from '@app/common/theme/theme-store';
 import { ChartSkill, SKILL_COLORS } from '../colors/skill-colors';
 import { PlayerView } from '../player-view';
-import { pickableCellRing, pickedCellBackground, pickedCellRing } from './picked-cell';
+import { pickableCellRing, pickedCellBackground, pickedCellRing, rowsOfThree } from './picked-cell';
 import { RankLines } from './rank-lines';
-
-// The in-game skill grid, read row by row; the total level follows across the full width
-const SKILL_LAYOUT: SkillEnum[] = [
-  ...[SkillEnum.Attack, SkillEnum.Hitpoints, SkillEnum.Mining],
-  ...[SkillEnum.Strength, SkillEnum.Agility, SkillEnum.Smithing],
-  ...[SkillEnum.Defence, SkillEnum.Herblore, SkillEnum.Fishing],
-  ...[SkillEnum.Ranged, SkillEnum.Thieving, SkillEnum.Cooking],
-  ...[SkillEnum.Prayer, SkillEnum.Crafting, SkillEnum.Firemaking],
-  ...[SkillEnum.Magic, SkillEnum.Fletching, SkillEnum.Woodcutting],
-  ...[SkillEnum.Runecraft, SkillEnum.Slayer, SkillEnum.Farming],
-  ...[SkillEnum.Construction, SkillEnum.Hunter, SkillEnum.Sailing],
-];
 
 interface SkillCell {
   name: SkillEnum;
@@ -201,11 +190,7 @@ export class SkillGrid {
       };
     });
   });
-  /** The cells in rows of three, as the grid reads them */
-  readonly rows = computed(() => {
-    const cells = this.cells();
-    return Array.from({ length: Math.ceil(cells.length / 3) }, (_, i) => cells.slice(i * 3, i * 3 + 3));
-  });
+  readonly rows = computed(() => rowsOfThree(this.cells()));
   readonly overall = computed(() => {
     const hiscore = this.hiscore();
     return hiscore && overallOf(hiscore);
@@ -214,23 +199,13 @@ export class SkillGrid {
 
   private readonly grid = viewChild(Grid);
 
+  // A picked cell's background and outline, and the outline of one that gained XP but isn't picked, as in the activity grid
+  protected readonly tint = pickedCellBackground;
+  protected readonly ring = pickedCellRing;
+  protected readonly pickableRing = pickableCellRing;
+
   constructor() {
     effect(() => setGridTabStop(this.grid()));
-  }
-
-  /** A picked cell's background, as in the activity grid */
-  tint(color: string): string {
-    return pickedCellBackground(color);
-  }
-
-  /** A picked cell's outline, as in the activity grid */
-  ring(color: string): string {
-    return pickedCellRing(color);
-  }
-
-  /** Outline of a cell that gained XP but isn't picked */
-  pickableRing(color: string): string {
-    return pickableCellRing(color);
   }
 
   label(cell: SkillCell): string {

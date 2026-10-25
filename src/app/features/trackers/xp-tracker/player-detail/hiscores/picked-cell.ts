@@ -17,3 +17,8 @@ export function pickedCellRing(color: string): string {
 export function pickableCellRing(color: string): string {
   return `inset 0 0 0 1px ${color}`;
 }
+
+/** A hiscores grid's cells in rows of three, as the grid reads them */
+export function rowsOfThree<T>(cells: T[]): T[][] {
+  return Array.from({ length: Math.ceil(cells.length / 3) }, (_, i) => cells.slice(i * 3, i * 3 + 3));
+}

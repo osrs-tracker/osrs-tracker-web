@@ -1,4 +1,5 @@
 import { accountType, capitalise } from '@app/common/format/player-labels';
+import { type GridSkill, SKILL_LAYOUT } from '@app/common/format/skill-layout';
 import { LucideUser } from '@lucide/angular';
 import { type HiscoreEntry, type Player, PlayerStatus, PlayerType, SkillEnum, skillLevel } from '@osrs-tracker/models';
 import hardcoreIcon from '../../../public/assets/icons/player_type/hardcore_ironman.png';
@@ -32,51 +33,33 @@ import skull from '../../../public/assets/icons/skull.png';
 import { COLORS, el, frame, img, type Node, renderPng, tile } from './card-kit';
 import { lucideIcon } from './lucide-icon';
 
-type GridSkill = Exclude<SkillEnum, SkillEnum.Overall>;
-
-// The in-game stats tab, read row by row, as the page's skill grid (`hiscores/skill-grid.ts`)
-const SKILL_ICONS: [GridSkill, Uint8Array][] = [
-  ...[
-    [SkillEnum.Attack, attack],
-    [SkillEnum.Hitpoints, hitpoints],
-    [SkillEnum.Mining, mining],
-  ],
-  ...[
-    [SkillEnum.Strength, strength],
-    [SkillEnum.Agility, agility],
-    [SkillEnum.Smithing, smithing],
-  ],
-  ...[
-    [SkillEnum.Defence, defence],
-    [SkillEnum.Herblore, herblore],
-    [SkillEnum.Fishing, fishing],
-  ],
-  ...[
-    [SkillEnum.Ranged, ranged],
-    [SkillEnum.Thieving, thieving],
-    [SkillEnum.Cooking, cooking],
-  ],
-  ...[
-    [SkillEnum.Prayer, prayer],
-    [SkillEnum.Crafting, crafting],
-    [SkillEnum.Firemaking, firemaking],
-  ],
-  ...[
-    [SkillEnum.Magic, magic],
-    [SkillEnum.Fletching, fletching],
-    [SkillEnum.Woodcutting, woodcutting],
-  ],
-  ...[
-    [SkillEnum.Runecraft, runecraft],
-    [SkillEnum.Slayer, slayer],
-    [SkillEnum.Farming, farming],
-  ],
-  ...[
-    [SkillEnum.Construction, construction],
-    [SkillEnum.Hunter, hunter],
-    [SkillEnum.Sailing, sailing],
-  ],
-] as [GridSkill, Uint8Array][];
+// Laid out in the game's order by `SKILL_LAYOUT`, as the page's skill grid is
+const SKILL_ICONS: Record<GridSkill, Uint8Array> = {
+  [SkillEnum.Agility]: agility,
+  [SkillEnum.Attack]: attack,
+  [SkillEnum.Construction]: construction,
+  [SkillEnum.Cooking]: cooking,
+  [SkillEnum.Crafting]: crafting,
+  [SkillEnum.Defence]: defence,
+  [SkillEnum.Farming]: farming,
+  [SkillEnum.Firemaking]: firemaking,
+  [SkillEnum.Fishing]: fishing,
+  [SkillEnum.Fletching]: fletching,
+  [SkillEnum.Herblore]: herblore,
+  [SkillEnum.Hitpoints]: hitpoints,
+  [SkillEnum.Hunter]: hunter,
+  [SkillEnum.Magic]: magic,
+  [SkillEnum.Mining]: mining,
+  [SkillEnum.Prayer]: prayer,
+  [SkillEnum.Ranged]: ranged,
+  [SkillEnum.Runecraft]: runecraft,
+  [SkillEnum.Sailing]: sailing,
+  [SkillEnum.Slayer]: slayer,
+  [SkillEnum.Smithing]: smithing,
+  [SkillEnum.Strength]: strength,
+  [SkillEnum.Thieving]: thieving,
+  [SkillEnum.Woodcutting]: woodcutting,
+};
 
 const HELMS: Record<Exclude<PlayerType, PlayerType.Normal>, Uint8Array> = {
   [PlayerType.Ironman]: ironmanIcon,
@@ -157,11 +140,11 @@ function name(player: Player, fontSize: number): Node {
 /** Rows of three like the stats tab, each level beside its icon */
 function skillGrid(hiscore: HiscoreEntry): Node {
   const rows: Node[] = [];
-  for (let i = 0; i < SKILL_ICONS.length; i += 3) {
+  for (let i = 0; i < SKILL_LAYOUT.length; i += 3) {
     rows.push(
       el(
         { flex: 1, display: 'flex', gap: 6 },
-        SKILL_ICONS.slice(i, i + 3).map(([skill, icon]) => skillCell(hiscore, skill, icon)),
+        SKILL_LAYOUT.slice(i, i + 3).map(skill => skillCell(hiscore, skill, SKILL_ICONS[skill])),
       ),
     );
   }

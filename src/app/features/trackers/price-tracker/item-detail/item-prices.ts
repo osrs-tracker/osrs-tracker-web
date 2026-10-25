@@ -3,7 +3,7 @@ import { Item } from '@osrs-tracker/models';
 import { DAY, utcDayStart } from '../utc-day';
 import { geTax, isGeTaxExempt } from './ge-tax';
 import { AveragePricesAtTime, LatestPrices } from '@app/common/api/osrs-prices-repo';
-import { formatSign, formatWhole, formatWholeCompact } from '@app/common/format/number-format';
+import { formatPercentChange, formatWhole, formatWholeCompact, PercentChange } from '@app/common/format/number-format';
 import { ChartTableRow } from '@app/common/charts/chart-table';
 import { binByTime, TimeBin, timeBinLabel } from '@app/common/charts/time-bins';
 
@@ -255,13 +255,10 @@ export function priceChartSummary(prices: AveragePricesAtTime[], period: string)
   ].join(' ');
 }
 
-const tenthsFormat = new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-
 /** How a price line moved over the chart's range, for its legend entry: "−34.5%" to "3,932,042,211" gp */
 export interface PriceChange {
   percent: string;
-  /** `flat` when the change reads 0.0%, as in the item lists */
-  tone: 'up' | 'down' | 'flat';
+  tone: PercentChange['tone'];
   last: string;
 }
 
@@ -270,13 +267,8 @@ export function priceChange(values: number[]): PriceChange | undefined {
   const traded = values.filter(Boolean);
   if (!traded.length) return undefined;
   const [first, last] = [traded[0], traded.at(-1)!];
-  const tenths = Math.round(((last - first) / first) * 1000);
-  const tone = tenths > 0 ? 'up' : tenths < 0 ? 'down' : 'flat';
-  return {
-    percent: `${formatSign(tenths, 'exceptZero')}${tenthsFormat.format(Math.abs(tenths) / 10)}%`,
-    tone,
-    last: formatWhole(last),
-  };
+  const { signed, tone } = formatPercentChange(last, first);
+  return { percent: signed, tone, last: formatWhole(last) };
 }
 
 /**
