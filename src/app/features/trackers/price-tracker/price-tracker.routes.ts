@@ -63,6 +63,7 @@ export default [
     },
     loadComponent: () => import('./tables/price-table-page'),
   },
+  // The server answers this path with a 301 first (`server/routers/redirects.ts`); this covers client-side navigation
   { path: 'browse', pathMatch: 'full', redirectTo: 'browse/a' },
   {
     // The meta's title, or this one when there's no meta

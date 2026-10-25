@@ -12,6 +12,7 @@ import { trailingSlashMiddleware } from './middleware/trailing-slash';
 import { createCarryOverRouter } from './routers/carry-over';
 import { createHealthRouter } from './routers/health';
 import { createOgImageRouter } from './routers/og-images';
+import { createRedirectRouter } from './routers/redirects';
 import { createSitemapRouter } from './routers/sitemaps';
 import { serverConfig } from './server-config';
 import { logger as serverLogger, renderingPage, type WebLogType } from './utils/log';
@@ -51,6 +52,7 @@ export function createApp({
     cspNonceMiddleware(), // Generate a CSP nonce for this response
     securityMiddleware(), // Add security headers
     protocolRelativeMiddleware(), // 404 for `//host` paths, which Angular SSR rejects with an error
+    createRedirectRouter(), // 301 for paths that moved, instead of Angular's 302
     trailingSlashMiddleware(), // Redirect `/path/` to `/path`, so each page has one URL and pre-rendered ones hit the cache
     angularCacheMiddleware(), // Cache rendered pages in memory for faster subsequent responses
   );

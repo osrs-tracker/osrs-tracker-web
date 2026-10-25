@@ -134,6 +134,22 @@ describe('createApp', () => {
     expect(handle).not.toHaveBeenCalled();
   });
 
+  it('redirects moved paths for good, keeping the query string', async () => {
+    for (const [path, location] of [
+      ['/trackers/price/browse', '/trackers/price/browse/a'],
+      ['/trackers/price/browse?q=x', '/trackers/price/browse/a?q=x'],
+      ['/trackers/price/browse/', '/trackers/price/browse/a'],
+    ]) {
+      const res = await get(path);
+
+      expect(res.status).toBe(301);
+      expect(res.headers.get('location')).toBe(location);
+    }
+    expect((await get('/trackers/price/browse', { method: 'HEAD' })).status).toBe(301);
+    expect((await get('/trackers/price/browse')).headers.get('cache-control')).toBeNull();
+    expect(handle).not.toHaveBeenCalled();
+  });
+
   it('does not redirect the root or protocol-relative paths with a trailing slash', async () => {
     pageCache.set('/', '<html>cached</html>');
     expect((await get('/')).status).toBe(200);
