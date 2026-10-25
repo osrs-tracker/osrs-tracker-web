@@ -17,6 +17,8 @@
   came, with their latest price and yesterday's trades. A clock beside a price that hasn't traded for an hour or more
   says when it last did. It lists items from today on, as the site only started dating them now. Find it in the menu
   under the Price Tracker, and from the Price Tracker and its card on Home.
+- In the Trackers menu, High-alch profit has a wand icon in the same line style as Margins and New on the GE, in place
+  of the game's nature rune, which stood out among them.
 
 ### Behind the scenes
 

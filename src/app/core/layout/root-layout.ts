@@ -10,7 +10,13 @@ import { ConsentBanner } from './consent-banner';
 import { DarkMode } from './dark-mode';
 import { NAV_TAB, NavMenu, NavMenuRow, NavMenus } from './nav-menu';
 import { PlayersOnlineCard } from './players-online-card';
-import { LucideArrowUpDown, LucideClock, LucideNewspaper, LucidePackagePlus } from '@lucide/angular';
+import {
+  LucideArrowUpDown,
+  LucideClock,
+  LucideNewspaper,
+  LucidePackagePlus,
+  LucideWandSparkles,
+} from '@lucide/angular';
 
 @Component({
   selector: 'root-layout',
@@ -30,6 +36,7 @@ import { LucideArrowUpDown, LucideClock, LucideNewspaper, LucidePackagePlus } fr
     LucideArrowUpDown,
     LucidePackagePlus,
     LucideClock,
+    LucideWandSparkles,
   ],
   providers: [NavMenus],
 })
