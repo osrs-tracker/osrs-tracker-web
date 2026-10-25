@@ -14,7 +14,7 @@ export function listCardState(resource: Resource<readonly unknown[] | undefined>
 /**
  * A card with a list of player or item rows (the projected content), a two-line header with an optional `[icon]`,
  * `[info]` tooltip, count and `[actions]`, and loading (skeleton rows), empty and error states. The list scrolls past
- * 390px.
+ * 390px. A `[footer]` (a link) shows under it in every state.
  */
 @Component({
   selector: 'section[list-card]',
@@ -65,6 +65,7 @@ export function listCardState(resource: Resource<readonly unknown[] | undefined>
         <load-error [source]="errorSource()" [message]="errorText()" [error]="error()" (retry)="retry.emit()" />
       }
     }
+    <ng-content select="[footer]" />
   `,
   host: {
     'class': 'block rounded-2xl bg-card overflow-hidden',

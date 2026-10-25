@@ -1,6 +1,6 @@
 ## 2026-10-25
 
-### New address and a steadier player page
+### New address, top gainers and a steadier player page
 
 - OSRS Tracker has its own address now: **osrs-tracker.net**. Old links and bookmarks to osrs-tracker.freekmencke.com
   keep working and take you to the same page on the new address. The first time you arrive that way, your favourite and
@@ -9,6 +9,10 @@
   show the new address too.
 - On phones, a player's combat level now always sits on its own line under their name. It used to move there a moment
   after the page opened on a slow connection, once the site's font arrived, pushing the rest of the page down.
+- The XP Tracker has a new list: yesterday's top gainers, the ten players this site tracks who gained the most XP on the
+  last full day (UTC). Open one to see what they trained. It sits beside your favourites, with the global and your own
+  recent lookups below. Home links to it from the XP Tracker card, and the Price Tracker card now links to the A–Z item
+  list.
 
 ### Behind the scenes
 

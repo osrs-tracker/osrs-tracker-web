@@ -113,6 +113,15 @@
           ></a>
         }
       }
+      <a
+        footer
+        class="link flex items-center justify-center gap-1.5 min-h-11 -mt-px border-t border-line text-sm/5 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent"
+        routerLink="/trackers/xp"
+        fragment="top-gainers"
+      >
+        See yesterday's top gainers
+        <ng-container *ngTemplateOutlet="arrow" />
+      </a>
     </section>
 
     <section
@@ -144,6 +153,15 @@
           <a item-row [routerLink]="['/trackers/price', item.id]" [item]="item"></a>
         }
       }
+      <!-- Matches the XP card's footer, so the two cards stay level side by side -->
+      <a
+        footer
+        class="link flex items-center justify-center gap-1.5 min-h-11 -mt-px border-t border-line text-sm/5 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent"
+        routerLink="/trackers/price/browse/a"
+      >
+        Browse items A–Z
+        <ng-container *ngTemplateOutlet="arrow" />
+      </a>
     </section>
   </div>
 </div>
