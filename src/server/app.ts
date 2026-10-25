@@ -52,12 +52,11 @@ export function createApp({
     cspNonceMiddleware(), // Generate a CSP nonce for this response
     securityMiddleware(), // Add security headers
     protocolRelativeMiddleware(), // 404 for `//host` paths, which Angular SSR rejects with an error
+    createRedirectRouter(), // 301 for paths that moved, instead of Angular's 302
     trailingSlashMiddleware(), // Redirect `/path/` to `/path`, so each page has one URL and pre-rendered ones hit the cache
     angularCacheMiddleware(), // Cache rendered pages in memory for faster subsequent responses
   );
 
-  // Paths that moved, answered with a 301 instead of Angular's 302
-  app.use(createRedirectRouter());
   // The page that hands visitors' saved data from the old host to the new one
   app.use(createCarryOverRouter());
   // The item and player sitemaps come from the API; the site sitemap and the index are static files

@@ -138,7 +138,7 @@ describe('createApp', () => {
     for (const [path, location] of [
       ['/trackers/price/browse', '/trackers/price/browse/a'],
       ['/trackers/price/browse?q=x', '/trackers/price/browse/a?q=x'],
-      ['/trackers/price/browse/', '/trackers/price/browse'],
+      ['/trackers/price/browse/', '/trackers/price/browse/a'],
     ]) {
       const res = await get(path);
 
@@ -146,6 +146,7 @@ describe('createApp', () => {
       expect(res.headers.get('location')).toBe(location);
     }
     expect((await get('/trackers/price/browse', { method: 'HEAD' })).status).toBe(301);
+    expect((await get('/trackers/price/browse')).headers.get('cache-control')).toBeNull();
     expect(handle).not.toHaveBeenCalled();
   });
 

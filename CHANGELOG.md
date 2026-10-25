@@ -1,13 +1,18 @@
 ## 2026-10-25
 
+### New address and a steadier player page
+
 - OSRS Tracker has its own address now: **osrs-tracker.net**. Old links and bookmarks to osrs-tracker.freekmencke.com
   keep working and take you to the same page on the new address. The first time you arrive that way, your favourite and
   recent players and items, light or dark mode, tracking offset and news catch-up day come along, so nothing needs
   setting up again. The cookie question shows once more, as your choice there belongs to each address. Link previews
   show the new address too.
 - On phones, a player's combat level now always sits on its own line under their name. It used to move there a moment
-  after the page opened on a slow connection, once the site's font arrived, pushing the rest of the page down. The A–Z
-  item list's address without a letter now tells search engines that it moved to the "A" page for good.
+  after the page opened on a slow connection, once the site's font arrived, pushing the rest of the page down.
+
+### Behind the scenes
+
+- The A–Z item list's address without a letter now tells search engines that it moved to the "A" page for good.
 
 ## 2026-10-24
 
