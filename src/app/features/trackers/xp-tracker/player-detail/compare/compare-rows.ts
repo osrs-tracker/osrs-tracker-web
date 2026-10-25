@@ -3,21 +3,15 @@ import { ActivityEnum, HiscoreEntry, SkillEnum, skillProgress } from '@osrs-trac
 /** One skill or activity on the newer day, and what changed since the older one when there is one */
 export interface CompareRow {
   name: string;
-  /** The level (skills) or score (activities) on the older day; only when comparing */
   from?: number;
-  /** The level or score on the newer day */
   to: number;
-  /** XP on the newer day; skills only */
   xp?: number;
-  /** XP (skills) or score (activities) gained since the older day; only when comparing */
   gained?: number;
-  /** The rank on the newer day; `null` when unranked */
   rank: number | null;
-  /** Places climbed since the older day (negative when it fell); only when comparing and ranked on both days */
+  /** Negative when it fell; only when ranked on both days */
   rankChange?: number;
 }
 
-/** Every skill, Overall first, on `to`, compared with `from` when given */
 export function skillRows(to: HiscoreEntry, from?: HiscoreEntry): CompareRow[] {
   return Object.values(SkillEnum).map(name => {
     const now = to.skills[name];
@@ -36,7 +30,6 @@ export function skillRows(to: HiscoreEntry, from?: HiscoreEntry): CompareRow[] {
   });
 }
 
-/** The activities with a score on either day, in the hiscores' order, on `to`, compared with `from` when given */
 export function activityRows(to: HiscoreEntry, from?: HiscoreEntry): CompareRow[] {
   return Object.values(ActivityEnum)
     .filter(name => to.activities[name] || from?.activities[name])

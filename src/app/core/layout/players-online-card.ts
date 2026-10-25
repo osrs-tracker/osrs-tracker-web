@@ -11,9 +11,7 @@ const WIDTH = 360;
 const HEIGHT = 64;
 
 /**
- * The Game menu's Players online card: the count (`PlayerCountStore`, the same as the page's) and a line of the last 24
- * hours that ends at it, linking to the page. Loads when the menu first opens (never during SSR: the menu is closed on
- * load), and again on every later opening.
+ * Loads when the menu first opens (never during SSR: the menu is closed on load), and again on every later opening.
  */
 @Component({
   selector: 'players-online-card',
@@ -55,7 +53,6 @@ export class PlayersOnlineCard {
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly playerCountStore = inject(PlayerCountStore);
 
-  /** Whether the menu is open */
   readonly active = input(false);
 
   private readonly requested = signal(false);
@@ -70,7 +67,6 @@ export class PlayersOnlineCard {
   /** Shown once the history has loaded too, so the number and the line's end appear together */
   readonly latest = computed(() => (this.history.hasValue() ? this.playerCountStore.count()?.total : undefined));
 
-  /** The line through every sample and the live count, scaled to the box with 4px to spare at the top and bottom */
   readonly line = computed(() => {
     const latest = this.latest();
     if (latest === undefined) return '';

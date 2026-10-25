@@ -4,7 +4,7 @@ import { BOSSES } from './activity-categories';
 
 const DAY = 24 * 60 * 60 * 1000;
 
-/** The gains between two checks (or the newest check and the live hiscores), dated by the older one */
+/** Dated by the older of the two checks */
 export interface Gains extends HiscoreDiff {
   /** The days they cover: 1, or more across a gap in the history (the player was off the hiscores or not checked) */
   days: number;
@@ -16,7 +16,6 @@ interface LevelGain {
   to: number;
 }
 
-/** What a player gained over the last `days` days, for the stat tiles. */
 export interface PeriodSummary {
   xp: number;
   /** XP gained in the `days` before that, `undefined` when the history doesn't cover them day for day */
@@ -28,10 +27,6 @@ export interface PeriodSummary {
   mostKilled?: { name: string; kills: number };
 }
 
-/**
- * Each check's gains, newest first. Takes the current stats (the live hiscores, or the newest stored entry when they're
- * unavailable) and the stored daily entries, newest first; the first gains are today's so far.
- */
 export function dailyGains(current: HiscoreEntry, history: HiscoreEntry[]): Gains[] {
   const ages = checkAges(current, history);
   let newer = current;
@@ -42,10 +37,6 @@ export function dailyGains(current: HiscoreEntry, history: HiscoreEntry[]): Gain
   });
 }
 
-/**
- * Where a period of `days` days starts: the index in `history` of the newest entry at least that many days back (the
- * oldest when the history doesn't go back that far) and how many days back it is.
- */
 export function periodStart(
   current: HiscoreEntry,
   history: HiscoreEntry[],
@@ -57,7 +48,6 @@ export function periodStart(
   return { index, days: ages[index] };
 }
 
-/** Sums the gains since the check `days` days ago; `undefined` without an entry to compare with. */
 export function periodSummary(current: HiscoreEntry, history: HiscoreEntry[], days: number): PeriodSummary | undefined {
   // the current stats can be the newest entry itself
   const entries = history[0] === current ? history : [current, ...history];
@@ -98,7 +88,6 @@ export function periodSummary(current: HiscoreEntry, history: HiscoreEntry[], da
   };
 }
 
-/** Each skill's XP, or each activity's score, gained over the days, for those that gained any */
 export function totalGains(days: Gains[], kind: 'skills' | 'activities'): ReadonlyMap<string, number> {
   const totals = new Map<string, number>();
   for (const day of days) {

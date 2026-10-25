@@ -5,7 +5,6 @@ import { Gains } from './player-summary';
 
 const day = (date: number): Date => new Date(Date.UTC(2026, 9, date));
 
-/** The diff dated October `date`: the XP each skill and the score each activity gained, Overall their total */
 const diff = (
   date: number,
   gains: { skills?: Record<string, number>; activities?: Record<string, number> } = {},

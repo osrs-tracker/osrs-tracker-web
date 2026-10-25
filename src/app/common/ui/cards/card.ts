@@ -1,9 +1,5 @@
 import { Component, input } from '@angular/core';
 
-/**
- * A flat card with a header: a 56px one-line header (title and `[actions]`, e.g. a segmented control), or a two-line
- * one when there's a `subtitle`.
- */
 @Component({
   selector: 'article[card]',
   template: `

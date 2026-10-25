@@ -16,9 +16,8 @@
     <div
       class="relative max-w-page mx-auto flex flex-wrap items-center gap-x-4 gap-y-1 px-4 pt-3 pb-1.5 sm:gap-6 sm:px-6 sm:py-4"
     >
-      <!-- The wordmark, as on the favicon: a big "OSRS" over a small "TRACKER" of the same width. Hover fills a tile
-           like the theme button's, padded evenly around the letters (pb-1 as TRACKER's line box leaves more below it);
-           the negative margins keep the text on the page edge and the nav height unchanged -->
+      <!-- Hover fills a tile like the theme button's, padded evenly around the letters (pb-1 as TRACKER's line box
+           leaves more below it); the negative margins keep the text on the page edge and the nav height unchanged -->
       <a
         class="flex flex-col items-start -mx-1.5 -my-1.5 px-1.5 pt-1.5 pb-1 rounded-xl font-bold uppercase hover:bg-row transition-colors"
         routerLink="/"
@@ -33,7 +32,6 @@
            them (display: none takes the hidden one out of the Tab order) -->
       <dark-mode class="sm:hidden" />
 
-      <!-- On phones the tabs wrap to a second row of three equal-width tabs, edge to edge -->
       <ul class="max-sm:order-3 max-sm:basis-full max-sm:grow max-sm:-mx-4 grid grid-cols-3 sm:flex sm:gap-6">
         <li class="flex">
           <a
@@ -151,7 +149,6 @@
   </nav>
 
   @if (navMenus.open()) {
-    <!-- Behind an open menu on phones; a tap on it closes the menu -->
     <!-- cursor-pointer: iOS Safari only sends a click on a plain element that has one -->
     <div
       class="sm:hidden fixed inset-0 z-9998 bg-scrim cursor-pointer"
@@ -161,7 +158,6 @@
   }
 
   <main id="main" class="relative">
-    <!-- content -->
     <router-outlet />
   </main>
 
@@ -178,7 +174,6 @@
       <div class="flex flex-wrap gap-x-5 gap-y-1.5 text-accent">
         <a class="hover:text-accent-hover" routerLink="/about/changelog">Changelog</a>
         <a class="hover:text-accent-hover" routerLink="/about/privacy">Privacy</a>
-        <!-- Opens the consent banner again, to change the choice -->
         <button type="button" class="hover:text-accent-hover cursor-pointer" (click)="consentStore.reopen()">
           Cookies
         </button>

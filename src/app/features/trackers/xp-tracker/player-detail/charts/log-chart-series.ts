@@ -14,14 +14,10 @@ export interface LogPoint {
 export interface ChartSeries<TName extends string = string> {
   name: TName;
   total: number;
-  /** One point per day with data, oldest first */
+  /** Oldest first */
   points: LogPoint[];
 }
 
-/**
- * Per skill that gained XP, the XP gained so far on each day, largest total first. Takes the newest diff first; by
- * default every skill in the diffs but Overall.
- */
 export function xpGainedSeries(diffs: Gains[], skills: readonly string[] = skillsIn(diffs)): ChartSeries[] {
   const days = [...diffs].reverse();
 
@@ -35,7 +31,6 @@ export function xpGainedSeries(diffs: Gains[], skills: readonly string[] = skill
     .sort((a, b) => b.total - a.total);
 }
 
-/** Per activity of the category with a score, the score of each day, largest total first. Takes the newest diff first. */
 export function activitySeries(diffs: Gains[], category: ReadonlySet<string>): ChartSeries[] {
   const days = [...diffs].reverse();
 
@@ -48,10 +43,6 @@ export function activitySeries(diffs: Gains[], category: ReadonlySet<string>): C
     .sort((a, b) => b.total - a.total);
 }
 
-/**
- * The series as a data table, a row per day, newest first, with each series' value that day: for a `cumulative` one
- * (XP gained so far) the day's gain. A row across a gap in the history spans its days.
- */
 export function logTableRows(series: ChartSeries[], cumulative = false): ChartTableRow[] {
   return (series[0]?.points ?? [])
     .map(({ x, from }, i) => ({
@@ -64,7 +55,6 @@ export function logTableRows(series: ChartSeries[], cumulative = false): ChartTa
     .reverse();
 }
 
-/** The skills in any of the diffs but Overall, in the order they first appear */
 function skillsIn(diffs: Gains[]): string[] {
   const names = new Set(diffs.flatMap(diff => Object.keys(diff.skills)));
   names.delete(SkillEnum.Overall);

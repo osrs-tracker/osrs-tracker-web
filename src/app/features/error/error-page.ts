@@ -8,7 +8,6 @@ import { AnalyticsService } from '@app/common/analytics/analytics-service';
 /** Long enough for an API restart, short enough that a crawler retries the same day */
 const RETRY_AFTER_SECONDS = 300;
 
-/** Shown when a page's data failed to load for a reason other than not found, see `resolverErrorHandler`. */
 @Component({
   selector: 'error-page',
   imports: [BackButton, StatusPanel],

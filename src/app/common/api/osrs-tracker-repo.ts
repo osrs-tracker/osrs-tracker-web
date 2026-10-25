@@ -27,16 +27,12 @@ export interface TopGainer {
   date: Date;
 }
 
-/** An item from `GET /items?sort=added`: only these fields, and always dated */
+/** Only these fields, and always dated */
 export type NewItem = Pick<Item, 'id' | 'name' | 'icon'> & Required<Pick<Item, 'addedAt'>>;
 
 @Service()
 export class OsrsTrackerRepo {
   private readonly httpClient = inject(HttpClient);
-
-  //
-  // Players
-  //
 
   getPlayerInfo(
     username: string,
@@ -56,8 +52,8 @@ export class OsrsTrackerRepo {
   }
 
   /**
-   * Records the lookup and starts tracking the player for `scrapingOffset`, or refreshes them when stale. Returns the
-   * player like `getPlayerInfo`, or `null` when the API took us for a bot. Only call it for `isHumanVisitor()`.
+   * Records the lookup and starts tracking the player for `scrapingOffset`, or refreshes them when stale. `null` when
+   * the API took us for a bot. Only call it for `isHumanVisitor()`.
    */
   trackPlayer(username: string, scrapingOffset: number): Observable<Player | null> {
     return this.httpClient
@@ -83,10 +79,7 @@ export class OsrsTrackerRepo {
       .pipe(map(players => players.map(player => this.#parsePlayer(player))));
   }
 
-  /**
-   * The tracked players with the largest Overall XP gain over the newest day the 00:00 UTC scrape covers, largest first
-   * (at most 50)
-   */
+  /** Over the newest day the 00:00 UTC scrape covers, largest first; at most 50 */
   getTopGainers(limit: number): Observable<TopGainer[]> {
     return this.httpClient
       .get<TopGainer[]>('/players', { params: { sort: 'gain', limit } })
@@ -100,17 +93,12 @@ export class OsrsTrackerRepo {
     };
   }
 
-  //
-  // Items
-  //
-
   searchItems(query: string): Observable<Item[] | void> {
     return this.httpClient.get<Item[]>('/items', { params: { search: query } });
   }
 
   /**
-   * Every item whose name starts with `letter` (`a`–`z`, or `0` for any other first character), sorted by name. A 400
-   * for any other letter.
+   * `letter` is `a`–`z`, or `0` for any other first character. A 400 for any other letter.
    */
   getItemsByLetter(letter: string): Observable<Pick<Item, 'id' | 'name' | 'icon'>[]> {
     return this.httpClient.get<Pick<Item, 'id' | 'name' | 'icon'>[]>('/items', {
@@ -119,9 +107,7 @@ export class OsrsTrackerRepo {
     });
   }
 
-  /**
-   * The items the API added since it began dating them (25 October 2026), newest first, at most `limit` (1–100)
-   */
+  /** Only items added since the API began dating them (25 October 2026); `limit` is 1–100 */
   getNewItems(limit: number): Observable<NewItem[]> {
     return this.httpClient
       .get<NewItem[]>('/items', { params: { sort: 'added', limit } })
@@ -143,15 +129,11 @@ export class OsrsTrackerRepo {
     return this.httpClient.get<Item[]>('/items', { params: { limit: config.maxStoredItems } });
   }
 
-  //
-  // Player counts
-  //
-
   // Requests refreshed every minute revalidate with the API (a 304 when unchanged) instead of using the browser cache's
   // copy (`max-age=60` live, 300 history). Not the ones SSR renders (`/latest`, the first `/live`): the transfer cache
   // leaves out a request with `cache: 'no-cache'`, so the browser would fetch it again on hydration
 
-  /** The newest stored sample of the players online, taken every 10 minutes */
+  /** Sampled every 10 minutes */
   getLatestPlayerCount(): Observable<PlayerCount> {
     return this.httpClient
       .get<PlayerCount>('/player-counts/latest')
@@ -159,8 +141,8 @@ export class OsrsTrackerRepo {
   }
 
   /**
-   * The players online right now, from Jagex's world list (the API keeps it for up to a minute). `refresh` revalidates
-   * with the API. Fails after the SSR timeout during a render, as the API may be waiting on Jagex.
+   * From Jagex's world list, which the API keeps for up to a minute; `refresh` revalidates. Fails after the SSR timeout
+   * during a render, as the API may be waiting on Jagex.
    */
   getLivePlayerCount(refresh: boolean): Observable<PlayerCount> {
     return this.httpClient
@@ -171,16 +153,12 @@ export class OsrsTrackerRepo {
       .pipe(map(playerCount => ({ ...playerCount, date: new Date(playerCount.date) })));
   }
 
-  /** The players online over `range`, oldest first: 10-minute samples (24h, 7d), hourly (30d), daily (1y, all) */
+  /** Oldest first: 10-minute samples (24h, 7d), hourly (30d), daily (1y, all) */
   getPlayerCountHistory(range: PlayerCountRange): Observable<PlayerCountPoint[]> {
     return this.httpClient
       .get<PlayerCountPoint[]>('/player-counts', { params: { range }, cache: 'no-cache' })
       .pipe(map(points => points.map(point => ({ ...point, date: new Date(point.date) }))));
   }
-
-  //
-  // News
-  //
 
   getNews(): Observable<OsrsNewsItem[]> {
     return this.httpClient
@@ -189,8 +167,8 @@ export class OsrsTrackerRepo {
   }
 
   /**
-   * Every stored post, newest first, `limit` (at most 50) at a time: the first page without `before`, then the older
-   * ones with the previous page's `next`. `category` is a name as Jagex uses it (`Event`, not `Events`).
+   * `limit` is at most 50; the older pages come with the previous page's `next` as `before`. `category` is a name as
+   * Jagex uses it (`Event`, not `Events`).
    */
   getNewsArchive(limit: number, options?: { before?: string; category?: string }): Observable<NewsArchivePage> {
     return this.httpClient

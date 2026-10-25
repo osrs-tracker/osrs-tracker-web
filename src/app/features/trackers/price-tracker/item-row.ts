@@ -11,17 +11,11 @@ import { OsrsPricesRepo, TimeSpan } from '@app/common/api/osrs-prices-repo';
 import { RecentItem } from './price-tracker-store';
 
 interface ItemRowPrice {
-  /** The latest instant-sell price. */
   price: number | null;
-  /** The price minus the previous day's 24h average (UTC). */
   change: number | null;
   average: number | null;
 }
 
-/**
- * A 65px list row linking to an item: icon, name, short price and the change since the previous day's 24h average
- * as a pill.
- */
 @Component({
   selector: 'a[item-row]',
   template: `

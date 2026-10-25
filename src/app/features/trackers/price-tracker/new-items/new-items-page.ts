@@ -31,9 +31,7 @@ const PAGE_SIZE = 25;
 /** The day the API began dating items: those it had before aren't listed (it kept no history to backfill from) */
 export const DATED_SINCE = new Date(Date.UTC(2026, 9, 25));
 
-/** An item's instant-buy price, when that last traded (ms) and yesterday's trades, from the Wiki's lists */
 export interface ItemPrices {
-  /** `null` without a trade yet */
   price: number | null;
   tradedAt: number | null;
   volume: number;
@@ -45,7 +43,6 @@ export interface NewItemPrices {
   loadedAt: number;
 }
 
-/** The items a game update added on one UTC day */
 export interface AddedDay {
   label: string;
   items: NewItem[];
@@ -54,10 +51,8 @@ export interface AddedDay {
 const PRICES_KEY = makeStateKey<NewItemPrices>('new-items-prices');
 
 /**
- * New on the GE: the items the API added most recently, under the day each came, with their latest price and daily
- * volume. The server renders it from the API's list and its copies of the Wiki's lists, and hands the browser the prices
- * of all the listed items (they're few), so hydration and "Show 25 more" fetch nothing. After a client-side navigation,
- * or when the server's prices failed, the browser loads the Wiki's lists itself.
+ * The server hands the browser the prices of all the listed items (they're few), so hydration and "Show 25 more" fetch
+ * nothing. After a client-side navigation, or when the server's prices failed, the browser loads the Wiki's lists itself.
  */
 @Component({
   selector: 'new-items-page',
@@ -127,7 +122,6 @@ export default class NewItemsPage {
 
   readonly shown = signal(PAGE_SIZE);
 
-  /** The shown items, under the UTC day each was added, newest first as the API sends them */
   readonly days = computed((): AddedDay[] => {
     if (!this.items.hasValue()) return [];
     const days: AddedDay[] = [];
@@ -143,7 +137,6 @@ export default class NewItemsPage {
   readonly shownCount = computed(() => Math.min(this.shown(), this.total()));
   readonly more = computed(() => Math.min(PAGE_SIZE, this.total() - this.shownCount()));
 
-  /** Phones: the row whose details are open */
   readonly expanded = signal<number | null>(null);
 
   readonly datedSince = formatDate(DATED_SINCE, 'd MMMM y', 'en-US', 'UTC');
@@ -153,7 +146,6 @@ export default class NewItemsPage {
 
   protected readonly formatTableNumber = formatTableNumber;
 
-  /** What a screen reader hears after "Show 25 more" or a retry: the count, or the failure */
   private readonly announcement = computed(() => {
     if (this.items.error()) return 'New items didn’t load.';
     if (this.pricesFailed()) return 'Prices didn’t load.';
@@ -175,12 +167,10 @@ export default class NewItemsPage {
     this.expanded.update(expanded => (expanded === id ? null : id));
   }
 
-  /** The item's prices, once loaded */
   pricesOf(id: number): ItemPrices | null {
     return this.prices.hasValue() ? (this.prices.value().byId[id] ?? null) : null;
   }
 
-  /** How long ago the price last traded, when that's an hour or more */
   staleFor(prices: ItemPrices): string | null {
     return prices.tradedAt !== null ? staleAge(prices.tradedAt, this.prices.value()!.loadedAt) : null;
   }

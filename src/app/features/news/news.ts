@@ -26,7 +26,7 @@ import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { LucideExternalLink, LucideNewspaper, LucideX } from '@lucide/angular';
 
-/** Posts per page: the first one is rendered on the server, "Show older posts" loads the next */
+/** The first page is rendered on the server */
 const PAGE_SIZE = 30;
 /** The first rows' artwork is in view on load, so it isn't lazy */
 const EAGER_IMAGES = 3;
@@ -50,10 +50,9 @@ interface NewsMonth {
 }
 
 /**
- * The news archive: every stored post, newest first, by month, a page at a time, each linking to the post on Jagex's
- * site. The category and the "since you last played" day are in the link (`?category=`, `?since=`), so the server
- * renders them and they can be shared. Picking either replaces the link without a navigation, which would scroll to
- * the top. Posts are dated by UTC day, so dates and months are shown in UTC.
+ * The category and the "since you last played" day are in the link (`?category=`, `?since=`), so the server renders
+ * them and they can be shared. Picking either replaces the link without a navigation, which would scroll to the top.
+ * Posts are dated by UTC day, so dates and months are shown in UTC.
  */
 @Component({
   selector: 'news',
@@ -81,13 +80,11 @@ export default class News {
 
   private readonly queryParams = toSignal(this.route.queryParamMap, { requireSync: true });
 
-  /** The category's name as Jagex uses it, `''` for all; a link to another one shows all */
   readonly category = linkedSignal(() => {
     const category = this.queryParams().get('category') ?? '';
     return NEWS_CATEGORIES.some(option => option.value === category) ? category : '';
   });
 
-  /** The "since you last played" day, `YYYY-MM-DD`, or `null` for every post */
   readonly since = linkedSignal(() => parseDay(this.queryParams().get('since')));
   readonly sinceDate = computed(() => {
     const since = this.since();
@@ -99,7 +96,6 @@ export default class News {
     return sinceDate ? new Date(sinceDate.getTime() + 24 * 60 * 60 * 1000) : null;
   });
 
-  /** With no day in the link, the calendar opens on the one remembered on this device, else a week ago */
   readonly openAt = computed(
     () => this.lastPlayedStore.lastPlayed() ?? subDays(new Date(), 7).toISOString().slice(0, 10),
   );
@@ -112,7 +108,6 @@ export default class News {
   /** During SSR a failed load renders as loading, as the browser fetches it again after hydration */
   readonly firstPageFailed = computed(() => this.isBrowser && !!this.firstPage.error());
 
-  /** The pages after the first, which start over with the category */
   private readonly older = paging({
     reset: this.category,
     fetch: ({ before, category }: { before: string; category: string }) =>
@@ -130,7 +125,6 @@ export default class News {
     return lastPage?.next ?? null;
   });
 
-  /** With a day picked: whether the loaded posts reach back to it, so every post since is shown */
   readonly reachedSince = computed(() => {
     const sinceEnd = this.sinceEnd();
     const oldest = this.posts().at(-1);
@@ -139,7 +133,6 @@ export default class News {
 
   readonly hasOlder = computed(() => !this.reachedSince() && this.next() !== null);
 
-  /** The day picked is before the oldest stored post: the end note says where the history starts */
   readonly historyStart = computed(() =>
     this.since() && !this.category() && !this.hasOlder() && !this.reachedSince()
       ? (this.posts().at(-1)?.pubDate ?? null)
@@ -169,7 +162,6 @@ export default class News {
     () => NEWS_CATEGORIES.find(option => option.value === this.category())?.label ?? '',
   );
 
-  /** "Game Updates posts since 1 May 2026", or "posts" without filters */
   private readonly postsLabel = computed(() => {
     const since = this.sinceDate();
     const category = this.category() ? `${this.categoryLabel()} ` : '';
@@ -177,7 +169,6 @@ export default class News {
   });
   readonly emptyText = computed(() => `No ${this.postsLabel()}.`);
 
-  /** Read out when a filter or "Show older posts" finishes: how many posts it shows or added, or the failure */
   private readonly announcement = computed(() => {
     if (this.firstPageFailed()) return "The news didn't load.";
     if (this.olderFailed()) return "The older posts didn't load.";
@@ -192,7 +183,6 @@ export default class News {
 
   readonly skeletonRows: number[] = Array.from({ length: 8 }, (_, i) => i);
 
-  /** Where focus was when "Show older posts" was pressed, to move on to the first post it adds, or to Try again */
   private olderFocus: Element | null = null;
 
   constructor() {
@@ -263,7 +253,6 @@ export default class News {
     target?.focus();
   }
 
-  /** Puts the filters in the link, replacing the history entry and keeping the scroll position */
   private updateQuery(): void {
     void this.router.navigate([], {
       relativeTo: this.route,

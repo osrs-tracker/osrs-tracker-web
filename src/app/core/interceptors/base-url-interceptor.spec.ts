@@ -68,7 +68,6 @@ describe('baseUrlInterceptor', () => {
   });
 
   it('lets the browser reuse responses the server fetched from the internal API URL', () => {
-    // Server render: fetch in-cluster and store the response in the transfer state
     globals.ngServerMode = true;
     const server = setup(provideInternalApiBaseUrl(internalOrigin));
     server.http.get('/news', { params: { page: 1 } }).subscribe();
@@ -76,7 +75,6 @@ describe('baseUrlInterceptor', () => {
     const state: Record<string, unknown> = JSON.parse(TestBed.inject(TransferState).toJson());
     expect(Object.keys(state)).toHaveLength(1);
 
-    // Hydration: the browser requests the public URL and finds the server's response
     TestBed.resetTestingModule();
     globals.ngServerMode = false;
     const browser = setup();

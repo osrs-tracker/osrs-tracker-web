@@ -14,30 +14,20 @@ export interface Milestone {
   target: MilestoneTarget;
   /** The level now; for 200M, the XP now matters instead */
   level: number;
-  /** The level reached, or 200M */
   goal: number | '200M';
   xp: number;
-  /** Average XP a day over the days the history covers */
   pace: number;
   /** From the last check, rounded up */
   daysLeft: number;
-  /** More than ten years away */
   far: boolean;
 }
 
 export interface Milestones {
   /** The days the pace is averaged over: the period, or fewer when the history doesn't go back that far */
   days: number;
-  /** Each target's milestones, soonest first */
   targets: Record<MilestoneTarget, Milestone[]>;
 }
 
-/**
- * When each skill reaches its next level, 99 and 200M XP at its average XP a day since the check `days` days back
- * (or the oldest one), carried forward. Takes the current stats and the stored entries, newest first. Skills without XP
- * in those days, unranked ones (now or at the start) and Overall get none; a skill at a target gets none for it. A skill at 98's next level is
- * 99, so it's in both.
- */
 export function milestones(current: HiscoreEntry, history: HiscoreEntry[], days: number): Milestones {
   const targets: Record<MilestoneTarget, Milestone[]> = { 'next': [], '99': [], '200m': [] };
   const start = history.length ? periodStart(current, history, days) : undefined;

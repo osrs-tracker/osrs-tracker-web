@@ -3,10 +3,7 @@ import { Component, input } from '@angular/core';
 import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
 import { TopGainer } from '@app/common/api/osrs-tracker-repo';
 
-/**
- * A 65px list row linking to a top gainer: their rank, name and the Overall XP they gained (the card's subtitle names
- * the day). Everything comes with the list, so unlike `player-row` it renders on the server.
- */
+/** Everything comes with the list, so unlike `player-row` it renders on the server. */
 @Component({
   selector: 'a[top-gainer-row]',
   template: `

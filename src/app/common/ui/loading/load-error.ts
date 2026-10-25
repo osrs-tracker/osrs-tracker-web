@@ -14,15 +14,13 @@ import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { LucideRefreshCw } from '@lucide/angular';
 
 /**
- * Shown in place of data that failed to load, with a retry button. Reports itself to analytics once it's visible in the
- * browser, labelled with `source`, so failures users actually see can be counted. `panel` gives it the same surface as
- * the cards around it, for when it replaces one; `compact` is a lone retry icon, for when it replaces a single value;
- * `inline` is an amber line of text (`message`, kept short), for when it replaces a line under a value.
+ * Reports itself to analytics once it's visible in the browser, labelled with `source`, so failures users actually see
+ * can be counted. `panel` replaces a card, `compact` a single value, `inline` a line under a value (`message`, kept
+ * short).
  *
  * The default and `panel` variants go away while the view reloads, so Try again moves focus first, instead of letting
  * it fall to `<body>`: to `retryFocus`, else to the last heading before it in the card or section around it (or that
- * card itself), else to the page's `h1`. These stay while the view reloads. Their hint tells a server error from a
- * network one when given the `error`.
+ * card itself), else to the page's `h1`.
  */
 @Component({
   selector: 'load-error',
@@ -75,11 +73,10 @@ export class LoadError {
 
   readonly source = input.required<string>();
   readonly message = input("Couldn't load this data.");
-  /** Replaces the hint picked from `error` */
   readonly hint = input<string>();
-  /** What failed, usually the resource's `error()`: an HTTP status from the server gets the server hint */
+  /** An HTTP status from the server gets the server hint */
   readonly error = input<unknown>();
-  /** Where Try again moves focus, when the heading before isn't the place (a search input) */
+  /** For when the heading before isn't the place (a search input) */
   readonly retryFocus = input<HTMLElement>();
   readonly compact = input(false, { transform: booleanAttribute });
   readonly panel = input(false, { transform: booleanAttribute });

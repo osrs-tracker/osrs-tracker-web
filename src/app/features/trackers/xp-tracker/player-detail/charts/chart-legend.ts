@@ -18,14 +18,12 @@ import { ensureToolbarTabStop, toolbarTabStop } from '@app/common/ui/controls/ar
 export interface LegendItem {
   name: string;
   color: string;
-  /** Shown after the name, e.g. the period total */
   total?: number;
   on: boolean;
 }
 
 /**
- * The chart's chips: the skill or activity icon and name in its series colour; picking one toggles its series. Past
- * `collapseAfter` items, the rest that are off wait behind a "+N" chip, so the plot keeps its room.
+ * Past `collapseAfter` items, the ones that are off wait behind a "+N" chip, so the plot keeps its room.
  *
  * An `@angular/aria` toolbar: one Tab stop, the arrow keys move between the chips and the "+N" chip last, Enter or Space
  * toggles one.
@@ -90,17 +88,14 @@ export class ChartLegend {
   readonly toggled = output<string>();
 
   readonly expanded = signal(false);
-  /** Collapsed: the first items, and any that are on */
   readonly shown = computed(() =>
     this.expanded() ? this.items() : this.items().filter((item, i) => i < this.collapseAfter() || item.on),
   );
-  /** How many items collapsing hides; with none, there is nothing to expand or collapse */
   readonly hidden = computed(() => this.items().filter((item, i) => i >= this.collapseAfter() && !item.on).length);
 
   private readonly document = inject(DOCUMENT);
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly toolbar = inject(Toolbar);
-  /** The chip that last had focus, while focus is in the legend */
   private focusedChip?: HTMLElement;
 
   constructor() {

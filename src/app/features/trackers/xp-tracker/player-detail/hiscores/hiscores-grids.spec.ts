@@ -69,7 +69,6 @@ describe('SkillGrid keyboard', () => {
       activities: {},
     };
     fixture.componentRef.setInput('hiscore', hiscore);
-    // Attack gained XP, Hitpoints didn't
     fixture.componentRef.setInput('gains', new Map([['Attack', 100]]));
     document.body.appendChild(fixture.nativeElement);
     await fixture.whenStable();
@@ -105,7 +104,7 @@ describe('SkillGrid keyboard', () => {
       key(buttons[row * 3], 'ArrowDown');
       await ready();
     }
-    expect(document.activeElement).toBe(buttons[24]); // The total level
+    expect(document.activeElement).toBe(buttons[24]);
     expect(buttons.filter(button => button.tabIndex === 0)).toEqual([buttons[24]]);
   });
 

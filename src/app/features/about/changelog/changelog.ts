@@ -5,10 +5,8 @@ import { Marked } from 'marked';
 import { markedSmartypants } from 'marked-smartypants';
 import { InformationPage } from '@app/common/ui/page/information-page';
 
-/** Curly quotes and dashes, as in the rest of the app; it leaves code alone */
 const markdown = new Marked({ async: false }, markedSmartypants());
 
-/** A `## 2026-10-23` heading: every day in `CHANGELOG.md` starts with one */
 const DAY_HEADING = /^## (\d{4}-\d{2}-\d{2})$/m;
 
 interface ChangelogDay {
@@ -53,7 +51,6 @@ export default class Changelog {
     return days;
   });
 
-  /** Each year with its newest day, newest first, for the jump links */
   readonly years = computed(() => {
     const years = new Map<string, string>();
     for (const { date } of this.days()) {

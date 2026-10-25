@@ -9,10 +9,8 @@
 /** 2% of the sale price per item, since 29 May 2025 (1% before); a whole percentage keeps the maths exact */
 export const GE_TAX_PERCENT = 2;
 
-/** The most tax paid on a single item */
 export const GE_TAX_CAP = 5_000_000;
 
-/** Items sold without tax, by item id */
 export const GE_TAX_EXEMPT_IDS: ReadonlySet<number> = new Set([
   13190, // Old school bond
   3008, // Energy potion(4)
@@ -74,7 +72,6 @@ export function geTax(itemId: number, price: number): number {
   return Math.min(Math.floor((price * GE_TAX_PERCENT) / 100), GE_TAX_CAP);
 }
 
-/** The lowest price to sell one item at to get at least `buyPrice` back after tax. */
 export function breakEvenSellPrice(itemId: number, buyPrice: number): number {
   if (buyPrice <= 0) return 0;
 

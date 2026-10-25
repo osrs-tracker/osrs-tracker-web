@@ -3,12 +3,10 @@ import express, { Router } from 'express';
 import { getCspNonce } from '../middleware/csp-nonce';
 
 /**
- * The only path the old host (osrs-tracker.freekmencke.com) still serves; everything else there 301s to the new one with
- * `#from-old`. A visitor who arrives that way with empty storage is sent here once by `index.html`, with the page they
- * came for in `?to=`; this page hands its `localStorage` to the new origin in the URL fragment, which never reaches a
- * server, and `index.html` imports it. Consent is left behind: a crafted link could otherwise set it. The page is the
- * same for every request (the script reads `to` itself), so nothing from the request ends up in it. Temporary: removed
- * in osrs-tracker-web#453.
+ * Hands the old host's (osrs-tracker.freekmencke.com) `localStorage` to the new origin in the URL fragment, which never
+ * reaches a server. Consent is left behind: a crafted link could otherwise set it. The page is the same for every
+ * request (the script reads `to` itself), so nothing from the request ends up in it. Temporary: removed in
+ * osrs-tracker-web#453.
  */
 export function createCarryOverRouter(): Router {
   const router = express.Router();

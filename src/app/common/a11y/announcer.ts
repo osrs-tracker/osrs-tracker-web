@@ -6,10 +6,9 @@ import { effect, inject, Injector, PLATFORM_ID, Service } from '@angular/core';
 export const ANNOUNCE_DELAY = 500;
 
 /**
- * Polite messages for screen readers, through CDK's `LiveAnnouncer`: one live region for the whole page, which reads a
- * message even when the text that shows it is added at the same time (a region added with its text isn't read).
- * Browser only: the announcer adds its region to the page when created, on the server too, so it's looked up on the
- * first message.
+ * One live region for the whole page reads a message even when the text that shows it is added at the same time (a
+ * region added with its text isn't read). Browser only: the announcer adds its region to the page when created, on the
+ * server too, so it's looked up on the first message.
  */
 @Service()
 export class Announcer {
@@ -22,10 +21,8 @@ export class Announcer {
 }
 
 /**
- * Reads `message` out whenever it changes to a new text that stays for `ANNOUNCE_DELAY`, such as a result count after a
- * filter, "No items match" or a failure. The first value isn't read: it's what the server rendered. Return `null` while
- * there's nothing to say (loading); a page that loads in the browser (after a client-side navigation) so reads its
- * first result. Browser only. Call it in an injection context.
+ * The first value isn't read: it's what the server rendered. Return `null` while there's nothing to say (loading); a
+ * page that loads in the browser (after a client-side navigation) so reads its first result. Browser only.
  */
 export function announceChanges(message: () => string | null): void {
   const announcer = inject(Announcer);

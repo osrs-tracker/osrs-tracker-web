@@ -75,11 +75,7 @@ const MAX_LEVEL = 99;
 const DAY = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
 const COMPACT = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 });
 
-/**
- * The player's link preview image: a 1200×630 PNG card with their account type, name and combat level, and from their
- * latest hiscores the total level, total XP and the in-game skill grid, with 99s in gold. The footer dates the stats, as
- * chat apps keep a preview for weeks. Without hiscores, only who they are.
- */
+/** The footer dates the stats, as chat apps keep a preview for weeks. */
 export async function renderPlayerCard(player: Player, hiscore: HiscoreEntry | undefined): Promise<Uint8Array> {
   return renderPng(hiscore ? statsCard(player, hiscore) : identityCard(player));
 }
@@ -115,7 +111,6 @@ function statsCard(player: Player, hiscore: HiscoreEntry): Node {
   );
 }
 
-/** The item card's layout: the account tile beside the name, the combat level under them */
 function identityCard(player: Player): Node {
   return frame(
     [
@@ -136,7 +131,6 @@ function name(player: Player, fontSize: number): Node {
   return el({ fontSize, fontWeight: 600, lineHeight: 1.05, letterSpacing: -1 }, capitalise(player.username));
 }
 
-/** Rows of three like the stats tab, each level beside its icon */
 function skillGrid(hiscore: HiscoreEntry): Node {
   const rows: Node[] = [];
   for (let i = 0; i < SKILL_LAYOUT.length; i += 3) {
@@ -194,10 +188,6 @@ function skillCell(hiscore: HiscoreEntry, skill: GridSkill, icon: Uint8Array): N
   );
 }
 
-/**
- * The account type's helm (Lucide's person for a regular account) on a tile, as on the page: bottom left a red × when
- * de-ironed or the ironman helm when de-ultimated, bottom right a skull when a hardcore died
- */
 function accountTile(player: Player, size: number): Node {
   const badge = (side: 'left' | 'right', child: Node) =>
     el(

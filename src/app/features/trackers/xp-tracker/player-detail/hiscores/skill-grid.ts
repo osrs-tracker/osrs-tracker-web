@@ -22,32 +22,22 @@ import { RankLines } from './rank-lines';
 
 interface SkillCell {
   name: SkillEnum;
-  /** False while the hiscores load; the cell is a skeleton */
   loaded: boolean;
   level: number;
-  /** XP shown and used for progress; an untrained skill has none */
   xp: number;
   /** On the main table; `null` or `undefined` unranked */
   rank?: number | null;
   /** Below 99 only */
   progress?: number;
-  /** XP gained in the charted days */
   gain: number;
-  /** Gained XP, so it can be picked to chart */
   charted: boolean;
   on: boolean;
-  /** Its line colour in the XP gained chart */
   color: string;
 }
 
-// Overall's line is drawn in the accent colour
 const OVERALL_COLOR = 'var(--accent)';
 
 /**
- * The skill levels with their progress to the next level; picking skills that gained XP compares them on the chart. As in
- * the activity grid, those are outlined in their chart colour and tinted when picked, so the grid reads as the chart's
- * legend.
- *
  * An `@angular/aria` grid: one Tab stop, the arrow keys move between cells, Enter or Space toggles one. Cells without gains
  * stay reachable (`aria-disabled`), as their tooltip has the XP; they just don't toggle.
  */
@@ -164,7 +154,6 @@ export class SkillGrid {
 
   /** Undefined while the hiscores load */
   readonly hiscore = input.required<HiscoreEntry | undefined>();
-  /** Each skill's XP gained over the charted days */
   readonly gains = input.required<ReadonlyMap<string, number>>();
 
   readonly cells = computed<SkillCell[]>(() => {

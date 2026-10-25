@@ -10,9 +10,9 @@ export function readQueryParams(router: Router, location: Location): ParamMap {
 }
 
 /**
- * Puts params in the URL (`null` takes one out) without navigating: a navigation would scroll to the top and count as a
- * page view ("Compared days go in the URL without navigating", `docs/decisions.md`). Keeps the router's state, so Back to
- * the page still restores its scroll position.
+ * Without navigating, as a navigation would scroll to the top and count as a page view ("Compared days go in the URL
+ * without navigating", `docs/decisions.md`). Keeps the router's state, so Back to the page still restores its scroll
+ * position.
  */
 export function replaceQueryParams(router: Router, route: ActivatedRoute, location: Location, params: Params): void {
   const url = router.createUrlTree([], { relativeTo: route, queryParams: params, queryParamsHandling: 'merge' });

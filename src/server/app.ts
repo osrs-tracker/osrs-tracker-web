@@ -18,10 +18,6 @@ import { serverConfig } from './server-config';
 import { logger as serverLogger, renderingPage, type WebLogType } from './utils/log';
 import { routeLabel } from './utils/route-label';
 
-/**
- * @param isReady Whether the readiness probe (`/healthy` on the main port) answers 200 yet
- * @param logger Where the request log and errors go, stdout unless a spec passes its own
- */
 export function createApp({
   isReady = () => true,
   logger = serverLogger,
@@ -37,27 +33,25 @@ export function createApp({
     trustProxyHeaders: serverConfig.TRUST_PROXY_HEADERS,
   });
 
-  // Readiness probe on the main port, before logging and metrics so probes don't show up in either
+  // Before logging and metrics, so probes don't show up in either
   app.use('/healthy', createHealthRouter(isReady));
 
   app.use(
-    metricsMiddleware(metricsApp), // Set up Monitoring
-    // Add request logging
+    metricsMiddleware(metricsApp),
     requestLogger({
       logger,
       route: routeLabel,
       // Only once the headers were sent: an aborted request has no cache field
       fields: (_req, res) => ({ cache: res.headersSent ? res.getHeader('x-cache') : undefined }),
     }),
-    cspNonceMiddleware(), // Generate a CSP nonce for this response
-    securityMiddleware(), // Add security headers
+    cspNonceMiddleware(),
+    securityMiddleware(),
     protocolRelativeMiddleware(), // 404 for `//host` paths, which Angular SSR rejects with an error
     createRedirectRouter(), // 301 for paths that moved, instead of Angular's 302
     trailingSlashMiddleware(), // Redirect `/path/` to `/path`, so each page has one URL and pre-rendered ones hit the cache
-    angularCacheMiddleware(), // Cache rendered pages in memory for faster subsequent responses
+    angularCacheMiddleware(),
   );
 
-  // The page that hands visitors' saved data from the old host to the new one
   app.use(createCarryOverRouter());
   // The item and player sitemaps come from the API; the site sitemap and the index are static files
   app.use(createSitemapRouter({ logger }));
@@ -89,9 +83,7 @@ export function createApp({
     res.status(500).send('Internal Server Error');
   });
 
-  metricsApp.use(
-    Router().use('/healthy', createHealthRouter()), // Health check endpoint
-  );
+  metricsApp.use(Router().use('/healthy', createHealthRouter()));
 
   return { app, metricsApp, angularApp, reqHandler: createNodeRequestHandler(app) };
 }

@@ -27,7 +27,6 @@ describe('resolverErrorHandler', () => {
     });
   });
 
-  /** Fails a resolver with `err` and waits for the navigation it starts */
   async function failWith(err: unknown): Promise<{ routerUrl: string; addressBar: string; rethrown: unknown }> {
     let rethrown: unknown;
     TestBed.runInInjectionContext(() =>

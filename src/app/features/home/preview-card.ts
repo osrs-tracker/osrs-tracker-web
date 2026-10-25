@@ -25,14 +25,11 @@ const SKILLS: PreviewSkill[] = [
   { name: 'Sailing', level: 84, progress: 62 },
 ];
 
-/** Cumulative overall XP (in thousands) per day of the sample week */
+/** In thousands */
 const CUMULATIVE_XP = [530, 1110, 1405, 2115, 2665, 3202, 3722];
 const LINE = CUMULATIVE_XP.map((xp, day) => `L${day * 50} ${Math.round(62 - (xp / 3722) * 58)}`).join(' ');
 
-/**
- * Home's tilted illustration of a player page, with static sample data (no API calls). Decorative apart from its link
- * to the XP Tracker.
- */
+/** Decorative apart from its link to the XP Tracker */
 @Component({
   selector: 'preview-card',
   template: `

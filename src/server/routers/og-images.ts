@@ -8,13 +8,13 @@ import type { WebLogType } from '../utils/log';
 
 /** The item from the API, or `undefined` when it has no such id. Throws on any other failure. */
 export type GetItem = (id: number) => Promise<Item | undefined>;
-/** The item's Wiki icon as PNG bytes. Throws when it failed to load. */
+/** Throws when the icon failed to load */
 export type GetIcon = (item: Item) => Promise<Uint8Array>;
 export type RenderItemCard = (item: Item, iconPng: Uint8Array | undefined) => Promise<Uint8Array>;
-/** The stored player with their latest hiscores, or `undefined` when the API doesn't store them. Throws otherwise. */
+/** `undefined` when the API doesn't store the player. Throws on any other failure. */
 export type GetPlayer = (username: string) => Promise<Player | undefined>;
 export type RenderPlayerCard = (player: Player) => Promise<Uint8Array>;
-/** The players online over the last 24 hours, oldest first. Throws when it failed to load. */
+/** Oldest first. Throws when it failed to load. */
 export type GetPlayerCounts = () => Promise<PlayerCountPoint[]>;
 export type RenderPlayersOnlineCard = (samples: PlayerCountPoint[]) => Promise<Uint8Array>;
 
@@ -31,7 +31,6 @@ const USERNAME = /^[a-z0-9 ]{1,12}$/;
 
 const apiBaseUrl = () => serverConfig.API_INTERNAL_URL ?? config.apiBaseUrl;
 
-/** The API's item, in the cluster through `API_INTERNAL_URL` like SSR, else the public URL */
 const fetchItem: GetItem = async id => {
   const response = await fetch(`${apiBaseUrl()}/items/${id}`, {
     headers: { 'User-Agent': config.userAgent },
@@ -42,7 +41,6 @@ const fetchItem: GetItem = async id => {
   return (await response.json()) as Item;
 };
 
-/** The Wiki's icon */
 const fetchIcon: GetIcon = async item => {
   const response = await fetch(`${config.wikiBaseUrl}/images/${item.icon.replaceAll(/\s/g, '_')}`, {
     headers: { 'User-Agent': config.userAgent },
@@ -53,8 +51,8 @@ const fetchIcon: GetIcon = async item => {
 };
 
 /**
- * The stored player with their newest hiscores at the default offset. `preview=false` keeps it read-only: a player the
- * API doesn't store answers 404 instead of a live preview, so an image URL never makes the API call the hiscores.
+ * `preview=false` keeps it read-only: a player the API doesn't store answers 404 instead of a live preview, so an image
+ * URL never makes the API call the hiscores.
  */
 const fetchPlayer: GetPlayer = async username => {
   const params = new URLSearchParams({ scrapingOffset: '0', includeLatestHiscoreEntry: 'true', preview: 'false' });
@@ -67,7 +65,6 @@ const fetchPlayer: GetPlayer = async username => {
   return (await response.json()) as Player;
 };
 
-/** The last 24 hours of player counts */
 const fetchPlayerCounts: GetPlayerCounts = async () => {
   const response = await fetch(`${apiBaseUrl()}/player-counts?range=24h`, {
     headers: { 'User-Agent': config.userAgent },
@@ -89,10 +86,7 @@ const renderPlayersOnlineLazily: RenderPlayersOnlineCard = async samples =>
 /** `keep: false` serves the image without caching it (an item card drawn without its icon) */
 type Card = { kind: 'image'; png: Uint8Array; keep: boolean } | { kind: 'not-found' };
 
-/**
- * The finished images (the most recently used `MAX_CACHED`, each for `maxAgeMs` if given), and the loads in progress,
- * so requests for the same key share one load and render
- */
+/** Requests for the same key share one load and render */
 function cardCache<K>(load: (key: K) => Promise<Card>, maxAgeMs?: number) {
   const cache = new Map<K, { png: Uint8Array; at: number }>();
   const loading = new Map<K, Promise<Card>>();

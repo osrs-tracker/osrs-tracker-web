@@ -91,8 +91,7 @@
         }
       }
 
-      <!-- Each line's change over the range, in both views; each swatch is its line over its area, and each entry shows
-      or hides its line (the last one shown stays). Without a chart it's only a key, hidden from screen readers -->
+      <!-- Without a chart it's only a key, hidden from screen readers -->
       @let charted = !priceSeries.error() && !priceSeriesLoading() && !priceChartEmpty();
       <ul
         class="flex flex-wrap gap-x-2 -mx-2 mt-2.5 text-sm"

@@ -4,7 +4,7 @@ import { config } from '@config/config';
 import { iconMap } from '@config/icon-map';
 import { LOCAL_ICONS } from './local-icons-token';
 
-/** Factor the pixel art is upscaled to before the browser smoothly scales it down to `scale`. */
+/** The pixel art is upscaled by this before the browser smoothly scales it down to `scale`. */
 const SHARP_FACTOR = 4;
 
 /**
@@ -39,9 +39,9 @@ export class Icon implements OnInit {
   /** Loads the icon right away instead of lazily: for icons above the fold. */
   readonly eager = input(false, { transform: booleanAttribute });
   /**
-   * Scales the icon relative to its natural size. Pixel art only scales cleanly by whole factors, so for
-   * fractional ones (e.g. 1.5) the icon is upscaled by `SHARP_FACTOR` with hard edges and then scaled down
-   * smoothly ("sharp bilinear"): pixels stay crisp and evenly sized, only their borders get blended.
+   * Pixel art only scales cleanly by whole factors, so for fractional ones (e.g. 1.5) the icon is upscaled by
+   * `SHARP_FACTOR` with hard edges and then scaled down smoothly ("sharp bilinear"): pixels stay crisp and evenly
+   * sized, only their borders get blended.
    */
   readonly scale = input<number>();
 
@@ -123,7 +123,6 @@ export class Icon implements OnInit {
     const url = this.iconUrl();
     const scale = this.scale();
 
-    // an icon that was upscaled before (e.g. on a previously visited player) can be shown right away
     const sharpUrl = this.window && scale ? resolvedSharpUrls.get(new URL(url, this.document.baseURI).href) : undefined;
     if (sharpUrl) return this.showSharp(sharpUrl, scale!);
 
@@ -150,12 +149,10 @@ export class Icon implements OnInit {
   }
 }
 
-/** URL of an item icon on the OSRS Wiki, from the icon's file name */
 export function wikiIconUrl(name: string): string {
   return `${config.wikiBaseUrl}/images/${name.replaceAll(/\s/g, '_')}`;
 }
 
-/** Path under `/assets/icons` of a skill or activity icon */
 export function iconPath(name: string, kind: 'skill' | 'activity'): string {
   const norm = name.toLowerCase().replace(/[^a-z]/g, '');
   return kind === 'skill' ? `/skills/skill_icon_${norm}1.gif` : `/activities/game_icon_${norm}.png`;

@@ -7,7 +7,6 @@ import { formatPercentChange, formatWhole, formatWholeCompact, PercentChange } f
 import { ChartTableRow } from '@app/common/charts/chart-table';
 import { binByTime, TimeBin, timeBinLabel } from '@app/common/charts/time-bins';
 
-/** One of the item page's stat tiles */
 export interface ItemStat {
   label: string;
   value: string;
@@ -17,7 +16,6 @@ export interface ItemStat {
   loading?: boolean;
 }
 
-/** What the item page's stat tiles are built from */
 export interface ItemStatsInput {
   item: Item;
   /** `undefined` while loading or after a failed load */
@@ -29,14 +27,9 @@ export interface ItemStatsInput {
   hourlyLoading: boolean;
   hourlyFailed: boolean;
   now: Date;
-  /** "2 minutes ago", as `TimeAgoPipe` writes it */
   timeAgo: (time?: Date) => string | null;
 }
 
-/**
- * The item page's stat tiles: instant buy, instant sell, the margin after GE tax, the daily volume, the buy limit and
- * high alch.
- */
 export function itemStats(input: ItemStatsInput): ItemStat[] {
   const { latest } = input;
   return [
@@ -115,7 +108,6 @@ function highAlchStat(item: Item): ItemStat {
   };
 }
 
-/** A value shortened to fit ("786.71M"), with the exact amount on hover: "786,705,873 gp." */
 function amount(value: number, unit: string): Pick<ItemStat, 'value' | 'tip'> {
   const short = formatWholeCompact(value);
   const whole = formatWhole(value);
@@ -131,10 +123,6 @@ export interface DailyVolume {
   sold: number;
 }
 
-/**
- * Items bought and sold per UTC day over the last `days` days, today included (so far), from the hourly time series.
- * Days without trades count as zero.
- */
 export function dailyVolumes(hourly: AveragePricesAtTime[], now: Date, days: number): DailyVolume[] {
   const today = utcDayStart(getUnixTime(now));
   const result: DailyVolume[] = Array.from({ length: days }, (_, i) => ({
@@ -153,7 +141,6 @@ export function dailyVolumes(hourly: AveragePricesAtTime[], now: Date, days: num
   return result;
 }
 
-/** Items bought and sold in one bar of the volume chart */
 export interface BinVolume {
   /** The bin's start, in milliseconds */
   start: number;
@@ -162,8 +149,8 @@ export interface BinVolume {
 }
 
 /**
- * Where a volume bin starts and the next one does, in milliseconds. Hours are the visitor's, as on the price chart; days
- * and months are UTC, as the Wiki counts its days (its daily points start at UTC midnight).
+ * In milliseconds. Hours are the visitor's, as on the price chart; days and months are UTC, as the Wiki counts its days
+ * (its daily points start at UTC midnight).
  */
 const VOLUME_BINS: Record<TimeBin, { start: (ms: number) => number; next: (ms: number) => number }> = {
   hour: { start: ms => startOfHour(ms).getTime(), next: ms => addHours(ms, 1).getTime() },
@@ -176,11 +163,7 @@ function utcMonth(ms: number, offset: number): number {
   return Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + offset);
 }
 
-/**
- * Items bought and sold per bin over the `seconds` before `now`, oldest first, the current bin (so far) last, from one
- * of the Wiki's time series. The first bin is the first the range covers from its start, so it isn't a part of one;
- * bins without trades count as zero.
- */
+/** The first bin is the first the range covers from its start, so it isn't a part of one. */
 export function binnedVolumes(series: AveragePricesAtTime[], now: Date, seconds: number, bin: TimeBin): BinVolume[] {
   const { start, next } = VOLUME_BINS[bin];
   const from = now.getTime() - seconds * 1000;
@@ -198,7 +181,6 @@ export function binnedVolumes(series: AveragePricesAtTime[], now: Date, seconds:
   return [...bins.values()];
 }
 
-/** Items traded (bought and sold) in the last 24 hours, from the hourly time series */
 function last24HourVolume(hourly: AveragePricesAtTime[], now: Date): number {
   const since = getUnixTime(now) - DAY;
   return hourly
@@ -207,8 +189,8 @@ function last24HourVolume(hourly: AveragePricesAtTime[], now: Date): number {
 }
 
 /**
- * Yesterday's (UTC) average instant sell price, weighted by volume, from the hourly time series: the same number as
- * the Wiki's 24-hour average for that day, which the item lists compare with, without loading every item's average.
+ * From the hourly series, to match the Wiki's 24-hour average for that day, which the item lists compare with, without
+ * loading every item's average.
  */
 export function yesterdayAverageSellPrice(hourly: AveragePricesAtTime[], now: Date): number | null {
   const yesterday = utcDayStart(getUnixTime(now)) - DAY;
@@ -229,10 +211,7 @@ export function hasTrades(prices: AveragePricesAtTime[]): boolean {
   return prices.some(price => price.avgHighPrice || price.avgLowPrice);
 }
 
-/**
- * The price chart in words, for screen readers, as its values are otherwise only in the hover tooltip: per price, the
- * first and last trade in the range, and the low and high.
- */
+/** For screen readers, as the chart's values are otherwise only in the hover tooltip. */
 export function priceChartSummary(prices: AveragePricesAtTime[], period: string): string {
   const describe = (name: string, values: number[]): string => {
     const traded = values.filter(Boolean);
@@ -255,14 +234,12 @@ export function priceChartSummary(prices: AveragePricesAtTime[], period: string)
   ].join(' ');
 }
 
-/** How a price line moved over the chart's range, for its legend entry: "−34.5%" to "3,932,042,211" gp */
 export interface PriceChange {
   percent: string;
   tone: PercentChange['tone'];
   last: string;
 }
 
-/** From the line's first trade to its last, skipping points without trades; nothing when it has none */
 export function priceChange(values: number[]): PriceChange | undefined {
   const traded = values.filter(Boolean);
   if (!traded.length) return undefined;
@@ -271,10 +248,7 @@ export function priceChange(values: number[]): PriceChange | undefined {
   return { percent: signed, tone, last: formatWhole(last) };
 }
 
-/**
- * The price chart's data as table rows, newest first: per bin (in the visitor's time zone, as the chart's axis), the
- * average instant buy and sell price, weighted by the number traded, or "—" without trades.
- */
+/** Bins are in the visitor's time zone, as the chart's axis. */
 export function priceTableRows(prices: AveragePricesAtTime[], bin: TimeBin): ChartTableRow[] {
   const average = (
     points: AveragePricesAtTime[],

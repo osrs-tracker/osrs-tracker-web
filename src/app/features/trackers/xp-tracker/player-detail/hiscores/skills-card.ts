@@ -14,7 +14,6 @@ const TABS: SegmentedOption<TopTab>[] = [
   { value: 'raids', label: 'Raids' },
 ];
 
-/** The player page's main hiscores card: skills, bosses or raids, whichever tab `PlayerView` has open. */
 @Component({
   selector: 'article[skills-card]',
   imports: [ActivityGrid, InfoTooltip, LoadError, Segmented, SkillGrid],
@@ -71,7 +70,6 @@ const TABS: SegmentedOption<TopTab>[] = [
 export class SkillsCard {
   readonly playerView = inject(PlayerView);
 
-  /** What a tile's coloured inner ring means, per tab */
   readonly ringTip: Record<TopTab, string> = {
     skills: 'A coloured ring marks a skill that gained XP in these days: pick it to show it on the chart.',
     bosses: 'A coloured ring marks a boss killed in these days: pick it to show it on the chart.',

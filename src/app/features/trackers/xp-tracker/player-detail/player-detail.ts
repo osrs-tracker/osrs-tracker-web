@@ -100,21 +100,16 @@ export default class PlayerDetail implements OnInit {
   private readonly location = inject(Location);
 
   readonly logViews: SegmentedOption<LogView>[] = LOG_VIEWS;
-  /** The day log, or two days compared in its place; a shared link with picked days opens the comparison */
   readonly logView = signal<LogView>(this.route.snapshot.queryParamMap.has(DAY_PARAM) ? 'compare' : 'days');
   /** Once opened, the comparison stays (hidden on Days), so going back to it keeps the picks and loads nothing again */
   readonly compareOpened = signal(this.logView() === 'compare');
-  /** Compare is shown in the day log's place; a new player's single day has nothing to compare */
   readonly comparing = computed(() => this.logView() === 'compare' && this.history.entries().length > 1);
   readonly #pageErrorHandler = resolverErrorHandler('/trackers/xp/' + this.username);
 
-  /** `null` when there's no such player */
   readonly player = input.required<Player | null>();
-  /** The resolved player, until `trackPlayer` returns a fresh one (or finds they no longer exist) */
   readonly playerDetail = linkedSignal(() => this.player());
 
   readonly scrapingOffset = this.xpTrackerStore.scrapingOffset;
-  /** The UTC hour the visitor's offset is checked at, e.g. "02:00 UTC" */
   readonly trackedAt = computed(() => `${String((this.scrapingOffset() + 24) % 24).padStart(2, '0')}:00\u00a0UTC`);
 
   readonly history = playerHistory({
@@ -126,7 +121,6 @@ export default class PlayerDetail implements OnInit {
     milestonePeriod: this.playerView.milestonePeriod,
   });
 
-  /** The stats shown are the last tracked ones because the hiscores didn't respond (to the API or the browser) */
   readonly stale = computed(
     () =>
       !this.history.today() &&
@@ -152,12 +146,10 @@ export default class PlayerDetail implements OnInit {
     return this.history.loaded() && this.history.entries().length <= 1 ? 'started' : 'tracked';
   });
 
-  /** Each day's gains, newest first; the first is today's so far when the live hiscores are in */
   readonly diffs = computed(() => {
     const current = this.history.current();
     return current ? dailyGains(current, this.history.entries()) : [];
   });
-  /** The days the chart and tiles cover: the period's days and today so far, newest first */
   readonly periodDiffs = computed(() => {
     const current = this.history.current();
     const entries = this.history.entries();
@@ -201,11 +193,8 @@ export default class PlayerDetail implements OnInit {
     return current && periodSummary(current, this.history.comparedEntries(), this.playerView.period());
   });
 
-  /** Each skill's XP gained over the period, for the skills that gained any */
   readonly skillGains = computed(() => totalGains(this.periodDiffs(), 'skills'));
-  /** Each activity's gains over the period */
   readonly activityGains = computed(() => totalGains(this.periodDiffs(), 'activities'));
-  /** The picked minigame, or the first running total with gains */
   readonly chartedMinigame = computed(
     () =>
       this.playerView.minigame() ??
@@ -267,7 +256,7 @@ export default class PlayerDetail implements OnInit {
     this.analyticsService.trackEvent('load_more_days');
   }
 
-  /** Days or Compare; back to Days takes the picked days out of the URL, so a reload or a copied link shows the days */
+  /** Back to Days takes the picked days out of the URL, so a reload or a copied link shows the days */
   setLogView(view: LogView): void {
     this.logView.set(view);
     this.analyticsService.trackOption('log_view', view);
@@ -277,7 +266,6 @@ export default class PlayerDetail implements OnInit {
     }
   }
 
-  /** Try again on the header's line that says the hiscores aren't responding */
   reloadToday(): void {
     this.history.reloadToday();
     this.analyticsService.trackEvent('retry', { source: 'player-stale' });
@@ -297,7 +285,6 @@ export default class PlayerDetail implements OnInit {
     this.document.head.appendChild(link);
   }
 
-  /** Starts tracking the player (or refreshes them when stale) and shows the player it returns. */
   private trackPlayer(): void {
     const offset = this.scrapingOffset();
 

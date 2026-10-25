@@ -2,34 +2,19 @@ import { ActivityEnum, HiscoreDiffActivity, HiscoreDiffSkill, SkillEnum } from '
 import { addDays } from 'date-fns';
 import { Gains } from './player-summary';
 
-/**
- * A day with gains (or the days a gap in the history covers, `to` its last), or a run of consecutive days in which
- * nothing happened.
- */
 export type LogGroup =
   | {
       type: 'day';
       date: Date;
       to?: Date;
-      /** Today's gains so far: the hour they count from */
       since?: string;
       overall?: HiscoreDiffSkill;
       skills: (HiscoreDiffSkill & { name: string })[];
       activities: (HiscoreDiffActivity & { name: string })[];
     }
   | { type: 'empty'; from: Date; to: Date; days: number }
-  /** Today, with nothing gained so far: its own card, the size of the one shown while it loads */
   | { type: 'today'; date: Date; since: string };
 
-/**
- * The day log's cards, newest first: each day's skills and activities that gained (not Overall, which the card shows
- * on its own), with each run of consecutive empty days (including a single day) merged into one group. Today stays on
- * its own when nothing was gained yet.
- *
- * @param diffs the daily diffs, newest first
- * @param todayLoading the live hiscores are loading: the first diff (today's) is left out, as it's a skeleton until then
- * @param todaySince the hour today's gains count from (the first diff)
- */
 export function dayLogGroups(diffs: Gains[], todayLoading: boolean, todaySince: string | undefined): LogGroup[] {
   const groups: LogGroup[] = [];
   let run: Extract<LogGroup, { type: 'empty' }> | undefined;

@@ -5,11 +5,7 @@ type Lab = [number, number, number];
 /** Closer than this (distance in OKLab), two activities on one chart read as the same colour */
 export const MIN_DISTANCE = 0.1;
 
-/**
- * Each charted activity's colour: its own, unless an activity with a larger total already has a colour too close to it.
- * Then it takes the fallback nearest its own colour that stays clear of the others, or the one furthest from them when
- * none does. Takes every activity with gains, also the hidden ones, so hiding one doesn't repaint the rest.
- */
+/** Takes every activity with gains, also the hidden ones, so hiding one doesn't repaint the rest. */
 export function chartColors(series: { name: string; total: number }[], dark: boolean): Map<string, string> {
   const theme = dark ? 'dark' : 'light';
   const fallbacks = FALLBACK_COLORS.map(colors => ({ color: colors[theme], lab: oklab(colors[theme]) }));
@@ -38,7 +34,6 @@ export function distance(a: Lab, b: Lab): number {
   return Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 }
 
-/** A `#rrggbb` colour in OKLab */
 export function oklab(hex: string): Lab {
   const [r, g, b] = [1, 3, 5].map(i => {
     const c = parseInt(hex.slice(i, i + 2), 16) / 255;

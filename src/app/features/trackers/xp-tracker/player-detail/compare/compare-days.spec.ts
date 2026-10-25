@@ -25,7 +25,6 @@ class PlayerPage {
 
 const PAGE = '/trackers/xp/zezima';
 
-/** Five stored checks, 10 to 6 October, newest first */
 const history = Array.from({ length: 5 }, (_, i) => ({
   date: new Date(Date.UTC(2026, 9, 10 - i, 2)).toISOString(),
   scrapingOffset: 0,
@@ -52,7 +51,6 @@ describe('CompareDays', () => {
     await settle();
     return harness.fixture.debugElement.query(By.directive(CompareDays)).componentInstance;
   };
-  /** The picked days, as `day vs` keys */
   const picks = (card: CompareDays): string => `${card.day()?.key} vs ${card.vs()?.key ?? NO_DAY}`;
   const addressBar = (): string => TestBed.inject(Location).path();
 

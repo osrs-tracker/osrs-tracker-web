@@ -26,9 +26,7 @@ interface ActivityCell {
   name: string;
   /** `null` without a score; the cell is a skeleton only while the hiscores load */
   activity?: HiscoreActivity | null;
-  /** Gained in the charted days */
   gain: number;
-  /** Has gains to chart, so picking it changes the chart */
   charted: boolean;
   on: boolean;
   color: string;
@@ -37,15 +35,11 @@ interface ActivityCell {
   icon: { name: string; activity: boolean };
   /** Marks Legacy Bounty Hunter, which reuses the current icons */
   badge?: string;
-  /** Empty cell that completes a row */
   filler: boolean;
 }
 
 /**
- * Hiscores of one activity category in rows of three. Activities with gains are outlined in their chart colour and
- * chart their category when picked, or toggle their series once it's charted.
- *
- * An `@angular/aria` grid, like the skill grid: one Tab stop, the arrow keys move between cells, Enter or Space picks
+ * An `@angular/aria` grid: one Tab stop, the arrow keys move between cells, Enter or Space picks
  * one. Cells without gains stay reachable (`aria-disabled`) for their tooltip, but aren't picked.
  */
 @Component({
@@ -143,15 +137,12 @@ export class ActivityGrid {
   readonly layout = input.required<(string | null)[]>();
   /** Undefined while the hiscores load */
   readonly hiscore = input.required<HiscoreEntry | undefined>();
-  /** Each activity's gain over the charted days */
   readonly gains = input.required<ReadonlyMap<string, number>>();
   readonly scoreLabel = input('Score');
-  /** The charted minigame */
   readonly minigame = input<string>();
   /** A full-width row follows (the clue total), so the last row keeps square corners */
   readonly hasFooter = input(false);
 
-  /** The colours the chart gives the category's activities with gains */
   readonly #colors = computed(() => {
     const category = CHART_CATEGORIES[this.view()];
     const series = [...this.gains()].filter(([name]) => category.has(name)).map(([name, total]) => ({ name, total }));
@@ -210,7 +201,6 @@ export class ActivityGrid {
     return '';
   }
 
-  /** The grid's name for screen readers */
   label(): string {
     return GRID_LABELS[this.view()];
   }

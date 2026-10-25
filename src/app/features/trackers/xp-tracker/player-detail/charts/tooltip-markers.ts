@@ -8,10 +8,7 @@ export const MARKER_HEIGHT = ICON;
 /** Drawn at this resolution, so markers stay sharp on high-density screens */
 const RESOLUTION = 3;
 
-/**
- * Tooltip markers (series color dot + icon) for Chart.js' `labelPointStyle`, cached per series. The icon is added once
- * it has loaded. Browser only.
- */
+/** Tooltip markers for Chart.js' `labelPointStyle`. Browser only. */
 export class TooltipMarkers {
   readonly #markers = new Map<string, HTMLImageElement>();
 
@@ -21,7 +18,6 @@ export class TooltipMarkers {
     private readonly localIcons: Readonly<Record<string, string>> | null,
   ) {}
 
-  /** Marker of a series; it only has the dot while the icon loads, or if there is none */
   get(color: string, name: string): HTMLImageElement {
     const key = `${color}|${name}`;
     let marker = this.#markers.get(key);
@@ -52,7 +48,7 @@ export class TooltipMarkers {
 
     const icon = this.document.createElement('img');
     icon.onload = () => {
-      // fit the icon in its box; pixel art stays crisp unless it has to shrink
+      // pixel art stays crisp unless it has to shrink
       const scale = Math.min(ICON / icon.naturalWidth, ICON / icon.naturalHeight, 1);
       const width = icon.naturalWidth * scale;
       const height = icon.naturalHeight * scale;

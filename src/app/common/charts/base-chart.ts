@@ -24,10 +24,7 @@ import './chart-setup';
 /** A change between two states of the data: short, as periods and skills are switched often (claude-kb VIZ-026) */
 const ANIMATION = { duration: 300 };
 
-/**
- * Lifecycle, workarounds and shared options of the time series charts. Subclasses render `<canvas #chart></canvas>` and
- * only add their chart type, own options and datasets (built from `data`).
- */
+/** Subclasses render `<canvas #chart></canvas>` and only add their chart type, own options and datasets. */
 @Directive()
 export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements OnInit, OnDestroy {
   private readonly injector = inject(Injector);
@@ -54,7 +51,7 @@ export abstract class BaseChart<TType extends 'line' | 'bar', TData> implements 
   /** Options on top of the shared ones, merged deeply */
   protected abstract chartOptions(): ChartOptions<TType>;
 
-  /** Replaces the chart's datasets (and anything else that depends on the data), the chart is redrawn afterwards */
+  /** The chart is redrawn afterwards */
   protected abstract setData(chart: Chart<TType, Point[]>, data: TData): void;
 
   ngOnInit(): void {

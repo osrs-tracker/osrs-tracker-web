@@ -7,19 +7,15 @@ export interface PageMeta {
   /** Over the route's `title`, which then only titles the page when there's no meta (a not-found state) */
   title?: string;
   description: string;
-  /** Path only, no query: '/trackers/price/4151' */
+  /** Path only, no query */
   canonicalPath: string;
   image?: PageImage;
   card?: 'summary' | 'summary_large_image';
-  /** schema.org nodes for the page's JSON-LD, with absolute URLs; rendered as one `@graph` */
+  /** With absolute URLs */
   jsonLd?: JsonLdNode[];
 }
 
-/**
- * A route's `data['meta']`: fixed, or built from the route once its resolvers ran (its resolved `data` and `params`),
- * `undefined` when the page has none (a not-found state). A function, not a resolver: the page's own resolver already
- * fetched what it describes.
- */
+/** A function, not a resolver: the page's own resolver already fetched what it describes. */
 export type RouteMeta = PageMeta | ((route: ActivatedRouteSnapshot) => PageMeta | undefined);
 
 export type JsonLdNode = { '@type': string } & Record<string, unknown>;
@@ -71,10 +67,7 @@ const SOCIAL_TAGS = [
   'name="twitter:card"',
 ];
 
-/**
- * Sets the title, description, canonical link and social tags once per navigation, from the deepest route's
- * `data['meta']` (a `RouteMeta`). Angular calls `updateTitle` after every successful navigation, also during SSR.
- */
+/** Angular calls `updateTitle` after every successful navigation, also during SSR. */
 @Service()
 export class PageMetaStrategy extends TitleStrategy {
   private readonly document = inject(DOCUMENT);
@@ -179,7 +172,6 @@ function deepestChild(route: ActivatedRouteSnapshot): ActivatedRouteSnapshot {
   return route.firstChild ? deepestChild(route.firstChild) : route;
 }
 
-/** A canonical URL never carries a query or fragment. */
 function canonicalUrl(path: string): string {
   return absoluteUrl(path.replace(/[?#].*$/, ''));
 }

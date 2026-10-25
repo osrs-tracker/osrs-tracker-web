@@ -71,10 +71,8 @@ export default class ItemDetail implements OnInit {
   private readonly isHumanVisitor = isHumanVisitor();
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  /** `null` when there's no such item */
   readonly item = input.required<Item | null>();
 
-  /** The browse page the item is listed on */
   readonly browseLetter = computed(() => {
     const item = this.item();
     return item ? browseLetterOf(item.name) : undefined;
@@ -99,8 +97,8 @@ export default class ItemDetail implements OnInit {
 
   /**
    * Shared per item and between the price and volume charts, so switching back and forth between ranges doesn't
-   * refetch. Browser only: the hourly series is
-   * about 20KB that SSR would wait for and embed in the page, and the chart it feeds isn't rendered on the server.
+   * refetch. Browser only: the hourly series is about 20KB that SSR would wait for and embed in the page, and the
+   * chart it feeds isn't rendered on the server.
    */
   private readonly timeSeries = computed<Record<PriceRange, Observable<AveragePricesAtTime[]>> | undefined>(() => {
     const id = this.item()?.id;
@@ -115,7 +113,6 @@ export default class ItemDetail implements OnInit {
     };
   });
 
-  /** The last 168 hours: the volume, the 24-hour volume and yesterday's average come from it, as does the 1W range */
   readonly hourly = rxResource({
     params: () => this.timeSeries()?.['1W'],
     stream: ({ params: hourly$ }) => hourly$,
@@ -155,9 +152,7 @@ export default class ItemDetail implements OnInit {
     return this.priceSeries.hasValue() ? this.priceSeries.value().filter(price => price.timestamp >= since) : [];
   });
   readonly priceChartLabel = computed(() => priceChartSummary(this.priceChartData(), this.rangeTitle()));
-  /** Lines hidden from the price chart and table by their legend entry; one always stays */
   readonly hiddenLines = signal<ReadonlySet<PriceLine>>(new Set());
-  /** The legend: each line's change over the range, from its first trade to its last, and whether it's shown */
   readonly priceLegend = computed(() => {
     const prices = this.priceChartData();
     const hidden = this.hiddenLines();
@@ -177,7 +172,6 @@ export default class ItemDetail implements OnInit {
   readonly priceDisplay = signal<ChartDisplay>('chart');
   readonly priceTable = computed(() => {
     const { bin, title } = PRICE_RANGES[this.range()];
-    // The time, then a column per shown line
     const shown = (_: unknown, i: number) => i === 0 || !this.hiddenLines().has(PRICE_LINES[i - 1]);
     return {
       caption: `Average prices per ${bin} over the last ${title}, newest first, in your time zone`,
@@ -186,7 +180,7 @@ export default class ItemDetail implements OnInit {
     };
   });
   readonly rangeTitle = computed(() => PRICE_RANGES[this.range()].title);
-  /** Rarely traded items often have no trades on 1D: the chart then says so, and offers the next range up */
+  /** Rarely traded items often have no trades on 1D */
   readonly priceChartEmpty = computed(() => !hasTrades(this.priceChartData()));
   readonly nextRange = computed(() => {
     const next = PRICE_RANGES[this.range()].next;
@@ -239,7 +233,6 @@ export default class ItemDetail implements OnInit {
     this.selectRange(range);
   }
 
-  /** Shows or hides a price line; the last one shown stays */
   toggleLine(line: PriceLine): void {
     const hidden = new Set(this.hiddenLines());
     if (hidden.has(line)) hidden.delete(line);
@@ -255,7 +248,6 @@ export default class ItemDetail implements OnInit {
     this.retryVolume();
   }
 
-  /** The volume card's retries: its summary's series, and its chart's */
   retryVolume(): void {
     if (this.hourly.error()) this.hourly.reload();
     if (this.volumeSeries.error()) this.volumeSeries.reload();

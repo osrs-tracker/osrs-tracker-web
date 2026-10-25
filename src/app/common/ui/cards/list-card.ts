@@ -4,18 +4,12 @@ import { LoadError } from '../loading/load-error';
 
 export type ListCardState = 'ready' | 'loading' | 'empty' | 'error';
 
-/** The state of a list card showing a resource's list. */
 export function listCardState(resource: Resource<readonly unknown[] | undefined>): ListCardState {
   if (resource.isLoading()) return 'loading';
   if (resource.error()) return 'error';
   return resource.hasValue() && resource.value()?.length ? 'ready' : 'empty';
 }
 
-/**
- * A card with a list of player or item rows (the projected content), a two-line header with an optional `[icon]`,
- * `[info]` tooltip, count and `[actions]`, and loading (skeleton rows), empty and error states. The list scrolls past
- * 390px. A `[footer]` (a link) shows under it in every state.
- */
 @Component({
   selector: 'section[list-card]',
   template: `
@@ -80,14 +74,12 @@ export class ListCard {
   readonly subtitle = input.required<string>();
   readonly kind = input.required<'player' | 'item'>();
   readonly state = input.required<ListCardState>();
-  /** Shown in the header when set and the list is ready. */
   readonly count = input<number>();
   readonly emptyText = input('Nothing here yet.');
   readonly emptyHint = input('');
-  /** The `load-error` source for analytics; required for lists that can fail to load. */
+  /** Required for lists that can fail to load */
   readonly errorSource = input('list-card');
   readonly errorText = input("Couldn't load this list.");
-  /** What failed (the resource's `error()`), for the error state's hint */
   readonly error = input<unknown>();
 
   readonly retry = output<void>();

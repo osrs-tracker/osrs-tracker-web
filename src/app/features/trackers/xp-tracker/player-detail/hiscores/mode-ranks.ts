@@ -6,10 +6,8 @@ import { catchError, of, throwError } from 'rxjs';
 import { JagexHiscoreTable, OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
 import { isNotFound } from '@app/core/routing/resolver-error';
 
-/** A hiscore table the player is ranked on besides the main one */
 export interface RankTable {
   table: JagexHiscoreTable;
-  /** Names its rank: "Ironman rank" */
   label: string;
 }
 
@@ -21,8 +19,8 @@ const SKILLER: RankTable = { table: 'hiscore_oldschool_skiller', label: 'Skiller
 const ONE_DEFENCE: RankTable = { table: 'hiscore_oldschool_skiller_defence', label: '1 Defence' };
 
 /**
- * The game mode's table, from the type and status the API found. A table the player left keeps their rank from then,
- * so a dead hardcore ranks on the ironman table, a de-ultimated ultimate too, and a de-ironed player on none.
+ * A table the player left keeps their rank from then, so a dead hardcore ranks on the ironman table, a de-ultimated
+ * ultimate too, and a de-ironed player on none.
  */
 export function modeTable(player: Pick<Player, 'type' | 'status' | 'diedAsHardcore'>): RankTable | undefined {
   if (player.status === PlayerStatus.DeIroned) return undefined;
@@ -38,7 +36,7 @@ export function modeTable(player: Pick<Player, 'type' | 'status' | 'diedAsHardco
   }
 }
 
-/** The build's table: Skiller at combat level 3 (who also has 1 Defence), else 1 Defence at Defence level 1 */
+/** Skiller at combat level 3 (who also has 1 Defence), else 1 Defence at Defence level 1 */
 export function buildTable(
   combatLevel: number,
   hiscore: Pick<HiscoreEntry, 'skills'> | undefined,
@@ -48,7 +46,6 @@ export function buildTable(
   return undefined;
 }
 
-/** One table's ranks as a tooltip shows them */
 export interface TableRanks extends RankTable {
   /** `undefined` while it loads or after it failed */
   hiscore?: Pick<HiscoreEntry, 'skills' | 'activities'>;
@@ -56,20 +53,16 @@ export interface TableRanks extends RankTable {
   reload(): void;
 }
 
-/** What the player page gives `ModeRanks` */
 export interface ModeRanksSource {
   username: string;
-  /** `null` when there's no such player */
   player: Signal<Player | null>;
   /** The hiscore the page shows, for the Defence level */
   hiscore: Signal<HiscoreEntry | undefined>;
 }
 
 /**
- * The player's ranks among their game mode and build, besides the main table's: at most two more tables. Each is a
- * Jagex request through the proxy, which the API and the daily check share, so they load when the first tooltip with
- * ranks opens (`load()`), in the browser only. A table the player isn't on (a 404) is left out. Provided by the player
- * page, which `connect`s it.
+ * Each table is a Jagex request through the proxy, which the API and the daily check share, so they load when the
+ * first tooltip with ranks opens (`load()`), in the browser only. A table the player isn't on (a 404) is left out.
  */
 @Service({ autoProvided: false })
 export class ModeRanks {
@@ -91,7 +84,7 @@ export class ModeRanks {
 
   readonly #modeRanks = this.ranksOn(this.#mode);
   readonly #buildRanks = this.ranksOn(this.#build);
-  /** The tables the player is on besides the main one, mode first; empty until `load()` */
+  /** Empty until `load()` */
   readonly tables = computed(() =>
     [this.#modeRanks(), this.#buildRanks()].filter((ranks): ranks is TableRanks => !!ranks),
   );
@@ -100,7 +93,6 @@ export class ModeRanks {
     this.#source.set(source);
   }
 
-  /** Loads the tables, once: a tooltip with ranks opened */
   load(): void {
     this.#wanted.set(true);
   }

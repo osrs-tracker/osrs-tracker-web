@@ -5,7 +5,6 @@ import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { formatSign } from '@app/common/format/number-format';
 import { XpTrackerStore } from './xp-tracker-store';
 
-/** The tracking offset select (stored in `XpTrackerStore`) with its explanation and the UTC hour it shows. */
 @Component({
   selector: 'tracking-offset',
   template: `
@@ -44,9 +43,8 @@ export class TrackingOffset {
   private readonly analyticsService = inject(AnalyticsService);
   private readonly xpTrackerStore = inject(XpTrackerStore);
 
-  readonly SCRAPING_OFFSETS: number[] = Array.from({ length: 24 }, (_, i) => i - 12); // -12 to 11
+  readonly SCRAPING_OFFSETS: number[] = Array.from({ length: 24 }, (_, i) => i - 12);
   readonly scrapingOffset = this.xpTrackerStore.scrapingOffset;
-  /** The UTC hour the shown hiscores were tracked at, e.g. "21:00 UTC" for −03:00. */
   readonly trackedAt = computed(() => `${pad((this.scrapingOffset() + 24) % 24)}:00 UTC`);
 
   setOffset(offset: number): void {

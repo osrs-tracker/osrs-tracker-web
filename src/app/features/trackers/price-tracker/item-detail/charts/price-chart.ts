@@ -8,11 +8,7 @@ import { formatNumberLegible } from '@app/common/format/number-format';
 import { AveragePricesAtTime } from '@app/common/api/osrs-prices-repo';
 import { PRICE_LINES, PriceLine } from '../price-ranges';
 
-/**
- * The instant buy price as an accent line and the instant sell price as a violet one, both solid: the area between them
- * (the spread) is a light accent, the area under the sell line a light violet. A hidden line's area goes with it: the
- * buy line's then reaches down to the axis.
- */
+/** A hidden line's area goes with it: the buy line's then reaches down to the axis. */
 @Component({
   selector: 'price-chart',
   template: '<canvas #chart></canvas>',
@@ -20,7 +16,6 @@ import { PRICE_LINES, PriceLine } from '../price-ranges';
 export class PriceChart extends BaseChart<'line', AveragePricesAtTime[]> {
   protected readonly type = 'line';
 
-  /** The lines' labels to leave out, from the legend */
   readonly hiddenLines = input<ReadonlySet<PriceLine>>(new Set());
 
   protected chartOptions(): ChartOptions<'line'> {
@@ -45,7 +40,6 @@ export class PriceChart extends BaseChart<'line', AveragePricesAtTime[]> {
         },
         y: {
           position: 'right',
-          // Dashes the gridlines
           border: { dash: [4, 6] },
           ticks: {
             autoSkipPadding: 20,
@@ -64,7 +58,6 @@ export class PriceChart extends BaseChart<'line', AveragePricesAtTime[]> {
   }
 
   protected setData(chart: Chart<'line', Point[]>, priceTimeSeries: AveragePricesAtTime[]): void {
-    // Hours for a day, days for up to a month, months beyond
     const span = priceTimeSeries.length ? priceTimeSeries.at(-1)!.timestamp - priceTimeSeries[0].timestamp : 0;
     (chart.options.scales!['x'] as TimeScaleOptions).time.unit =
       span > 60 * 86400 ? 'month' : span > 2 * 86400 ? 'day' : 'hour';

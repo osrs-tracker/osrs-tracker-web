@@ -1,4 +1,3 @@
-// Compares the GE tax rules in ge-tax.ts with the OSRS Wiki and exits 1 when they differ.
 // Imports the .ts helper directly, which relies on Node's type stripping (Node 24).
 const { GE_TAX_CAP, GE_TAX_EXEMPT_IDS, GE_TAX_PERCENT } =
   await import('../../src/app/features/trackers/price-tracker/item-detail/ge-tax.ts');

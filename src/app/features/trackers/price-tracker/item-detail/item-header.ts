@@ -9,11 +9,7 @@ import { PriceTrackerStore } from '../price-tracker-store';
 import { formatPercentChange, formatWhole } from '@app/common/format/number-format';
 import { LucideExternalLink, LucideStar, LucideTriangle } from '@lucide/angular';
 
-/**
- * The item page's header: icon tile, the name (to the OSRS Wiki), the examine text, the instant sell price with its
- * change since yesterday's 24-hour average, and the favourite star beside it. On phones the price and star move below
- * the name, so a long name gets the full width.
- */
+/** On phones the price and star move below the name, so a long name gets the full width */
 @Component({
   selector: 'header[item-header]',
   template: `
@@ -110,16 +106,12 @@ export class ItemHeader {
   private readonly priceTrackerStore = inject(PriceTrackerStore);
 
   readonly item = input.required<Item>();
-  /** The latest instant sell price, `null` without recent trades */
   readonly price = input<number | null>(null);
-  /** Yesterday's (UTC) 24-hour average instant sell price, `null` without trades */
+  /** Yesterday's (UTC) 24-hour average */
   readonly average = input<number | null>(null);
-  /** The price is loading */
   readonly loading = input(false);
-  /** Yesterday's average is loading, so the change isn't known yet */
   readonly averageLoading = input(false);
   readonly error = input(false);
-  /** Yesterday's average failed to load, so the change can't be shown */
   readonly averageError = input(false);
 
   readonly retry = output();
@@ -128,7 +120,6 @@ export class ItemHeader {
     () => `${config.wikiBaseUrl}/w/${encodeURIComponent(this.item().name.replaceAll(' ', '_'))}`,
   );
   readonly priceText = computed(() => formatWhole(this.price() ?? 0));
-  /** E.g. "8,402 (0.6%)", after a triangle up or down */
   readonly change = computed(() => {
     const price = this.price();
     const average = this.average();

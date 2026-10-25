@@ -22,7 +22,6 @@ describe('DayPicker', () => {
     return fixture.componentInstance.calendars()[0].weeks;
   }
 
-  /** The cell of a day of the month */
   const cell = (weeks: ReturnType<typeof weeksOf>, date: number) => weeks.flat().find(cell => cell.date === date)!;
 
   it('starts the weeks on Monday, with blank days before the 1st and after the last', () => {
