@@ -33,7 +33,7 @@ export default [
             canonicalPath: '/players-online',
             // Drawn by the server from the latest count; `?v=` busts shared links' caches when the design changes
             image: {
-              url: '/og/players-online.png?v=5',
+              url: '/og/players-online.png?v=6',
               width: 1200,
               height: 630,
               alt: 'Old School RuneScape players online now and over the last 24 hours',

@@ -2,6 +2,22 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## osrs-tracker.net, with a one-time carry-over of saved data (2026-10-25)
+
+- **Context:** the site moved from osrs-tracker.freekmencke.com to osrs-tracker.net (roadmap
+  osrs-tracker/osrs-tracker-web#448). Favourites, recents, theme, offset and the news day live in `localStorage`, which
+  belongs to one origin, so a plain 301 would empty them for every returning visitor. Browsers partition storage in
+  third-party iframes, so the new origin can't read the old one's from an iframe either.
+- **Decision:** the old host 301s every path to the same one on the new host with `#from-old` (Google ignores
+  fragments), except `/carry-over` (`src/server/routers/carry-over.ts`). The first inline script in `index.html` sends a
+  person who arrives with `#from-old` and nothing stored to that page once; it returns with `#carry-over=<its storage>`
+  in the fragment, which never reaches a server, and the script imports it before anything reads storage. Crawlers skip
+  the trip. The consent choice isn't carried, so a crafted link can't set it. The new host's certificate comes from an
+  Ingress annotation, not a standalone `Certificate`: Flux's `flux-deployer` role may manage Ingresses, not Certificates
+  (a standalone one blocked every deploy, osrs-tracker/osrs-tracker-web#454).
+- **Revisit:** remove the carry-over from 2027-04-25 (osrs-tracker/osrs-tracker-web#453); keep the 301 while the old
+  host gets traffic.
+
 ## Pixel icons in fixed boxes have no `width` and `height` (2026-10-23)
 
 - **Context:** the UI review (osrs-tracker/osrs-tracker-web#412) counted images without `width`/`height`: 371 on A–Z, 49

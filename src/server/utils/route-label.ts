@@ -21,6 +21,8 @@ const PAGE_ROUTES: [RegExp, string][] = [
   [/^\/og\/item\/\d+\.png$/, '/og/item/:id.png'],
   [/^\/og\/player\/[^/]+\.png$/, '/og/player/:username.png'],
   [/^\/og\/players-online\.png$/, '/og/players-online.png'],
+  // Answered by the server on the old host (routers/carry-over.ts)
+  [/^\/carry-over$/, '/carry-over'],
 ];
 
 /**

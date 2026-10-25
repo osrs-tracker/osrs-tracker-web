@@ -4,7 +4,7 @@
 # -e like GitHub's default `run` shell (bash -e), which a script run from it doesn't inherit
 set -e
 
-base=https://osrs-tracker.freekmencke.com
+base=https://osrs-tracker.net
 failed=0
 expect() {
   status=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$base$2" || true)

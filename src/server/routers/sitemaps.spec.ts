@@ -39,8 +39,8 @@ describe('createSitemapRouter', () => {
       [
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-        '<url><loc>https://osrs-tracker.freekmencke.com/trackers/price/2</loc></url>',
-        '<url><loc>https://osrs-tracker.freekmencke.com/trackers/price/4151</loc></url>',
+        '<url><loc>https://osrs-tracker.net/trackers/price/2</loc></url>',
+        '<url><loc>https://osrs-tracker.net/trackers/price/4151</loc></url>',
         '</urlset>',
       ].join('\n'),
     );
@@ -52,7 +52,7 @@ describe('createSitemapRouter', () => {
 
     const body = await (await get('/sitemap-players.xml')).text();
     expect(body).toContain(
-      '<url><loc>https://osrs-tracker.freekmencke.com/trackers/xp/the%20fraking</loc>' +
+      '<url><loc>https://osrs-tracker.net/trackers/xp/the%20fraking</loc>' +
         '<lastmod>2026-10-10T00:01:59.259Z</lastmod></url>',
     );
 

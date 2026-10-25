@@ -7,7 +7,7 @@
 </p>
 
 <div align="center">
-  <a href="https://osrs-tracker.freekmencke.com">
+  <a href="https://osrs-tracker.net">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="public/favicon-dark.png">
       <img alt="OSRS Tracker" src="public/favicon.png">
@@ -36,7 +36,7 @@
 This repository is the website. It is one of four parts:
 
 - **[osrs-tracker-web](https://github.com/osrs-tracker/osrs-tracker-web)** (this repo): the website at
-  [osrs-tracker.freekmencke.com](https://osrs-tracker.freekmencke.com).
+  [osrs-tracker.net](https://osrs-tracker.net).
 - **[osrs-tracker-api](https://github.com/osrs-tracker/osrs-tracker-api)**: the API that serves player, item and news
   data to the website.
 - **[osrs-tracker-aws](https://github.com/osrs-tracker/osrs-tracker-aws)**: background jobs that save a daily snapshot

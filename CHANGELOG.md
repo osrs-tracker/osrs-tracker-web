@@ -1,7 +1,10 @@
 ## 2026-10-25
 
-- Behind the scenes: OSRS Tracker is getting its own address, osrs-tracker.net. Its security certificate is set up
-  first, so the site can move without visitors seeing a certificate warning.
+- OSRS Tracker has its own address now: **osrs-tracker.net**. Old links and bookmarks to osrs-tracker.freekmencke.com
+  keep working and take you to the same page on the new address. The first time you arrive that way, your favourite and
+  recent players and items, light or dark mode, tracking offset and news catch-up day come along, so nothing needs
+  setting up again. The cookie question shows once more, as your choice there belongs to each address. Link previews
+  show the new address too.
 
 ## 2026-10-24
 

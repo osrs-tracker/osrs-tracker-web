@@ -1,6 +1,6 @@
 # Runbook
 
-What to do when osrs-tracker.freekmencke.com misbehaves in production. Deploying is described in the project skill
+What to do when osrs-tracker.net misbehaves in production. Deploying is described in the project skill
 (`.claude/skills/osrs-tracker-web/SKILL.md`).
 
 ## Roll back
