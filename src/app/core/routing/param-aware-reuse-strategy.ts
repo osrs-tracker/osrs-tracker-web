@@ -4,7 +4,6 @@ import { ActivatedRouteSnapshot, BaseRouteReuseStrategy } from '@angular/router'
 /**
  * By default, Angular reuses the component when navigating between routes with the same config, ex. going from
  * `/trackers/price/1` to `/trackers/price/2`, which leaves components that load their data on init stale.
- * This strategy recreates the component whenever the route params change.
  */
 @Service()
 export class ParamAwareReuseStrategy extends BaseRouteReuseStrategy {

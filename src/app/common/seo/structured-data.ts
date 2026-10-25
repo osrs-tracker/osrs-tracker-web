@@ -1,12 +1,11 @@
 import { absoluteUrl, JsonLdNode, SITE_NAME } from './page-meta-strategy';
 
-/** One step of a breadcrumb trail: what the page is called, and its canonical path */
 export interface Crumb {
   name: string;
   path: string;
 }
 
-/** Home, then `crumbs`; the last one is the page itself. */
+/** The last crumb is the page itself. */
 export function breadcrumbList(crumbs: Crumb[]): JsonLdNode {
   return {
     '@type': 'BreadcrumbList',
@@ -19,7 +18,7 @@ export function breadcrumbList(crumbs: Crumb[]): JsonLdNode {
   };
 }
 
-/** A page about one subject, such as an item or a player, given as a plain `Thing`: no more specific type fits. */
+/** `about` is a plain `Thing`: no more specific type fits. */
 export function webPage(page: { path: string; title: string; description: string; about: JsonLdNode }): JsonLdNode {
   return {
     '@type': 'WebPage',

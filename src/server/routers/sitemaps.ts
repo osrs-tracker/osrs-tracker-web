@@ -4,7 +4,6 @@ import express from 'express';
 import { serverConfig } from '../server-config';
 import type { WebLogType } from '../utils/log';
 
-/** A JSON response from the API, at a path such as `/items?letter=a` */
 export type GetJson = (path: string) => Promise<unknown>;
 
 interface SitemapUrl {
@@ -22,7 +21,7 @@ const RETRY_AFTER_MS = 60_000;
 const escapeXml = (text: string) =>
   text.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[char]!);
 
-/** A `<urlset>`, one `<url>` per line. No `<priority>` or `<changefreq>`: Google ignores both. */
+/** No `<priority>` or `<changefreq>`: Google ignores both. */
 function urlset(urls: SitemapUrl[]): string {
   const lines = urls.map(
     ({ loc, lastmod }) => `<url><loc>${escapeXml(loc)}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}</url>`,
@@ -36,9 +35,8 @@ function urlset(urls: SitemapUrl[]): string {
 }
 
 /**
- * The item pages, by id: every item the API has, so every page in it resolves. Dated by the item's `updatedAt`, when the
- * API last stored a change to it (its add included); items it stored before it kept that date have none, and no
- * `<lastmod>`.
+ * Dated by the item's `updatedAt`, when the API last stored a change to it (its add included). Items it stored before it
+ * kept that date have no `<lastmod>`.
  */
 async function itemsSitemap(getJson: GetJson): Promise<string> {
   const letters = await Promise.all(
@@ -56,8 +54,8 @@ async function itemsSitemap(getJson: GetJson): Promise<string> {
 }
 
 /**
- * The tracked players with a recent hiscore entry (the API decides which), at the page's canonical, the API's
- * lower-case name (`player-detail-meta.ts`), dated by the newest entry: when the page last changed.
+ * At the page's canonical, the API's lower-case name (`player-detail-meta.ts`), dated by the newest entry: when the page
+ * last changed.
  */
 async function playersSitemap(getJson: GetJson): Promise<string> {
   const players = (await getJson('/sitemap/players')) as { username: string; lastEntry: string }[];
@@ -72,11 +70,10 @@ async function playersSitemap(getJson: GetJson): Promise<string> {
 }
 
 /**
- * A sitemap built on demand and kept for `ttl` ms. Requests while it loads share the load. A failed load keeps the last
- * good copy (`undefined` before the first) and tries again after `RETRY_AFTER_MS`, so a down API isn't asked again on
+ * A failed load keeps the last good copy and tries again after `RETRY_AFTER_MS`, so a down API isn't asked again on
  * every request.
  */
-export function cachedSitemap(build: () => Promise<string>, ttl: number, onError: (error: unknown) => void) {
+export function cachedSitemap(build: () => Promise<string>, ttlMs: number, onError: (error: unknown) => void) {
   let xml: string | undefined;
   let expiresAt = 0;
   let loading: Promise<string | undefined> | undefined;
@@ -88,7 +85,7 @@ export function cachedSitemap(build: () => Promise<string>, ttl: number, onError
       .then(
         built => {
           xml = built;
-          expiresAt = Date.now() + ttl;
+          expiresAt = Date.now() + ttlMs;
           return xml;
         },
         (error: unknown) => {
@@ -102,7 +99,6 @@ export function cachedSitemap(build: () => Promise<string>, ttl: number, onError
   };
 }
 
-/** The API's JSON, in the cluster through `API_INTERNAL_URL` like SSR, else the public URL */
 const fetchApiJson: GetJson = async path => {
   const response = await fetch(`${serverConfig.API_INTERNAL_URL ?? config.apiBaseUrl}${path}`, {
     headers: { 'User-Agent': config.userAgent },
@@ -113,9 +109,8 @@ const fetchApiJson: GetJson = async path => {
 };
 
 /**
- * `/sitemap-items.xml` and `/sitemap-players.xml`, built from the API when requested rather than at build time: players
- * get a new hiscore entry every day and the API new items, neither with a deploy. Cached as long as the API caches the
- * lists (a day for items, an hour for players). 503 when the API failed and there's no earlier copy.
+ * Built from the API when requested rather than at build time: players get a new hiscore entry every day and the API new
+ * items, neither with a deploy. Cached as long as the API caches the lists (a day for items, an hour for players).
  */
 export function createSitemapRouter({ logger, getJson = fetchApiJson }: { logger: Logger; getJson?: GetJson }) {
   const log = logger.child({ type: 'sitemap' satisfies WebLogType });

@@ -9,10 +9,6 @@ import { PlayerCountHistory } from './player-count-history';
 import { formatShare, locationCounts } from './world-locations';
 import { LucideActivity } from '@lucide/angular';
 
-/**
- * The players online: the count (`PlayerCountStore`: live, rendered on the server and refreshed in the browser), its
- * members and free-to-play split and its world locations, and the history below, drawn in the browser.
- */
 @Component({
   selector: 'players-online',
   templateUrl: './players-online.html',

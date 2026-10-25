@@ -20,13 +20,8 @@ import { TooltipMarkers } from './tooltip-markers';
 /** Above this many days, the points crowd the line */
 const MAX_POINTS = 15;
 
-/** Overall and the skills with the largest gains get a chip; the rest wait behind "+N" */
 const CHIPS_SHOWN = 7;
 
-/**
- * XP gained so far over the period: one cumulative line per picked skill (Overall in the accent colour), with chips to
- * add and remove skills. Takes the daily diffs, newest first.
- */
 @Component({
   selector: 'xp-gained-chart',
   template: `
@@ -67,17 +62,13 @@ export class XpGainedChart extends BaseChart<'line', Gains[]> {
 
   readonly #markers = new TooltipMarkers(inject(DOCUMENT), 'skill', inject(LOCAL_ICONS, { optional: true }));
 
-  /** The picked skills that gained XP */
   readonly series = computed(() => xpGainedSeries(this.data(), [...this.playerView.skills()]));
-  /** Overall, then the skills that gained XP, largest first; only those can be picked */
   readonly chips = computed<LegendItem[]>(() => {
     const picked = this.playerView.skills();
     const names = [SkillEnum.Overall, ...xpGainedSeries(this.data()).map(({ name }) => name)];
     return names.map(name => ({ name, color: this.cssColor(name), on: picked.has(name) }));
   });
-  /** What the data table holds, e.g. "XP gained per day, last 30 days, newest first" */
   readonly tableCaption = input.required<string>();
-  /** Set by the card's Chart/Table switch (player-chart) */
   readonly display = input<ChartDisplay>('chart');
   /** The table in the plot's place; with nothing gained, the plot's message stays */
   readonly tableShown = computed(() => this.display() === 'table' && !!this.series().length);
@@ -107,7 +98,6 @@ export class XpGainedChart extends BaseChart<'line', Gains[]> {
       datasets: {
         line: {
           borderWidth: 2.5,
-          // a point per day while they fit; longer periods only show the one under the cursor
           pointRadius: context => ((context.dataset.data as Point[]).length > MAX_POINTS ? 0 : 4),
           pointHoverRadius: 6,
           pointBorderWidth: 2.5,
@@ -121,7 +111,6 @@ export class XpGainedChart extends BaseChart<'line', Gains[]> {
         tooltip: {
           itemSort: (a, b) => b.parsed.y! - a.parsed.y!,
           callbacks: {
-            // that day's gain, and the total so far
             label: context => {
               const points = context.dataset.data as Point[];
               const day = context.parsed.y! - (points[context.dataIndex - 1]?.y ?? 0);
@@ -142,7 +131,6 @@ export class XpGainedChart extends BaseChart<'line', Gains[]> {
       borderColor: this.color(series.name),
       pointBackgroundColor: token('card'),
       pointBorderColor: this.color(series.name),
-      // one skill gets the area under its line
       fill: single ? 'origin' : false,
       backgroundColor: single ? withAlpha(this.color(series.name), 0.16) : this.color(series.name),
     }));

@@ -4,9 +4,8 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 
 /**
- * `catchError` handler for page resolvers: a 400/404 shows the not-found page, any other failure (5xx, network) the
- * error page. Both keep `url` in the address bar, so a refresh or the error page's retry loads the page again. Call it
- * synchronously in the resolver, as it injects.
+ * The not-found and error pages keep `url` in the address bar, so a refresh or the error page's retry loads the page
+ * again. Call it synchronously in the resolver, as it injects.
  */
 export function resolverErrorHandler(url: string): (err: unknown) => never {
   const loc = inject(Location);

@@ -18,7 +18,6 @@ const HIGH_ALCH_XP = 65;
 /** Prices can pass 2,147,483,647 (platinum tokens), but stay well within whole-number precision */
 const MAX_DIGITS = 15;
 
-/** "1,234.56", for a percentage */
 const percent = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 interface Field {
@@ -34,10 +33,6 @@ interface ResultRow {
   info?: string;
 }
 
-/**
- * Profit of flipping the item (buy at one price, sell at another, minus GE tax) or of high alching it (minus the item
- * and a nature rune), for a quantity. Prices start at the latest ones; "Use latest prices" resets them.
- */
 @Component({
   selector: 'article[profit-calculator]',
   template: `
@@ -175,7 +170,6 @@ export class ProfitCalculator {
   readonly item = input.required<Item>();
   readonly latestPrices = input<LatestPrices | undefined>();
   readonly loading = input(false);
-  /** The latest prices failed to load: the note says so, with a retry */
   readonly error = input(false);
 
   readonly retry = output();
@@ -223,16 +217,12 @@ export class ProfitCalculator {
         ],
   );
 
-  /** The latest prices loaded, but the item has no recent trade to start from */
   readonly noRecentPrices = computed(() => {
     const latest = this.latestPrices();
     return !!latest && (this.mode() === 'flip' ? !latest.low && !latest.high : !latest.high);
   });
 
-  /**
-   * A price needed for the profit is empty: the total and the rows that need it show "–". Not the nature rune's, which
-   * is 0 for runes you already have (and while its price loads).
-   */
+  /** Not the nature rune's price, which is 0 for runes you already have (and while its price loads) */
   readonly missingPrices = computed(() =>
     this.mode() === 'flip' ? !this.buyAt() || !this.sellAt() : !this.alchBuyAt(),
   );
@@ -317,7 +307,6 @@ export class ProfitCalculator {
     const sign = formatSign(Number(total), 'exceptZero');
     return sign + (total < 0n ? -total : total).toLocaleString('en-US');
   });
-  /** Sizes the total to fit (`fit-total-digits`) */
   readonly totalDigits = computed(() => this.totalText().replace(/\D/g, '').length);
 
   readonly note = computed(() => {
@@ -329,12 +318,11 @@ export class ProfitCalculator {
     return formatWhole(value, signed);
   }
 
-  /** Sizes an input's number to fit (`fit-input-digits`) */
   digitCount(value: number): number {
     return String(value).length;
   }
 
-  /** Keeps only the digits and shows them with thousands separators, leaving the caret after the same digit. */
+  /** Reformatting the text moves the caret, so it's put back after the same digit */
   onInput(event: Event, value: WritableSignal<number>): void {
     const input = event.target as HTMLInputElement;
     const caret = input.selectionStart ?? input.value.length;

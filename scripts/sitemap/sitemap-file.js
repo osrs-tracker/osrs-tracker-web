@@ -18,7 +18,7 @@ export const hasFullHistory = () => {
 const escapeXml = text =>
   text.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[char]);
 
-/** A `<urlset>` of `<url>` entries, each `{ loc, lastmod? }`. No `<priority>` or `<changefreq>`: Google ignores both. */
+/** No `<priority>` or `<changefreq>`: Google ignores both. */
 export const urlset = urls =>
   [
     '<?xml version="1.0" encoding="UTF-8"?>',
@@ -29,7 +29,6 @@ export const urlset = urls =>
     '</urlset>',
   ].join('');
 
-/** Formats and writes a sitemap, leaving the file alone when its content is unchanged. */
 export const writeSitemap = async (path, xml) => {
   const formatted = xmlFormatter(xml, { indentation: '  ', collapseContent: true, lineSeparator: '\n' });
 

@@ -4,7 +4,6 @@ import { RouterLink } from '@angular/router';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { LucideSearch } from '@lucide/angular';
 
-/** Player name search that opens the player's page; `[leading]` content (e.g. a mode switch) goes before the input. */
 @Component({
   selector: 'player-search',
   host: { class: 'block w-full' },
@@ -41,7 +40,6 @@ export class PlayerSearch {
 
   readonly usernameQuery = signal('');
 
-  /** The Search button, which Enter in the input clicks too */
   trackSearch(): void {
     if (this.usernameQuery().trim()) this.analyticsService.trackSearch('player', this.usernameQuery());
   }

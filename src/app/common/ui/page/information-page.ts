@@ -2,9 +2,8 @@ import { DatePipe } from '@angular/common';
 import { Component, input } from '@angular/core';
 
 /**
- * A reading page (changelog, privacy, terms): a title and one card, narrowed for reading. Wrap the content in
- * `<div class="markdown">` for the reading styles; an element with the `intro` attribute goes between the title and
- * the card (the changelog's year links).
+ * Wrap the content in `<div class="markdown">` for the reading styles; an element with the `intro` attribute goes
+ * between the title and the card.
  */
 @Component({
   selector: 'information-page',
@@ -28,6 +27,6 @@ import { Component, input } from '@angular/core';
 })
 export class InformationPage {
   readonly title = input.required<string>();
-  /** The day the text last changed, as `2026-10-13` */
+  /** `YYYY-MM-DD` */
   readonly lastUpdated = input<string>();
 }

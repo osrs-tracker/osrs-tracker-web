@@ -5,7 +5,6 @@ import { RequestHandler } from 'express';
 const ASSET_PATH = /\.(?:js|mjs|css|map|woff2|png|gif)$/i;
 
 /**
- * Answers asset paths the static middleware didn't find with a plain 404 before they reach Angular.
  * Some crawlers ignore `<base href="/">` and request `/trackers/price/chunk-*.js`, which would otherwise render as a
  * player or item page and call the API with the filename. Register it after `express.static`, so real assets are served.
  * Deliberately not a redirect to the root path: with the 30-day cache, a stale bundle name would get an old or wrong file.

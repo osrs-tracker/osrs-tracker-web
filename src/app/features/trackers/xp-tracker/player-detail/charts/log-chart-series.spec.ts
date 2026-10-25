@@ -18,7 +18,6 @@ const diff = (
 
 describe('xpGainedSeries', () => {
   it('adds up the daily gains oldest first, without Overall or skills that gained nothing', () => {
-    // Newest first, like the logs
     const diffs = [
       diff(3, { [SkillEnum.Overall]: 300, [SkillEnum.Attack]: 100, [SkillEnum.Magic]: 200 }),
       diff(2, { [SkillEnum.Overall]: 0, [SkillEnum.Attack]: 0, [SkillEnum.Magic]: 0 }),

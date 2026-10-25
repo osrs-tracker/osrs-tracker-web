@@ -25,11 +25,9 @@ export interface PlayerHistory {
   readonly today: Signal<HiscoreEntry | undefined>;
   readonly todayFailed: Signal<boolean>;
   readonly firstPageFailed: Signal<boolean>;
-  /** The check the period before starts from failed to load, so the stat tiles can't compare the two */
   readonly previousPeriodFailed: Signal<boolean>;
-  /** The live hiscores aren't in yet; also during SSR, which doesn't fetch them, so hydration doesn't change the page */
+  /** Also true during SSR, which doesn't fetch the live hiscores, so hydration doesn't change the page */
   readonly todayLoading: Signal<boolean>;
-  /** The first page is in */
   readonly loaded: Signal<boolean>;
   /** The stored daily entries loaded so far, newest first */
   readonly entries: Signal<HiscoreEntry[]>;
@@ -38,21 +36,17 @@ export interface PlayerHistory {
   readonly hasMore: Signal<boolean>;
   /** The period's history is in (or there's no more, or it failed), so the chart is drawn once, complete */
   readonly periodLoaded: Signal<boolean>;
-  /** The same for the milestones card's period */
   readonly milestonePeriodLoaded: Signal<boolean>;
   /**
    * `periodLoaded`, and the check the period before starts from is in (or failed), so the stat tiles are drawn once,
    * with their comparison. Only the tiles wait for it: it's the slowest request when the API is slow.
    */
   readonly comparedLoaded: Signal<boolean>;
-  /** The live hiscores; until they load (or when they fail) the newest tracked entry */
   readonly current: Signal<HiscoreEntry | undefined>;
-  /** When the daily check last stored the player's stats (a failed check stores nothing): the newest entry's date */
   readonly lastCheckedAt: Signal<Date | undefined>;
 
   readonly loadingMore: Signal<boolean>;
   readonly loadMoreFailed: Signal<boolean>;
-  /** Loads the next `size` days of history, a week by default */
   loadMore(size?: number): void;
   /** Loads as much as the failed load asked for (a longer period asks for more than a week) */
   retryLoadMore(): void;
@@ -60,23 +54,15 @@ export interface PlayerHistory {
   reloadPreviousPeriod(): void;
   /** After tracking starts at the offset, which stores its first entry, or when the first page failed */
   reloadFirstPage(): void;
-  /** Reloads the live hiscores, and the first page if it failed */
   retry(): void;
 }
 
-/**
- * A player's live hiscores and stored history at the visitor's offset: the first page (a week) and the pages loaded
- * after it, by the visitor or because a longer `period` or `milestonePeriod` needs them. Call it in an injection
- * context, like a resource.
- */
+/** Call it in an injection context, like a resource. */
 export function playerHistory(params: {
   username: string;
   offset: Signal<number>;
-  /** False when there's no such player: nothing is fetched */
   enabled: Signal<boolean>;
-  /** Days the chart and tiles cover */
   period: Signal<number>;
-  /** Days the milestones card's pace covers, apart from the chart's: only what's loaded follows it */
   milestonePeriod: Signal<number>;
 }): PlayerHistory {
   const { username, offset, enabled, period, milestonePeriod } = params;
@@ -136,7 +122,6 @@ export function playerHistory(params: {
     more.load({ offset: offset(), size, skip: entries().length });
   }
 
-  // A longer period, the chart's or the milestones card's, loads the history it needs
   effect(() => {
     const needed = periodSize(Math.max(period(), milestonePeriod()));
     if (!loaded() || entries().length >= needed || !hasMore()) return;

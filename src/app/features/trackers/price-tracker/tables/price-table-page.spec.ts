@@ -57,7 +57,6 @@ describe('PriceTablePage', () => {
     fixture.componentRef.setInput('kind', 'high-alch');
   }
 
-  /** Renders, so the page asks for the lists, and answers it */
   function flushLists() {
     TestBed.tick();
     httpTesting.expectOne(`${config.pricesBaseUrl}/mapping`).flush(items);
@@ -103,7 +102,6 @@ describe('PriceTablePage', () => {
 
     (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('thead button')!.click();
     TestBed.tick();
-    // Until the lists arrive, the server's rows stay
     expect(rowNames()).toEqual(['Dragon med helm']);
     flushLists();
     await fixture.whenStable();

@@ -8,7 +8,6 @@ import { LOADING_INDICATOR } from '@app/core/interceptors/loading-indicator-inte
 import { SSR_TIMEOUT } from '@app/core/interceptors/ssr-timeout-interceptor';
 import { config } from '@config/config';
 
-/** The Wiki's average price lists (`/5m`, `/1h`, `/6h`, `/24h`), each holding every item */
 export enum TimeSpan {
   FIVE_MINUTES = '5m',
   HOUR = '1h',
@@ -16,7 +15,7 @@ export enum TimeSpan {
   DAY = '24h',
 }
 
-/** How far back an item's time series goes; the Wiki picks the step (5 minutes for `24h`, hourly for `7d`, …) */
+/** The Wiki picks the step (5 minutes for `24h`, hourly for `7d`, …) */
 export type Lookback = '6h' | '24h' | '7d' | '30d' | '6m' | '1y';
 
 export interface LatestPrices {
@@ -37,21 +36,20 @@ export interface AveragePricesAtTime extends AveragePrices {
   timestamp: number;
 }
 
-/** An item from the Wiki's `/mapping`, cut down to the fields the site uses */
 export interface ItemMapping {
   id: number;
   name: string;
   icon: string;
   members: boolean;
   highalch?: number;
-  /** The GE buy limit per 4 hours, missing for some items */
+  /** Per 4 hours, missing for some items */
   limit?: number;
 }
 
-/** The full `/latest` list, by item id: prices in gp, times in Unix seconds */
+/** Prices in gp, times in Unix seconds */
 export type LatestPriceList = Record<string, Record<string, number>>;
 
-/** The lists the server keeps for every render, and how long each stays fresh, in ms */
+/** How long each list stays fresh, in ms */
 interface ServerLists {
   /** As long as the Wiki's CDN caches it */
   latest: LatestPriceList;
@@ -87,9 +85,7 @@ export class OsrsPricesRepo {
 
   /** Browser only: until the app is stable, the rendered items' prices come from the server (like the transfer cache) */
   private useTransferredPrices = !this.isServer;
-  /** Server only: the render's ongoing request for each list in `serverLists` that is stale */
   private readonly serverListRequests: Partial<Record<keyof ServerLists, Observable<unknown>>> = {};
-  /** Browser only: `/mapping` for the session */
   private mapping$?: Observable<ItemMapping[]>;
 
   private averagePriceCache: Record<
@@ -128,21 +124,16 @@ export class OsrsPricesRepo {
     return this.fetchLatestPrices(options).pipe(map(data => toLatestPrices(data[id])));
   }
 
-  /** Every item's name, icon, membership, alch value and buy limit */
   getItemMapping(): Observable<ItemMapping[]> {
     if (this.isServer) return this.serverList('mapping', '', () => this.fetchItemMapping({ transferCache: false }));
     return (this.mapping$ ??= this.fetchItemMapping().pipe(shareReplay(1)));
   }
 
-  /** The full `/latest` list, by item id; times in Unix seconds */
   getAllLatestPrices(): Observable<LatestPriceList> {
     return this.isServer ? this.serverLatestPrices() : this.fetchLatestPrices();
   }
 
-  /**
-   * Every item's average prices for the `timeSpan` period starting at `timestamp`, by item id. The browser shares the
-   * request with `getCachedPriceAverage`; the server keeps the day (`TimeSpan.DAY`) for every render.
-   */
+  /** The browser shares the request with `getCachedPriceAverage`; the server keeps the day for every render */
   getAveragePrices(timeSpan: TimeSpan, timestamp: Date): Observable<Record<string, AveragePrices>> {
     if (this.isServer && timeSpan === TimeSpan.DAY)
       return this.serverList('day', String(getUnixTime(timestamp)), () =>
@@ -164,7 +155,6 @@ export class OsrsPricesRepo {
       .pipe(map(response => response.data));
   }
 
-  /** Average prices for the `timeSpan` period starting at `timestamp` (the latest period without one) */
   getPriceAverage(
     id: number,
     timeSpan: TimeSpan,
@@ -174,8 +164,8 @@ export class OsrsPricesRepo {
   }
 
   /**
-   * Same as `getPriceAverage`, but shares one request per time span and timestamp, since the response holds every item.
-   * A failed request is retried by the next subscriber.
+   * Shares one request per time span and timestamp, since the response holds every item. A failed request is retried by
+   * the next subscriber.
    */
   getCachedPriceAverage(
     id: number,
@@ -195,12 +185,10 @@ export class OsrsPricesRepo {
     ).pipe(shareReplay(1)));
   }
 
-  /** The full `/latest` list for the server: kept for every render, and requested once per render when stale */
   private serverLatestPrices(options?: { loadingIndicator?: boolean }): Observable<LatestPriceList> {
     return this.serverList('latest', '', () => this.fetchLatestPrices({ ...options, transferCache: false }));
   }
 
-  /** A list in `serverLists`, or the render's one request for it while it's missing, stale or for another `key` */
   private serverList<K extends keyof ServerLists>(
     name: K,
     key: string,
@@ -253,7 +241,7 @@ export class OsrsPricesRepo {
       `${config.pricesBaseUrl}/${timeSpan}`,
       {
         transferCache: options?.transferCache,
-        ...(timestamp && { params: { timestamp: getUnixTime(timestamp) } }), // Only add the timestamp param if it's defined
+        ...(timestamp && { params: { timestamp: getUnixTime(timestamp) } }),
         context: wikiContext(),
       },
     );
@@ -269,7 +257,7 @@ export class OsrsPricesRepo {
   }
 }
 
-/** Maps an item's entry in the Wiki's `/latest` response (times in Unix seconds), which is missing without trades */
+/** An item's entry in `/latest` is missing without trades; times are in Unix seconds */
 function toLatestPrices(price: Record<string, number>): LatestPrices {
   return {
     high: price?.['high'],

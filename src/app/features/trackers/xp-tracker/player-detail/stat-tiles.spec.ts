@@ -14,7 +14,6 @@ const summary = (xp: number, previousXp?: number, extra: Partial<PeriodSummary> 
   ...extra,
 });
 
-/** The XP tile's comparison line and tone */
 const comparison = (s: PeriodSummary, period: Period = 7): { sub: string; tone: string } => {
   const { sub, tone } = statTilesFor(overall, s, period)[1];
   return { sub, tone };

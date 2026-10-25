@@ -78,7 +78,6 @@
     cursor: pointer;
   }
 
-  /* Long titles (item names, news posts) break into even lines instead of leaving one word on the last */
   h1,
   h2,
   h3 {

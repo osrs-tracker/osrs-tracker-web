@@ -3,10 +3,7 @@ import { patchState, signalStore, withHooks, withMethods, withState } from '@ngr
 import { StorageKey } from './storage';
 import { StorageService } from './storage-service';
 
-/**
- * `value` when it's a real day (`YYYY-MM-DD`) before today (UTC), as the news catch-up takes it from the link or
- * storage; otherwise `null`. Not today: "posts since today" are always none.
- */
+/** Not today (UTC): "posts since today" are always none. */
 export function parseDay(value: string | null | undefined): string | null {
   if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
   const day = new Date(`${value}T00:00:00Z`);
@@ -17,14 +14,10 @@ export function parseDay(value: string | null | undefined): string | null {
 }
 
 class LastPlayedState {
-  /** The day last picked for "Since you last played", `YYYY-MM-DD` */
   lastPlayed: string | null = null;
 }
 
-/**
- * The news catch-up's day, remembered on this device so the news page and the Game menu offer it next time. In
- * `common/`, as the nav (in `core/`) reads it too.
- */
+/** In `common/`, as the nav (in `core/`) reads it too. */
 export const LastPlayedStore = signalStore(
   { providedIn: 'root' },
   withState(new LastPlayedState()),

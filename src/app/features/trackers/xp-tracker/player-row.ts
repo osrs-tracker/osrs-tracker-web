@@ -22,10 +22,6 @@ interface PlayerRowData {
   totalLevel: number | null;
 }
 
-/**
- * A 65px list row linking to a player: account type, name, total level and the XP gained since they were last tracked.
- * Known parts show straight away, the rest is a skeleton until the browser has fetched it.
- */
 @Component({
   selector: 'a[player-row]',
   template: `
@@ -91,7 +87,6 @@ export class PlayerRow implements OnInit {
 
   readonly _username = computed(() => (this.player()?.username ?? this.username())!);
 
-  /** The XP gained since the last scrape, and the player itself when only a username was given. Browser only. */
   readonly overallDiffResource = rxResource({
     params: () =>
       this.isBrowser ? { username: this.username(), player: this.player(), offset: this.scrapingOffset() } : undefined,

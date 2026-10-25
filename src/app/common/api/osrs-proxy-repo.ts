@@ -6,18 +6,13 @@ import { map, Observable } from 'rxjs';
 import { BASE_URL_PREFIX } from '@app/core/interceptors/base-url-interceptor';
 import { config } from '@config/config';
 
-/** Jagex's hiscore tables: the main one, the three ironman modes and the two builds (level-3 skillers, 1 Defence) */
+/** The two builds are level-3 skillers and 1 Defence */
 export type JagexHiscoreTable = HiscoreTable | 'hiscore_oldschool_skiller' | 'hiscore_oldschool_skiller_defence';
 
 @Service()
 export class OsrsProxyRepo {
   private readonly httpClient = inject(HttpClient);
 
-  //
-  // Players
-  //
-
-  /** Live hiscores from Jagex (through the AWS proxy), shaped like a stored hiscore entry */
   getPlayerHiscore(username: string, scrapingOffset: number): Observable<HiscoreEntry> {
     return this.getHiscoreTable(username, 'hiscore_oldschool').pipe(
       map(({ skills, activities }) => ({ date: new Date(), scrapingOffset, skills, activities })),

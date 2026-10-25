@@ -11,7 +11,6 @@ import { PlayerRow } from './player-row';
 describe('PlayerRow', () => {
   afterEach(() => localStorage.clear());
 
-  /** Renders a row for ToxSick, a recent and favorite player, and fails its player request with `status` */
   async function failPlayerRequest(
     status: number,
   ): Promise<{ store: InstanceType<typeof XpTrackerStore>; element: HTMLElement }> {

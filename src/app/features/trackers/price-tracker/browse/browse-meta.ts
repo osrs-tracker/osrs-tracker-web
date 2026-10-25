@@ -5,8 +5,7 @@ import { isBrowseLetter, startingWith } from './browse-letters';
 
 /**
  * From the letter alone, so it doesn't wait for the API. None for a letter there's no page for: it's a 404, titled by
- * the route, without a canonical. The title is "OSRS items starting with A: Grand Exchange prices", like the landing
- * pages' titles, without the site name.
+ * the route, without a canonical.
  */
 export function browseMeta(route: ActivatedRouteSnapshot): PageMeta | undefined {
   const letter: string = route.params['letter'];

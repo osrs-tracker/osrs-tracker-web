@@ -40,6 +40,8 @@
   and the phone details button of the price tables and New on the GE, the order of the skills (the page and the link
   preview cards), the hiscores grids' rows, the trackers' saved recent and favourite lists and the settings of the
   requests to the OSRS Wiki. Nothing looks different, and a fix to one now reaches all of them.
+- The code's comments now only say why something is done a certain way, where the code itself can't: about 950 comment
+  lines that repeated what the code already says are gone, so the code is quicker to read.
 
 ## 2026-10-24
 

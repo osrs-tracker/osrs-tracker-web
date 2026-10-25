@@ -99,12 +99,11 @@ export class Tooltip implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   ngOnChanges(): void {
-    this.mousePresent$.complete(); // Complete any existing observable
+    this.mousePresent$.complete();
 
-    // Tooltip is not enabled => break early and complete the observable
     if (this.tooltip() === false) return;
 
-    this.mousePresent$ = new Subject<boolean>(); // Recreate the subject if tooltip is enabled
+    this.mousePresent$ = new Subject<boolean>();
     this.mousePresent$.pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef)).subscribe(isPresent => {
       if (this.isOpen === isPresent) return;
       this.isOpen = isPresent;
@@ -132,7 +131,7 @@ export class Tooltip implements OnChanges, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     [this.arrowOverlayRef, this.containerOverlayRef].forEach(ref => (ref?.detach(), ref?.dispose()));
 
-    this.mousePresent$.next(false); // emit false to be sure.
+    this.mousePresent$.next(false);
     this.mousePresent$.complete();
   }
 

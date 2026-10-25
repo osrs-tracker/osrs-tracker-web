@@ -18,7 +18,6 @@ class ErrorPage {}
 
 const URL = '/trackers/xp/ToxSick';
 
-/** ToxSick as the API returns them, tracked at the default offset (0) unless `extra` says otherwise */
 const player = (extra: Partial<Player> = {}): Player => ({
   username: 'ToxSick',
   combatLevel: 3,
@@ -30,7 +29,6 @@ const player = (extra: Partial<Player> = {}): Player => ({
   ...extra,
 });
 
-/** `count` stored entries, a day apart, newest first */
 const entries = (count: number): object[] =>
   Array.from({ length: count }, (_, i) => ({
     date: new Date(Date.UTC(2026, 9, 10 - i, 2)).toISOString(),
@@ -47,7 +45,6 @@ const settle = async (): Promise<void> => {
 
 describe('PlayerDetail', () => {
   let httpTesting: HttpTestingController;
-  /** What the page's resolver returns */
   let resolved: Player;
 
   const lookup = (): TestRequest =>
@@ -56,7 +53,6 @@ describe('PlayerDetail', () => {
     httpTesting.expectOne(req => req.url === '/players/ToxSick/hiscores' && req.params.get('skip') === '0');
   const liveHiscores = (): TestRequest => httpTesting.expectOne(req => req.url.includes('/index_lite.json'));
 
-  /** Opens the player page in a person's browser, as the router does (the template is left out: this is its state) */
   const open = async (player: Player, url: string = URL): Promise<PlayerDetail> => {
     resolved = player;
     const harness = await RouterTestingHarness.create();

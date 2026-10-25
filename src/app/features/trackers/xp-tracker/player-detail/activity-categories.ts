@@ -28,7 +28,6 @@ export const CLUES: ReadonlySet<string> = new Set([
   ActivityEnum.ClueScrollsMaster,
 ]);
 
-/** Minigames, points and ranks: everything before the raids that isn't a clue scroll or the collection log. */
 export const MINIGAMES: ReadonlySet<string> = new Set(
   ACTIVITIES.slice(0, ACTIVITIES.indexOf(ActivityEnum.ChambersOfXeric)).filter(
     activity =>
@@ -36,10 +35,7 @@ export const MINIGAMES: ReadonlySet<string> = new Set(
   ),
 );
 
-/**
- * Normal modes on the first row, their harder modes below; The Fractured Archive, which has no harder mode on the
- * hiscores, on a row of its own.
- */
+/** The Fractured Archive has no harder mode on the hiscores, so it gets a row of its own. */
 export const RAID_LAYOUT: (string | null)[] = fillRows([
   ActivityEnum.ChambersOfXeric,
   ActivityEnum.TheatreOfBlood,
@@ -50,10 +46,6 @@ export const RAID_LAYOUT: (string | null)[] = fillRows([
   ActivityEnum.TheFracturedArchive,
 ]);
 
-/**
- * The minigames card in rows of three: minigames; Bounty Hunter (Legacy under current) with the PvP ratings; seasonal
- * points. Each row only shows what the player is ranked in.
- */
 export const MINIGAME_ROWS: ActivityEnum[][] = [
   [ActivityEnum.RiftsClosed, ActivityEnum.SoulWarsZeal, ActivityEnum.ColosseumGlory],
   [ActivityEnum.BountyHunter, ActivityEnum.BountyHunterRogue, ActivityEnum.LastManStanding],
@@ -76,12 +68,9 @@ export const UNCHARTED_MINIGAMES: Partial<Record<ActivityEnum, string>> = {
   [ActivityEnum.GridPoints]: 'Seasonal points',
 };
 
-/** Empty cells (`null`) that complete the last row of three */
 export function fillRows(names: string[]): (string | null)[] {
   return [...names, ...Array<null>((3 - (names.length % 3)) % 3).fill(null)];
 }
 
-/** The bosses card: every boss, in `ActivityEnum` order, the last row filled up */
 export const BOSS_LAYOUT: (string | null)[] = fillRows(Object.values(ActivityEnum).filter(name => BOSSES.has(name)));
-/** The clues card: the six tiers, beginner to master, in two rows (the total is the card's footer) */
 export const CLUE_LAYOUT: (string | null)[] = Object.values(ActivityEnum).filter(name => CLUES.has(name));

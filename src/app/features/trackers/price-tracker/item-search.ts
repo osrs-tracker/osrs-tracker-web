@@ -26,16 +26,11 @@ import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { announceChanges } from '@app/common/a11y/announcer';
 import { LucideSearch } from '@lucide/angular';
 
-/** Keys the combobox passes on to the listbox to move the active option */
 const NAVIGATION_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageUp', 'PageDown']);
 
 /**
- * Item name search with a floating dropdown of matching items and their prices, linking to their price pages.
- * `[leading]` content (e.g. a mode switch) goes before the input. An `initialQuery` is searched for straight away.
- *
- * A combobox on `@angular/aria`: the arrow keys move the active option while focus stays in the input, Enter opens it,
- * Escape, clicking outside or clearing the input closes the dropdown. The options are the result links themselves
- * (`role="option"` on the `<a>`), so mouse users keep middle-click and "Open in new tab".
+ * The options are the result links themselves (`role="option"` on the `<a>`), so mouse users keep middle-click and
+ * "Open in new tab".
  */
 @Component({
   selector: 'item-search',
@@ -176,7 +171,6 @@ export class ItemSearch {
   private readonly router = inject(Router);
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
-  /** E.g. the name searched for on an item page that wasn't found */
   readonly initialQuery = input('');
 
   readonly query = signal('');
@@ -194,23 +188,15 @@ export class ItemSearch {
   readonly loading = this.search.isLoading;
   readonly error = computed(() => !!this.search.error());
   readonly results = computed(() => (this.search.hasValue() ? (this.search.value() ?? []) : []));
-  /** The query of the last finished search, for the "No items match" message. */
   readonly searchedQuery = computed(() => (this.search.hasValue() ? (this.submitted()?.query ?? null) : null));
 
-  /**
-   * Whether the dropdown shows: a search, typing or a click open it; Escape, focus or a press leaving the search, or
-   * clearing it close it.
-   */
   readonly showing = signal(false);
-  /** Whether there's something to show: while searching and once a search has finished or failed, until cleared. */
   readonly open = computed(
     () => !!this.query().trim() && (this.loading() || this.error() || this.searchedQuery() !== null),
   );
   readonly hasResults = computed(() => !this.loading() && !this.error() && !!this.results().length);
-  /** The combobox's `expanded`: only while it shows the result list */
   readonly listed = computed(() => this.showing() && this.open() && this.hasResults());
 
-  /** Read out when a search ends: how many items match, none, or the failure */
   private readonly announcement = computed(() => {
     const query = this.searchedQuery();
     if (!this.open() || this.loading()) return null;
@@ -219,20 +205,13 @@ export class ItemSearch {
     if (!count) return `No items match “${query}”.`;
     return `${count} ${count === 1 ? 'item matches' : 'items match'} “${query}”.`;
   });
-  /** The active option's item ID (the listbox selects the option the arrow keys reach, the first one at the start) */
   readonly selected = signal<number[]>([]);
-  /** Whether the arrow keys moved the active option since the input last changed, so Enter opens it. */
   readonly navigated = signal(false);
-  /**
-   * Whether a plain Enter opens the active option (outlined) rather than searching: the arrow keys reached it, or the
-   * results are for what's in the input.
-   */
   readonly enterOpens = computed(() => this.listed() && (this.navigated() || this.query() === this.searchedQuery()));
 
-  /** Name bar widths of the rows shown while searching, varied like `list-row-skeleton`'s */
   readonly skeletonWidths: string[] = ['w-32', 'w-24', 'w-36'];
 
-  /** The latest instant-sell price per result; the requests share one fetch of all latest prices. */
+  /** The requests share one fetch of all latest prices. */
   readonly pricesResource = rxResource({
     params: () => ({ ids: this.results().map(item => item.id) }),
     // Typed here: `Object.fromEntries` returns `any`, and `rxResource` takes no partial generic
@@ -279,16 +258,11 @@ export class ItemSearch {
     return formatNumberLegible(price);
   }
 
-  /** The Search button, or Enter with a modifier (the input handles a plain Enter) */
   submit(event: Event): void {
     event.preventDefault();
     this.searchItems();
   }
 
-  /**
-   * The combobox passes the arrow keys and Enter on to the listbox while it's expanded. A plain Enter opens the active
-   * option when the arrow keys reached it or the results are for what's in the input, and searches otherwise.
-   */
   onKeydown(event: KeyboardEvent): void {
     if (NAVIGATION_KEYS.has(event.key)) {
       this.navigated.set(true);
@@ -326,7 +300,7 @@ export class ItemSearch {
     if (!this.elementRef.nativeElement.contains(event.target as Node | null)) this.close();
   }
 
-  /** Focus leaving the search closes a message; the combobox closes its list itself */
+  /** The combobox closes its list itself; this closes a message. */
   closeOnFocusOutside(event: FocusEvent): void {
     if (!this.elementRef.nativeElement.contains(event.relatedTarget as Node | null)) this.showing.set(false);
   }

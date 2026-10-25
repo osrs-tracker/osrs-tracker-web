@@ -12,15 +12,9 @@ export interface StatTileView {
   tip?: string;
   /** The whole line, for when it's cut off; one item per line */
   subTip?: string;
-  /** The period before failed to load, so the line is a retry instead of the comparison */
   comparisonFailed?: boolean;
 }
 
-/**
- * The stat tiles above the player page: total level, XP gained over the period (compared with the period before it),
- * levels gained and boss kills. Without a summary (a single stored entry), the gains wait for the next check.
- * `comparisonFailed`: the check the period before starts from didn't load.
- */
 export function statTilesFor(
   overall: HiscoreSkill,
   summary: PeriodSummary | undefined,
@@ -68,10 +62,6 @@ export function statTilesFor(
   ];
 }
 
-/**
- * The stat tiles when the history failed to load: the total level when the live hiscores are in, and "–" for the gains,
- * which need the history.
- */
 export function failedStatTilesFor(overall: HiscoreSkill | undefined, period: Period): StatTileView[] {
   const notLoaded = (label: string): StatTileView => ({ label, value: '–', sub: 'Not loaded', tone: 'muted' });
   return [
@@ -91,7 +81,7 @@ function totalLevelTile(overall: HiscoreSkill): StatTileView {
   };
 }
 
-/** Compared with the period before it, e.g. "+24% vs previous week"; 90 days back is as far as the history goes, so only 7D and 30D compare */
+/** 90 days back is as far as the history goes, so only 7D and 30D compare */
 function periodComparison(summary: PeriodSummary, period: Period): Pick<StatTileView, 'sub' | 'tone'> {
   const { xp, previousXp } = summary;
   const previous = period === 7 ? 'week' : `${period} days`;

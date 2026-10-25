@@ -10,9 +10,9 @@ import { WINDOW } from '@app/core/platform/window-token';
 const MINUTE = 60_000;
 
 /**
- * The players online count that the Players online page and the Game menu's card share, so they always show the same
- * number: the live count from Jagex's world list when it loads, else the newest stored sample. The server renders the
- * live count too, so the number doesn't change on hydration: the transfer cache hands the browser the server's count.
+ * Shared by the Players online page and the Game menu's card so they show the same number: the live count from Jagex's
+ * world list when it loads, else the newest stored sample. The server renders the live count too, so the number doesn't
+ * change on hydration: the transfer cache hands the browser the server's count.
  * The API keeps the live count for a minute, so renders poll Jagex at most once a minute, and the SSR timeout keeps a
  * slow poll from holding up a render (it then shows the stored sample, and the browser fetches the live one).
  */
@@ -48,7 +48,6 @@ export const PlayerCountStore = signalStore(
     };
   }),
   withMethods(store => ({
-    /** Fetches the live count and the stored sample again (or for the first time) */
     refresh(): void {
       if (store._storedRequested()) store._stored.reload();
       else patchState(store, { _storedRequested: true });
@@ -60,10 +59,7 @@ export const PlayerCountStore = signalStore(
     const window = inject(WINDOW);
 
     return {
-      /**
-       * Refreshes every minute while the tab is visible, and on coming back to the tab after a missed minute; stops
-       * when the last `watch`er is destroyed. Browser only.
-       */
+      /** Browser only */
       _refreshes: defer(() => {
         const document = window!.document;
         let missed = false;
@@ -87,11 +83,7 @@ export const PlayerCountStore = signalStore(
     };
   }),
   withMethods(store => ({
-    /**
-     * For a component that shows the count while it's on screen: loads both counts (also during SSR; on hydration they
-     * come from the transfer cache), or refreshes them if they loaded earlier (the Game menu's card), then refreshes
-     * as `_refreshes` describes until the component is destroyed. `onRefresh` runs with each of those refreshes.
-     */
+    /** Loads both counts also during SSR; on hydration they come from the transfer cache. */
     watch(onRefresh?: () => void): void {
       const destroyRef = inject(DestroyRef);
       // Not while they load: a second watcher in the same render would fetch them twice

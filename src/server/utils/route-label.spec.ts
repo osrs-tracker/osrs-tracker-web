@@ -8,7 +8,6 @@ function label(url: string, statusCode = 200): string {
   return routeLabel({ originalUrl: url } as Request, { statusCode } as Response);
 }
 
-/** The full path of every page in the Angular route table, lazy children included */
 async function pagePaths(routes: Routes, parent = ''): Promise<string[]> {
   const paths: string[] = [];
 

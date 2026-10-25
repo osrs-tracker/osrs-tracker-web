@@ -14,11 +14,9 @@ import {
 import { formatNumberLegible } from '@app/common/format/number-format';
 import { LucideCalendar, LucideChevronDown, LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 
-/** A day with a stored check, as the picker shows it */
 export interface PickerDay {
-  /** The check's UTC date, e.g. "2026-10-13" */
+  /** UTC */
   key: string;
-  /** "Tue 13 Oct" */
   label: string;
   /** Overall XP gained since the check before; `undefined` for the oldest */
   gained?: number;
@@ -27,14 +25,10 @@ export interface PickerDay {
 }
 
 interface CalendarCell {
-  /** The day of the month; `undefined` before the 1st and after the last */
   date?: number;
   key?: string;
-  /** Only days with a check can be picked */
   day?: PickerDay;
-  /** The tint between the two picked days, a half cell at either end */
   band?: string;
-  /** Rounds the tint where a week or the month starts or ends */
   bandEdge?: string;
 }
 
@@ -43,22 +37,15 @@ const MONTH_NAMES = [
   ...['January', 'February', 'March', 'April', 'May', 'June'],
   ...['July', 'August', 'September', 'October', 'November', 'December'],
 ];
-/** The heat bar's strength per step: a see-through accent, so it keeps its hue on either theme */
+/** A see-through accent, so it keeps its hue on either theme */
 const HEAT_MIX = [0, 35, 55, 78, 100];
 const BAND = 'color-mix(in oklch, var(--accent) 12%, transparent)';
 
 /**
- * A day picked from a month calendar: a 32px button opening a floating calendar under it (under the nearest positioned
- * ancestor on phones, e.g. the row of pickers, so it stays inside the card). Either only the given `days` can be picked
- * (Compare: the days with a stored check), each with a bar under its date as strong as its `heat`, so the busy days
- * stand out; or every day in `range` (the news catch-up). The day picked in the other picker is ringed, and the days
- * between the two are tinted, which shows the span being compared. A year dropdown in the header jumps between years
- * when the days span more than one. `variant="inline"` is a plain trigger for a control that draws its own frame (the
- * news page's pill).
- *
- * The calendar is an `@angular/aria` grid: the arrow keys move between the days that can be picked (the others are
- * hard-disabled, so they're skipped), Page Up and Page Down change the month, Enter or Space picks. It opens on the
- * picked day; Escape, a click outside or focus leaving it closes it.
+ * Either only the given `days` can be picked (Compare), or every day in `range` (the news catch-up).
+ * `variant="inline"` is a plain trigger for a control that draws its own frame. On phones the calendar floats under the
+ * nearest positioned ancestor, so it stays inside the card. Its `@angular/aria` grid hard-disables the days that can't
+ * be picked, so the arrow keys skip them.
  */
 @Component({
   selector: 'day-picker',
@@ -84,39 +71,31 @@ export class DayPicker {
   private readonly injector = inject(Injector);
   private readonly trigger = viewChild.required<ElementRef<HTMLButtonElement>>('trigger');
 
-  /** What's picked, e.g. "Day"; names the button and the calendar */
   readonly label = input.required<string>();
-  /** The days that can be picked, newest first; or none, with `range` */
+  /** Newest first */
   readonly days = input<PickerDay[]>([]);
-  /** Every day from `from` to `to` (`YYYY-MM-DD`) can be picked, instead of only the `days` */
+  /** Instead of `days`; `YYYY-MM-DD` */
   readonly range = input<{ from: string; to: string }>();
-  /** The picked day's key; `undefined` for none */
   readonly value = input.required<string | undefined>();
-  /** The other picker's day, ringed, with the days between the two tinted */
   readonly other = input<string | undefined>();
-  /** When set, a button that picks no day, and the button's text while none is picked */
+  /** A button that picks no day */
   readonly noneLabel = input<string | undefined>();
-  /** The button's text and name while no day is picked, without a button for none (e.g. "Since you last played") */
+  /** Like `noneLabel`, without a button for none */
   readonly placeholder = input<string | undefined>();
-  /** Before the picked day's label on the button, e.g. "Since "; the button's text then names it without `label` */
+  /** The button's text then names it without `label` */
   readonly prefix = input('');
-  /** The day the calendar opens on while none is picked; else the newest */
   readonly openAt = input<string | undefined>();
-  /** Under the calendar, what the heat bars mean; none without */
   readonly legend = input<string | undefined>();
   readonly variant = input<'default' | 'inline'>('default');
-  /** Which edge of the button the calendar lines up with from 640px; on phones it's under the positioned ancestor */
+  /** From 640px; on phones the calendar is under the positioned ancestor */
   readonly align = input<'start' | 'end'>('start');
-  /** A day's key, or `null` for none */
   readonly picked = output<string | null>();
 
   readonly weekdays: string[] = WEEKDAYS;
   readonly open = signal(false);
-  /** The month shown, e.g. "2026-10" */
   readonly shownMonth = signal('');
 
   private readonly byKey = computed(() => new Map(this.days().map(day => [day.key, day])));
-  /** The months with a day to pick, oldest first */
   private readonly months = computed(() => {
     const range = this.range();
     if (!range) return [...new Set(this.days().map(day => day.key.slice(0, 7)))].sort();
@@ -130,7 +109,6 @@ export class DayPicker {
     }
     return months;
   });
-  /** The years with a day to pick, oldest first */
   readonly years = computed(() => [...new Set(this.months().map(month => month.slice(0, 4)))]);
 
   readonly valueLabel = computed(() => {
@@ -138,7 +116,6 @@ export class DayPicker {
     const day = value && this.dayOf(value);
     return day ? this.prefix() + day.label : (this.placeholder() ?? this.noneLabel() ?? '–');
   });
-  /** The label and the day, or the button's text alone where it names itself: a `placeholder`, or a `prefix` */
   readonly buttonName = computed(() =>
     (this.value() ? this.prefix() : this.placeholder()) ? this.valueLabel() : `${this.label()}: ${this.valueLabel()}`,
   );
@@ -151,7 +128,7 @@ export class DayPicker {
   );
   readonly nextMonth = computed(() => this.months().find(month => month > this.shownMonth()));
 
-  /** The shown month as its weeks, Monday first (a list, so the grid is recreated per month) */
+  /** A list, so the grid is recreated per month */
   readonly calendars = computed(() => {
     const month = this.shownMonth();
     return month ? [{ month, title: monthTitle(month), weeks: this.weeksOf(month) }] : [];
@@ -212,7 +189,6 @@ export class DayPicker {
     if (month) this.shownMonth.set(month);
   }
 
-  /** The same month in `year`, else that year's nearest one */
   showYear(year: string): void {
     const months = this.months().filter(month => month.startsWith(year));
     const target = `${year}${this.shownMonth().slice(4)}`;
@@ -238,7 +214,6 @@ export class DayPicker {
     return `${day.label}${gained}${other ? ', the other day picked' : ''}`;
   }
 
-  /** The heat bar: the accent at the step's strength, or the text colour on the picked (accent) day */
   heatColor(heat: number, onAccent: boolean): string {
     return `color-mix(in oklch, var(${onAccent ? '--on-accent' : '--accent'}) ${HEAT_MIX[heat]}%, transparent)`;
   }
@@ -258,7 +233,6 @@ export class DayPicker {
     if (refocus) this.trigger().nativeElement.focus();
   }
 
-  /** A pickable day: one of `days`, or any in `range`, labelled like "1 September 2026" */
   private dayOf(key: string): PickerDay | undefined {
     const range = this.range();
     if (!range) return this.byKey().get(key);
@@ -267,7 +241,6 @@ export class DayPicker {
     return { key, label: `${date} ${MONTH_NAMES[month - 1]} ${year}`, heat: 0 };
   }
 
-  /** Focuses the picked day once rendered, else `openAt`, else the shown month's newest day */
   private focusDay(focusVisible: boolean): void {
     afterNextRender(
       () => {
@@ -281,7 +254,6 @@ export class DayPicker {
   }
 }
 
-/** "October 2026" for "2026-10" */
 function monthTitle(month: string): string {
   const [year, index] = month.split('-').map(Number);
   return `${MONTH_NAMES[index - 1]} ${year}`;

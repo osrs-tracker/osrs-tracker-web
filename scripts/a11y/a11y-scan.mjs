@@ -1,5 +1,5 @@
-// Scans pages of a running server with axe-core on the WCAG 2.2 AA tags and prints one line per violation (rule,
-// impact, node count, selectors) and each page's incomplete count. Exits 1 on violations, 2 when a page can't be scanned.
+// Prints one line per violation (rule, impact, node count, selectors) and each page's incomplete count. Exits 1 on
+// violations, 2 when a page can't be scanned.
 //   npm run a11y -- [--light] [--click=<selector>]... <url>...
 // --light scans the light theme (dark is the default, as most visitors use it). Each --click clicks that element after
 // the page loads, in order, to scan an open state (a menu, a dialog). Needs Playwright's headless Chromium once:

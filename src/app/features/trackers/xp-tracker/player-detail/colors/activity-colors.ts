@@ -3,9 +3,8 @@ import { ActivityEnum } from '@osrs-tracker/models';
 export type ChartActivity = Exclude<ActivityEnum, ActivityEnum.ClueScrollsAll>;
 
 /**
- * Activity colours. Bosses get the colour that fits them best (Zamorak red, Saradomin blue, venom green for the
- * wilderness spiders, melee red, ranged green and magic blue for the Dagannoth Kings…); `chartColors` swaps one for a
- * fallback when it's too close to another on the same chart. The others are taken from their hiscores icon, and grey or
+ * Bosses get the colour that fits them best (Zamorak red, Saradomin blue, venom green for the wilderness spiders, melee
+ * red, ranged green and magic blue for the Dagannoth Kings…). The others are taken from their hiscores icon, and grey or
  * shared icons (clue tiers, Theatre of Blood modes…) are picked by hand. Lightness is adjusted for at least 3:1 contrast
  * on light cards and 3.5:1 on dark cards.
  */
@@ -103,7 +102,6 @@ export const ACTIVITY_COLORS: Record<ChartActivity, { light: string; dark: strin
   [ActivityEnum.Zulrah]: { light: '#35a873', dark: '#3fb07a' },
 };
 
-/** Colours spread around the hue wheel at two lightnesses, for an activity whose own colour is taken on the chart */
 export const FALLBACK_COLORS: { light: string; dark: string }[] = [
   { light: '#af3c3a', dark: '#dd766f' },
   { light: '#9f5102', dark: '#d58042' },

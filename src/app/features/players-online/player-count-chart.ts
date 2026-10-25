@@ -12,11 +12,9 @@ export interface PlayerCountSeries {
   range: PlayerCountRange;
   /** Oldest first; daily points dated at the local midnight of their UTC day */
   points: PlayerCountPoint[];
-  /** The hero card's order of locations, which the tooltip keeps */
   locationOrder: readonly string[];
 }
 
-/** What the line is per range, for the legend and the tooltip */
 export function lineName(range: PlayerCountRange): string {
   return range === '1y' || range === 'all'
     ? 'Daily average'
@@ -31,7 +29,6 @@ interface HoveredPoint {
   x: number;
   top: number;
   bottom: number;
-  /** Beside the point, to its right or left; or pinned to the chart's edge away from it when the chart is narrow */
   side: 'right' | 'left' | 'pin-left' | 'pin-right';
   /** The chart's width, for placing the tooltip from the right */
   width: number;
@@ -39,11 +36,7 @@ interface HoveredPoint {
 
 const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
 
-/**
- * The players online as an accent line over a light area, its newest point drawn; on daily ranges, which end on the
- * last full day, no newest point but the day's peak as a dashed muted line. Hovering shows a guide line and an HTML tooltip (Chart.js' own can't draw the flags): the count,
- * the players per location and the members and free-to-play split.
- */
+/** Hovering shows an HTML tooltip: Chart.js' own can't draw the flags */
 @Component({
   selector: 'player-count-chart',
   template: `
@@ -157,7 +150,6 @@ export class PlayerCountChart extends BaseChart<'line', PlayerCountSeries> {
           position: 'right',
           // From 0, so the filled area's height reads as the count
           beginAtZero: true,
-          // Dashes the gridlines
           border: { dash: [4, 6] },
           ticks: { autoSkipPadding: 20, callback: value => formatNumberShort(Number(value)) },
         },

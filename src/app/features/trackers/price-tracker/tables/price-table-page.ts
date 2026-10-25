@@ -48,15 +48,13 @@ import {
 import { DetailsToggle } from './details-toggle';
 import { StaleNote, StalePrice } from './stale-price';
 
-/** Rows shown at first (all the server renders and transfers), and added by "Show 25 more" */
+/** All the server renders and transfers */
 const PAGE_SIZE = 25;
 
 /** What the server hands the browser: the default view's first page, as the lists themselves are about 1.6 MB */
 interface TableView {
   rows: TableRow[];
-  /** Rows that pass the filters, shown or not */
   total: number;
-  /** High alch: the nature rune's price on the picked side */
   natureRune: number;
   /** When the lists were loaded, in ms: the age of a price counts from here */
   loadedAt: number;
@@ -69,8 +67,6 @@ interface Column {
 }
 
 /**
- * High-alch profit or Margins (`kind`, from the route): every item at the latest prices, sortable and filtered.
- *
  * The server renders the default view's first 25 rows from its copies of the Wiki's lists and transfers only those, so
  * hydration fetches nothing. The browser loads the lists on the first change of a control (or straight away after a
  * client-side navigation, or when the server's render failed), and from then on works out every view itself.
@@ -107,11 +103,9 @@ export default class PriceTablePage {
 
   readonly kind = input.required<TableKind>();
 
-  /** From the URL's query params, read once (the server renders that view); changes are written back to them */
+  /** Read once (the server renders that view) */
   readonly options = linkedSignal(() => optionsFromParams(this.kind(), readQueryParams(this.router, this.location)));
-  /** Back to the first page whenever the options change */
   readonly shown = linkedSignal({ source: this.options, computation: () => PAGE_SIZE });
-  /** Phones: the row whose details are open, closed whenever the options change */
   readonly expanded = linkedSignal<TableOptions, number | null>({ source: this.options, computation: () => null });
   /** Browser only: whether the lists are needed, once a control has changed or nothing was transferred */
   private readonly interacted = signal(false);
@@ -159,7 +153,6 @@ export default class PriceTablePage {
     return buildRows(this.kind(), this.buyAt(), mapping, latest, day);
   });
 
-  /** The rows to show: from the lists once loaded, else the server's; `null` while there are neither */
   readonly view = computed((): TableView | null => {
     const rows = this.rows();
     if (!rows || !this.lists.hasValue()) return this.transferred();
@@ -182,7 +175,6 @@ export default class PriceTablePage {
       : 'Check the spelling, or pick Any volume and All items.';
   });
 
-  /** What a screen reader hears after a filter, sort or "Show 25 more": the count and order, no match, or the failure */
   private readonly announcement = computed(() => {
     if (this.failed()) return 'Prices didn’t load.';
     const view = this.view();
@@ -298,7 +290,6 @@ export default class PriceTablePage {
     this.analyticsService.trackOption('price_table_buy_at', buyAt);
   }
 
-  /** A header click: highest first, and a second click reverses the order */
   sortBy(sort: SortKey, toggle = true): void {
     const { sort: current, dir } = this.options();
     this.setOptions(toggle && sort === current ? { dir: dir === 'desc' ? 'asc' : 'desc' } : { sort, dir: 'desc' });
@@ -315,10 +306,6 @@ export default class PriceTablePage {
     this.expanded.update(expanded => (expanded === id ? null : id));
   }
 
-  /**
-   * Sorted columns stay on every width; Buy limit hides below 1024px, the rest but the key column on phones. The last
-   * column gets the card's padding from 640px; on phones the details button's column comes after it.
-   */
   columnClass(key: SortKey, last = false): string {
     const sorted = key === this.options().sort;
     return (
@@ -328,7 +315,6 @@ export default class PriceTablePage {
     );
   }
 
-  /** A value in a row's details, in full */
   detailValue(row: TableRow, key: SortKey): string {
     switch (key) {
       case 'key':
@@ -342,7 +328,6 @@ export default class PriceTablePage {
     }
   }
 
-  /** The price's age, shown with a clock when Any volume lets an old price in */
   staleFor(row: TableRow, view: TableView): string | null {
     return this.options().volume === 'any' ? staleAge(row.tradedAt, view.loadedAt) : null;
   }

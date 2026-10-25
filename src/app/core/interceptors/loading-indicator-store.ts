@@ -1,7 +1,6 @@
 import { computed } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 
-/** The requests the loading bar waits for */
 export const LoadingIndicatorStore = signalStore(
   { providedIn: 'root' },
   withState({ _ongoingRequests: 0 }),

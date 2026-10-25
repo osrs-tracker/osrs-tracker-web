@@ -5,11 +5,11 @@ import { ConsentStore } from '@app/common/analytics/consent-store';
 import { LucideChartNoAxesColumn } from '@lucide/angular';
 
 /**
- * Asks to allow Google Analytics' cookies. Fixed over the page, so it shifts no layout, and not a modal: the page stays
- * usable and nothing is tracked until a choice is made. Both buttons look the same, so declining is as easy as
- * allowing (docs/decisions.md). While it shows, it sets `--consent-reserve` on `<html>` to the height it covers at the
- * bottom of the viewport, the `consent` spacing token: the page keeps it clear (WCAG 2.4.11), as Tab scrolls a focused
- * element above it and the page's end gets room to scroll out from under it.
+ * Fixed over the page, so it shifts no layout, and not a modal: the page stays usable and nothing is tracked until a
+ * choice is made. Both buttons look the same, so declining is as easy as allowing (docs/decisions.md). While it shows,
+ * it sets `--consent-reserve` on `<html>` to the height it covers at the bottom of the viewport, the `consent` spacing
+ * token: the page keeps it clear (WCAG 2.4.11), as Tab scrolls a focused element above it and the page's end gets room
+ * to scroll out from under it.
  */
 @Component({
   selector: 'consent-banner',

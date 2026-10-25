@@ -21,7 +21,6 @@ const entry = (xp: number, daysAgo = 0, sailing = 80, kills: Record<string, numb
   ),
 });
 
-/** A real hiscores response as a stored entry, checked `daysAgo` */
 const jagexEntry = (json: JagexHiscoreJson, daysAgo: number): HiscoreEntry => {
   const { skills, activities } = fromJagex(json);
   return { date: checked(daysAgo), scrapingOffset: 0, skills, activities };

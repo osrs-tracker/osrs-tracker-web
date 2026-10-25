@@ -29,7 +29,6 @@ describe('closeServers', () => {
     metrics.on('close', () => closed.push('metrics'));
     const closing = closeServers(main, metrics);
 
-    // The metrics server keeps answering while the main server drains
     expect(await (await fetch(url(metrics))).text()).toBe('OK');
 
     respond();

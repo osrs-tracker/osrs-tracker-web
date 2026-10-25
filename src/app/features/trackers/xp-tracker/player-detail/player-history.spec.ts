@@ -6,7 +6,6 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { playerHistory, PlayerHistory } from './player-history';
 import { Period } from './player-view';
 
-/** `count` stored entries at `offset`, a day apart */
 const entries = (count: number, offset: number): object[] =>
   Array.from({ length: count }, (_, i) => ({
     date: new Date(Date.UTC(2026, 9, 10 - i)).toISOString(),
@@ -37,7 +36,6 @@ describe('playerHistory', () => {
         req.params.get('skip') === String(skip) &&
         (limit === undefined || req.params.get('limit') === String(limit)),
     );
-  /** The check the week before starts from, for the stat tiles' comparison */
   const previousWeekStart = (scrapingOffset: number): TestRequest => page(scrapingOffset, 14, 1);
 
   beforeEach(() => {

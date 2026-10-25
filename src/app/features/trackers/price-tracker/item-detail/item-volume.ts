@@ -13,12 +13,11 @@ import { VolumeChart } from './charts/volume-chart';
 import { BinVolume, DailyVolume } from './item-prices';
 import { PRICE_RANGES, PriceRange, RANGE_OPTIONS } from './price-ranges';
 
-/** The volume chart's state, apart from the summary's: it loads the series of its own range */
 export type VolumeChartState = 'loading' | 'failed' | 'not loaded' | 'ready';
 
 type BinLabel = (start: number) => string;
 
-/** A bin's labels: the visitor's hours, UTC days and months (`binnedVolumes`); `first` and `end` under the chart */
+/** The visitor's hours, UTC days and months (`binnedVolumes`) */
 const BIN_LABELS: Record<TimeBin, { column: string; row: BinLabel; first: BinLabel; end: string }> = {
   hour: {
     column: 'Hour',
@@ -50,10 +49,6 @@ interface VolumeSummary {
   value: string;
 }
 
-/**
- * Items bought and sold per hour, UTC day or UTC month over its own range, newest last, with today's totals and the
- * daily average of the last week above the bars.
- */
 @Component({
   selector: 'article[item-volume]',
   template: `
@@ -162,15 +157,13 @@ export class ItemVolume {
 
   protected readonly RANGE_OPTIONS = RANGE_OPTIONS;
 
-  /** The summary's days, from the hourly series: oldest first, today (so far) last */
+  /** Oldest first, today (so far) last */
   readonly volumes = input.required<DailyVolume[]>();
   readonly loading = input(false);
-  /** A failed load of the summary's series, with a retry */
   readonly error = input(false);
-  /** A failed load that's shown elsewhere with a retry: the values are only marked */
+  /** Shown elsewhere with a retry: the values are only marked */
   readonly notLoaded = input(false);
 
-  /** The chart's range, its bins (oldest first) and their state */
   readonly range = model.required<PriceRange>();
   readonly bins = input.required<BinVolume[]>();
   readonly chart = input<VolumeChartState>('loading');

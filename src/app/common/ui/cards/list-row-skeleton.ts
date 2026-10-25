@@ -4,10 +4,6 @@ import { Skeleton } from '../loading/skeleton';
 /** Name bar widths, varied per row so a list of skeleton rows doesn't look like a barcode. */
 const NAME_WIDTHS = ['w-32', 'w-24', 'w-36', 'w-28', 'w-20'];
 
-/**
- * A loading row sized like a 65px player or item row: an icon tile, a name and meta line, and the value (a text bar
- * for players, a pill for items).
- */
 @Component({
   selector: 'list-row-skeleton',
   template: `
@@ -31,7 +27,6 @@ const NAME_WIDTHS = ['w-32', 'w-24', 'w-36', 'w-28', 'w-20'];
 })
 export class ListRowSkeleton {
   readonly kind = input.required<'player' | 'item'>();
-  /** The row's position in the list, to vary the name bar. */
   readonly index = input(0);
 
   readonly nameWidth = computed(() => NAME_WIDTHS[this.index() % NAME_WIDTHS.length]);

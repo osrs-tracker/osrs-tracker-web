@@ -12,16 +12,14 @@ const LAST_RELOAD_KEY = 'stale-chunk-reload';
 const RELOAD_GUARD_MS = 10_000;
 
 /**
- * Reloads the page when a lazy chunk fails to load. Each deploy renames the chunks and the new image doesn't have the old
- * ones, so a tab opened before the deploy can't load a page or `@defer` block it hasn't loaded yet. A reload gets the
- * new version (page HTML is `no-cache`).
+ * Each deploy renames the chunks and the new image doesn't have the old ones, so a tab opened before the deploy can't
+ * load a page or `@defer` block it hasn't loaded yet. A reload gets the new version (page HTML is `no-cache`).
  */
 @Service()
 export class StaleChunkReloader {
   private readonly window = inject(WINDOW);
   private reloading = false;
 
-  /** Reloads at `url` (the current page by default) if `error` is a failed chunk load. Returns whether it reloads. */
   reloadIfStale(error: unknown, url?: string): boolean {
     if (!this.window || !isFailedChunkLoad(error)) return false;
     if (this.reloading) return true;
@@ -46,7 +44,6 @@ export class StaleChunkReloader {
   }
 }
 
-/** For `withNavigationErrorHandler`: opens the page the navigation was going to with the new version */
 export function reloadOnStaleChunk(event: NavigationError): void {
   inject(StaleChunkReloader).reloadIfStale(event.error, event.url);
 }

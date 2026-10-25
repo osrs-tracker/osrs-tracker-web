@@ -15,7 +15,6 @@ import { Period, PlayerView } from '../player-view';
 import { Milestone, milestones, MilestoneTarget } from './milestones';
 
 const DAY = 24 * 60 * 60 * 1000;
-/** Rows shown before "Show all" */
 const SHOWN = 6;
 
 const TARGETS: SegmentedOption<MilestoneTarget>[] = [
@@ -29,20 +28,13 @@ interface MilestoneRow {
   skill: string;
   /** The icon tile's outline: the skill's chart colour, or `undefined` for a skill without one (a new one) */
   color?: string;
-  /** "84 → 85", or "200M" */
   milestone: string;
-  /** For 200M: "17.4M XP now ·", before the pace */
   now?: string;
-  /** "16K XP a day" */
   pace: string;
   date: string;
   left: string;
 }
 
-/**
- * When each skill reaches its next level, 99 or 200M XP at the player's pace: their average XP a day over the period
- * picked in the card's header, apart from the chart's. Skills without XP in that period are left out.
- */
 @Component({
   selector: 'milestones-card',
   templateUrl: './milestones-card.html',
@@ -55,11 +47,9 @@ export class MilestonesCard {
   private readonly darkMode = inject(ThemeStore).darkMode;
   readonly playerView = inject(PlayerView);
 
-  /** The player's display name */
   readonly username = input.required<string>();
   /** `undefined` while the hiscores load */
   readonly current = input.required<HiscoreEntry | undefined>();
-  /** The stored daily entries, newest first */
   readonly entries = input.required<HiscoreEntry[]>();
   /** The card's period is loaded (or as much of it as there is) */
   readonly loaded = input.required<boolean>();
@@ -75,18 +65,15 @@ export class MilestonesCard {
     const current = this.current();
     return current && this.loaded() ? milestones(current, this.entries(), this.period()) : undefined;
   });
-  /** No skill has a milestone: none gained XP in the period */
   readonly empty = computed(
     () => !!this.result() && TARGETS.every(({ value }) => !this.result()!.targets[value].length),
   );
 
-  /** The first target with milestones; a computed, so the target below resets only when it changes */
+  /** A computed, so the target below resets only when it changes */
   private readonly firstTarget = computed(
     () => TARGETS.find(({ value }) => this.result()?.targets[value].length)?.value ?? TARGETS[0].value,
   );
-  /** Starts on the first target with milestones, and again when another one is first after a change of period */
   readonly target = linkedSignal(() => this.firstTarget());
-  /** "Show all"; another period or target shows fewer again */
   readonly expanded = linkedSignal({
     source: () => ({ period: this.period(), target: this.target() }),
     computation: () => false,
@@ -135,7 +122,7 @@ export class MilestonesCard {
     };
   }
 
-  /** The date `days` after the last check, in the visitor's time zone; the year only when it isn't this one */
+  /** In the visitor's time zone */
   private dateIn(days: number): string {
     const date = new Date((this.lastCheckedAt()?.getTime() ?? Date.now()) + days * DAY);
     const thisYear = date.getFullYear() === new Date().getFullYear();

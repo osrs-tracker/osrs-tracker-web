@@ -25,9 +25,9 @@ class ConsentState {
 }
 
 /**
- * The visitor's choice about Google Analytics' cookies. Until they allow them, the tag (gtag.js) isn't loaded, so
- * nothing reaches Google: events wait in `dataLayer` and go out if the visitor allows it later on the same page.
- * `index.html` loads the tag on page load for visitors who allowed it before.
+ * Until the visitor allows the cookies, the tag (gtag.js) isn't loaded, so nothing reaches Google: events wait in
+ * `dataLayer` and go out if the visitor allows it later on the same page. `index.html` loads the tag on page load for
+ * visitors who allowed it before.
  */
 export const ConsentStore = signalStore(
   { providedIn: 'root' },
@@ -66,7 +66,6 @@ export const ConsentStore = signalStore(
         patchState(store, { choice, bannerOpen: choice === null });
       },
 
-      /** The footer's Cookies button: shows the banner again, with the current choice */
       reopen(): void {
         document.getElementById(CHOSEN_STYLE_ID)?.remove();
         patchState(store, { bannerOpen: true });

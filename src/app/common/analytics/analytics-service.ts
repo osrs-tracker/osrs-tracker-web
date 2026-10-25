@@ -26,10 +26,7 @@ export class AnalyticsService {
     });
   }
 
-  /**
-   * Sends the visit's Core Web Vitals as `web_vitals` events: LCP once it's final, CLS and INP when the page is hidden.
-   * They cover the page the visit landed on, not the pages the app navigates to after it.
-   */
+  /** Covers the page the visit landed on, not the pages the app navigates to after it. */
   setupWebVitals() {
     if (!this.gtag) return;
 

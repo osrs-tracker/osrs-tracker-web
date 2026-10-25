@@ -9,10 +9,8 @@ import { AccountTile } from '../account-tile';
 import { XpTrackerStore } from '../xp-tracker-store';
 import { LucideExternalLink, LucideStar, LucideTriangleAlert } from '@lucide/angular';
 
-/** Whether the player has a history at the visitor's offset yet, which decides the line under the name */
 export type TrackingState = 'tracked' | 'started' | 'untracked';
 
-/** The player's account type, name (to the official hiscores), combat level, history line and favourite star. */
 @Component({
   selector: 'player-header',
   template: `
@@ -38,7 +36,6 @@ export type TrackingState = 'tracked' | 'started' | 'untracked';
           <svg lucideExternalLink class="size-4.5 shrink-0 text-muted" />
           <span class="sr-only">(opens the Old School Hiscores in a new tab)</span>
         </a>
-        <!-- the divider only beside the name -->
         <span class="hidden sm:block self-center w-px h-5.5 bg-border" aria-hidden="true"></span>
         <span class="flex items-baseline gap-1.5 text-lg font-bold text-text tabular-nums" title="Combat level">
           <img class="size-3.75" icon alt="Combat level" name="combat" />{{ player.combatLevel }}
@@ -107,18 +104,13 @@ export class PlayerHeader {
 
   readonly playerDetail = input.required<Player>();
   readonly trackingState = input.required<TrackingState>();
-  /** The UTC hour the visitor's offset is checked at, e.g. "02:00 UTC" */
   readonly trackedAt = input.required<string>();
-  /** When the daily check last stored the player's stats; unknown while the history loads */
   readonly lastCheckedAt = input.required<Date | undefined>();
-  /** The stats shown are the last stored ones, as the hiscores didn't respond: then the header says how old they are */
   readonly stale = input(false);
-  /** Try again on the line that says the hiscores aren't responding */
   readonly retry = output();
 
   readonly isFavorite = computed(() => this.xpTrackerStore.isFavoritePlayer(this.playerDetail().username));
 
-  /** The account type's hiscores, where the player is ranked now */
   readonly hiscoreUrl = computed(() => {
     const player = this.playerDetail();
     return `https://secure.runescape.com/m=hiscore_oldschool${this.hiscoreType(player)}/hiscorepersonal?user1=${encodeURIComponent(player.username)}`;

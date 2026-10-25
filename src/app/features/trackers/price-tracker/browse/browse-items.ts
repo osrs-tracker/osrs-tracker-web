@@ -7,7 +7,7 @@ import { startingWith } from './browse-letters';
 import { LetterBar } from './letter-bar';
 import { LucideArrowLeft } from '@lucide/angular';
 
-/** Every item for one first letter, with the letter bar to the others: a crawlable path to every item page. */
+/** A crawlable path to every item page. */
 @Component({
   selector: 'browse-items',
   templateUrl: './browse-items.html',
@@ -18,7 +18,6 @@ export default class BrowseItems implements OnInit {
   private readonly responseInit = inject(RESPONSE_INIT, { optional: true });
 
   readonly letter = input.required<string>();
-  /** `null` for a letter there's no page for */
   readonly items = input.required<RecentItem[] | null>();
 
   readonly heading = computed(() => `Items ${startingWith(this.letter())}`);
