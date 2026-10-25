@@ -194,7 +194,9 @@ export class NavMenu {
   }
 }
 
-/** A row in a nav menu: a 40px tile (the content), a bold label, an optional "New" pill and a muted line under it */
+/**
+ * A row in a nav menu: a 40px tile (the content), a bold label, a "New" pill until `newUntil` and a muted line under it
+ */
 @Component({
   selector: 'a[nav-menu-row]',
   template: `
@@ -225,5 +227,11 @@ export class NavMenuRow {
 
   readonly label = input.required<string>();
   readonly sub = input.required<string>();
-  readonly isNew = input(false);
+  /** The day (`YYYY-MM-DD`) the "New" pill stops showing, from midnight UTC, so server and browser agree */
+  readonly newUntil = input<string>();
+
+  protected readonly isNew = computed(() => {
+    const until = this.newUntil();
+    return !!until && Date.now() < Date.parse(`${until}T00:00:00Z`);
+  });
 }

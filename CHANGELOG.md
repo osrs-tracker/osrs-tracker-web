@@ -20,7 +20,9 @@
 - In the Trackers menu, High-alch profit has a wand icon in the same line style as Margins and New on the GE, in place
   of the game's nature rune, which stood out among them.
 - In the Game menu, Latest news now carries the same "New" badge as the newer pages in the Trackers menu, so the news
-  archive and its catch-up are easier to spot.
+  archive and its catch-up are easier to spot. The menus' "New" badges now go away on their own about four weeks after
+  the page arrived (from 14 November for High-alch profit and Margins, 22 November for New on the GE and Latest news),
+  so "New" keeps meaning new.
 - The shortcuts under the item search (Items A–Z, High-alch profit, Margins, New on the GE) on Home and the Price
   Tracker are now pills with a solid background, so the dotted pattern behind them no longer makes them hard to read.
 
