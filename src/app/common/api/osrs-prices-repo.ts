@@ -76,7 +76,6 @@ const serverLists: { [K in keyof ServerLists]?: { data: ServerLists[K]; key: str
  * The OSRS Wiki's prices API (v2), as its guidelines ask: bulk lists over single items, and time series by `lookback`,
  * which its CDN caches for everyone, unlike the old `timestep` series that waited on its database (`docs/decisions.md`).
  */
-/** A request to the Wiki, not the API, that a server render gives up on after `ssrRequestTimeout` */
 const wikiContext = (loadingIndicator = false): HttpContext =>
   new HttpContext().set(BASE_URL_PREFIX, false).set(SSR_TIMEOUT, true).set(LOADING_INDICATOR, loadingIndicator);
 

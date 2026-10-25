@@ -199,7 +199,6 @@ export class SkillGrid {
 
   private readonly grid = viewChild(Grid);
 
-  // A picked cell's background and outline, and the outline of one that gained XP but isn't picked, as in the activity grid
   protected readonly tint = pickedCellBackground;
   protected readonly ring = pickedCellRing;
   protected readonly pickableRing = pickableCellRing;

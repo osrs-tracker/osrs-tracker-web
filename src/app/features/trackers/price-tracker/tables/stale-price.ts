@@ -2,11 +2,7 @@ import { Component, input } from '@angular/core';
 import { LucideClock } from '@lucide/angular';
 import { Tooltip } from '@app/common/ui/tooltip/tooltip';
 
-/**
- * A price in a table cell that last traded a while ago: the projected price after an amber clock, the age in a
- * tooltip and for screen readers. Focusable and above the row's stretched link, so the tooltip opens by keyboard and
- * touch too. Shared by the price tables and New on the GE.
- */
+// Focusable and above the row's stretched link, so the tooltip opens by keyboard and touch too
 @Component({
   selector: 'stale-price',
   template: `
@@ -27,11 +23,9 @@ import { Tooltip } from '@app/common/ui/tooltip/tooltip';
   imports: [LucideClock, Tooltip],
 })
 export class StalePrice {
-  /** How long ago it last traded, e.g. "3 hours" */
   readonly age = input.required<string>();
 }
 
-/** The same age as a line in a row's phone details */
 @Component({
   selector: 'p[stale-note]',
   template: `

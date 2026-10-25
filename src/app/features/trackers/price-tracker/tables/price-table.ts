@@ -132,7 +132,6 @@ function isStale(tradedAt: number, now: number): boolean {
   return now - tradedAt > STALE_AFTER;
 }
 
-/** How long ago a price last traded ("3 hours"), when it's too old to trust; `null` otherwise */
 export function staleAge(tradedAt: number, now: number): string | null {
   return isStale(tradedAt, now) ? formatDistanceStrict(tradedAt, now) : null;
 }

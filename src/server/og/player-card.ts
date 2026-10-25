@@ -33,7 +33,6 @@ import skull from '../../../public/assets/icons/skull.png';
 import { COLORS, el, frame, img, type Node, renderPng, tile } from './card-kit';
 import { lucideIcon } from './lucide-icon';
 
-// Laid out in the game's order by `SKILL_LAYOUT`, as the page's skill grid is
 const SKILL_ICONS: Record<GridSkill, Uint8Array> = {
   [SkillEnum.Agility]: agility,
   [SkillEnum.Attack]: attack,

@@ -128,7 +128,7 @@ export class ItemHeader {
     () => `${config.wikiBaseUrl}/w/${encodeURIComponent(this.item().name.replaceAll(' ', '_'))}`,
   );
   readonly priceText = computed(() => formatWhole(this.price() ?? 0));
-  /** E.g. "8,402 (0.6%)", after a triangle up or down; grey without one when it reads 0.0%, as in the item lists */
+  /** E.g. "8,402 (0.6%)", after a triangle up or down */
   readonly change = computed(() => {
     const price = this.price();
     const average = this.average();

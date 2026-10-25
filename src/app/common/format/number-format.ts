@@ -54,19 +54,14 @@ export function formatWholeCompact(value: number): string {
 
 const percentTenths = new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
-/** A change from one value to another in percent, as the price lists, the item page and its chart legend show it */
 export interface PercentChange {
-  /** One decimal without a sign, for beside an arrow: "3.2%", "1,204.5%" */
   percent: string;
-  /** With a plus or a true minus, none when it reads 0.0%: "+3.2%", "−0.6%", "0.0%" */
   signed: string;
-  /** `flat` when the change reads 0.0%, so a rise too small to show isn't coloured as one */
   tone: 'up' | 'down' | 'flat';
 }
 
-/** The change from `base` to `value` in percent; `base` must not be 0 */
 export function formatPercentChange(value: number, base: number): PercentChange {
-  // rounded once, so the tone and the text agree on what reads as 0.0%
+  // Rounded once, so a change that reads 0.0% is also flat
   const tenths = Math.round(((value - base) / base) * 1000);
   const percent = `${percentTenths.format(Math.abs(tenths) / 10)}%`;
   return {

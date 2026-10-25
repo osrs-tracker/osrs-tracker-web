@@ -1,10 +1,7 @@
 import { Component, input } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 
-/**
- * The phone button that opens a table row's details row below it, above the row's stretched link. The page keeps which
- * row is open, handles the click and labels it ("Details for <item>"), in its template so lint sees the label.
- */
+// The page sets `aria-label` in its template, where lint can see the button has a name
 @Component({
   selector: 'button[details-toggle]',
   template: `
@@ -26,6 +23,5 @@ import { LucideChevronDown } from '@lucide/angular';
 })
 export class DetailsToggle {
   readonly open = input.required<boolean>();
-  /** The id of the details row it opens */
   readonly detailsId = input.required<string>();
 }
