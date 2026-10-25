@@ -1,0 +1,225 @@
+<div class="max-w-page mx-auto px-4 sm:px-6 pt-4">
+  <a routerLink="/trackers/price" class="link inline-flex items-center gap-1.5 min-h-11">
+    <svg lucideArrowLeft class="size-4.5" strokeWidth="2.5" />
+    Price Tracker
+  </a>
+</div>
+
+<header class="max-w-page mx-auto flex flex-col gap-1 px-4 sm:px-6 pt-2">
+  <h1 class="text-2xl sm:text-3xl font-bold text-strong">New on the GE</h1>
+  <p class="max-w-180 text-muted">
+    Items the latest game updates added to the Grand Exchange, newest first, at their latest prices. Few trade in a new
+    item’s first days, so its price can jump.
+  </p>
+</header>
+
+<div class="max-w-page mx-auto flex flex-col gap-4 px-4 sm:px-6 pt-6 pb-18">
+  <section
+    class="rounded-2xl bg-card overflow-hidden"
+    aria-label="New on the GE"
+    [attr.aria-busy]="items.isLoading() || prices.isLoading()"
+  >
+    @if (items.error()) {
+      <load-error
+        source="new-items"
+        message="New items didn’t load."
+        [error]="items.error()"
+        (retry)="items.reload()"
+      />
+    } @else if (items.hasValue() && total() === 0) {
+      <div class="flex flex-col items-center gap-1 px-5 py-8 text-center">
+        <p class="font-bold text-strong">No new items since {{ datedSince }}.</p>
+        <p class="text-sm text-muted">Items show here once a game update adds them to the Grand Exchange.</p>
+      </div>
+    } @else {
+      <table class="w-full">
+        <caption class="sr-only">
+          Items added to the Grand Exchange, newest first
+        </caption>
+        <thead>
+          <tr class="border-b border-line text-sm text-muted">
+            <th scope="col" class="w-full py-3 pl-5 max-sm:pl-4 pr-3 max-sm:pr-2 text-left font-normal">Item</th>
+            <th scope="col" class="py-3 px-3 max-sm:pl-2 max-sm:pr-1 text-right font-normal whitespace-nowrap">
+              <span class="cursor-help" tooltip [tooltipTemplate]="priceTip" tabindex="0">Price</span>
+              <ng-template #priceTip>The instant-buy price: what the item costs now</ng-template>
+            </th>
+            <th scope="col" class="max-sm:hidden py-3 px-3 sm:pr-5 text-right font-normal whitespace-nowrap">
+              <span class="cursor-help" tooltip [tooltipTemplate]="volumeTip" tabindex="0">Daily volume</span>
+              <ng-template #volumeTip>Trades yesterday (UTC)</ng-template>
+            </th>
+            <th scope="col" class="sm:hidden py-3 pr-2.5"><span class="sr-only">Details</span></th>
+          </tr>
+        </thead>
+
+        @if (items.hasValue()) {
+          <!-- A game update adds its items in one go: each day's items under a header row with that day -->
+          @for (day of days(); track day.label) {
+            <tbody>
+              <tr>
+                <th
+                  scope="rowgroup"
+                  colspan="4"
+                  class="py-2 px-5 max-sm:px-4 bg-inner border-b border-line text-left text-sm font-bold text-strong"
+                >
+                  {{ day.label }}
+                </th>
+              </tr>
+              @for (item of day.items; track item.id) {
+                @let open = expanded() === item.id;
+                @let itemPrices = pricesOf(item.id);
+                <tr
+                  class="group border-b border-row hover:bg-row has-focus-visible:outline-2 has-focus-visible:-outline-offset-2 has-focus-visible:outline-accent"
+                  [class]="open ? 'max-sm:border-b-0' : ''"
+                >
+                  <th scope="row" class="relative max-w-0 py-3 pl-5 max-sm:pl-4 pr-3 max-sm:pr-2 text-left font-normal">
+                    <!-- The row's one link, stretched over it from its cell to the card's edge, which clips it: WebKit
+                         doesn't position inside a relative <tr>. Values with a tooltip sit above it -->
+                    <a
+                      class="flex items-center gap-3 min-w-0 text-strong after:content-[''] after:absolute after:inset-y-0 after:left-0 after:w-screen focus-visible:outline-none"
+                      [routerLink]="['/trackers/price', item.id]"
+                    >
+                      <span
+                        class="flex items-center justify-center size-8 shrink-0 rounded-xl bg-deep border border-line"
+                        aria-hidden="true"
+                      >
+                        <img class="max-w-6 max-h-6" icon alt="" [name]="item.icon" [wiki]="true" />
+                      </span>
+                      <span
+                        class="truncate text-base/5 font-bold group-hover:underline decoration-border underline-offset-3"
+                        >{{ item.name }}</span
+                      >
+                    </a>
+                  </th>
+                  <td
+                    class="py-3 px-3 max-sm:pl-2 max-sm:pr-1 text-right text-base/5 font-bold text-strong tabular-nums whitespace-nowrap"
+                  >
+                    @if (pricesFailed()) {
+                      <span class="relative z-1 inline-flex -my-1.5 align-middle">
+                        <load-error
+                          compact
+                          source="new-items-prices"
+                          message="Prices didn’t load."
+                          (retry)="prices.reload()"
+                        />
+                      </span>
+                    } @else if (itemPrices) {
+                      @if (itemPrices.price === null) {
+                        <span class="font-normal text-muted">–<span class="sr-only">No trades yet</span></span>
+                      } @else if (staleFor(itemPrices); as age) {
+                        <span
+                          class="relative z-1 inline-flex items-center gap-1.5 cursor-help decoration-dotted underline-offset-6 group-hover:underline pointer-coarse:underline"
+                          tooltip
+                          [tooltipTemplate]="ageTip"
+                          [tooltipUnderline]="false"
+                          [tooltipDescribe]="false"
+                          tabindex="0"
+                        >
+                          <svg lucideClock class="size-3.5 text-amber" strokeWidth="2.5" />
+                          {{ formatTableNumber(itemPrices.price) }}
+                          <span class="sr-only">, last traded {{ age }} ago</span>
+                        </span>
+                        <ng-template #ageTip>Last traded {{ age }} ago</ng-template>
+                      } @else {
+                        {{ formatTableNumber(itemPrices.price) }}
+                      }
+                    } @else {
+                      <span class="flex justify-end"><skeleton class="h-4 w-14" /></span>
+                    }
+                  </td>
+                  <td class="max-sm:hidden py-3 px-3 sm:pr-5 text-right text-base/5 tabular-nums whitespace-nowrap">
+                    @if (pricesFailed()) {
+                      <span class="text-muted">–</span>
+                    } @else if (itemPrices) {
+                      {{ formatTableNumber(itemPrices.volume) }}
+                    } @else {
+                      <span class="flex justify-end"><skeleton class="h-4 w-14" /></span>
+                    }
+                  </td>
+                  <td class="sm:hidden py-3 pr-2.5 text-right">
+                    <!-- Above the row's stretched link -->
+                    <button
+                      type="button"
+                      class="relative z-1 inline-flex items-center justify-center size-7 -my-1 rounded-full text-muted hover:bg-inner hover:text-strong aria-expanded:bg-inner aria-expanded:text-strong"
+                      [attr.aria-label]="'Details for ' + item.name"
+                      [attr.aria-expanded]="open"
+                      [attr.aria-controls]="open ? 'new-item-details-' + item.id : null"
+                      (click)="toggleDetails(item.id)"
+                    >
+                      <svg
+                        lucideChevronDown
+                        class="size-4.5 transition-transform motion-reduce:transition-none"
+                        [class]="open ? 'rotate-180' : ''"
+                        strokeWidth="2.5"
+                      />
+                    </button>
+                  </td>
+                </tr>
+                @if (open) {
+                  <tr class="sm:hidden border-b border-row" [id]="'new-item-details-' + item.id">
+                    <td class="pb-4 pl-15 pr-4" colspan="4">
+                      <p class="text-sm font-bold text-strong">{{ item.name }}</p>
+                      <dl class="flex flex-col gap-1.5 mt-2 text-sm">
+                        <div class="flex justify-between gap-4">
+                          <dt class="text-muted">Daily volume</dt>
+                          <dd class="text-strong tabular-nums">
+                            {{ itemPrices ? (itemPrices.volume | number) : '–' }}
+                          </dd>
+                        </div>
+                      </dl>
+                      @if (itemPrices && itemPrices.price !== null && staleFor(itemPrices); as age) {
+                        <p class="flex items-center gap-1.5 mt-2 text-sm text-muted">
+                          <svg lucideClock class="size-3.5 text-amber" strokeWidth="2.5" />
+                          Last traded {{ age }} ago
+                        </p>
+                      }
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          }
+        } @else {
+          <tbody aria-hidden="true">
+            @for (width of skeletons; track $index) {
+              <tr class="border-b border-row">
+                <td class="py-3 pl-5 max-sm:pl-4 pr-3">
+                  <span class="flex items-center gap-3">
+                    <skeleton class="size-8 rounded-xl" />
+                    <skeleton class="h-4" [class]="width" />
+                  </span>
+                </td>
+                <td class="py-3 px-3 max-sm:pl-2 max-sm:pr-1">
+                  <span class="flex justify-end"><skeleton class="h-4 w-14" /></span>
+                </td>
+                <td class="max-sm:hidden py-3 px-3 sm:pr-5">
+                  <span class="flex justify-end"><skeleton class="h-4 w-14" /></span>
+                </td>
+                <td class="sm:hidden py-3 pr-2.5"></td>
+              </tr>
+            }
+          </tbody>
+        }
+      </table>
+
+      @if (items.hasValue()) {
+        <div
+          class="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 -mt-px px-5 max-sm:px-4 py-3 border-t border-line"
+        >
+          <span class="text-sm text-muted tabular-nums">
+            Showing {{ shownCount() | number }} of {{ total() | number }} {{ total() === 1 ? 'item' : 'items' }}
+          </span>
+          @if (more() > 0) {
+            <button type="button" class="button--default button--rounded h-9 px-4 text-sm" (click)="showMore()">
+              Show {{ more() }} more
+            </button>
+          }
+        </div>
+      }
+    }
+  </section>
+
+  <p class="text-sm text-muted">
+    Prices from the OSRS Wiki’s real-time prices, refreshed every minute. Volume is yesterday’s trades (UTC). Items the
+    GE had before {{ datedSince }} aren’t listed.
+  </p>
+</div>

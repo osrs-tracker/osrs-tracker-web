@@ -27,6 +27,9 @@ export interface TopGainer {
   date: Date;
 }
 
+/** An item from `GET /new-items`: only these fields, and always dated */
+export type NewItem = Pick<Item, 'id' | 'name' | 'icon'> & Required<Pick<Item, 'addedAt'>>;
+
 @Service()
 export class OsrsTrackerRepo {
   private readonly httpClient = inject(HttpClient);
@@ -113,6 +116,16 @@ export class OsrsTrackerRepo {
     return this.httpClient.get<Pick<Item, 'id' | 'name' | 'icon'>[]>(`/items/browse/${encodeURIComponent(letter)}`, {
       context: new HttpContext().set(LOADING_INDICATOR, true),
     });
+  }
+
+  /**
+   * The items the API added since it began dating them (25 October 2026), newest first, at most `limit` (1–100). Not
+   * under `/items`, where `/items/:id` would take `new` for an id.
+   */
+  getNewItems(limit: number): Observable<NewItem[]> {
+    return this.httpClient
+      .get<NewItem[]>('/new-items', { params: { limit } })
+      .pipe(map(items => items.map(item => ({ ...item, addedAt: new Date(item.addedAt) }))));
   }
 
   getItemInfo(itemId: number, options?: { loadingIndicator: boolean }): Observable<Item> {

@@ -15,7 +15,7 @@ const lastmod = file => git(['log', '-1', '--follow', '--diff-filter=AMT', '--fo
     return;
   }
 
-  // The landings, the price tables, the players online page and the news archive have no lastmod: they show live data
+  // The landings, the price tables and new items, the players online page and the news archive have no lastmod: they show live data
   // (recent lookups, prices, news, the player count), so they change all the time. Nor do the browse pages, one per first letter (as BROWSE_LETTERS in the app):
   // their item lists come from the API and change without a commit, so their template's date would tell search engines
   // a page is unchanged when it isn't.
@@ -24,6 +24,7 @@ const lastmod = file => git(['log', '-1', '--follow', '--diff-filter=AMT', '--fo
     { loc: `${SITE_URL}/trackers/price` },
     { loc: `${SITE_URL}/trackers/price/high-alch` },
     { loc: `${SITE_URL}/trackers/price/margins` },
+    { loc: `${SITE_URL}/trackers/price/new` },
     ...[...'abcdefghijklmnopqrstuvwxyz', '0'].map(letter => ({ loc: `${SITE_URL}/trackers/price/browse/${letter}` })),
     { loc: `${SITE_URL}/trackers/xp` },
     { loc: `${SITE_URL}/players-online` },

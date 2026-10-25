@@ -51,8 +51,8 @@ export interface TableRow {
 }
 
 const NATURE_RUNE_ID = 561;
-/** A row needs a trade this recent at the price it uses, unless the volume filter is `any` */
-const STALE_AFTER = 3_600_000;
+/** A row needs a trade this recent at the price it uses, unless the volume filter is `any`; older prices get a clock */
+export const STALE_AFTER = 3_600_000;
 
 /** The nature rune's price on the `buyAt` side; it trades all day, so a missing one is a failed load */
 export function natureRunePrice(latest: LatestPriceList, buyAt: BuyAt): number {
