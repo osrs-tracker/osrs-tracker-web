@@ -1,3 +1,8 @@
+## 2026-10-25
+
+- Behind the scenes: OSRS Tracker is getting its own address, osrs-tracker.net. Its security certificate is set up
+  first, so the site can move without visitors seeing a certificate warning.
+
 ## 2026-10-24
 
 - An item's volume card, now called "Trade volume", has its own range beside the table switch, like the price chart: the
