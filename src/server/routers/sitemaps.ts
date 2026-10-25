@@ -35,15 +35,24 @@ function urlset(urls: SitemapUrl[]): string {
   ].join('\n');
 }
 
-/** The item pages, by id: every item the API has, so every page in it resolves. No `<lastmod>`: no item has a date. */
+/**
+ * The item pages, by id: every item the API has, so every page in it resolves. Dated by the item's `updatedAt`, when the
+ * API last stored a change to it (its add included); items it stored before it kept that date have none, and no
+ * `<lastmod>`.
+ */
 async function itemsSitemap(getJson: GetJson): Promise<string> {
   const letters = await Promise.all(
-    BROWSE_LETTERS.map(letter => getJson(`/items/browse/${letter}`) as Promise<{ id: number }[]>),
+    BROWSE_LETTERS.map(letter => getJson(`/items/browse/${letter}`) as Promise<{ id: number; updatedAt?: string }[]>),
   );
-  const ids = [...new Set(letters.flat().map(({ id }) => id))].sort((a, b) => a - b);
-  if (ids.length === 0) throw new Error('The API has no items');
+  // An item in two letters' lists is the same document, so either row's date will do
+  const items = new Map(letters.flat().map(({ id, updatedAt }) => [id, updatedAt]));
+  if (items.size === 0) throw new Error('The API has no items');
 
-  return urlset(ids.map(id => ({ loc: `${config.siteUrl}/trackers/price/${id}` })));
+  return urlset(
+    [...items]
+      .sort(([a], [b]) => a - b)
+      .map(([id, updatedAt]) => ({ loc: `${config.siteUrl}/trackers/price/${id}`, lastmod: updatedAt })),
+  );
 }
 
 /**

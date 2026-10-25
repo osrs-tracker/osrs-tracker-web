@@ -1,6 +1,6 @@
 ## 2026-10-25
 
-### New address, top gainers and a steadier player page
+### New address, top gainers, new GE items and a steadier player page
 
 - OSRS Tracker has its own address now: **osrs-tracker.net**. Old links and bookmarks to osrs-tracker.freekmencke.com
   keep working and take you to the same page on the new address. The first time you arrive that way, your favourite and
@@ -13,10 +13,16 @@
   last full day (UTC). Open one to see what they trained. It sits beside your favourites, with the global and your own
   recent lookups below. Home links to it from the XP Tracker card, and the Price Tracker card now links to the A–Z item
   list.
+- New page: **New on the GE**, the items the latest game updates added to the Grand Exchange, grouped by the day they
+  came, with their latest price and yesterday's trades. A clock beside a price that hasn't traded for an hour or more
+  says when it last did. It lists items from today on, as the site only started dating them now. Find it in the menu
+  under the Price Tracker, and from the Price Tracker and its card on Home.
 
 ### Behind the scenes
 
 - The A–Z item list's address without a letter now tells search engines that it moved to the "A" page for good.
+- The item list for search engines now says when each item was added or last changed, for the items the site has dated,
+  so they find new items sooner.
 
 ## 2026-10-24
 

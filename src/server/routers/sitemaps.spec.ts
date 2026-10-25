@@ -16,7 +16,7 @@ describe('createSitemapRouter', () => {
   const api = (players: unknown[]) =>
     getJson.mockImplementation(async path => {
       if (path === '/sitemap/players') return players;
-      if (path === '/items/browse/a') return [{ id: 4151 }, { id: 2 }];
+      if (path === '/items/browse/a') return [{ id: 4151, updatedAt: '2026-10-28T11:00:04.120Z' }, { id: 2 }];
       if (path === '/items/browse/0') return [{ id: 2 }]; // Each item is listed once
       return [];
     });
@@ -27,7 +27,7 @@ describe('createSitemapRouter', () => {
     logs.lines.splice(0);
   });
 
-  it('lists every item the API browses, by id, from all 27 letters', async () => {
+  it('lists every item the API browses, by id, from all 27 letters, dated where the API dated it', async () => {
     api([]);
 
     const res = await get('/sitemap-items.xml');
@@ -40,7 +40,7 @@ describe('createSitemapRouter', () => {
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
         '<url><loc>https://osrs-tracker.net/trackers/price/2</loc></url>',
-        '<url><loc>https://osrs-tracker.net/trackers/price/4151</loc></url>',
+        '<url><loc>https://osrs-tracker.net/trackers/price/4151</loc><lastmod>2026-10-28T11:00:04.120Z</lastmod></url>',
         '</urlset>',
       ].join('\n'),
     );

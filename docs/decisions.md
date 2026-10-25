@@ -309,11 +309,13 @@ Choices that look like accidents without their context: what was decided, why, a
 - **Decision:** `routers/sitemaps.ts` builds `/sitemap-items.xml` and `/sitemap-players.xml` from the API on request
   (through `API_INTERNAL_URL`), kept in memory per replica for as long as the API caches the lists: items a day, from
   the 27 `GET /items/browse/:letter` lists, so every listed id resolves (not the Wiki's list, which can be ahead of the
-  API); players an hour, from `GET /sitemap/players` (tracked, not paused, an entry in the last 30 days), at their
-  canonical lower-case name, dated by the newest entry. A failed or empty load keeps the last good copy and retries
-  after a minute; with none yet, 503. The site sitemap and the index stay build-time files: their dates come from git,
-  which the image doesn't have. The index dates only the site sitemap. No `<priority>` or `<changefreq>`: Google ignores
-  both.
+  API), each dated by its `updatedAt` (since 2026-10-25: when the API's ingester last stored a change to the item's Wiki
+  fields, its add included; items stored before then have no date and no `<lastmod>`, as the API kept no history to
+  backfill from, and `lastFetch` is when a visitor looked, not a change); players an hour, from `GET /sitemap/players`
+  (tracked, not paused, an entry in the last 30 days), at their canonical lower-case name, dated by the newest entry. A
+  failed or empty load keeps the last good copy and retries after a minute; with none yet, 503. The site sitemap and the
+  index stay build-time files: their dates come from git, which the image doesn't have. The index dates only the site
+  sitemap. No `<priority>` or `<changefreq>`: Google ignores both.
 - **Revisit:** if a sitemap nears 50,000 URLs (4,663 items and 534 players on 2026-10-10), or the API gets one endpoint
   for every item id.
 

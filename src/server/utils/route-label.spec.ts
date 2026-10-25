@@ -46,6 +46,7 @@ describe('routeLabel', () => {
     ['/trackers/price/browse', '/trackers/price/browse'],
     ['/trackers/price/high-alch', '/trackers/price/high-alch'],
     ['/trackers/price/margins/', '/trackers/price/margins'],
+    ['/trackers/price/new', '/trackers/price/new'],
     ['/trackers/price/browse/a', '/trackers/price/browse/:letter'],
     ['/trackers/xp/a/b', '#unmatched'],
     ['/main-ABC123.js', '/static'],

@@ -63,6 +63,25 @@ export default [
     },
     loadComponent: () => import('./tables/price-table-page'),
   },
+  {
+    title: 'New OSRS Items: The latest Grand Exchange additions and prices',
+    path: 'new',
+    pathMatch: 'full',
+    data: {
+      meta: {
+        description:
+          'The newest items on the OSRS Grand Exchange, under the day the game update added them, with their live instant-buy price and daily volume.',
+        canonicalPath: '/trackers/price/new',
+        jsonLd: [
+          breadcrumbList([
+            { name: 'Price Tracker', path: '/trackers/price' },
+            { name: 'New on the GE', path: '/trackers/price/new' },
+          ]),
+        ],
+      } satisfies PageMeta,
+    },
+    loadComponent: () => import('./new-items/new-items-page'),
+  },
   // The server answers this path with a 301 first (`server/routers/redirects.ts`); this covers client-side navigation
   { path: 'browse', pathMatch: 'full', redirectTo: 'browse/a' },
   {
