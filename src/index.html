@@ -12,7 +12,7 @@
 
     <!-- Saved data from the old host (until osrs-tracker-web#453), before the scripts below read the storage. Its 301
          adds #from-old: with nothing stored here yet, a person makes one trip to its /carry-over (routers/carry-over.ts),
-         which comes back with #carry-over=<its localStorage>; consent stays behind -->
+         which comes back with #carry-over=<its localStorage>; consent stays behind. The carried-over key ends the trips -->
     <script>
       if (location.hash === '#from-old' || location.hash.startsWith('#carry-over=')) {
         if (
@@ -32,6 +32,8 @@
                 if (key !== 'analytics-consent' && typeof value === 'string') localStorage.setItem(key, value);
               }
             } catch {}
+            // So a visitor who had nothing to carry doesn't make the trip again on the next old link
+            localStorage.setItem('carried-over', 'true');
           }
           history.replaceState(history.state, '', location.pathname + location.search);
         }
