@@ -53,7 +53,7 @@ FreekMencke/home-cluster's `cluster/osrs-tracker/flux.yaml`, not here.
   refresh (`/` every 5 min, the changelog hourly, privacy and terms daily). Wait, or have the user run
   `kubectl -n osrs-tracker rollout restart deploy/osrs-tracker-web`; see "Page cache" in the project skill.
 - **Certificate errors:** cert-manager renews `osrs-tracker-web-tls` (osrs-tracker.freekmencke.com, from the Ingress)
-  and `osrs-tracker-net-tls` (osrs-tracker.net and www, a standalone `Certificate` in the manifest):
+  and `osrs-tracker-net-tls` (osrs-tracker.net and www, from `osrs-tracker-net-ingress`):
   `kubectl -n osrs-tracker describe certificate <name>`. A pending HTTP-01 challenge usually means the name's DNS no
   longer reaches the cluster. Issuer problems are fixed in FreekMencke/fremen-cluster.
 
