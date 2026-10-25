@@ -114,8 +114,10 @@ value the scale lacks becomes a token in `src/styles/tailwind/theme.css`.
   class to `svg[lucideIcon]` (`LucideDynamicIcon`, as in `status-panel`). Icons are `aria-hidden`: label the control
   around them. `img[icon]` is for the game's pixel-art icons.
 - **Classes** (`components.css`): `.button--primary` (accent) and `.button--default` (outlined), `.button--rounded` for
-  standalone ones; `.link` for accent links; `.search-box`/`.search-box-input`/`.search-box-button` for the big search;
-  `.markdown` for reading text (changelog, privacy, terms).
+  standalone ones; `.link` for accent links; `.link-pill` with `.button--default.button--rounded` for the shortcuts
+  under the item search (a 36px pill on `card`, so the dot grid stays out of its text);
+  `.search-box`/`.search-box-input`/`.search-box-button` for the big search; `.markdown` for reading text (changelog,
+  privacy, terms).
 
 Which component to use (in `common/ui/<folder>/` unless noted):
 

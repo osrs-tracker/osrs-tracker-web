@@ -19,6 +19,15 @@
   }
 
   /*
+   * A shortcut link under the big search (Items A–Z, Margins), with `.button--default.button--rounded`: a 36px pill on
+   * a solid fill, so the hero's dot grid doesn't run behind its text, turning accent on hover. The `before` box grows
+   * the target to 44px: 5px past the padding box, which sits inside the border. `gap-2` between pills keeps them apart.
+   */
+  .link-pill {
+    @apply relative h-9 px-4 bg-card hover:bg-card hover:text-accent hover:border-accent before:absolute before:-inset-y-1.25 before:inset-x-0;
+  }
+
+  /*
    * The big search: a borderless input and a `.button--primary.search-box-button` in one rounded box. On phones the
    * input takes the rest of the row and the button is a 48px icon (its label `max-sm:sr-only`).
    */
