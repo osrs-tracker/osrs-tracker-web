@@ -13,6 +13,9 @@
     <loc>https://osrs-tracker.net/trackers/price/margins</loc>
   </url>
   <url>
+    <loc>https://osrs-tracker.net/trackers/price/new</loc>
+  </url>
+  <url>
     <loc>https://osrs-tracker.net/trackers/price/browse/a</loc>
   </url>
   <url>
@@ -104,7 +107,7 @@
   </url>
   <url>
     <loc>https://osrs-tracker.net/about/changelog</loc>
-    <lastmod>2026-10-25T17:33:36+01:00</lastmod>
+    <lastmod>2026-10-25T17:55:52+01:00</lastmod>
   </url>
   <url>
     <loc>https://osrs-tracker.net/about/privacy</loc>
