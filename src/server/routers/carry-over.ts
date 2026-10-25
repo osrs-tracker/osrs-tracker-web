@@ -4,18 +4,16 @@ import { getCspNonce } from '../middleware/csp-nonce';
 
 /**
  * The only path the old host (osrs-tracker.freekmencke.com) still serves; everything else there 301s to the new one with
- * `#from-old`. A visitor who arrives that way with empty storage is sent here once by `index.html`; this page hands its
- * `localStorage` to the new origin in the URL fragment, which never reaches a server, and `index.html` imports it.
- * Consent is left behind: a crafted link could otherwise set it. Temporary: removed in osrs-tracker-web#453.
+ * `#from-old`. A visitor who arrives that way with empty storage is sent here once by `index.html`, with the page they
+ * came for in `?to=`; this page hands its `localStorage` to the new origin in the URL fragment, which never reaches a
+ * server, and `index.html` imports it. Consent is left behind: a crafted link could otherwise set it. The page is the
+ * same for every request (the script reads `to` itself), so nothing from the request ends up in it. Temporary: removed
+ * in osrs-tracker-web#453.
  */
 export function createCarryOverRouter(): Router {
   const router = express.Router();
 
-  router.get('/carry-over', (req, res) => {
-    const to = typeof req.query['to'] === 'string' && req.query['to'].startsWith('/') ? req.query['to'] : '/';
-    // `<` escaped, so a `to` holding `</script>` can't end the script
-    const target = JSON.stringify(config.siteUrl + to).replaceAll('<', '\\u003c');
-
+  router.get('/carry-over', (_req, res) => {
     res
       .status(200)
       .set({ 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' })
@@ -35,7 +33,9 @@ export function createCarryOverRouter(): Router {
       if (key !== 'analytics-consent') data[key] = localStorage.getItem(key);
     }
   } catch {}
-  location.replace(${target} + '#carry-over=' + encodeURIComponent(JSON.stringify(data)));
+  const to = new URLSearchParams(location.search).get('to');
+  const path = to && to.startsWith('/') ? to : '/';
+  location.replace('${config.siteUrl}' + path + '#carry-over=' + encodeURIComponent(JSON.stringify(data)));
 </script>
 </head>
 <body>

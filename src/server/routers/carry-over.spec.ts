@@ -11,8 +11,27 @@ import { createCarryOverRouter } from './carry-over';
 describe('createCarryOverRouter', () => {
   const get = serve(express().use(cspNonceMiddleware(), securityMiddleware(), createCarryOverRouter()));
 
-  /** The URL the page's script sends the visitor to, before the fragment */
-  const target = (html: string) => JSON.parse(html.match(/location\.replace\((".*?") \+/)![1]) as string;
+  /** Runs the page's script against `stored` at the old host's `search`, and returns where it sends the visitor */
+  async function carry(search: string, stored = new Map<string, string>()) {
+    const html = await (await get(`/carry-over${search}`)).text();
+    const start = html.indexOf('>', html.indexOf('<script')) + 1;
+    const replace = vi.fn<(url: string) => void>();
+
+    runInNewContext(html.slice(start, html.indexOf('</script>', start)), {
+      URLSearchParams,
+      localStorage: {
+        get length() {
+          return stored.size;
+        },
+        key: (i: number) => [...stored.keys()][i],
+        getItem: (key: string) => stored.get(key) ?? null,
+      },
+      location: { search, replace },
+    });
+
+    const [url, fragment] = replace.mock.calls[0][0].split('#carry-over=');
+    return { url, carried: JSON.parse(decodeURIComponent(fragment)) as Record<string, string> };
+  }
 
   it('serves a page whose script carries the response nonce, uncached and unindexed', async () => {
     const response = await get('/carry-over?to=/trackers/xp');
@@ -24,55 +43,34 @@ describe('createCarryOverRouter', () => {
     expect(response.headers.get('cache-control')).toBe('no-store');
     expect(response.headers.get('x-robots-tag')).toBe('noindex');
     expect(response.headers.get('content-security-policy')).toContain(`'nonce-${nonce}'`);
-    expect(target(html)).toBe(`${config.siteUrl}/trackers/xp`);
   });
 
-  it('keeps the query of the page the visitor came for', async () => {
-    const html = await (await get(`/carry-over?to=${encodeURIComponent('/trackers/xp/the fraking?offset=2')}`)).text();
-
-    expect(target(html)).toBe(`${config.siteUrl}/trackers/xp/the fraking?offset=2`);
-  });
-
-  it.each([['https://example.com/'], ['example.com'], ['']])('sends `to=%s` to the home page', async to => {
-    const html = await (await get(`/carry-over?to=${encodeURIComponent(to)}`)).text();
-
-    expect(target(html)).toBe(`${config.siteUrl}/`);
-  });
-
-  it("can't be made to end its script early", async () => {
+  it("doesn't put the request's query in the page", async () => {
     const html = await (
       await get(`/carry-over?to=${encodeURIComponent('/</script><script>alert(1)</script>')}`)
     ).text();
 
-    expect(html.match(/<\/script>/g)).toHaveLength(1);
-    expect(target(html)).toBe(`${config.siteUrl}/</script><script>alert(1)</script>`);
+    expect(html).not.toContain('alert(1)');
   });
 
-  it('sends every stored entry but the consent choice in the fragment', async () => {
-    const html = await (await get('/carry-over?to=/news')).text();
+  it('sends every stored entry but the consent choice to the same page on the new host', async () => {
     const stored = new Map([
       ['dark-mode', 'true'],
       ['analytics-consent', 'granted'],
       ['xp-tracker-favorite-players', '["the fraking"]'],
     ]);
-    const replace = vi.fn<(url: string) => void>();
 
-    runInNewContext(html.match(/<script[^>]*>([\s\S]*?)<\/script>/)![1], {
-      localStorage: {
-        get length() {
-          return stored.size;
-        },
-        key: (i: number) => [...stored.keys()][i],
-        getItem: (key: string) => stored.get(key) ?? null,
-      },
-      location: { replace },
+    expect(await carry(`?to=${encodeURIComponent('/trackers/xp/the fraking?offset=2')}`, stored)).toEqual({
+      url: `${config.siteUrl}/trackers/xp/the fraking?offset=2`,
+      carried: { 'dark-mode': 'true', 'xp-tracker-favorite-players': '["the fraking"]' },
     });
+  });
 
-    const [url, fragment] = replace.mock.calls[0][0].split('#carry-over=');
-    expect(url).toBe(`${config.siteUrl}/news`);
-    expect(JSON.parse(decodeURIComponent(fragment))).toEqual({
-      'dark-mode': 'true',
-      'xp-tracker-favorite-players': '["the fraking"]',
-    });
+  it.each([['https://example.com/'], ['example.com'], ['']])('sends `to=%s` to the home page', async to => {
+    expect((await carry(`?to=${encodeURIComponent(to)}`)).url).toBe(`${config.siteUrl}/`);
+  });
+
+  it('sends a visitor without a `to` to the home page', async () => {
+    expect(await carry('')).toEqual({ url: `${config.siteUrl}/`, carried: {} });
   });
 });
