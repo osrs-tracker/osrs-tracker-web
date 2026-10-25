@@ -4,8 +4,8 @@ import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
 import { TopGainer } from '@app/common/api/osrs-tracker-repo';
 
 /**
- * A 65px list row linking to a top gainer: their rank, name and the Overall XP they gained that day. Everything comes
- * with the list, so unlike `player-row` it renders on the server.
+ * A 65px list row linking to a top gainer: their rank, name and the Overall XP they gained (the card's subtitle names
+ * the day). Everything comes with the list, so unlike `player-row` it renders on the server.
  */
 @Component({
   selector: 'a[top-gainer-row]',
@@ -19,9 +19,7 @@ import { TopGainer } from '@app/common/api/osrs-tracker-repo';
     <span class="flex-1 min-w-0 truncate text-lg/5 max-sm:text-base/5 font-bold text-strong">{{
       gainer().username | capitalizeWords
     }}</span>
-    <span class="shrink-0 font-bold text-strong tabular-nums" [title]="'Overall XP gained on ' + day() + ' (UTC).'">
-      +{{ gainer().gain | number }} XP
-    </span>
+    <span class="shrink-0 font-bold text-strong tabular-nums">+{{ gainer().gain | number }} XP</span>
   `,
   host: {
     class:
@@ -32,6 +30,4 @@ import { TopGainer } from '@app/common/api/osrs-tracker-repo';
 export class TopGainerRow {
   readonly gainer = input.required<TopGainer>();
   readonly rank = input.required<number>();
-  /** The day the XP was gained, as the card's subtitle names it ("Sat 24 Oct") */
-  readonly day = input.required<string>();
 }

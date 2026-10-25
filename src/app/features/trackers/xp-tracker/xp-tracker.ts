@@ -14,7 +14,10 @@ import { TopGainerRow } from './top-gainer-row';
 import { TrackingOffset } from './tracking-offset';
 import { XpTrackerStore } from './xp-tracker-store';
 
-/** Rows in the top gainers card: about what a visitor reads, not more for the links alone (`docs/decisions.md`) */
+/**
+ * Rows in the top gainers card: what a visitor reads, not more for the links alone (`docs/decisions.md`, "No visible
+ * text for search engines only")
+ */
 const TOP_GAINERS = 10;
 
 @Component({

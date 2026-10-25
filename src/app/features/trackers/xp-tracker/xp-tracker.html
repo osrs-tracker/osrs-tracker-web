@@ -37,7 +37,8 @@
       </info-tooltip>
       <!-- Projected content is created in every state, and value() throws in the error state -->
       @if (topGainers.hasValue()) {
-        <ol class="flex flex-col">
+        <!-- role="list": Safari drops a list's role when its markers are hidden, and the rank badge is aria-hidden -->
+        <ol class="flex flex-col" role="list">
           @for (gainer of topGainers.value(); track gainer.username; let rank = $index) {
             <li class="flex flex-col">
               <a
@@ -45,7 +46,6 @@
                 [routerLink]="['/trackers/xp', gainer.username]"
                 [gainer]="gainer"
                 [rank]="rank + 1"
-                [day]="topGainersDay()!"
               ></a>
             </li>
           }
