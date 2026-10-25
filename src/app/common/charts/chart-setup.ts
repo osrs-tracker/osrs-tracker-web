@@ -16,11 +16,10 @@ import 'chartjs-adapter-date-fns';
 import Annotation from 'chartjs-plugin-annotation';
 
 /**
- * Shared Chart.js registrations, defaults and the date adapter, imported for its side effects by every chart component.
- *
- * Registration happens once at import time, so it's guaranteed to happen before any chart is created:
- * the annotation plugin needs to be registered globally (it registers its annotation element types on register),
- * and only initializes its state for charts that are created after it was registered.
+ * Imported for its side effects by every chart component. Registration happens once at import time, so it's guaranteed
+ * to happen before any chart is created: the annotation plugin needs to be registered globally (it registers its
+ * annotation element types on register), and only initializes its state for charts that are created after it was
+ * registered.
  */
 Chart.register(
   BarController,
@@ -38,17 +37,14 @@ Chart.register(
 
 let colors: { dark: boolean; values: Record<string, string> } | undefined;
 
-/**
- * A theme colour token (`--line`, `--muted`…), read from the page so charts match it in both themes. Cached per theme,
- * since Chart.js asks for colours on every draw. Browser only, like drawing.
- */
+/** Read from the page so charts match both themes; cached per theme, since Chart.js asks on every draw. Browser only */
 export function token(name: 'line' | 'muted' | 'text' | 'strong' | 'card' | 'border' | 'accent' | 'sold'): string {
   const dark = document.documentElement.classList.contains('dark');
   if (colors?.dark !== dark) colors = { dark, values: {} };
   return (colors.values[name] ??= getComputedStyle(document.documentElement).getPropertyValue(`--${name}`).trim());
 }
 
-/** `color` (an `oklch(…)` token or a `#rrggbb` hex colour) at `alpha` opacity, e.g. for the area under a line */
+/** `color` is an `oklch(…)` token or a `#rrggbb` hex colour */
 export function withAlpha(color: string, alpha: number): string {
   if (color.startsWith('#'))
     return (

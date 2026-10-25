@@ -5,7 +5,6 @@ const TRAILING_SLASHES = /\/+$/;
 const SAME_HOST_PATH = /^\/(?![/\\])/;
 
 /**
- * Redirects paths with a trailing slash to the path without it (301), keeping the query string.
  * Otherwise `/about/terms/` renders the same page as `/about/terms` and misses the page cache, which is keyed by path.
  * Register it after `protocolRelativeMiddleware`, so `//host/` paths keep their 404.
  * Deliberately not Express' strict routing: the redirect has to happen before the page cache and SSR.

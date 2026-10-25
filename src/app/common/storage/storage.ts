@@ -10,6 +10,6 @@ export const enum StorageKey {
   PriceTrackerRecentItems = 'price-tracker-recent-items',
   PriceTrackerFavoriteItems = 'price-tracker-favorite-items',
 
-  /** The day picked for the news catch-up, `YYYY-MM-DD` */
+  /** `YYYY-MM-DD` */
   NewsLastPlayed = 'news-last-played',
 }

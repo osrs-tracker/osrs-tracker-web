@@ -20,7 +20,6 @@ const listMeta: PageMeta = {
   jsonLd: [{ '@type': 'WebPage', 'name': 'All items' }],
 };
 
-/** Like an item or player page: meta from what the route's resolver found, none for a name it didn't */
 const playerMeta: RouteMeta = (route: ActivatedRouteSnapshot) => {
   const player: string | null = route.data['player'];
   return player

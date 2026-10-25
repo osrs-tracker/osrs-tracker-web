@@ -1,16 +1,14 @@
 import { Component, input } from '@angular/core';
 
-/** A row of a chart's data table: `cells[0]` heads the row (the time), the rest are its values, already formatted */
+/** `cells[0]` heads the row (the time), the rest are its values, already formatted */
 export interface ChartTableRow {
   key: string | number;
   cells: string[];
 }
 
 /**
- * A chart's data as a table, shown in the chart's place by its card's Chart/Table switch (`chart-display-switch`): the
- * canvas is the only other way to the values (WCAG 1.1.1). It takes the chart's size from its host and scrolls inside
- * it, so the card keeps its height. Numbers are right-aligned with their units in the headers, which wrap so a phone fits
- * three columns.
+ * The canvas is the only other way to the values (WCAG 1.1.1). Takes the chart's size from its host and scrolls inside
+ * it, so the card keeps its height.
  */
 @Component({
   selector: 'chart-table',
@@ -55,9 +53,8 @@ export interface ChartTableRow {
   host: { class: 'flex flex-col' },
 })
 export class ChartTable {
-  /** What the table holds and over which period, e.g. "Average prices per day over the last week" */
   readonly caption = input.required<string>();
-  /** Column headers with their units: the row header's first, e.g. "Day", "Instant buy (gp)" */
+  /** The row header's first, then the values' headers with their units */
   readonly columns = input.required<string[]>();
   readonly rows = input.required<ChartTableRow[]>();
 }

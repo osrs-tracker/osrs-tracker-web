@@ -3,12 +3,7 @@ import { InfoTooltip } from '../tooltip/info-tooltip';
 import { Tooltip } from '../tooltip/tooltip';
 import { Skeleton } from '../loading/skeleton';
 
-/**
- * A labelled value with a line below it, e.g. "XP last 7 days · 3.72M · +24% vs previous week". `tone` colours the line
- * for a change; `compact` (24px value instead of 30px) fits six in a row; `loading` shows skeletons of the same size.
- * `subTip` shows a line that may be cut off in full; without it, the line's `title` does. Content goes below the value,
- * e.g. an `inline` `load-error` in place of the line.
- */
+/** `subTip` shows a line that may be cut off in full; without it, the line's `title` does. */
 @Component({
   selector: 'stat-tile',
   template: `
@@ -64,11 +59,9 @@ export class StatTile {
   readonly value = input('');
   readonly sub = input('');
   readonly tone = input<'muted' | 'up' | 'down'>('muted');
-  /** Explains the label, in an info tooltip */
   readonly info = input('');
-  /** Shown on hover over the value, e.g. the exact number behind a short one */
   readonly tip = input('');
-  /** Shown in a tooltip over the line, e.g. the whole of a list the line cuts off; `\n` starts a new line */
+  /** `\n` starts a new line */
   readonly subTip = input('');
   readonly compact = input(false, { transform: booleanAttribute });
   readonly loading = input(false, { transform: booleanAttribute });

@@ -8,9 +8,7 @@ import { allowCrossOriginEmbedding, LINK_PREVIEW_IMAGE } from './security';
 const HASHED_FILE = /^\/[^/]+\.(?:js|css)$/;
 
 /**
- * Serves the browser build. Hashed bundles are cached for a year, the files in `noCacheStaticFiles` are revalidated on
- * every use, and everything else (icons, favicons, the font) for a day, after which the browser revalidates it with the
- * ETag. Compression is left to Traefik (`osrs-tracker-web.yaml`).
+ * Compression is left to Traefik (`osrs-tracker-web.yaml`).
  */
 export function staticFilesMiddleware(): RequestHandler {
   const root = serverConfig.browserDistFolder;

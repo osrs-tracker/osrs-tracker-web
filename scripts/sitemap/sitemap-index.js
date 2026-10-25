@@ -9,8 +9,7 @@ const UNDATED = ['sitemap-items.xml', 'sitemap-players.xml'];
 
 const day = date => date.toISOString().slice(0, 10);
 
-// The day a sitemap's content last changed: today when this run changed it (it differs from the committed copy), else
-// the day of the last commit that changed it. Not the file's timestamp, which in the CD workflow is the checkout time.
+// Not the file's timestamp, which in the CD workflow is the checkout time.
 // A day, not a time: the CD workflow commits a few minutes after generating, and a time would then change once more on
 // the next deploy without the content changing. UTC, as the deploy commits are.
 const lastmod = async file => {

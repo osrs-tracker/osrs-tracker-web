@@ -1,36 +1,30 @@
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-// Reused variables
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 
 export const serverConfig = {
-  // Server settings
   PORT: Number(process.env['PORT'] || 8080),
   METRICS_PORT: Number(process.env['METRICS_PORT'] || 9090),
   HOST: process.env['HOST'] || 'localhost',
   TRUST_PROXY_HEADERS: process.env['TRUST_PROXY_HEADERS']?.split(',') || [],
-  // The API's in-cluster origin for server-side rendering. Unset, the server calls the public URL like the browser.
+  // In-cluster, so server-side rendering doesn't go through the public URL
   API_INTERNAL_URL: process.env['API_INTERNAL_URL'] ? new URL(process.env['API_INTERNAL_URL']).origin : undefined,
 
-  // Connections and probes
   // Above Traefik's 90 s idle timeout for backend connections, so Traefik is the one that closes an idle connection.
   // With Node's 5 s default, Node can close one just as Traefik sends a request on it, which Traefik answers with a 502.
   keepAliveTimeout: 95000,
-  // How long the readiness probe waits for the first pre-render of the auto-generated pages
   readyTimeout: 20000,
-  // How long an OSRS Wiki call (`SSR_TIMEOUT`) may take during a render before it fails and the browser loads it after
-  // hydration. Item pages waited up to 15 s for one; crawlers give up after about 10 s.
+  // For an OSRS Wiki call (`SSR_TIMEOUT`) during a render; a failed one is loaded by the browser after hydration. Item
+  // pages waited up to 15 s for one; crawlers give up after about 10 s.
   ssrRequestTimeout: 3000,
 
-  // Paths
   serverDistFolder: serverDistFolder,
   browserDistFolder: resolve(serverDistFolder, '../browser'),
 
-  // Cache settings
   pageCache: {
     ttl: 86400000, // 24 hours
-    maxSize: 100, // Maximum size of the cache before entries get dropped
+    maxSize: 100,
   },
 
   // Pages to auto-generate, on every pod and whether visited or not: keep to the landing page and slow or static ones

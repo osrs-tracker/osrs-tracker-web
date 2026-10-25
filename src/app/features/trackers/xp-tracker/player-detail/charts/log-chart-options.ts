@@ -3,7 +3,6 @@ import { format } from 'date-fns';
 import { LogPoint } from './log-chart-series';
 import { MARKER_HEIGHT, MARKER_WIDTH, TooltipMarkers } from './tooltip-markers';
 
-/** Options shared by the log charts: a day axis, and tooltips with the icon markers. */
 export function logChartOptions<TType extends 'line' | 'bar'>(markers: TooltipMarkers): ChartOptions<TType> {
   // typed as a bar chart's: the options used here have the same shape for line charts
   const options: ChartOptions<'bar'> = {
@@ -23,7 +22,6 @@ export function logChartOptions<TType extends 'line' | 'bar'>(markers: TooltipMa
         boxHeight: MARKER_HEIGHT,
         boxPadding: 4,
         callbacks: {
-          // the day, or the days a gap in the history covers
           title: ([item]) => {
             if (!item) return '';
             const { x, from } = item.raw as LogPoint;

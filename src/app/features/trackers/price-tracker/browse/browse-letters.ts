@@ -5,12 +5,10 @@ export function isBrowseLetter(letter: string): boolean {
   return BROWSE_LETTERS.includes(letter);
 }
 
-/** "A", or "0–9" for `0` */
 export function browseLetterLabel(letter: string): string {
   return letter === '0' ? '0–9' : letter.toUpperCase();
 }
 
-/** "starting with A", or "starting with a number" for `0` */
 export function startingWith(letter: string): string {
   return letter === '0' ? 'starting with a number' : `starting with ${letter.toUpperCase()}`;
 }

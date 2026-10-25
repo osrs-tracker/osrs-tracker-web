@@ -2,12 +2,9 @@ import { computed, linkedSignal, Signal, untracked } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, EMPTY, finalize, Observable, Subject, switchMap, tap } from 'rxjs';
 
-/** The pages loaded after a list's first page, one request at a time */
 export interface Paging<Request, Page> {
-  /** In the order they loaded */
   readonly pages: Signal<Page[]>;
   readonly loading: Signal<boolean>;
-  /** The request that failed; cleared by the next load */
   readonly failed: Signal<Request | undefined>;
   /** Loads a page, cancelling one still loading */
   load(request: Request): void;
@@ -22,9 +19,8 @@ interface PagingState<Request, Page> {
 }
 
 /**
- * Pages after a list's first page, such as "Show older posts". Another `reset()` value (a category, an offset) starts
- * the list over: it drops the pages, and a page still loading for the old list is ignored when it arrives. Call it in
- * an injection context. Hand-written, as a resource holds one value per request, not pages that add up.
+ * Another `reset()` value starts the list over: a page still loading for the old list is ignored when it arrives.
+ * Hand-written, as a resource holds one value per request, not pages that add up.
  */
 export function paging<Request, Page>(options: {
   reset: () => unknown;

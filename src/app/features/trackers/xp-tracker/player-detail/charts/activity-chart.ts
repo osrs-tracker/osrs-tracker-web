@@ -15,13 +15,9 @@ import { logChartOptions } from './log-chart-options';
 import { activitySeries, logTableRows } from './log-chart-series';
 import { TooltipMarkers } from './tooltip-markers';
 
-/** The activities with the largest totals get a chip; the rest wait behind "+N" */
 const CHIPS_SHOWN = 8;
 
-/**
- * Daily scores of one activity category as stacked bars over the period: the activities the page doesn't hide, or for
- * minigames the one picked, as their units differ too much to stack. Takes the daily diffs, newest first.
- */
+/** Minigames show only the one picked, as their units differ too much to stack. */
 @Component({
   selector: 'activity-chart',
   template: `
@@ -68,14 +64,10 @@ export class ActivityChart extends BaseChart<'bar', Gains[]> {
   readonly #markers = new TooltipMarkers(inject(DOCUMENT), 'activity', inject(LOCAL_ICONS, { optional: true }));
 
   readonly category = input.required<ActivityView>();
-  /** The charted minigame */
   readonly minigame = input<string>();
 
-  /** Every activity of the category with gains */
   readonly #allSeries = computed(() => activitySeries(this.data(), CHART_CATEGORIES[this.category()]));
-  /** Every activity's colour, kept apart from the others with gains */
   readonly #colors = computed(() => chartColors(this.#allSeries(), this.darkMode()));
-  /** The ones shown */
   readonly series = computed(() => this.#allSeries().filter(({ name }) => !this.hidden(name)));
   readonly legendItems = computed<LegendItem[]>(() =>
     this.#allSeries().map(series => ({
@@ -86,16 +78,13 @@ export class ActivityChart extends BaseChart<'bar', Gains[]> {
     })),
   );
 
-  /** What the data table holds, e.g. "Boss kills per day, last 30 days, newest first" */
   readonly tableCaption = input.required<string>();
-  /** Set by the card's Chart/Table switch (player-chart) */
   readonly display = input<ChartDisplay>('chart');
   /** The table in the plot's place; with nothing gained, the plot's message stays */
   readonly tableShown = computed(() => this.display() === 'table' && !!this.series().length);
   readonly tableColumns = computed(() => ['Day', ...this.series().map(({ name }) => name)]);
   readonly tableRows = computed(() => logTableRows(this.series()));
 
-  /** Picks a minigame, or toggles an activity of the other categories */
   toggle(name: string): void {
     this.playerView.pickActivity(this.category(), name);
   }

@@ -3,7 +3,6 @@ import { AveragePrices, ItemMapping, LatestPriceList } from '@app/common/api/osr
 import { formatNumberTenths, formatSign, formatWhole } from '@app/common/format/number-format';
 import { geTax } from '../item-detail/ge-tax';
 
-/** The two item tables, which share one page */
 export type TableKind = 'high-alch' | 'margins';
 /** Which price High alch buys at: the instant-buy price (`high`) or the instant-sell price (`low`) a buy offer pays */
 export type BuyAt = 'instant-buy' | 'instant-sell';
@@ -17,7 +16,6 @@ export interface TableOptions {
   volume: Volume;
   /** High alch only */
   buyAt: BuyAt;
-  /** The name filter */
   query: string;
   sort: SortKey;
   dir: 'asc' | 'desc';
@@ -28,16 +26,12 @@ export interface TableRow {
   name: string;
   icon: string;
   members: boolean;
-  /** The price paid for the item */
   buy: number;
-  /** High alch: the alch value */
   alch?: number;
-  /** Margins: the price the item sells at, and the GE tax on it */
   sell?: number;
   tax?: number;
   /** The profit (High alch) or the margin (Margins), per item */
   key: number;
-  /** `key` on a full buy limit; `null` without a limit */
   perLimit: number | null;
   limit: number | null;
   /** Trades yesterday (UTC), both sides */
@@ -47,13 +41,11 @@ export interface TableRow {
    * picked on High alch, the older side on Margins.
    */
   tradedAt: number;
-  /** High alch: the nature rune's price on the same side */
   natureRune?: number;
 }
 
 const NATURE_RUNE_ID = 561;
-/** A row needs a trade this recent at the price it uses, unless the volume filter is `any`; older prices get a clock */
-const STALE_AFTER = 3_600_000;
+const STALE_AFTER_MS = 3_600_000;
 
 /** The nature rune's price on the `buyAt` side; it trades all day, so a missing one is a failed load */
 export function natureRunePrice(latest: LatestPriceList, buyAt: BuyAt): number {
@@ -62,10 +54,6 @@ export function natureRunePrice(latest: LatestPriceList, buyAt: BuyAt): number {
   return price;
 }
 
-/**
- * Every row of a table, unfiltered. High alch skips items without an alch value or a price on the picked side, Margins
- * items without a price on both sides.
- */
 export function buildRows(
   kind: TableKind,
   buyAt: BuyAt,
@@ -127,19 +115,14 @@ function perLimit(key: number, limit: number | undefined): number | null {
   return limit ? key * limit : null;
 }
 
-/** Whether a price is too old to trust: shown with a clock when the volume filter lets it in */
 function isStale(tradedAt: number, now: number): boolean {
-  return now - tradedAt > STALE_AFTER;
+  return now - tradedAt > STALE_AFTER_MS;
 }
 
 export function staleAge(tradedAt: number, now: number): string | null {
   return isStale(tradedAt, now) ? formatDistanceStrict(tradedAt, now) : null;
 }
 
-/**
- * The rows that pass the filters, sorted: by membership, then volume (and a recent trade, unless `any`), then name.
- * Rows without the sorted value (no buy limit) go last either way; ties sort by name.
- */
 export function viewRows(rows: TableRow[], options: TableOptions, now: number): TableRow[] {
   const query = options.query.trim().toLowerCase();
   const { members, volume, sort, dir } = options;
@@ -175,7 +158,6 @@ export function defaultOptions(kind: TableKind): TableOptions {
   };
 }
 
-/** Each table's columns, in order */
 const TABLE_COLUMNS: Record<TableKind, SortKey[]> = {
   'high-alch': ['buy', 'alch', 'key', 'limit', 'perLimit', 'volume'],
   'margins': ['buy', 'sell', 'key', 'limit', 'perLimit', 'volume'],
@@ -185,16 +167,12 @@ const MEMBERS: Members[] = ['all', 'members', 'f2p'];
 const VOLUMES: Volume[] = ['any', 100, 1000, 10000];
 const BUY_AT: BuyAt[] = ['instant-buy', 'instant-sell'];
 
-/** A sort key as the URL writes it: the key column by its label */
 function sortParam(kind: TableKind, sort: SortKey): string {
   if (sort === 'key') return kind === 'high-alch' ? 'profit' : 'margin';
   return sort === 'perLimit' ? 'per-limit' : sort;
 }
 
-/**
- * The options as query params, `null` for a default, so the default view keeps a bare URL:
- * `?q=rune&members=f2p&volume=any&buy-at=instant-sell&sort=per-limit&dir=asc`
- */
+/** `null` for a default, so the default view keeps a bare URL */
 export function optionsToParams(
   kind: TableKind,
   options: TableOptions,
@@ -212,7 +190,6 @@ export function optionsToParams(
   };
 }
 
-/** The options from query params; a missing or unknown value (`?sort=abc`) reads as the default */
 export function optionsFromParams(kind: TableKind, params: { get(name: string): string | null }): TableOptions {
   const defaults = defaultOptions(kind);
   const pick = <T>(values: T[], param: string | null, fallback: T): T =>
@@ -227,11 +204,7 @@ export function optionsFromParams(kind: TableKind, params: { get(name: string): 
   };
 }
 
-/**
- * A table value short enough for its column: in full below 10,000 ("9,999", "−420"), then compact with one decimal
- * ("12.0K", "195.5M", "−1.2B"), so a column reads evenly. `signed` adds a plus to gains ("+24.8K").
- * `formatWholeCompact` switches at 10M, too late here.
- */
+/** `formatWholeCompact` switches at 10M, too late for a column to read evenly. */
 export function formatTableNumber(value: number, signed = false): string {
   const abs = Math.abs(Math.round(value));
   if (abs < 10_000) return formatWhole(value, signed);

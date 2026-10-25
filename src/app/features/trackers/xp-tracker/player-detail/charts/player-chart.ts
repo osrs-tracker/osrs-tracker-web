@@ -24,10 +24,8 @@ const TITLES: Record<ChartView, string> = {
 
 interface CategoryCopy {
   title: string;
-  /** "All 5 bosses with gains" */
   noun: string;
   icon: ChartHeading['icon'];
-  /** The title when one activity is shown, e.g. "Zulrah kills" */
   single: (name: string) => string;
   scoreLabel: string;
 }
@@ -58,7 +56,6 @@ const CATEGORY_COPY: Record<Exclude<ActivityView, 'minigames'>, CategoryCopy> = 
   },
 };
 
-/** The line above the chart: what's shown, for which period, and its total */
 interface ChartHeading {
   icon: { name: string; skill?: boolean; activity?: boolean };
   title: string;
@@ -66,10 +63,6 @@ interface ChartHeading {
   total: string;
 }
 
-/**
- * The chart card: it follows the page's last chartable pick (a tab, a skill or an activity) over the picked period.
- * From 1024px up it's as tall as the Skills card beside it, and the plot takes what the chips leave.
- */
 @Component({
   selector: 'player-chart',
   template: `
@@ -175,16 +168,13 @@ export class PlayerChart {
     title: `Last ${days} days`,
   }));
 
-  /** The period's daily diffs, newest first */
   readonly diffs = input.required<Gains[]>();
-  /** The current stats, for levels and all-time scores */
   readonly current = input<HiscoreEntry>();
   /** Where the diffs start, when it isn't the period's first day: the history is shorter, or has a gap there */
   readonly since = input<Date>();
   /** `empty` until there's a second entry to compare with */
   readonly state = input.required<'loading' | 'empty' | 'ready'>();
   readonly emptyText = input('');
-  /** The charted minigame */
   readonly minigame = input<string>();
 
   /** Kept across tabs, skills and periods */
@@ -196,7 +186,6 @@ export class PlayerChart {
     return chart === 'skills' ? undefined : chart;
   });
 
-  /** "last 30 days", or "since 5 Oct" when the diffs start later */
   readonly period = computed(() => {
     const since = this.since();
     return since ? `since ${format(since, 'd MMM')}` : `last ${this.playerView.period()} days`;

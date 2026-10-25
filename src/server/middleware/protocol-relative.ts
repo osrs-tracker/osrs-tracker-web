@@ -4,7 +4,6 @@ import { RequestHandler } from 'express';
 const PROTOCOL_RELATIVE_PATH = /^[/\\]{2}/;
 
 /**
- * Answers protocol-relative paths with a plain 404 before they reach Angular.
  * Angular SSR rejects them (NG05702) to prevent host injection, which would otherwise surface as a 500.
  * Deliberately not a redirect to the collapsed path, redirecting to `//host` is an open redirect.
  */

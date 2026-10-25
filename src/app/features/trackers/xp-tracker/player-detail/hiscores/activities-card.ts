@@ -13,7 +13,6 @@ const TABS: SegmentedOption<BottomTab>[] = [
   { value: 'minigames', label: 'Minigames' },
 ];
 
-/** The player page's second hiscores card: clues (with the total) or minigames, whichever tab `PlayerView` has open. */
 @Component({
   selector: 'article[activities-card]',
   imports: [ActivityGrid, CapitalizePipe, DecimalPipe, Segmented, Skeleton],
@@ -75,18 +74,15 @@ export class ActivitiesCard {
   /** `undefined` while the hiscores load */
   readonly hiscore = input.required<HiscoreEntry | undefined>();
   readonly gains = input.required<ReadonlyMap<string, number>>();
-  /** The charted minigame */
   readonly minigame = input<string>();
 
   readonly tabs: SegmentedOption<BottomTab>[] = TABS;
   readonly clueLayout: (string | null)[] = CLUE_LAYOUT;
-  /** Only the minigames the player is ranked in, each row of three filled up on its own */
   readonly minigameLayout = computed(() => {
     const hiscore = this.hiscore();
     const ranked = (name: string): boolean => hiscore?.activities[name] != null;
     return MINIGAME_ROWS.flatMap(row => fillRows(row.filter(ranked)));
   });
-  /** One row of loading cells */
   readonly minigameSkeleton: (string | null)[] = MINIGAME_ROWS[0];
   readonly clueTotal = computed(() => this.hiscore()?.activities[ActivityEnum.ClueScrollsAll]?.score);
 }

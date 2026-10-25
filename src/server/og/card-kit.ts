@@ -20,7 +20,6 @@ export type Child = Node | string;
 const WIDTH = 1200;
 const HEIGHT = 630;
 
-/** The site's dark theme */
 export const COLORS = {
   ground: '#0b1120',
   dot: '#26324a',
@@ -43,7 +42,6 @@ const fonts: Font[] = [
 
 let wasmReady: Promise<void> | undefined;
 
-/** Lays the card out with satori and draws it as a 1200×630 PNG */
 export async function renderPng(card: Node): Promise<Uint8Array> {
   // Shared by concurrent first calls; a failed init is retried on the next call
   wasmReady ??= initWasm(resvgWasm).catch((error: unknown) => {
@@ -67,10 +65,6 @@ export async function renderPng(card: Node): Promise<Uint8Array> {
   }
 }
 
-/**
- * The dotted ground with one card on it and the footer under it, shared by every link preview
- * @param footerText What follows "OSRS Tracker, " in the footer
- */
 export function frame(content: Child[], footerText: string): Node {
   return el(
     {
@@ -119,7 +113,6 @@ function footer(text: string): Node {
   ]);
 }
 
-/** A stat tile: a label over a tabular value */
 export function tile(label: string, value: string, width: number): Node {
   return el(
     {
@@ -142,7 +135,6 @@ export function el(style: Record<string, string | number>, children?: Child | Ch
   return { type: 'div', props: { style: { boxSizing: 'border-box', ...style }, children } };
 }
 
-/** An image of the given size from PNG or GIF bytes */
 export function img(bytes: Uint8Array, width: number, height = width): Node {
   // Both start with their own signature, which is all the data URI's type needs to name
   const type = bytes[0] === 0x47 ? 'image/gif' : 'image/png';

@@ -19,7 +19,7 @@ import { lineName, PlayerCountChart, PlayerCountSeries } from './player-count-ch
 const HOUR = 3_600_000;
 const DAY = 24 * HOUR;
 
-/** Each range's name, how far back it reaches and how late its first point may be before it counts as incomplete */
+/** `slack`: how late the first point may be before the range counts as incomplete */
 const RANGES: Record<
   PlayerCountRange,
   { label: string; title: string; name: string; bin: TimeBin; span?: number; slack?: number }
@@ -34,10 +34,6 @@ const RANGES: Record<
 const isDaily = (range: PlayerCountRange) => range === '1y' || range === 'all';
 const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
 
-/**
- * The player count over a range, drawn in the browser: the range's peak, the chart and its legend. Daily ranges show
- * full days only, and a panel instead of a chart until there are two.
- */
 @Component({
   selector: 'player-count-history',
   template: `
@@ -132,7 +128,6 @@ export class PlayerCountHistory {
   private readonly analyticsService = inject(AnalyticsService);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  /** The hero card's order of locations, which the tooltip keeps */
   readonly locationOrder = input.required<readonly string[]>();
 
   readonly rangeOptions: SegmentedOption<PlayerCountRange>[] = PLAYER_COUNT_RANGES.map(range => ({
@@ -143,7 +138,6 @@ export class PlayerCountHistory {
   readonly range = signal<PlayerCountRange>('24h');
   readonly display = signal<ChartDisplay>('chart');
 
-  /** Ranges loaded since the last refresh, shown again without a request; each refresh clears them */
   private readonly loaded = new Map<PlayerCountRange, PlayerCountPoint[]>();
 
   // Browser only: the server renders the loading state. A resource cancels the previous request when the range changes,
@@ -173,19 +167,14 @@ export class PlayerCountHistory {
     computation: ({ range, points }, previous) => (points ? { range, points } : previous?.value),
   });
 
-  /** Another range is drawn while the picked one loads, or failed to */
   readonly stale = computed(() => !!this.shown() && this.shown()!.range !== this.range());
 
-  /** Skeletons on a first load or a retry with nothing drawn, never on a refresh or a range switch */
   readonly loading = computed(() => !this.isBrowser || (this.history.isLoading() && !this.shown()));
 
-  /** An error in place of the chart when the picked range has nothing to draw: a failed refresh keeps the chart */
   readonly failed = computed(() => !!this.history.error() && (!this.shown() || this.stale()));
 
-  /** Another range's chart is drawn while the picked one loads */
   readonly switching = computed(() => this.stale() && !this.failed());
 
-  /** What's drawn; daily ranges leave out the days counted only in part */
   readonly series = computed<PlayerCountSeries | undefined>(() => {
     const shown = this.shown();
     if (!shown || this.failed()) return undefined;
@@ -197,11 +186,9 @@ export class PlayerCountHistory {
     };
   });
 
-  /** The drawn range, which the peak, the legend and the label describe */
   readonly daily = computed(() => isDaily(this.series()?.range ?? this.range()));
   readonly lineName = computed(() => lineName(this.series()?.range ?? this.range()));
 
-  /** Enough points for a line */
   readonly charted = computed(() => (this.series()?.points.length ?? 0) > 1);
 
   readonly peak = computed(() => {
@@ -223,7 +210,6 @@ export class PlayerCountHistory {
     return { label: range === '30d' ? 'Busiest hour' : 'Peak', value, when };
   });
 
-  /** When counting started, if that's within the drawn range */
   readonly countingStarted = computed(() => {
     const shown = this.series() && this.shown();
     return shown && startsCounting(shown.range, shown.points) ? format(shown.points[0].date, 'd MMMM yyyy') : undefined;
@@ -239,7 +225,6 @@ export class PlayerCountHistory {
     );
   });
 
-  /** The chart's data per hour, day or month, newest first */
   readonly dataTable = computed(() => {
     const series = this.series();
     if (!series) return { caption: '', columns: [], rows: [] };
@@ -282,13 +267,11 @@ export function playerCountRows(points: PlayerCountPoint[], bin: TimeBin): Chart
   }));
 }
 
-/** Whether the points start when counting did: always on All, and on another range while counting is younger */
 export function startsCounting(range: PlayerCountRange, points: PlayerCountPoint[]): boolean {
   const { span, slack } = RANGES[range];
   return !!points.length && (span === undefined || points[0].date.getTime() >= Date.now() - span + slack!);
 }
 
-/** Daily points without today's (still counting) and, when counting started that day, the first */
 export function fullDays(points: PlayerCountPoint[], startsCounting: boolean): PlayerCountPoint[] {
   const today = localDay(new Date()).getTime();
   return points.filter((point, i) => point.date.getTime() !== today && !(i === 0 && startsCounting));

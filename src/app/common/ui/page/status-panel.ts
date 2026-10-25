@@ -11,11 +11,7 @@ import {
 
 type StatusPanelIcon = 'search' | 'alert' | 'clock';
 
-/**
- * A centred panel for a page-level state, such as a player that doesn't exist or data that's unavailable: an icon, a
- * heading, a message and an optional action (a search box or a retry button). Other actions, such as a back button,
- * go in as content, after the built-in one.
- */
+/** Other actions, such as a back button, go in as content, after the built-in one. */
 @Component({
   selector: 'status-panel',
   template: `
@@ -86,7 +82,6 @@ export class StatusPanel {
   /** 1 when the panel is the page's content (e.g. not found), 2 when it sits under a page heading */
   readonly headingLevel = input<1 | 2>(1);
 
-  /** The search box's initial value, e.g. the name that wasn't found */
   readonly initialQuery = input('');
   readonly placeholder = input('');
   readonly searchLabel = input('Search');

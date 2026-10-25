@@ -13,7 +13,6 @@ import { XpTrackerStore } from '../xp-tracker-store';
  */
 const RESOLVED_OFFSET = 0;
 
-/** The player, or `null` when there's no such player: the page then shows its own not-found state with a search. */
 export const playerDetailResolver: ResolveFn<Player | null> = (route: ActivatedRouteSnapshot) => {
   const osrsTrackerRepo = inject(OsrsTrackerRepo);
   const xpTrackerStore = inject(XpTrackerStore);

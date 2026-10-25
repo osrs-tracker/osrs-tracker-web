@@ -5,7 +5,6 @@ import { format, isToday, isYesterday } from 'date-fns';
   name: 'shortDate',
 })
 export class ShortDatePipe implements PipeTransform {
-  /** E.g. "Sun 5 Oct", or "Today · Mon 6 Oct" and "Yesterday · Sun 5 Oct" */
   transform(date: Date | string | number | null | undefined): string {
     if (!date) return '';
 

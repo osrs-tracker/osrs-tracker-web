@@ -4,8 +4,8 @@ import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { StaleChunkReloader } from '../routing/stale-chunk-reloader';
 
 /**
- * Reports uncaught errors to analytics. Failed requests are only logged: the ones users see are shown with
- * `<load-error>` or the error page, which report themselves. A chunk from before a deploy that's gone reloads the page
+ * Failed requests are only logged: the ones users see are shown with `<load-error>` or the error page, which report
+ * themselves. A chunk from before a deploy that's gone reloads the page
  * instead (a `@defer` block's, or a navigation's that the router rethrows).
  */
 @Service({ autoProvided: false })

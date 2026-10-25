@@ -36,12 +36,10 @@ const TABS: SegmentedOption<CompareTab>[] = [
   { value: 'activities', label: 'Activities' },
 ];
 
-/** A stored check that can be picked */
 interface DayOption extends PickerDay {
   entry: HiscoreEntry;
 }
 
-/** What two days changed: Overall, and the skills and activities that gained, biggest first */
 interface Changes {
   overall: CompareRow;
   skills: CompareRow[];
@@ -49,15 +47,9 @@ interface Changes {
 }
 
 /**
- * Compares the player's stats on two days of their history, or shows them on one. Shown in the day log's place (the
- * page's Days/Compare switch), it looks like a day card: the two days picked in its header with the XP and levels
- * gained between them, then what each skill and activity gained. "Show all stats" opens a table of every skill or
- * activity with its level or score, XP and rank, and what changed; one day shows that table at once.
- *
- * Only days with a stored check can be picked, so a gap in the history is skipped. The picks are in the URL
- * (`?day=2026-10-12&vs=2026-09-12`, `vs=none` for one day), so a comparison can be shared; they're written with
- * `Location.replaceState`, which doesn't navigate: a navigation would scroll to the top and count as a page view.
- * Opened from such a link, the card scrolls into view once loaded.
+ * The picks are in the URL (`?day=2026-10-12&vs=2026-09-12`, `vs=none` for one day), so a comparison can be shared;
+ * they're written with `Location.replaceState`, which doesn't navigate: a navigation would scroll to the top and count
+ * as a page view.
  *
  * The whole history is one request (about 40 KB compressed), made in the browser only: the first paint doesn't need it.
  */
@@ -87,9 +79,7 @@ export class CompareDays {
   readonly SkillEnum: typeof SkillEnum = SkillEnum;
 
   readonly tab = signal<CompareTab>('skills');
-  /** The full table instead of only what changed */
   readonly allStats = signal(false);
-  /** The days picked by key; `undefined` takes the default: the newest day, compared with the oldest */
   private readonly picked = signal(readComparePicks(this.router, this.location));
 
   readonly history = rxResource({
@@ -97,7 +87,6 @@ export class CompareDays {
     stream: ({ params }) => this.osrsTrackerRepo.getPlayerHiscores(params.username, params.offset, PERIOD_SIZE, 0),
   });
 
-  /** The stored checks, newest first, with the XP each gained since the one before (its strength in the calendar) */
   readonly options = computed<DayOption[]>(() => {
     const entries = this.history.hasValue() ? this.history.value() : [];
     const gains = entries.map((entry, i) =>
@@ -116,15 +105,11 @@ export class CompareDays {
     }));
   });
 
-  /** The picked day, or the newest; a day missing from the history (another offset, or since removed) falls back too */
   readonly day = computed<DayOption | undefined>(() => {
     const days = this.options();
     return days.find(day => day.key === this.picked().day) ?? days[0];
   });
-  /**
-   * The day compared with: the picked one, or the oldest; none when `vs=none`, or when the history has one day. A picked
-   * day that turns out to be the day (its own pick fell back to the newest) falls back to the oldest too.
-   */
+  /** A picked day that turns out to be `day` (its own pick fell back to the newest) falls back to the oldest too */
   readonly vs = computed<DayOption | undefined>(() => {
     const days = this.options();
     const { vs } = this.picked();
@@ -133,7 +118,6 @@ export class CompareDays {
     return found === this.day() ? undefined : found;
   });
 
-  /** Of the two days, the older; `undefined` for one day */
   readonly older = computed(() => {
     const [day, vs] = [this.day()?.entry, this.vs()?.entry];
     return day && vs ? (vs.date < day.date ? vs : day) : undefined;
@@ -143,7 +127,6 @@ export class CompareDays {
     return day && vs ? (vs.date < day.date ? day : vs) : day;
   });
 
-  /** What changed between two days; `undefined` for one day */
   readonly changes = computed<Changes | undefined>(() => {
     const [newer, older] = [this.newer(), this.older()];
     if (!newer || !older) return undefined;
@@ -158,7 +141,6 @@ export class CompareDays {
     };
   });
 
-  /** The full table's rows, for the open tab */
   readonly rows = computed(() => {
     const newer = this.newer();
     if (!newer) return [];
@@ -199,7 +181,6 @@ export class CompareDays {
     this.analyticsService.trackOption('compare_view', this.allStats() ? 'all' : 'changes');
   }
 
-  /** Picks a day or the day to compare with, and puts both in the URL */
   pick(change: ComparePicks): void {
     const [day, vs] = [this.day()?.key, this.vs()?.key ?? NO_DAY];
     // picking the other picker's day swaps the two (the calendars show it ringed); with no second day, a day can't be
@@ -216,23 +197,19 @@ export class CompareDays {
     });
   }
 
-  /** Puts the days picked in the URL, once there are picks */
   writeUrl(): void {
     if (!this.picked().day) return;
     writeComparePicks(this.router, this.route, this.location, { day: this.day()?.key, vs: this.vs()?.key ?? NO_DAY });
   }
 
-  /** "+1.2M", or with `full` "+1,204,330"; "+0" for no gain */
   signed(value: number, full = false): string {
     return formatSign(value, 'always') + (full ? formatWhole(Math.abs(value)) : formatNumberShort(Math.abs(value)));
   }
 
-  /** "1.2K", without a sign */
   short(value: number): string {
     return formatNumberShort(Math.abs(value));
   }
 
-  /** "335.05M" */
   legible(value: number): string {
     return formatNumberLegible(value);
   }
@@ -241,7 +218,6 @@ export class CompareDays {
     return `${formatWhole(Math.abs(change))} places ${change > 0 ? 'up' : 'down'}`;
   }
 
-  /** A cell's tooltip: "Slayer 90 → 92, +2,840,112 XP, rank 90,306 (71,000 places up)" */
   cellTitle(row: CompareRow, skill: boolean): string {
     const value = row.from === row.to ? formatWhole(row.to) : `${row.from} → ${row.to}`;
     const gained = skill ? `, ${this.signed(row.gained!, true)} XP` : '';
@@ -251,7 +227,7 @@ export class CompareDays {
   }
 }
 
-/** The check's UTC date, e.g. "2026-10-13": each offset checks once a day at a fixed UTC hour */
+/** UTC, as each offset checks once a day at a fixed UTC hour */
 function dayKey(date: Date): string {
   return date.toISOString().slice(0, 10);
 }

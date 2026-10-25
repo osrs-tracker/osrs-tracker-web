@@ -40,10 +40,8 @@
       }
     </script>
 
-    <!-- PWA -->
     <meta name="theme-color" content="#0F172A" />
     <link rel="manifest" href="manifest.webmanifest" />
-    <!-- End PWA -->
 
     <!-- Google tag (gtag.js): loaded only once the visitor allows its cookies (ConsentStore); before a choice, events
          wait in dataLayer, and after Don't allow none are pushed. The ID and storage key are config.gaMeasurementId and
@@ -86,9 +84,7 @@
         ...(localStorage.getItem('traffic_type') ? { traffic_type: localStorage.getItem('traffic_type') } : {}),
       });
     </script>
-    <!-- End Google tag -->
 
-    <!-- Load theme -->
     <script>
       const darkModeSetting = localStorage.getItem('dark-mode');
 
@@ -103,7 +99,6 @@
 
       gtag('event', 'load_theme', { theme: darkModeEnabled ? 'dark' : 'light' });
     </script>
-    <!-- End Load Theme -->
 
     <link href="favicon.png" rel="icon" media="(prefers-color-scheme: light)" />
     <link href="favicon-dark.png" rel="icon" media="(prefers-color-scheme: dark)" />

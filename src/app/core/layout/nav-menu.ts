@@ -15,12 +15,7 @@ import { filter, map } from 'rxjs';
 import { WINDOW } from '@app/core/platform/window-token';
 import { LucideChevronDown } from '@lucide/angular';
 
-/**
- * A top-level nav tab, link or menu button. From `sm` up the current one is accented (`current:` matches the link's
- * `aria-current="page"` and the menu button's `aria-current="true"`). On phones, one of three equal tabs: the marked one
- * (`data-marked`) is accented and underlined, which is the open menu's tab while one is open, so the underline sits
- * over the sheet, and the current one otherwise.
- */
+/** On phones `data-marked` is the open menu's tab while one is open, so the underline sits over the sheet */
 export const NAV_TAB =
   'relative flex grow items-center justify-center gap-1 max-sm:min-h-11 whitespace-nowrap max-xs:text-sm font-bold ' +
   // Edge to edge on phones: an inset ring stays clear of the screen edge
@@ -29,7 +24,6 @@ export const NAV_TAB =
   'max-sm:data-marked:after:absolute max-sm:data-marked:after:inset-x-0 max-sm:data-marked:after:-bottom-1.5 ' +
   'max-sm:data-marked:after:h-0.5 max-sm:data-marked:after:rounded-xs max-sm:data-marked:after:bg-accent';
 
-/** Which nav menu is open (one at a time), and the current URL for the tabs. Provided by the root layout. */
 @Injectable()
 export class NavMenus {
   private readonly router = inject(Router);
@@ -60,11 +54,8 @@ export class NavMenus {
 }
 
 /**
- * A nav tab that opens a menu of links (a disclosure, not an ARIA `menu`): under the nav's right edge on desktop, a
- * full-width sheet under the nav on phones. Escape, a click outside, focus leaving it and following a link close it.
- * From `sm` up a mouse also opens it on hover and closes it on leaving the tab and panel, after short delays: the open
- * one skips a pass over the nav (not when another menu is open, so moving along the tabs switches at once), the close
- * one crosses the gap between tab and panel. A mouse click on a menu opened by hover keeps it open.
+ * A disclosure, not an ARIA `menu`. On hover the open delay skips a pass over the nav (not when another menu is open,
+ * so moving along the tabs switches at once), the close delay crosses the gap between tab and panel.
  * The links are in the page while it's closed (hidden), so the server render still links every page for crawlers.
  */
 @Component({
@@ -115,9 +106,7 @@ export class NavMenu {
   private readonly tab = viewChild.required<ElementRef<HTMLButtonElement>>('tab');
 
   readonly label = input.required<string>();
-  /** The menu panel's id, for `aria-controls` */
   readonly menuId = input.required<string>();
-  /** Whether the current page is one of the menu's */
   readonly current = input(false);
 
   protected readonly tabClass = NAV_TAB;
@@ -128,7 +117,6 @@ export class NavMenu {
     () => `${this.isOpen() ? 'rotate-180' : ''} ${!this.current() && !this.marked() ? 'text-muted' : ''}`,
   );
 
-  /** Whether hover opened it, so leaving closes it; a mouse click keeps it open */
   private openedByHover = false;
   private hoverTimer?: ReturnType<typeof setTimeout>;
 
@@ -194,9 +182,6 @@ export class NavMenu {
   }
 }
 
-/**
- * A row in a nav menu: a 40px tile (the content), a bold label, a "New" pill until `newUntil` and a muted line under it
- */
 @Component({
   selector: 'a[nav-menu-row]',
   template: `

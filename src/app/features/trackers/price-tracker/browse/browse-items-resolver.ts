@@ -6,10 +6,7 @@ import { resolverErrorHandler } from '@app/core/routing/resolver-error';
 import { RecentItem } from '../price-tracker-store';
 import { isBrowseLetter } from './browse-letters';
 
-/**
- * Every item for the route's letter, or `null` for a letter there's no page for (the page shows its not-found state in
- * place, without asking the API). Prices load on the page itself, in each row. Other failures show the error page.
- */
+/** `null` for a letter there's no page for, so the page shows its not-found state without asking the API. */
 export const browseItemsResolver: ResolveFn<RecentItem[] | null> = (
   route: ActivatedRouteSnapshot,
 ): Observable<RecentItem[] | null> => {

@@ -17,8 +17,7 @@ export function allowCrossOriginEmbedding(res: ServerResponse): void {
 }
 
 /**
- * Turns off the browser features the site never uses, for its own pages and anything they embed. Helmet doesn't set
- * this header. Only features Chrome knows: it logs an error for each name it doesn't.
+ * Helmet doesn't set this header. Only features Chrome knows: it logs an error for each name it doesn't.
  */
 const PERMISSIONS_POLICY = [
   'accelerometer',

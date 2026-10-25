@@ -19,7 +19,6 @@ export default class PriceTracker {
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly priceTrackerStore = inject(PriceTrackerStore);
 
-  /** A search to run straight away, from `?q=` (e.g. from an item page that wasn't found) */
   readonly q = input<string>();
 
   readonly favoriteItems = this.priceTrackerStore.favoriteItems;

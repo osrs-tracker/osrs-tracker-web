@@ -1,6 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-/** "3 hours ago", "just now"; `null` without a date. For code; templates use the `timeAgo` pipe */
 export function timeAgo(value: Date | number | string | null | undefined): string | null {
   if (!value) return null;
 

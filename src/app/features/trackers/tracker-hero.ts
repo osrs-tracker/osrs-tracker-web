@@ -1,9 +1,5 @@
 import { Component, input } from '@angular/core';
 
-/**
- * The tracker landing pages' hero: a dot-grid band with an icon tile (the `[icon]` content), the title with its
- * subject word accented, an intro and the rest of the content (the search) below.
- */
 @Component({
   selector: 'header[tracker-hero]',
   template: `
@@ -29,7 +25,6 @@ import { Component, input } from '@angular/core';
   host: { class: 'relative z-10 block bg-deep dot-grid border-b border-line' },
 })
 export class TrackerHero {
-  /** The accented word before "Tracker", e.g. "XP". */
   readonly subject = input.required<string>();
   readonly intro = input.required<string>();
 }

@@ -4,7 +4,6 @@
 
 @import './tailwind/theme' layer(theme);
 @custom-variant dark (&:where(.dark, .dark *));
-/* The current page's nav link (`ariaCurrentWhenActive="page"`), or the nav menu holding it (`aria-current="true"`) */
 @custom-variant current (&:is([aria-current='page'], [aria-current='true']));
 /* Home's narrow news cards: two in a row on phones, four on tablets (768–1279px); both get the compact card */
 @custom-variant compact {

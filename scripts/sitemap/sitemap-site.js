@@ -2,8 +2,7 @@ import { git, hasFullHistory, SITE_URL, urlset, writeSitemap } from './sitemap-f
 
 const OUTPUT = 'public/sitemap-site.xml';
 
-// The date of the last commit that changed a page's file (for a page in the app, its template, which holds the text).
-// File timestamps won't do: a fresh checkout (the CD workflow) gives every file the checkout time, so every deploy would
+// For a page in the app, its template holds the text. File timestamps won't do: a fresh checkout (the CD workflow) gives every file the checkout time, so every deploy would
 // move the dates without the pages changing. A rename doesn't count, and older commits are followed across it. A file
 // with no commits yet gets no <lastmod> rather than a made-up date.
 const lastmod = file => git(['log', '-1', '--follow', '--diff-filter=AMT', '--format=%cI', '--', file]) || undefined;

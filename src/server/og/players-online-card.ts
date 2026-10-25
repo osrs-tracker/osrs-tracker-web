@@ -6,7 +6,6 @@ import { COLORS, el, frame, type Node, renderPng } from './card-kit';
 const COUNT_WIDTH = 480;
 const LINE_WIDTH = 992 - COUNT_WIDTH - 40;
 const LINE_HEIGHT = 120;
-// A third of the card's inner width less the gaps, as on the item card
 const TILE_WIDTH = (992 - 2 * 20) / 3;
 const DAY_MS = 24 * 60 * 60 * 1000;
 // "13 Oct 2026, 19:15 UTC": chat apps keep a preview for weeks, so the footer says when the count was taken
@@ -28,11 +27,7 @@ const TILE_STYLE = {
   backgroundColor: COLORS.tile,
 };
 
-/**
- * The players online page's link preview image: a 1200×630 PNG card with the newest count, a line of the last 24 hours,
- * the members and free-to-play split, and the day's peak and low.
- * @param samples The last 24 hours, oldest first; at least two
- */
+/** @param samples The last 24 hours, oldest first; at least two */
 export async function renderPlayersOnlineCard(samples: PlayerCountPoint[]): Promise<Uint8Array> {
   return renderPng(card(samples));
 }
@@ -73,7 +68,6 @@ function valueTile(label: string, value: string): Node {
   ]);
 }
 
-/** Members on the left and free-to-play on the right, over a bar split between them, as on the page */
 function splitTile(members: number, f2p: number): Node {
   const players = members + f2p;
   const side = (label: string, value: string, align: string) =>
@@ -101,8 +95,7 @@ function liveLabel(): Node {
 }
 
 /**
- * The totals as a line over a fading area, placed by time over the 24 hours up to the newest sample (so a gap stays a
- * gap, and a shorter history starts partway), with a dot on the newest
+ * Placed by time over the 24 hours up to the newest sample, so a gap stays a gap and a shorter history starts partway
  */
 function line(samples: PlayerCountPoint[]): Node {
   const totals = samples.map(sample => sample.total);

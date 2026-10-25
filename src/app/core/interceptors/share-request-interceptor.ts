@@ -9,14 +9,10 @@ import { Observable, finalize, share } from 'rxjs';
 @Service()
 class OngoingRequests extends Map<string, Observable<HttpEvent<unknown>>> {}
 
-/**
- * This interceptor is used to share ongoing requests to reduce the number of unnecessary requests.
- */
 export const shareRequestInterceptor: HttpInterceptorFn = (
   request: HttpRequest<unknown>,
   next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> => {
-  // Do not share non-GET requests
   if (request.method !== 'GET') return next(request);
 
   const ongoingRequests = inject(OngoingRequests);

@@ -2,11 +2,7 @@ import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BROWSE_LETTERS, browseLetterLabel, startingWith } from './browse-letters';
 
-/**
- * Links to every browse page as equal keys: one row on wide screens, two from `sm`, three of nine on phones. Keys are
- * 4px apart on one row and on phones, 8px on two rows, so "0–9" fits on one line. The current letter is filled with
- * the accent.
- */
+// Keys are 4px apart on one row and on phones, 8px on two rows, so "0–9" fits on one line
 @Component({
   selector: 'nav[letter-bar]',
   template: `
@@ -32,13 +28,12 @@ export class LetterBar {
   readonly LETTERS = BROWSE_LETTERS;
   readonly label = browseLetterLabel;
 
-  /** Holds the visible text (WCAG 2.5.3, for voice control): "Items starting with A", "0–9: items starting with a number" */
+  /** Holds the visible text (WCAG 2.5.3, for voice control) */
   protected ariaLabel(letter: string): string {
     return letter === '0'
       ? `${browseLetterLabel(letter)}: items ${startingWith(letter)}`
       : `Items ${startingWith(letter)}`;
   }
 
-  /** The letter of the page it's on, if any */
   readonly current = input<string>();
 }

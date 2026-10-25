@@ -7,19 +7,15 @@ import { formatWhole } from '@app/common/format/number-format';
 
 const MAX_DESCRIPTION_LENGTH = 160;
 
-/**
- * The item page's meta, from the item `itemDetailResolver` resolved. None for an unknown item (`null`): the page shows
- * its not-found state, titled by the route, without a canonical. Other failures show the error page.
- */
+/** None for an unknown item (`null`): its not-found state is titled by the route, without a canonical. */
 export function itemDetailMeta(route: ActivatedRouteSnapshot): PageMeta | undefined {
   const item: Item | null = route.data['item'];
   return item ? itemPageMeta(item) : undefined;
 }
 
 /**
- * "Abyssal whip - OSRS price, high alch and buy limit": the item's name first, as most searches name only the item, then
- * the facts the page has for it. Without the site name, which search results and link previews show on their own (as
- * the landing pages' titles do).
+ * The item's name first, as most searches name only the item. Without the site name, which search results and link
+ * previews show on their own (as the landing pages' titles do).
  */
 export function itemTitle(item: Item): string {
   const facts = ['price', item.highalch ? 'high alch' : '', item.limit ? 'buy limit' : ''].filter(Boolean);
@@ -65,9 +61,8 @@ function itemImage(item: Item): PageImage {
 }
 
 /**
- * "A weapon from the abyss. Buy limit 70 · High alch 72,000 gp · Live Grand Exchange prices and price history.": the
- * examine text first, as most searches name only the item, then its facts and what the page tracks. Search results show
- * no line breaks, so a `·` separates them. Leaves out what the item lacks, and what doesn't fit 160 characters: the facts
+ * The examine text first, as most searches name only the item. Search results show no line breaks, so a `·` separates
+ * the facts. Leaves out what the item lacks, and what doesn't fit 160 characters: the facts
  * last first, or the examine text if even that alone is too long. Not whether it's members only: nearly every visitor is
  * a member or doesn't care.
  */

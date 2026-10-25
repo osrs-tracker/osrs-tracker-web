@@ -6,9 +6,7 @@ import { LucideUser, LucideX } from '@lucide/angular';
 
 interface AccountMode {
   label: string;
-  /** What changed, e.g. "De-ironed" */
   change?: string;
-  /** Which hiscores they're ranked on since */
   note?: string;
 }
 
@@ -19,11 +17,6 @@ const TYPE_LABELS: Record<PlayerType, string> = {
   [PlayerType.Ultimate]: 'Ultimate ironman',
 };
 
-/**
- * The player's account type as an icon tile: the helm of the type they started as (a person for a regular account), with
- * a badge for each status they lost. Bottom left a red × when de-ironed (no longer iron at all) or the ironman helm when de-ultimated (still iron);
- * bottom right a skull when a hardcore died. A tooltip, not a title, names the type and what changed.
- */
 @Component({
   selector: 'account-tile',
   template: `
@@ -105,7 +98,6 @@ export class AccountTile {
   readonly PlayerType: typeof PlayerType = PlayerType;
 
   readonly account = input.required<Player>();
-  /** The player page's 64px tile, focusable; otherwise a list row's 40px (32px on phones) one */
   readonly large = input(false, { transform: booleanAttribute });
 
   readonly mode = computed<AccountMode>(() => {

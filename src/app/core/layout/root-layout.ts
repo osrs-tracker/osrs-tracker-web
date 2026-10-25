@@ -61,7 +61,6 @@ export default class RootLayout {
   });
   protected readonly navTab = NAV_TAB;
 
-  /** The nav tab the current page is under, besides Home */
   readonly section = computed(() => {
     const path = this.navMenus.url().split(/[?#]/)[0];
     if (path.startsWith('/trackers')) return 'trackers';
@@ -69,7 +68,6 @@ export default class RootLayout {
     return null;
   });
 
-  /** Home's tab is underlined on phones on Home, unless a menu is open (its tab is underlined then) */
   readonly homeMarked = computed(() => !this.navMenus.open() && this.navMenus.url().split(/[?#]/)[0] === '/');
 
   readonly skipHref = computed(() => `${this.navMenus.url().split('#')[0]}#main`);

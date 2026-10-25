@@ -13,10 +13,7 @@ interface RankLine {
   reload?: () => void;
 }
 
-/**
- * A hiscores tooltip's ranks: among all accounts, then among the player's game mode and build (`ModeRanks`). Opening
- * the first of these tooltips renders this, which loads those tables.
- */
+/** Rendering the first of these tooltips loads the mode tables (`ModeRanks`). */
 @Component({
   selector: 'rank-lines',
   imports: [DecimalPipe, LoadError, Skeleton],
@@ -40,7 +37,6 @@ export class RankLines implements OnInit {
   private readonly modeRanks = inject(ModeRanks);
 
   readonly kind = input.required<'skills' | 'activities'>();
-  /** A skill or activity */
   readonly name = input.required<string>();
   /** On the main table; `null` or `undefined` unranked */
   readonly rank = input.required<number | null | undefined>();

@@ -25,7 +25,6 @@
     </div>
     @if (changes(); as changes) {
       @let levels = changes.overall.to - changes.overall.from!;
-      <!-- the totals, as on a day card -->
       <div class="flex items-center gap-3.5">
         @if (levels > 0) {
           <span class="text-sm font-bold text-accent tabular-nums"
@@ -73,7 +72,6 @@
         </ul>
       }
       @if (diff.activities.length) {
-        <!-- its own rows under a full-width line, as on a day card: scores and kill counts, not XP -->
         <ul class="grid grid-cols-log gap-x-6 gap-y-2 px-5 py-4 border-row" [class.border-t]="diff.skills.length">
           @for (row of diff.activities; track row.name) {
             <li class="flex items-center gap-2.5 min-h-6" [attr.title]="cellTitle(row, false)">
@@ -140,7 +138,6 @@
                       [activity]="tab() === 'activities'"
                     />
                   </span>
-                  <!-- in a comparison, what didn't change steps back -->
                   <span
                     class="truncate"
                     [class]="comparing && !changed ? 'text-muted' : 'text-strong'"
@@ -163,7 +160,6 @@
                   class="py-2 px-1.5 sm:px-3 text-right whitespace-nowrap text-text"
                   [class]="comparing ? 'max-sm:hidden' : ''"
                 >
-                  <!-- on phones only in the one-day view, short -->
                   <span class="sm:hidden" [attr.title]="row.xp | number">{{ legible(row.xp!) }}</span>
                   <span class="max-sm:hidden">{{ row.xp | number }}</span>
                 </td>

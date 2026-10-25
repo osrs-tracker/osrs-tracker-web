@@ -3,7 +3,6 @@ import type { Node } from './card-kit';
 
 // Apart from `card-kit.ts`, which loads resvg's wasm on import, so a spec can test it
 
-/** A Lucide icon (a component's static `icon`, `LucideUser.icon`) as an image, drawn as `@lucide/angular` draws it */
 export function lucideIcon({ node }: LucideIconData, size: number, color: string): Node {
   const markup = (nodes: LucideIconNode[]): string =>
     nodes

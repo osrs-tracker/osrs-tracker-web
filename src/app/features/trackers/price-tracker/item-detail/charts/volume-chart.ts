@@ -7,17 +7,14 @@ import { formatNumberShort } from '@app/common/format/number-format';
 import { TimeBin } from '@app/common/charts/time-bins';
 import { BinVolume } from '../item-prices';
 
-/** The tooltip's title per bin: the visitor's hours, UTC days and months (`binnedVolumes`) */
+/** The visitor's hours, UTC days and months (`binnedVolumes`) */
 const TOOLTIP_TITLE: Record<TimeBin, [format: string, timezone?: string]> = {
   hour: ['d MMM y, HH:mm'],
   day: ['d MMM y', 'UTC'],
   month: ['MMMM y', 'UTC'],
 };
 
-/**
- * Items bought (accent, above the line) and sold (violet, below it) per hour, UTC day or UTC month. Both halves share one scale, so the
- * bars compare; the axis counts both up from the line, and the tooltip has the exact numbers.
- */
+/** Both halves share one scale, so the bars compare. */
 @Component({
   selector: 'volume-chart',
   template: '<canvas #chart></canvas>',
@@ -40,7 +37,6 @@ export class VolumeChart extends BaseChart<'bar', { volumes: BinVolume[]; bin: T
         y: {
           position: 'right',
           stacked: true,
-          // Dashes the gridlines, as on the price chart
           border: { dash: [4, 6] },
           ticks: {
             maxTicksLimit: 5,

@@ -11,7 +11,6 @@ import { createCarryOverRouter } from './carry-over';
 describe('createCarryOverRouter', () => {
   const get = serve(express().use(cspNonceMiddleware(), securityMiddleware(), createCarryOverRouter()));
 
-  /** Runs the page's script against `stored` at the old host's `search`, and returns where it sends the visitor */
   async function carry(search: string, stored = new Map<string, string>()) {
     const html = await (await get(`/carry-over${search}`)).text();
     const start = html.indexOf('>', html.indexOf('<script')) + 1;

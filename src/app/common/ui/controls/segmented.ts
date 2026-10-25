@@ -18,25 +18,17 @@ import { setToolbarTabStop } from './aria-tab-stop';
 export interface SegmentedOption<T> {
   value: T;
   label: string;
-  /** Shown on hover */
   title?: string;
   disabled?: boolean;
-  /** A decorative icon before the label */
   icon?: { name: string; skill?: boolean };
-  /** A line icon in place of the label, which names it for screen readers and on hover */
+  /** Replaces the label, which names it for screen readers and on hover */
   lucide?: LucideIcon;
 }
 
 /**
- * A segmented control: 32px pills on a 4px track, the selected one accent-filled. `variant="slate"` is Home's
- * Player/Item switch, which sits beside the accent Search button; on phones and tablets its options share the width
- * it's given.
- * `stretch` gives every option the same width.
- *
- * A radio group on `@angular/aria`'s toolbar: one Tab stop (the checked option), arrow keys move focus between the
- * options, Enter or Space chooses one. Disabled options stay reachable by the arrow keys (`aria-disabled`) but can't be
- * chosen, so keyboard users find them and their `title`.
- * `picked` also fires when the checked option is chosen again.
+ * `variant="slate"` is Home's Player/Item switch, beside the accent Search button. Disabled options stay reachable by
+ * the arrow keys (`aria-disabled`) but can't be chosen, so keyboard users find them and their `title`. `picked` also
+ * fires when the checked option is chosen again.
  */
 @Component({
   selector: 'segmented',
@@ -92,7 +84,6 @@ export class Segmented<T> {
   readonly value = model.required<T>();
   /** Every choice, also of the checked option, which `valueChange` skips */
   readonly picked = output<T>();
-  /** What the options choose between, e.g. "Period" */
   readonly label = input.required<string>();
   readonly variant = input<'accent' | 'slate'>('accent');
   readonly stretch = input(false, { transform: booleanAttribute });
