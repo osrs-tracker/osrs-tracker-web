@@ -19,6 +19,8 @@
   under the Price Tracker, and from the Price Tracker and its card on Home.
 - In the Trackers menu, High-alch profit has a wand icon in the same line style as Margins and New on the GE, in place
   of the game's nature rune, which stood out among them.
+- The shortcuts under the item search (Items A–Z, High-alch profit, Margins, New on the GE) on Home and the Price
+  Tracker are now buttons with a solid background, so the dotted pattern behind them no longer makes them hard to read.
 
 ### Behind the scenes
 
