@@ -1,10 +1,11 @@
 import { formatNumber } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
-import { Chart, ChartOptions, Point, TimeScaleOptions, TooltipModel } from 'chart.js';
+import { Chart, ChartOptions, Point, TooltipModel } from 'chart.js';
 import { PlayerCountPoint, PlayerCountRange } from '@osrs-tracker/models';
 import { format } from 'date-fns';
 import { BaseChart } from '@app/common/charts/base-chart';
 import { token, withAlpha } from '@app/common/charts/chart-setup';
+import { setTimeAxisUnit, timeAxis } from '@app/common/charts/time-axis';
 import { formatNumberShort } from '@app/common/format/number-format';
 import { formatShare, locationCountsInOrder } from './world-locations';
 
@@ -139,13 +140,7 @@ export class PlayerCountChart extends BaseChart<'line', PlayerCountSeries> {
         },
       },
       scales: {
-        x: {
-          // Spaced by time rather than by point, so there's one label per hour, day or month
-          type: 'time',
-          grid: { display: false },
-          ticks: { source: 'auto', stepSize: 1, autoSkipPadding: 24 },
-          time: { displayFormats: { hour: 'HH:mm', day: 'd MMM', month: 'MMM yyyy' } },
-        },
+        x: timeAxis(),
         y: {
           position: 'right',
           // From 0, so the filled area's height reads as the count
@@ -161,11 +156,7 @@ export class PlayerCountChart extends BaseChart<'line', PlayerCountSeries> {
   }
 
   protected setData(chart: Chart<'line', Point[]>, { range, points }: PlayerCountSeries): void {
-    // Hours for a day, days for up to two months, months beyond: by the data's span, as a range that only just started
-    // counting would otherwise get no labels at all
-    const span = points.length ? points.at(-1)!.date.getTime() - points[0].date.getTime() : 0;
-    (chart.options.scales!['x'] as TimeScaleOptions).time.unit =
-      span > 60 * 86_400_000 ? 'month' : span > 2 * 86_400_000 ? 'day' : 'hour';
+    setTimeAxisUnit(chart, points.length ? points.at(-1)!.date.getTime() - points[0].date.getTime() : 0);
     this.hovered.set(null);
 
     const daily = range === '1y' || range === 'all';

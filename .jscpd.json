@@ -3,5 +3,6 @@
   "format": ["typescript", "markup", "css"],
   "ignore": ["**/*.spec.ts", "**/testing/**", "**/*.generated.ts"],
   "threshold": 1,
-  "reporters": ["console"]
+  "reporters": ["console"],
+  "ignorePattern": ["import[^;]*;"]
 }

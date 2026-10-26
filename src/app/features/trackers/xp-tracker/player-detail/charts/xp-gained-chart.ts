@@ -1,18 +1,16 @@
 import { formatNumber } from '@angular/common';
-import { DOCUMENT, Component, computed, inject, input } from '@angular/core';
+import { DOCUMENT, Component, computed, inject } from '@angular/core';
 import { SkillEnum } from '@osrs-tracker/models';
 import { Chart, ChartOptions, Point } from 'chart.js';
 import { merge } from 'chart.js/helpers';
-import { BaseChart } from '@app/common/charts/base-chart';
 import { ChartTable } from '@app/common/charts/chart-table';
-import { ChartDisplay } from '@app/common/charts/chart-display-switch';
 import { token, withAlpha } from '@app/common/charts/chart-setup';
 import { LOCAL_ICONS } from '@app/common/icon/local-icons-token';
 import { formatNumberLegible } from '@app/common/format/number-format';
 import { ChartSkill, SKILL_COLORS } from '../colors/skill-colors';
-import { Gains } from '../player-summary';
 import { PlayerView } from '../player-view';
 import { ChartLegend, LegendItem } from './chart-legend';
+import { LogChart } from './log-chart';
 import { logChartOptions } from './log-chart-options';
 import { logTableRows, xpGainedSeries } from './log-chart-series';
 import { TooltipMarkers } from './tooltip-markers';
@@ -53,7 +51,7 @@ const CHIPS_SHOWN = 7;
   host: { class: 'flex flex-col grow min-h-0' },
   imports: [ChartLegend, ChartTable],
 })
-export class XpGainedChart extends BaseChart<'line', Gains[]> {
+export class XpGainedChart extends LogChart<'line'> {
   protected readonly type = 'line';
 
   readonly playerView = inject(PlayerView);
@@ -68,10 +66,6 @@ export class XpGainedChart extends BaseChart<'line', Gains[]> {
     const names = [SkillEnum.Overall, ...xpGainedSeries(this.data()).map(({ name }) => name)];
     return names.map(name => ({ name, color: this.cssColor(name), on: picked.has(name) }));
   });
-  readonly tableCaption = input.required<string>();
-  readonly display = input<ChartDisplay>('chart');
-  /** The table in the plot's place; with nothing gained, the plot's message stays */
-  readonly tableShown = computed(() => this.display() === 'table' && !!this.series().length);
   readonly tableColumns = computed(() => ['Day', ...this.series().map(({ name }) => `${name} (XP)`)]);
   readonly tableRows = computed(() => logTableRows(this.series(), true));
   readonly label = computed(() => `${[...this.playerView.skills()].join(', ')} XP gained over the period, cumulative`);

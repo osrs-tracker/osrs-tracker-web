@@ -38,14 +38,7 @@
             (valueChange)="setSearchMode($event)"
           />
         </item-search>
-        <div class="flex flex-wrap gap-2 -mt-2">
-          <a class="button--default button--rounded link-pill" routerLink="/trackers/price/browse/a">Items A–Z</a>
-          <a class="button--default button--rounded link-pill" routerLink="/trackers/price/high-alch"
-            >High-alch profit</a
-          >
-          <a class="button--default button--rounded link-pill" routerLink="/trackers/price/margins">Margins</a>
-          <a class="button--default button--rounded link-pill" routerLink="/trackers/price/new">New on the GE</a>
-        </div>
+        <div price-tracker-links></div>
       }
     </div>
 

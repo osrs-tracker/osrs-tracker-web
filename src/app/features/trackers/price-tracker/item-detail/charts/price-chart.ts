@@ -1,9 +1,10 @@
 import { formatNumber } from '@angular/common';
 import { Component, input } from '@angular/core';
-import { Chart, ChartOptions, Point, TimeScaleOptions } from 'chart.js';
+import { Chart, ChartOptions, Point } from 'chart.js';
 import { fromUnixTime } from 'date-fns';
 import { BaseChart } from '@app/common/charts/base-chart';
 import { token, withAlpha } from '@app/common/charts/chart-setup';
+import { setTimeAxisUnit, timeAxis } from '@app/common/charts/time-axis';
 import { formatNumberLegible } from '@app/common/format/number-format';
 import { AveragePricesAtTime } from '@app/common/api/osrs-prices-repo';
 import { PRICE_LINES, PriceLine } from '../price-ranges';
@@ -28,16 +29,7 @@ export class PriceChart extends BaseChart<'line', AveragePricesAtTime[]> {
         },
       },
       scales: {
-        x: {
-          // Spaced by time rather than by point, so there's one label per hour, day or month
-          type: 'time',
-          grid: { display: false },
-          ticks: { source: 'auto', stepSize: 1, autoSkipPadding: 24 },
-          time: {
-            displayFormats: { hour: 'HH:mm', day: 'd MMM', month: 'MMM yyyy' },
-            tooltipFormat: 'd MMM yyyy, HH:mm',
-          },
-        },
+        x: timeAxis('d MMM yyyy, HH:mm'),
         y: {
           position: 'right',
           border: { dash: [4, 6] },
@@ -58,9 +50,9 @@ export class PriceChart extends BaseChart<'line', AveragePricesAtTime[]> {
   }
 
   protected setData(chart: Chart<'line', Point[]>, priceTimeSeries: AveragePricesAtTime[]): void {
+    // The Wiki's timestamps are in seconds
     const span = priceTimeSeries.length ? priceTimeSeries.at(-1)!.timestamp - priceTimeSeries[0].timestamp : 0;
-    (chart.options.scales!['x'] as TimeScaleOptions).time.unit =
-      span > 60 * 86400 ? 'month' : span > 2 * 86400 ? 'day' : 'hour';
+    setTimeAxisUnit(chart, span * 1000);
 
     const [buy, sell] = PRICE_LINES;
     chart.data.datasets = [

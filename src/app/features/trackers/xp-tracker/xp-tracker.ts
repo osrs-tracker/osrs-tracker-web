@@ -10,6 +10,7 @@ import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { TrackerHero } from '../tracker-hero';
 import { PlayerSearch } from './player-search';
 import { PlayerRow } from './player-row';
+import { recentPlayerLookups } from './recent-player-lookups';
 import { TopGainerRow } from './top-gainer-row';
 import { TrackingOffset } from './tracking-offset';
 import { XpTrackerStore } from './xp-tracker-store';
@@ -41,11 +42,7 @@ export default class XpTracker {
 
   readonly scrapingOffset = this.xpTrackerStore.scrapingOffset;
 
-  readonly recentPlayerLookups = rxResource({
-    params: () => ({ offset: this.scrapingOffset() }),
-    stream: ({ params: { offset } }) => this.osrsTrackerRepo.getRecentPlayerLookups(offset),
-    defaultValue: [],
-  });
+  readonly recentPlayerLookups = recentPlayerLookups();
   readonly recentPlayerLookupsState = computed(() => listCardState(this.recentPlayerLookups));
 
   /** Ranked at offset 0 whatever the visitor's tracking offset, so rendered on the server like the recent lookups */
