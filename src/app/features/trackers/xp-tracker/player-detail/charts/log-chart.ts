@@ -4,10 +4,8 @@ import { ChartDisplay } from '@app/common/charts/chart-display-switch';
 import { Gains } from '../player-summary';
 import { ChartSeries } from './log-chart-series';
 
-/** The XP gained and activity charts: a player's gains per day, with a table that can take the plot's place */
 @Directive()
 export abstract class LogChart<TType extends 'line' | 'bar'> extends BaseChart<TType, Gains[]> {
-  /** The lines or bars drawn, which the table shows too */
   abstract readonly series: Signal<ChartSeries[]>;
 
   readonly tableCaption = input.required<string>();

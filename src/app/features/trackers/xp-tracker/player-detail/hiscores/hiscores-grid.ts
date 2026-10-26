@@ -5,7 +5,6 @@ import { ThemeStore } from '@app/common/theme/theme-store';
 import { PlayerView } from '../player-view';
 import { pickableCellRing, pickedCellBackground, pickedCellRing } from './picked-cell';
 
-/** The skills and activities grids: cells that pick what the charts show, in an `@angular/aria` grid */
 @Directive()
 export abstract class HiscoresGrid {
   readonly playerView = inject(PlayerView);

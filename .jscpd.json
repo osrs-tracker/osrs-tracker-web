@@ -4,5 +4,5 @@
   "ignore": ["**/*.spec.ts", "**/testing/**", "**/*.generated.ts"],
   "threshold": 1,
   "reporters": ["console"],
-  "ignorePattern": ["import[^;]*;"]
+  "ignorePattern": ["(?m)^import[^;]*;"]
 }

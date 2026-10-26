@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-/** The Price Tracker's lists, as pills under an item search: on Home and in the Price Tracker's hero */
 @Component({
   selector: 'div[price-tracker-links]',
   template: `
