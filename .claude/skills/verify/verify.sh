@@ -18,11 +18,12 @@ if [[ $PWD == */.claude/worktrees/* ]]; then
   fi
 fi
 
-names=(lint prettier knip)
+names=(lint prettier knip jscpd)
 commands=(
   'npx ng lint'
   'npm run prettier:ci'
   'npx knip'
+  'npx jscpd'
 )
 summary=()
 

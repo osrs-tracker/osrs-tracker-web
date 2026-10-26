@@ -1,3 +1,9 @@
+## 2026-10-26
+
+- Behind the scenes, every change to the site is now also checked for copied code and for files that import each other
+  in a circle, two ways bugs creep in when code grows: a fix lands in one copy and not the other, or a part of the page
+  starts before what it needs has loaded.
+
 ## 2026-10-25
 
 ### New address, top gainers, new GE items and a steadier player page

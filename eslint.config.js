@@ -51,12 +51,17 @@ export default defineConfig(
     },
   },
   {
-    // Layers: features build on common and core, never the other way round, and don't reach into each other. Resolved
-    // paths, so relative imports count too.
+    // Layers: features build on common and core, never the other way round, and don't reach into each other; and no
+    // circular imports, which load a module half-initialised. Resolved paths, so relative imports count too.
     files: ['src/**/*.ts'],
     plugins: { 'import-x': importX },
-    settings: { 'import-x/resolver-next': [createTypeScriptImportResolver({ project: 'tsconfig.json' })] },
+    settings: {
+      'import-x/resolver-next': [createTypeScriptImportResolver({ project: 'tsconfig.json' })],
+      // The files no-cycle parses to follow their imports; it skips the others, and the default is only .js
+      'import-x/extensions': ['.ts'],
+    },
     rules: {
+      'import-x/no-cycle': 'error',
       'import-x/no-restricted-paths': [
         'error',
         {

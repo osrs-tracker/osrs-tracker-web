@@ -56,6 +56,9 @@ jobs:
       - run: npm run prettier:ci
       # Unused files, exports and dependencies; what it can't see is in knip.jsonc
       - run: npx knip
+      # Copy-pasted code in src/ (.jscpd.json): fails when more than 1% of the lines are duplicated, the specs and test
+      # data left out
+      - run: npx jscpd
       # The workflows' scripts and Claude Code's hooks and skill scripts. ShellCheck comes with GitHub's Ubuntu runners.
       - run: shellcheck .github/scripts/*.sh .claude/hooks/*.sh .claude/skills/*/*.sh
 
