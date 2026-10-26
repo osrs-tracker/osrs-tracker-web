@@ -1,6 +1,6 @@
 import { Grid, GridCell, GridCellWidget, GridRow } from '@angular/aria/grid';
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, effect, inject, input, viewChild } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import {
   calculateXPForSkillLevel,
   calculateXPToNextLevel,
@@ -13,11 +13,9 @@ import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Tooltip } from '@app/common/ui/tooltip/tooltip';
 import { Icon } from '@app/common/icon/icon';
 import { SKILL_LAYOUT } from '@app/common/format/skill-layout';
-import { setGridTabStop } from '@app/common/ui/controls/aria-tab-stop';
-import { ThemeStore } from '@app/common/theme/theme-store';
 import { ChartSkill, SKILL_COLORS } from '../colors/skill-colors';
-import { PlayerView } from '../player-view';
-import { pickableCellRing, pickedCellBackground, pickedCellRing, rowsOfThree } from './picked-cell';
+import { HiscoresGrid } from './hiscores-grid';
+import { rowsOfThree } from './picked-cell';
 import { RankLines } from './rank-lines';
 
 interface SkillCell {
@@ -143,10 +141,7 @@ const OVERALL_COLOR = 'var(--accent)';
   `,
   imports: [DecimalPipe, Grid, GridCell, GridCellWidget, GridRow, Icon, RankLines, Skeleton, Tooltip],
 })
-export class SkillGrid {
-  readonly playerView = inject(PlayerView);
-  private readonly darkMode = inject(ThemeStore).darkMode;
-
+export class SkillGrid extends HiscoresGrid {
   readonly SkillEnum: typeof SkillEnum = SkillEnum;
   readonly OVERALL_COLOR: string = OVERALL_COLOR;
   readonly xpForLevel: typeof calculateXPForSkillLevel = calculateXPForSkillLevel;
@@ -185,16 +180,6 @@ export class SkillGrid {
     return hiscore && overallOf(hiscore);
   });
   readonly overallOn = computed(() => this.playerView.skills().has(SkillEnum.Overall));
-
-  private readonly grid = viewChild(Grid);
-
-  protected readonly tint = pickedCellBackground;
-  protected readonly ring = pickedCellRing;
-  protected readonly pickableRing = pickableCellRing;
-
-  constructor() {
-    effect(() => setGridTabStop(this.grid()));
-  }
 
   label(cell: SkillCell): string {
     if (!cell.loaded) return cell.name;

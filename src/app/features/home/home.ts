@@ -10,8 +10,10 @@ import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { ItemRow } from '@app/features/trackers/price-tracker/item-row';
 import { ItemSearch } from '@app/features/trackers/price-tracker/item-search';
+import { PriceTrackerLinks } from '@app/features/trackers/price-tracker/price-tracker-links';
 import { PlayerRow } from '@app/features/trackers/xp-tracker/player-row';
 import { PlayerSearch } from '@app/features/trackers/xp-tracker/player-search';
+import { recentPlayerLookups } from '@app/features/trackers/xp-tracker/recent-player-lookups';
 import { TrackingOffset } from '@app/features/trackers/xp-tracker/tracking-offset';
 import { XpTrackerStore } from '@app/features/trackers/xp-tracker/xp-tracker-store';
 import { OsrsNewsCardSkeleton } from './osrs-news-card/osrs-news-card-skeleton';
@@ -38,6 +40,7 @@ type SearchMode = 'player' | 'item';
     PlayerRow,
     TrackingOffset,
     ItemSearch,
+    PriceTrackerLinks,
     ItemRow,
     LucideArrowRight,
   ],
@@ -63,11 +66,7 @@ export default class Home {
     defaultValue: [],
   });
 
-  readonly recentPlayerLookups = rxResource({
-    params: () => ({ offset: this.scrapingOffset() }),
-    stream: ({ params: { offset } }) => this.osrsTrackerRepo.getRecentPlayerLookups(offset),
-    defaultValue: [],
-  });
+  readonly recentPlayerLookups = recentPlayerLookups();
   readonly recentPlayerLookupsState = computed(() => listCardState(this.recentPlayerLookups));
 
   readonly recentItemLookups = rxResource({

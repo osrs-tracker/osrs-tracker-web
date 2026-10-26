@@ -24,8 +24,8 @@ with the full log's path) and a summary line per check, and exits 1 when any fai
 3. `npx knip`: unused files, exports and dependencies. An export only its own file uses loses its `export`; a false
    positive goes in `knip.jsonc` with a comment saying why
 4. `npx jscpd`: copy-pasted code in `src/` (TypeScript, templates and CSS; `.jscpd.json` leaves out specs, `testing/`
-   and generated files), failing over 1% duplicated lines. Move the copy into one place (`common/` when two features
-   need it); never raise the threshold to pass
+   and generated files; import statements don't count, as repeating them copies no code), failing over 1% duplicated
+   lines. Move the copy into one place (`common/` when two features need it); never raise the threshold to pass
 5. `shellcheck` on `.github/scripts/*.sh`, `.claude/hooks/*.sh` and `.claude/skills/*/*.sh`, as CI's lint job does
 6. `lychee --offline --hidden --include-fragments --exclude-path node_modules './**/*.md'`, CI's links job: local links
    and `#anchors` in the Markdown. CI has no `node_modules` to skip; a checkout here does, and its packages' READMEs

@@ -1,18 +1,17 @@
 import { Grid, GridCell, GridCellWidget, GridRow } from '@angular/aria/grid';
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, effect, inject, input, viewChild } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { ActivityEnum, HiscoreActivity, HiscoreEntry } from '@osrs-tracker/models';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Tooltip } from '@app/common/ui/tooltip/tooltip';
 import { Icon } from '@app/common/icon/icon';
-import { setGridTabStop } from '@app/common/ui/controls/aria-tab-stop';
 import { formatNumberShort, formatWhole } from '@app/common/format/number-format';
-import { ThemeStore } from '@app/common/theme/theme-store';
 import { UNCHARTED_MINIGAMES } from '../activity-categories';
 import { CHART_CATEGORIES } from '../charts/chart-categories';
 import { chartColors } from '../colors/chart-colors';
-import { ActivityView, PlayerView } from '../player-view';
-import { pickableCellRing, pickedCellBackground, pickedCellRing, rowsOfThree } from './picked-cell';
+import { ActivityView } from '../player-view';
+import { HiscoresGrid } from './hiscores-grid';
+import { rowsOfThree } from './picked-cell';
 import { RankLines } from './rank-lines';
 
 const GRID_LABELS: Record<ActivityView, string> = {
@@ -128,10 +127,7 @@ interface ActivityCell {
   `,
   imports: [DecimalPipe, Grid, GridCell, GridCellWidget, GridRow, Icon, RankLines, Skeleton, Tooltip],
 })
-export class ActivityGrid {
-  readonly playerView = inject(PlayerView);
-  private readonly darkMode = inject(ThemeStore).darkMode;
-
+export class ActivityGrid extends HiscoresGrid {
   readonly view = input.required<ActivityView>();
   /** Activity names in grid order; `null` is an empty cell */
   readonly layout = input.required<(string | null)[]>();
@@ -180,16 +176,6 @@ export class ActivityGrid {
   });
 
   readonly rows = computed(() => rowsOfThree(this.cells()));
-
-  private readonly grid = viewChild(Grid);
-
-  protected readonly tint = pickedCellBackground;
-  protected readonly ring = pickedCellRing;
-  protected readonly pickableRing = pickableCellRing;
-
-  constructor() {
-    effect(() => setGridTabStop(this.grid()));
-  }
 
   /** Corner cells follow the grid's rounded corners, so their selection ring isn't clipped */
   corner(row: number, col: number, lastRow: boolean): string {

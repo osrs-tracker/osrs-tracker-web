@@ -46,6 +46,7 @@ import {
   viewRows,
 } from './price-table';
 import { DetailsToggle } from './details-toggle';
+import { ITEM_SKELETON_WIDTHS, ItemCellSkeleton } from './item-cell-skeleton';
 import { StaleNote, StalePrice } from './stale-price';
 
 /** All the server renders and transfers */
@@ -81,6 +82,7 @@ interface Column {
     LucideArrowRight,
     LucideSearch,
     DetailsToggle,
+    ItemCellSkeleton,
     Icon,
     InfoTooltip,
     LoadError,
@@ -255,8 +257,7 @@ export default class PriceTablePage {
     { value: 'instant-sell', label: 'Instant sell' },
   ];
 
-  /** Name bar widths, varied per row so the skeleton rows don't look like a barcode */
-  readonly skeletons = ['w-40', 'w-30', 'w-46', 'w-34', 'w-26', 'w-38', 'w-32', 'w-44', 'w-28', 'w-36'];
+  readonly skeletons = ITEM_SKELETON_WIDTHS;
 
   protected readonly formatWhole = formatWhole;
   protected readonly formatTableNumber = formatTableNumber;

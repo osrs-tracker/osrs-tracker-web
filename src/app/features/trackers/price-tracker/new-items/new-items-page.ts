@@ -22,6 +22,7 @@ import { Tooltip } from '@app/common/ui/tooltip/tooltip';
 import { LucideArrowLeft } from '@lucide/angular';
 import { formatTableNumber, staleAge } from '../tables/price-table';
 import { DetailsToggle } from '../tables/details-toggle';
+import { ITEM_SKELETON_WIDTHS, ItemCellSkeleton } from '../tables/item-cell-skeleton';
 import { StaleNote, StalePrice } from '../tables/stale-price';
 import { yesterdayStart } from '../utc-day';
 
@@ -62,6 +63,7 @@ const PRICES_KEY = makeStateKey<NewItemPrices>('new-items-prices');
     RouterLink,
     LucideArrowLeft,
     DetailsToggle,
+    ItemCellSkeleton,
     Icon,
     LoadError,
     Skeleton,
@@ -141,8 +143,7 @@ export default class NewItemsPage {
 
   readonly datedSince = formatDate(DATED_SINCE, 'd MMMM y', 'en-US', 'UTC');
 
-  /** Name bar widths, varied per row so the skeleton rows don't look like a barcode */
-  readonly skeletons = ['w-40', 'w-30', 'w-46', 'w-34', 'w-26', 'w-38', 'w-32', 'w-44', 'w-28', 'w-36'];
+  readonly skeletons = ITEM_SKELETON_WIDTHS;
 
   protected readonly formatTableNumber = formatTableNumber;
 

@@ -319,12 +319,7 @@
         <tbody aria-hidden="true">
           @for (width of skeletons; track $index) {
             <tr class="border-b border-row">
-              <td class="py-3 pl-5 max-sm:pl-4 pr-3">
-                <span class="flex items-center gap-3">
-                  <skeleton class="size-8 rounded-xl" />
-                  <skeleton class="h-4" [class]="width" />
-                </span>
-              </td>
+              <td item-cell-skeleton [width]="width"></td>
               @for (column of columns(); track column.key) {
                 <td class="py-3 px-3 max-sm:pl-2 max-sm:pr-1" [class]="columnClass(column.key, $last)">
                   <span class="flex justify-end"><skeleton class="h-4 w-14" /></span>

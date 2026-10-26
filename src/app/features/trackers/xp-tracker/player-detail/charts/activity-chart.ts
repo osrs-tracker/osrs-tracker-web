@@ -2,15 +2,13 @@ import { formatNumber } from '@angular/common';
 import { DOCUMENT, Component, computed, inject, input } from '@angular/core';
 import { Chart, ChartOptions, Point } from 'chart.js';
 import { merge } from 'chart.js/helpers';
-import { BaseChart } from '@app/common/charts/base-chart';
 import { ChartTable } from '@app/common/charts/chart-table';
-import { ChartDisplay } from '@app/common/charts/chart-display-switch';
 import { LOCAL_ICONS } from '@app/common/icon/local-icons-token';
 import { chartColors } from '../colors/chart-colors';
-import { Gains } from '../player-summary';
 import { ActivityView, PlayerView } from '../player-view';
 import { CHART_CATEGORIES } from './chart-categories';
 import { ChartLegend, LegendItem } from './chart-legend';
+import { LogChart } from './log-chart';
 import { logChartOptions } from './log-chart-options';
 import { activitySeries, logTableRows } from './log-chart-series';
 import { TooltipMarkers } from './tooltip-markers';
@@ -54,7 +52,7 @@ const CHIPS_SHOWN = 8;
   host: { class: 'flex flex-col grow min-h-0' },
   imports: [ChartLegend, ChartTable],
 })
-export class ActivityChart extends BaseChart<'bar', Gains[]> {
+export class ActivityChart extends LogChart<'bar'> {
   protected readonly type = 'bar';
 
   private readonly playerView = inject(PlayerView);
@@ -78,10 +76,6 @@ export class ActivityChart extends BaseChart<'bar', Gains[]> {
     })),
   );
 
-  readonly tableCaption = input.required<string>();
-  readonly display = input<ChartDisplay>('chart');
-  /** The table in the plot's place; with nothing gained, the plot's message stays */
-  readonly tableShown = computed(() => this.display() === 'table' && !!this.series().length);
   readonly tableColumns = computed(() => ['Day', ...this.series().map(({ name }) => name)]);
   readonly tableRows = computed(() => logTableRows(this.series()));
 
