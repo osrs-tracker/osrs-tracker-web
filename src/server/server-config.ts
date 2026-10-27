@@ -38,6 +38,10 @@ export const serverConfig = {
       interval: 3600000, // 60 minutes
     },
     {
+      path: '/about/how-it-works',
+      interval: 86400000, // 24 hours
+    },
+    {
       path: '/about/privacy',
       interval: 86400000, // 24 hours
     },

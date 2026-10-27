@@ -26,6 +26,18 @@ export default [
     },
   },
   {
+    path: 'how-it-works',
+    title: 'How it works - OSRS Tracker',
+    data: {
+      meta: {
+        description:
+          'How OSRS Tracker tracks XP and prices: a daily hiscores check at your tracking offset, why gains only show after you log out, and where the Grand Exchange prices come from.',
+        canonicalPath: '/about/how-it-works',
+      } satisfies PageMeta,
+    },
+    loadComponent: () => import('./how-it-works/how-it-works'),
+  },
+  {
     path: 'privacy',
     title: 'Privacy - OSRS Tracker',
     data: {

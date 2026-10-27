@@ -1,0 +1,81 @@
+<div class="max-w-3xl mx-auto px-4 sm:px-6 pt-12 pb-18 flex flex-col gap-6">
+  <div class="flex flex-col gap-4">
+    <h1 class="text-2xl/8 sm:text-3xl/9 font-bold text-strong">How it works</h1>
+    <p class="text-lg/7 text-muted">Where the numbers come from, and why they sometimes lag behind the game.</p>
+  </div>
+
+  <!-- The question most visitors come with: when XP reaches the hiscores, and which day it counts for -->
+  <article card subtitle="At the default tracking offset, 00:00 UTC" aria-labelledby="day-heading">
+    <h2 title id="day-heading">A tracked day</h2>
+    <ol class="grid sm:grid-cols-4 gap-4 py-1">
+      @for (step of steps; track step.title) {
+        <li class="group relative flex sm:flex-col gap-4 sm:gap-3 max-sm:pb-5 max-sm:last:pb-0 min-w-0">
+          <span class="flex items-center gap-2 shrink-0">
+            <span
+              class="flex items-center justify-center size-10 shrink-0 rounded-xl bg-deep border border-line"
+              [class]="step.check ? 'text-accent' : 'text-text'"
+            >
+              <svg class="size-5" [lucideIcon]="step.icon" aria-hidden="true" />
+            </span>
+            <!-- Joins this step's icon to the next one's: across from 640px, down on phones -->
+            <span
+              class="group-last:hidden max-sm:absolute max-sm:left-4.75 max-sm:top-12 max-sm:bottom-2 w-0.5 sm:w-auto sm:flex-1 sm:h-0.5 rounded-full bg-line"
+              aria-hidden="true"
+            ></span>
+          </span>
+          <span class="flex flex-col gap-1 min-w-0">
+            <span class="text-sm/5 text-muted">{{ step.when }}</span>
+            <strong class="text-base text-strong">{{ step.title }}</strong>
+            <span class="text-sm/5">{{ step.text }}</span>
+          </span>
+        </li>
+      }
+    </ol>
+  </article>
+
+  <article card aria-labelledby="xp-heading">
+    <h2 title id="xp-heading" class="flex items-center gap-2.5">
+      <img class="size-5.5" icon alt="" name="overall" [skill]="true" />
+      XP Tracker
+    </h2>
+    <ng-container *ngTemplateOutlet="questionList; context: { $implicit: xpQuestions, openFirst: true }" />
+  </article>
+
+  <article card aria-labelledby="price-heading">
+    <h2 title id="price-heading" class="flex items-center gap-2.5">
+      <img icon alt="" name="coin stack" [scale]="2" />
+      Price Tracker
+    </h2>
+    <ng-container *ngTemplateOutlet="questionList; context: { $implicit: priceQuestions, openFirst: false }" />
+  </article>
+
+  <p class="text-sm/5 text-muted">
+    There are no accounts: favourites and recent lookups stay in this browser.
+    <a class="link" routerLink="/about/privacy">Privacy</a> has the details.
+  </p>
+</div>
+
+<!-- Native disclosures: Tab, Enter and find-in-page work without script -->
+<ng-template #questionList let-questions let-openFirst="openFirst">
+  <!-- clips the last row's hover to the card's rounded corners -->
+  <div class="-mx-5 -my-4 divide-y divide-row rounded-b-2xl overflow-hidden">
+    @for (q of questions; track q.question; let first = $first) {
+      <details class="group/q" [open]="first && openFirst">
+        <summary
+          class="flex items-center justify-between gap-4 min-h-14 px-5 py-3 font-bold text-strong cursor-pointer list-none hover:bg-row focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent"
+        >
+          {{ q.question }}
+          <svg
+            lucideChevronDown
+            class="size-5 shrink-0 text-muted transition-transform group-open/q:rotate-180 motion-reduce:transition-none"
+            strokeWidth="2.5"
+            aria-hidden="true"
+          />
+        </summary>
+        <!-- On their own lines, the link would get a space before the comma that follows it -->
+        <!-- prettier-ignore -->
+        <p class="max-w-160 px-5 pb-5 text-base/7">{{ q.text }}@if (q.link; as link) {<a class="link" [href]="link.href" target="_blank" rel="noopener">{{ link.text }}<span class="sr-only"> (opens in a new tab)</span></a>}{{ q.after }}</p>
+      </details>
+    }
+  </div>
+</ng-template>
