@@ -102,8 +102,8 @@ value the scale lacks becomes a token in `src/styles/tailwind/theme.css`.
   above the footer (`pb-18`); reading pages narrow to `max-w-3xl`.
 - **Phones** (below `sm`): keep pages symmetric inside the 16px margins and check balance against the cards around a
   change. Pictures are never cropped (Home's news is a 2×2 grid of picture-on-top cards; tablets show four of them in a
-  row, the `compact:` variant). List rows are one line: no second line, 32px tiles, 16px names, the item price beside
-  the change pill.
+  row, the `compact:` variant). List rows are one line: no second line, 40px tiles as on desktop, 16px names, the item
+  price beside the change pill.
 - **Icons:** every line icon is Lucide's, through `@lucide/angular` (`docs/decisions.md`): import the icon's component
   (`LucideSearch`) and write `<svg lucideSearch class="size-4.5" strokeWidth="2.5" />`; pick from
   https://lucide.dev/icons, never hand-draw one or take it from another set. Weight with `strokeWidth` (a `stroke-width`

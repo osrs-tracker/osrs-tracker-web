@@ -28,7 +28,7 @@ interface PlayerRowData {
     @if (playerDetails(); as playerDetails) {
       <account-tile [account]="playerDetails" />
     } @else {
-      <skeleton class="size-10 max-sm:size-8 rounded-xl" />
+      <skeleton class="size-10 rounded-xl" />
     }
 
     <span class="flex flex-1 flex-col gap-1 min-w-0">

@@ -20,10 +20,10 @@ interface ItemRowPrice {
   selector: 'a[item-row]',
   template: `
     <span
-      class="flex items-center justify-center size-10 max-sm:size-8 shrink-0 rounded-xl bg-deep border border-line"
+      class="flex items-center justify-center size-10 shrink-0 rounded-xl bg-deep border border-line"
       aria-hidden="true"
     >
-      <img class="max-w-7.5 max-h-7.5 max-sm:max-w-6 max-sm:max-h-6" icon alt="" [name]="item().icon" [wiki]="true" />
+      <img class="max-w-7.5 max-h-7.5" icon alt="" [name]="item().icon" [wiki]="true" />
     </span>
 
     <!-- On phones the price sits beside the change instead, so a row is one line -->
