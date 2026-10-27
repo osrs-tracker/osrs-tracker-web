@@ -40,7 +40,7 @@ A failed run alerts the Discord alerts channel. Find the failed step (`gh run vi
 | Smoke test the site                                             | The new pods serve, but `/`, its `main-*.js`, `/about/terms` or the 404 page answered wrong.                                            | Roll back first, then look: no `x-cache` means the auto-generator couldn't render `/`; a 404 on the bundle means the image's assets don't match.             |
 
 If Flux says "forbidden", the manifest uses a kind Flux isn't allowed to manage yet: that's fixed in
-FreekMencke/home-cluster's `cluster/osrs-tracker/flux.yaml`, not here.
+FreekMencke/fremen-cluster's `cluster/osrs-tracker/flux.yaml`, not here.
 
 ## Site down or erroring
 
@@ -59,19 +59,20 @@ FreekMencke/home-cluster's `cluster/osrs-tracker/flux.yaml`, not here.
 
 ## Look around
 
-The `kubectl` commands use the `kubernetes-admin@kubernetes` context. Claude Code sessions read the cluster through the
+The `kubectl` commands are the user's, with the admin kubeconfig (`--kubeconfig ~/.kube/admin.yaml`); the default
+`~/.kube/config` holds only the read-only `claude-agent` context. Claude Code sessions read the cluster through the
 read-only `kubernetes` and `flux` MCP servers instead (the current pods and their logs), and older logs and the metrics
 through the claude.ai Grafana Cloud connector: its tools are named by an ID (`mcp__<id>__query_loki_logs`), so find them
 with a tool search for `loki`. Desktop WSL sessions often don't get connector tools (claude-kb MCP-010), and the
 `claude-agent` ServiceAccount can't reach Loki through the cluster's API proxy (checked 2026-10-15): when the search
 finds nothing, read the pods' logs with the `kubernetes` or `flux` MCP server, which reach back only to each pod's
 start, and ask the user for older lines. Use the connector to read only: it can also change dashboards and alert rules,
-which FreekMencke/home-cluster keeps. Writes such as a rollout restart are for the user to run.
+which FreekMencke/fremen-cluster keeps. Writes such as a rollout restart are for the user to run.
 
 - Pods and events: `kubectl -n osrs-tracker get pods` and `kubectl -n osrs-tracker describe deploy osrs-tracker-web`.
 - Logs: `kubectl -n osrs-tracker logs deploy/osrs-tracker-web --since=15m`, or Grafana Cloud (Explore, Loki) for older
-  logs, from 2026-10-13 on (how to reach it: FreekMencke/home-cluster's README, "Grafana Cloud"). The server's own lines
-  are JSON with a `type`, written by `@osrs-tracker/logger` (`src/server/utils/log.ts` adds `prerender`, `sitemap` and
+  logs, from 2026-10-13 on (how to reach it: FreekMencke/fremen-cluster's README, "Usage"). The server's own lines are
+  JSON with a `type`, written by `@osrs-tracker/logger` (`src/server/utils/log.ts` adds `prerender`, `sitemap` and
   `og-image`): `incoming` (requests it answered), `outgoing` (requests a render made), `lifecycle` (startup, shutdown),
   `prerender` (auto page generation), `sitemap` (the item and player sitemaps), `og-image` (the link preview images:
   item, player and players online) and `uncaught` (errors that reached Express' error handler, stack in `error`);
@@ -83,9 +84,9 @@ which FreekMencke/home-cluster keeps. Writes such as a rollout restart are for t
 - Slow pages: `outgoing` lines have the `url`, `responseTime` and the `page` the render was for; a call cut short
   because the client closed the connection or an OSRS Wiki call cut off by `ssrRequestTimeout` (3 s) is `aborted: true`
   (`… | json | type="outgoing" |~ "\"responseTime\":\"[0-9]{4,}"` for calls of a second or more).
-- Metrics: "Express Dashboard" in Grafana Cloud (request rate and status codes, average response time per route label,
-  and each pod's memory, event-loop lag, CPU and GC time), exported to FreekMencke/home-cluster's
-  `cluster/monitoring/grafana-cloud/dashboards/express-dashboard.json`. The series come from
+- Metrics: "NodeJS Dashboard" in Grafana Cloud (request rate and status codes, average response time per route label,
+  and each pod's memory, event-loop lag, CPU and GC time), exported to FreekMencke/fremen-cluster's
+  `cluster/monitoring/grafana-cloud/dashboards/nodejs-dashboard.json`. The series come from
   `@osrs-tracker/express-metrics` (osrs-tracker-packages, shared with the API) on the metrics port (9090, `/metrics`):
   `http_request_duration_seconds` and `up`, plus Node's `nodejs_*` and `process_*`; query them in Grafana Cloud. Alloy
   drops histogram buckets on the way, so there are averages (`_sum` / `_count`) but no percentiles.

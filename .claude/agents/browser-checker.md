@@ -83,7 +83,7 @@ Issues (WCAG 2.x; `min` in the row):
   const ROOTS = ['main']; // CSS selectors of the changed parts
   // The colours of src/styles/tailwind/base.css: a token missing here shows as NO TOKEN
   const TOKENS = ['ground', 'card', 'line', 'row', 'inner', 'deep', 'border', 'muted', 'text', 'strong', 'accent',
-    'accent-hover', 'on-accent', 'up', 'down', 'down-pill', 'amber', 'sold'];
+    'accent-hover', 'on-accent', 'up', 'down', 'down-pill', 'amber', 'sold', 'scrim', 'dot'];
   // A 1px canvas turns any CSS colour (oklch, color-mix) into sRGB bytes and stacks translucent layers. Given a value it
   // can't parse ('', `none`, `url(#…)`), it keeps painting the last colour, so values that may not be one go via isColor.
   const ctx = Object.assign(document.createElement('canvas'), { width: 1, height: 1 }).getContext('2d', { willReadFrequently: true });

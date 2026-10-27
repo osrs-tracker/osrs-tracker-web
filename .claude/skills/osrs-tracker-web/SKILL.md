@@ -186,7 +186,8 @@ hover shows library signatures and docs instead.
   (`python3 -m fontTools.ttLib.woff2 compress cut.ttf -o public/assets/fonts/SOLIX-Variable.woff2`) and bump `?v=` in
   `base.css` and `index.html`. The link preview cards use the release's `ttf/SOLIX-Regular.ttf` and
   `ttf/SOLIX-SemiBold.ttf` as they are: copy them into `src/server/og/fonts/` and bump the cards' `?v=`
-  (`docs/decisions.md`) when the release changes outlines, widths or kerning (4.0.0 changed none, so it kept them).
+  (`item-detail-meta.ts` with its spec, `player-detail-meta.ts`, players online in `app.routes.ts`; `docs/decisions.md`)
+  when the release changes outlines, widths or kerning (4.0.0 changed none, so it kept them).
 - **Missing assets**: `middleware/missing-asset.ts` 404s them, so Angular routes can't end in a build asset extension;
   `/og/item/:id.png` (`routers/og-images.ts`) registers before it in `app.ts`.
 - **Static files and compression**: `middleware/static-files.ts` sets the cache lifetimes (hashed bundles a year,
