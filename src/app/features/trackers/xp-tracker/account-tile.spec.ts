@@ -38,9 +38,15 @@ describe('AccountTile', () => {
     expect(tile.querySelector('img')).toBeNull();
   });
 
-  it('draws the rank only when given one', async () => {
-    expect((await render(PlayerType.Normal, PlayerStatus.Default)).textContent?.trim()).toBe('');
-    TestBed.resetTestingModule();
-    expect((await render(PlayerType.Normal, PlayerStatus.Default, false, 10)).textContent?.trim()).toBe('10');
+  it('draws no rank by default', async () => {
+    const tile = await render(PlayerType.Normal, PlayerStatus.Default);
+
+    expect(tile.textContent?.trim()).toBe('');
+  });
+
+  it('draws the rank when given one', async () => {
+    const tile = await render(PlayerType.Normal, PlayerStatus.Default, false, 10);
+
+    expect(tile.textContent?.trim()).toBe('10');
   });
 });
