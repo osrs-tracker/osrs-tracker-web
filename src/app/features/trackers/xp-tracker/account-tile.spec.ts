@@ -4,7 +4,7 @@ import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { describe, expect, it } from 'vitest';
 import { AccountTile } from './account-tile';
 
-async function render(type: PlayerType, status: PlayerStatus, large = false): Promise<HTMLElement> {
+async function render(type: PlayerType, status: PlayerStatus, large = false, rank?: number): Promise<HTMLElement> {
   TestBed.configureTestingModule({ providers: [provideZonelessChangeDetection()] });
   const fixture = TestBed.createComponent(AccountTile);
   fixture.componentRef.setInput('account', {
@@ -17,6 +17,7 @@ async function render(type: PlayerType, status: PlayerStatus, large = false): Pr
     scrapingOffsets: [0],
   } satisfies Player);
   fixture.componentRef.setInput('large', large);
+  fixture.componentRef.setInput('rank', rank);
   await fixture.whenStable();
   return fixture.nativeElement;
 }
@@ -35,5 +36,11 @@ describe('AccountTile', () => {
 
     expect(tile.querySelector('svg[lucideUser] path')).not.toBeNull();
     expect(tile.querySelector('img')).toBeNull();
+  });
+
+  it('draws the rank only when given one', async () => {
+    expect((await render(PlayerType.Normal, PlayerStatus.Default)).textContent?.trim()).toBe('');
+    TestBed.resetTestingModule();
+    expect((await render(PlayerType.Normal, PlayerStatus.Default, false, 10)).textContent?.trim()).toBe('10');
   });
 });

@@ -36,7 +36,7 @@
       </info-tooltip>
       <!-- Projected content is created in every state, and value() throws in the error state -->
       @if (topGainers.hasValue()) {
-        <!-- role="list": Safari drops a list's role when its markers are hidden, and the rank badge is aria-hidden -->
+        <!-- role="list": Safari drops a list's role when its markers are hidden, and the rank badge is inside the account tile's image -->
         <ol class="flex flex-col" role="list">
           @for (gainer of topGainers.value(); track gainer.username; let rank = $index) {
             <li class="flex flex-col">

@@ -1,5 +1,10 @@
 ## 2026-10-27
 
+- Yesterday's top gainers now show each player's account the way your favourites and recent lookups do: the ironman,
+  hardcore or ultimate helmet (or a person for a regular account), with the de-ironed and died badges, and their place
+  in the list as a small number in the top left corner. So you can tell at a glance which of them play an ironman.
+- On phones, player and item avatars in lists are now the same size as on a computer, so the account helmets, item icons
+  and their small badges are easier to make out.
 - On a player's page, a day with nothing gained yet now shows as a slim outlined "Nothing gained yet today" card, like
   the quiet days below it, instead of a full-size card that was mostly empty space.
 

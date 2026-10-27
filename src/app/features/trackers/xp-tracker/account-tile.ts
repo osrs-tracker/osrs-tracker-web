@@ -28,7 +28,7 @@ const TYPE_LABELS: Record<PlayerType, string> = {
       role="img"
       [class]="
         'relative flex items-center justify-center border border-line bg-deep ' +
-        (large() ? 'size-16 rounded-2xl' : 'size-10 max-sm:size-8 rounded-xl')
+        (large() ? 'size-16 rounded-2xl' : 'size-10 rounded-xl')
       "
       [attr.tabindex]="large() ? 0 : null"
       [attr.aria-label]="modeText()"
@@ -38,15 +38,9 @@ const TYPE_LABELS: Record<PlayerType, string> = {
       [tooltipDescribe]="false"
     >
       @if (player.type === PlayerType.Normal) {
-        <svg lucideUser [class]="large() ? 'size-9 stroke-text' : 'size-5.5 max-sm:size-4.5 stroke-text'" />
+        <svg lucideUser [class]="large() ? 'size-9 stroke-text' : 'size-5.5 stroke-text'" />
       } @else {
-        <img
-          [class]="large() ? 'size-10' : 'size-6 max-sm:size-5'"
-          icon
-          alt=""
-          [eager]="large()"
-          [name]="player.type"
-        />
+        <img [class]="large() ? 'size-10' : 'size-6'" icon alt="" [eager]="large()" [name]="player.type" />
       }
 
       @if (player.status === PlayerStatus.DeIroned) {
@@ -61,6 +55,12 @@ const TYPE_LABELS: Record<PlayerType, string> = {
           [eager]="large()"
           [name]="PlayerType.Ironman"
         />
+      }
+      @if (rank(); as rank) {
+        <span
+          class="absolute -left-1.5 -top-1.5 flex items-center justify-center min-w-5 h-5 px-1 rounded-full border border-line bg-deep text-xs/none font-bold text-strong tabular-nums"
+          >{{ rank }}</span
+        >
       }
       @if (player.diedAsHardcore) {
         <img
@@ -97,8 +97,10 @@ export class AccountTile {
   readonly PlayerStatus: typeof PlayerStatus = PlayerStatus;
   readonly PlayerType: typeof PlayerType = PlayerType;
 
-  readonly account = input.required<Player>();
+  readonly account = input.required<Pick<Player, 'type' | 'status' | 'diedAsHardcore'>>();
   readonly large = input(false, { transform: booleanAttribute });
+  /** A list position, drawn in the top left corner; rows only, as the corner badge is sized for the small tile */
+  readonly rank = input<number>();
 
   readonly mode = computed<AccountMode>(() => {
     const { type, status, diedAsHardcore } = this.account();

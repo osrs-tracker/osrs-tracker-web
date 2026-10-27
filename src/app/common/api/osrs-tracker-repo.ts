@@ -21,8 +21,7 @@ export function newsImageUrl(url: string): string {
 }
 
 /** A player in the top gainers: `gain` is the Overall XP between their two newest offset-0 entries, `date` the newer one's */
-export interface TopGainer {
-  username: string;
+export interface TopGainer extends Pick<Player, 'username' | 'type' | 'status' | 'diedAsHardcore'> {
   gain: number;
   date: Date;
 }

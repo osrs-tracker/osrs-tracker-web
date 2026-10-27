@@ -7,7 +7,7 @@ const NAME_WIDTHS = ['w-32', 'w-24', 'w-36', 'w-28', 'w-20'];
 @Component({
   selector: 'list-row-skeleton',
   template: `
-    <skeleton class="size-10 max-sm:size-8 rounded-xl" />
+    <skeleton class="size-10 rounded-xl" />
     <div class="flex flex-1 flex-col gap-2 min-w-0 py-0.5">
       <skeleton class="h-4" [class]="nameWidth()" />
       <skeleton class="max-sm:hidden h-3" [class]="kind() === 'player' ? 'w-24' : 'w-16'" />
