@@ -1,3 +1,8 @@
+## 2026-10-27
+
+- On a player's page, a day with nothing gained yet now shows as a slim outlined "Nothing gained yet today" card, like
+  the quiet days below it, instead of a full-size card that was mostly empty space.
+
 ## 2026-10-26
 
 - Behind the scenes, every change to the site is now also checked for copied code and for files that import each other
