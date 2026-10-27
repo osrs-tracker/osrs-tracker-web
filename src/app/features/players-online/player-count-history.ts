@@ -118,6 +118,11 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
           }
         </div>
       </div>
+
+      <p class="-mx-5 mt-4 px-5 pt-4 border-t border-line text-sm text-muted text-pretty">
+        Players on a world, counted from World Select every 10&nbsp;minutes. The lobby isn't a world, so the official
+        total is a little higher.
+      </p>
     </article>
   `,
   host: { class: 'block' },
