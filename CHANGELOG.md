@@ -12,6 +12,8 @@
   and their small badges are easier to make out.
 - On a player's page, a day with nothing gained yet now shows as a slim outlined "Nothing gained yet today" card, like
   the quiet days below it, instead of a full-size card that was mostly empty space.
+- On Players online, the note on how players are counted now sits at the foot of the History card in two short
+  sentences, instead of a loose paragraph under it, so it reads as part of the chart it explains.
 
 ## 2026-10-26
 
