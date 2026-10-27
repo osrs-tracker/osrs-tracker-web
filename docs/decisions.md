@@ -464,10 +464,11 @@ Choices that look like accidents without their context: what was decided, why, a
 - **Decision:** keep the live fetch out of SSR. The proxy is shared with the API and the daily scrape, so rendering it
   on the server would call Jagex for every render, crawlers included, and make each render wait on Jagex (it was moved
   to the browser on 2025-04-24 for that). Instead, nothing jumps when it arrives: today's day-log card is a skeleton
-  until then (also in the SSR HTML), the header only says "Last checked …" when the stored stats are what's shown, and
-  `BaseChart` keeps drawn datasets over the same dates so only the newest point moves. The rendered page carries a
-  `<link rel="preload" as="fetch">` for the request (2026-10-13), so the browser starts it while it reads the HTML
-  instead of once the app has loaded; the server still doesn't call it.
+  until then (also in the SSR HTML; a day with nothing gained yet then shrinks to the slim outlined card, accepted on
+  2026-10-27 because no skeleton can match a day's rows ahead), the header only says "Last checked …" when the stored
+  stats are what's shown, and `BaseChart` keeps drawn datasets over the same dates so only the newest point moves. The
+  rendered page carries a `<link rel="preload" as="fetch">` for the request (2026-10-13), so the browser starts it while
+  it reads the HTML instead of once the app has loaded; the server still doesn't call it.
 - **Revisit:** if the proxy gets its own rate limit headroom, or the API starts storing intraday stats.
 
 ## Phone layout for Home and the lists (2026-10-08)
