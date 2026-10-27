@@ -50,7 +50,7 @@ FreekMencke/home-cluster's `cluster/osrs-tracker/flux.yaml`, not here.
   200 in flight). Expected for an aggressive crawler; if real visitors hit it, raise them there and merge to `main`.
 - **Player or item pages 503 while the pods are healthy:** an upstream is down, see "Known upstream failures" below.
 - **A page shows stale data after an API change:** pre-rendered pages are served from the page cache until their next
-  refresh (`/` every 5 min, the changelog hourly, privacy and terms daily). Wait, or have the user run
+  refresh (`/` every 5 min, the changelog hourly, How it works, privacy and terms daily). Wait, or have the user run
   `kubectl -n osrs-tracker rollout restart deploy/osrs-tracker-web`; see "Page cache" in the project skill.
 - **Certificate errors:** cert-manager renews `osrs-tracker-web-tls` (osrs-tracker.freekmencke.com, from the Ingress)
   and `osrs-tracker-net-tls` (osrs-tracker.net and www, from `osrs-tracker-net-ingress`):

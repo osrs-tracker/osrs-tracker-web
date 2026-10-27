@@ -4,7 +4,12 @@
       <h3 class="text-base font-bold">{{ notice.date | shortDate }}</h3>
       <span class="text-sm">{{ notice.label }}</span>
     </div>
-    <p class="px-5 py-3.5 text-base text-muted">{{ notice.text }}</p>
+    <p class="px-5 py-3.5 text-base text-muted">
+      {{ notice.text }}
+      @if (notice.howItWorks) {
+        <a class="link" routerLink="/about/how-it-works">How it works</a>
+      }
+    </p>
   </article>
 } @else if (loading()) {
   @for (card of [0, 1]; track card) {

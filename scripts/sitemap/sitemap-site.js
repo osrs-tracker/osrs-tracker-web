@@ -29,6 +29,7 @@ const lastmod = file => git(['log', '-1', '--follow', '--diff-filter=AMT', '--fo
     { loc: `${SITE_URL}/players-online` },
     { loc: `${SITE_URL}/news` },
     { loc: `${SITE_URL}/about/changelog`, lastmod: lastmod('CHANGELOG.md') },
+    { loc: `${SITE_URL}/about/how-it-works`, lastmod: lastmod('src/app/features/about/how-it-works/how-it-works.ts') },
     { loc: `${SITE_URL}/about/privacy`, lastmod: lastmod('src/app/features/about/privacy/privacy.html') },
     { loc: `${SITE_URL}/about/terms`, lastmod: lastmod('src/app/features/about/terms/terms.html') },
   ];

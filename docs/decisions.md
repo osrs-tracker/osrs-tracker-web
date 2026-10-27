@@ -448,13 +448,13 @@ Choices that look like accidents without their context: what was decided, why, a
 - **Context:** `<lastmod>` came from file timestamps, which a fresh checkout (the `CD` workflow) sets to the checkout
   time, so every deploy moved every date and search engines learn to ignore them.
 - **Decision:** `sitemap-site.js` takes each page's date from the last commit that changed its source file (the template
-  for privacy and terms, `CHANGELOG.md`), following renames, which don't count as a change. Without full history (a
-  shallow clone, or the Docker build, which has no git or `.git`) it keeps `public/sitemap-site.xml` as it is: the image
-  is built from the file the `CD` workflow just generated. The sitemap index dates the site sitemap by the day its
-  content last changed (`sitemap-index.js`): today when the run changed it, else its last commit, in UTC. A day, not a
-  time: `CD` commits a few minutes after generating, so a time would change again on the next deploy. The server-built
-  items and players sitemaps get no date in the index. Item pages have no date of their own (the API's `lastFetch` is
-  the last lookup).
+  for privacy and terms, the component for How it works, `CHANGELOG.md`), following renames, which don't count as a
+  change. Without full history (a shallow clone, or the Docker build, which has no git or `.git`) it keeps
+  `public/sitemap-site.xml` as it is: the image is built from the file the `CD` workflow just generated. The sitemap
+  index dates the site sitemap by the day its content last changed (`sitemap-index.js`): today when the run changed it,
+  else its last commit, in UTC. A day, not a time: `CD` commits a few minutes after generating, so a time would change
+  again on the next deploy. The server-built items and players sitemaps get no date in the index. Item pages have no
+  date of their own (the API's `lastFetch` is the last lookup).
 - **Revisit:** if a page's content stops living in one file (e.g. it moves to the API or a CMS).
 
 ## Live hiscores load in the browser only (2026-10-08)

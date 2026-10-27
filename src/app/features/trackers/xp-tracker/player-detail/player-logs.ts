@@ -1,5 +1,6 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, computed, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { SkillEnum } from '@osrs-tracker/models';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Icon } from '@app/common/icon/icon';
@@ -11,13 +12,15 @@ export interface LogNotice {
   date: Date;
   label: string;
   text: string;
+  /** Ends the text with a link to the How it works page */
+  howItWorks?: boolean;
 }
 
 @Component({
   selector: 'player-logs',
   templateUrl: './player-logs.html',
   host: { class: 'flex flex-col gap-6' },
-  imports: [DatePipe, DecimalPipe, Icon, ShortDatePipe, Skeleton],
+  imports: [DatePipe, DecimalPipe, Icon, RouterLink, ShortDatePipe, Skeleton],
 })
 export class PlayerLogs {
   readonly SkillEnum: typeof SkillEnum = SkillEnum;

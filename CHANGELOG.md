@@ -1,5 +1,10 @@
 ## 2026-10-27
 
+- New page: **How it works**, linked at the bottom of every page. It answers the questions the trackers raise most: why
+  XP you just gained doesn't show up until you log out (the hiscores only update then), when the daily check runs and
+  which day late XP counts for, what the tracking offset does, why a skill can be missing, how long history is kept, and
+  where the Grand Exchange prices come from. A player's day log links to it, and so does the note on a player whose
+  tracking just started.
 - Yesterday's top gainers now show each player's account the way your favourites and recent lookups do: the ironman,
   hardcore or ultimate helmet (or a person for a regular account), with the de-ironed and died badges, and their place
   in the list as a small number in the top left corner. So you can tell at a glance which of them play an ironman.

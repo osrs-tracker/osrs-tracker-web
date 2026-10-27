@@ -127,7 +127,10 @@
               [value]="logView()"
               (valueChange)="setLogView($event)"
             />
-            <span class="text-sm text-muted">From the daily checks at {{ trackedAt() }}</span>
+            <span class="text-sm text-muted">
+              From the daily checks at {{ trackedAt() }} ·
+              <a class="link" routerLink="/about/how-it-works">How it works</a>
+            </span>
           </div>
           @if (compareOpened()) {
             <div [class.hidden]="!comparing()">

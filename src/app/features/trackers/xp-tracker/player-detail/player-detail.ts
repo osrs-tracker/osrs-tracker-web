@@ -176,6 +176,7 @@ export default class PlayerDetail implements OnInit {
           date: new Date(this.playerDetail()?.trackedSince ?? this.history.entries()[0]?.date ?? Date.now()),
           label: 'Tracking started',
           text: 'First entry saved. Each daily check adds a day here.',
+          howItWorks: true,
         };
       case 'untracked':
         return {
