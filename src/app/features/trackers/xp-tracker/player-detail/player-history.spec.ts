@@ -2,7 +2,9 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting, TestRequest } from '@angular/common/http/testing';
 import { Injector, PLATFORM_ID, provideZonelessChangeDetection, runInInjectionContext, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { Subject, throwError } from 'rxjs';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
 import { playerHistory, PlayerHistory } from './player-history';
 import { Period } from './player-view';
 
@@ -215,5 +217,46 @@ describe('playerHistory', () => {
     await settle();
     expect(history.milestonePeriodLoaded()).toBe(true);
     httpTesting.verify();
+  });
+});
+
+describe('playerHistory in the browser', () => {
+  // Try again on a failed check must show it's loading again: the resource keeps the failure while it reloads
+  it('reports today as loading while it reloads after failing', async () => {
+    const retried = new Subject<never>();
+    let calls = 0;
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: PLATFORM_ID, useValue: 'browser' },
+        {
+          provide: OsrsProxyRepo,
+          useValue: { getPlayerHiscore: () => (calls++ ? retried : throwError(() => new Error('down'))) },
+        },
+      ],
+    });
+    const history = runInInjectionContext(TestBed.inject(Injector), () =>
+      playerHistory({
+        username: 'zezima',
+        offset: signal(0),
+        enabled: signal(true),
+        period: signal<Period>(7),
+        milestonePeriod: signal<Period>(7),
+      }),
+    );
+    await settle();
+    expect(history.todayFailed()).toBe(true);
+    expect(history.todayLoading()).toBe(false);
+
+    history.reloadToday();
+    await settle();
+    expect(history.todayLoading()).toBe(true);
+
+    retried.error(new Error('still down'));
+    await settle();
+    expect(history.todayFailed()).toBe(true);
+    expect(history.todayLoading()).toBe(false);
   });
 });

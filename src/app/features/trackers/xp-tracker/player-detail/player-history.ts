@@ -135,7 +135,8 @@ export function playerHistory(params: {
     todayFailed: computed(() => !!todayResource.error()),
     firstPageFailed: computed(() => !!firstPage.error()),
     previousPeriodFailed: computed(() => !!previousPeriodStart.error()),
-    todayLoading: computed(() => !todayResource.hasValue() && !todayResource.error()),
+    // error() keeps the failure while Try again reloads it ('reloading'), so isLoading() tells that apart
+    todayLoading: computed(() => !todayResource.hasValue() && (!todayResource.error() || todayResource.isLoading())),
     loaded,
     entries,
     comparedEntries: computed(() => {
