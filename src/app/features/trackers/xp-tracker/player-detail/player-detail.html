@@ -13,7 +13,7 @@
       [trackedAt]="trackedAt()"
       [lastCheckedAt]="history.lastCheckedAt()"
       [stale]="stale()"
-      [retrying]="history.todayLoading()"
+      [retrying]="retrying()"
       (retry)="reloadToday()"
     />
 

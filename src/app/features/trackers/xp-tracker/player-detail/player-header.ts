@@ -52,7 +52,7 @@ export type TrackingState = 'tracked' | 'started' | 'untracked';
             type="button"
             class="link font-bold aria-disabled:text-muted aria-disabled:cursor-wait"
             [attr.aria-disabled]="retrying() || null"
-            (click)="retrying() || retry.emit()"
+            (click)="retry.emit()"
           >
             {{ retrying() ? 'Checking…' : 'Try again' }}
           </button>
