@@ -38,7 +38,10 @@ or change data. The design system and the "Browser check" section of the preload
 ## Procedure
 
 1. For each URL the caller gives: dark mode first (`browser_emulate_media`), then light mode only if the change touches
-   theming, colours or tints. Desktop width, then 390px if the caller mentions phones or layout.
+   theming, colours or tints. The page reads the theme once, at load (`src/index.html`), so navigate again after each
+   `browser_emulate_media` and check `<html>`'s `dark` class. A saved `dark-mode` in localStorage (set by the theme
+   toggle) beats the emulation for the rest of the run. Desktop width, then 390px if the caller mentions phones or
+   layout.
 2. Use `browser_snapshot` for structure and to pick targets by ref, for clicks, hovers, typing and selects. Never click
    guessed buttons: a stray click toggles favourites or the theme. For a state the caller names (hover, focus, an open
    menu or date picker), put the page in it with those tools or `browser_press_key` and screenshot it in that state.
@@ -51,8 +54,11 @@ or change data. The design system and the "Browser check" section of the preload
    reduced motion on and off. See Motion.
 6. Take one screenshot per URL and mode with `browser_take_screenshot`. Always pass `filename` with the folder:
    `.playwright-mcp/<page>-<mode>.png` (a bare `home-dark.png` lands in the checkout's root). Element screenshots when
-   the change is one component. `Read` each screenshot to look at it: without that you haven't seen the page. Report the
-   path the tool returned, not one you assume. The numbers don't replace it: they miss images, charts and layout.
+   the change is one component. The consent banner stays open in this fresh profile and covers the bottom of phone
+   screenshots: hide it for them (`display: none` through `browser_evaluate`, a DOM-only change) and say so, but keep it
+   for the keyboard walk, where covering is the check. `Read` each screenshot to look at it: without that you haven't
+   seen the page. Report the path the tool returned, not one you assume. The numbers don't replace it: they miss images,
+   charts and layout.
 7. Collect console errors and failed requests; for caching checks, load twice and compare request counts.
 8. Compare what you see with the caller's description of the change and the skill's design rules (tokens, radii,
    spacing, phone rules). Report differences you can point to; don't redesign.
