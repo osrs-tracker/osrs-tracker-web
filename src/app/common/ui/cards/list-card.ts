@@ -13,7 +13,7 @@ export function listCardState(resource: Resource<readonly unknown[] | undefined>
 @Component({
   selector: 'section[list-card]',
   template: `
-    <div class="flex items-center gap-3 px-5 max-sm:px-4 py-4 max-sm:py-3 border-b border-line">
+    <div class="card-header flex-nowrap justify-start py-4">
       <ng-content select="[icon]" />
       <div class="flex-1 min-w-0">
         <!-- The info button sits beside the heading, not in it, so it isn't part of the heading's name -->
@@ -50,7 +50,7 @@ export function listCardState(resource: Resource<readonly unknown[] | undefined>
         </div>
       }
       @case ('empty') {
-        <div class="flex flex-col items-center gap-1 px-5 py-8 text-center">
+        <div class="flex flex-col items-center gap-1 px-card py-8 text-center">
           <p class="font-bold text-strong">{{ emptyText() }}</p>
           <p class="text-sm text-muted">{{ emptyHint() }}</p>
         </div>

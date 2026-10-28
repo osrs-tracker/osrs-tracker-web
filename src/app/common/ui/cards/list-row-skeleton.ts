@@ -20,7 +20,7 @@ const NAME_WIDTHS = ['w-32', 'w-24', 'w-36', 'w-28', 'w-20'];
     }
   `,
   host: {
-    'class': 'flex items-center gap-3.5 max-sm:gap-3 px-5 max-sm:px-4 py-3 max-sm:py-2.5 border-b border-row bg-card',
+    'class': 'flex items-center gap-3 px-card py-3 border-b border-row bg-card',
     'aria-hidden': 'true',
   },
   imports: [Skeleton],

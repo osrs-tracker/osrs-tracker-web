@@ -36,13 +36,13 @@ interface ResultRow {
 @Component({
   selector: 'article[profit-calculator]',
   template: `
-    <div class="flex flex-wrap items-center justify-between gap-2 min-h-14 px-5 py-1.5 border-b border-line">
+    <div class="card-header">
       <h2 class="text-xl/6 font-bold text-strong">Profit calculator</h2>
       <segmented label="Calculation" [options]="modeOptions()" [value]="mode()" (valueChange)="selectMode($event)" />
     </div>
 
     @if (loading()) {
-      <div class="flex flex-col gap-4 p-5" aria-busy="true">
+      <div class="flex flex-col gap-4 p-card" aria-busy="true">
         <span class="sr-only">Loading the latest prices</span>
         <div class="grid grid-cols-3 gap-3">
           <skeleton class="h-16 rounded-xl" />
@@ -53,7 +53,7 @@ interface ResultRow {
         <skeleton class="h-22 rounded-xl" />
       </div>
     } @else {
-      <div class="flex flex-col flex-1 gap-5 p-5">
+      <div class="flex flex-col flex-1 gap-5 p-card">
         <div>
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
             @for (field of fields(); track field.id) {
@@ -131,7 +131,7 @@ interface ResultRow {
 
         <!-- Neutral without the prices, so a missing price doesn't read as a profit of 0 -->
         <div
-          class="@container mt-auto flex flex-col gap-1 p-4 rounded-xl border"
+          class="@container mt-auto flex flex-col gap-1 p-3 rounded-xl border"
           [class]="
             missingPrices()
               ? 'bg-inner border-line'

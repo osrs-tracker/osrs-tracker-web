@@ -27,7 +27,7 @@
         (retry)="items.reload()"
       />
     } @else if (items.hasValue() && total() === 0) {
-      <div class="flex flex-col items-center gap-1 px-5 py-8 text-center">
+      <div class="flex flex-col items-center gap-1 px-card py-8 text-center">
         <p class="font-bold text-strong">No new items since {{ datedSince }}.</p>
         <p class="text-sm text-muted">Items show here once a game update adds them to the Grand Exchange.</p>
       </div>
@@ -38,12 +38,12 @@
         </caption>
         <thead>
           <tr class="border-b border-line text-sm text-muted">
-            <th scope="col" class="w-full py-3 pl-5 max-sm:pl-4 pr-3 max-sm:pr-2 text-left font-normal">Item</th>
+            <th scope="col" class="w-full py-3 pl-card pr-3 max-sm:pr-2 text-left font-normal">Item</th>
             <th scope="col" class="py-3 px-3 max-sm:pl-2 max-sm:pr-1 text-right font-normal whitespace-nowrap">
               <span class="cursor-help" tooltip [tooltipTemplate]="priceTip" tabindex="0">Price</span>
               <ng-template #priceTip>The instant-buy price: what the item costs now</ng-template>
             </th>
-            <th scope="col" class="max-sm:hidden py-3 px-3 sm:pr-5 text-right font-normal whitespace-nowrap">
+            <th scope="col" class="max-sm:hidden py-3 px-3 sm:pr-card text-right font-normal whitespace-nowrap">
               <span class="cursor-help" tooltip [tooltipTemplate]="volumeTip" tabindex="0">Daily volume</span>
               <ng-template #volumeTip>Trades yesterday (UTC)</ng-template>
             </th>
@@ -59,7 +59,7 @@
                 <th
                   scope="rowgroup"
                   colspan="4"
-                  class="py-2 px-5 max-sm:px-4 bg-inner border-b border-line text-left text-sm font-bold text-strong"
+                  class="py-2 px-card bg-inner border-b border-line text-left text-sm font-bold text-strong"
                 >
                   {{ day.label }}
                 </th>
@@ -71,7 +71,7 @@
                   class="group border-b border-row hover:bg-row has-focus-visible:outline-2 has-focus-visible:-outline-offset-2 has-focus-visible:outline-accent"
                   [class]="open ? 'max-sm:border-b-0' : ''"
                 >
-                  <th scope="row" class="relative max-w-0 py-3 pl-5 max-sm:pl-4 pr-3 max-sm:pr-2 text-left font-normal">
+                  <th scope="row" class="relative max-w-0 py-3 pl-card pr-3 max-sm:pr-2 text-left font-normal">
                     <!-- The row's one link, stretched over it from its cell to the card's edge, which clips it: WebKit
                          doesn't position inside a relative <tr>. Values with a tooltip sit above it -->
                     <a
@@ -114,7 +114,7 @@
                       <span class="flex justify-end"><skeleton class="h-4 w-14" /></span>
                     }
                   </td>
-                  <td class="max-sm:hidden py-3 px-3 sm:pr-5 text-right text-base/5 tabular-nums whitespace-nowrap">
+                  <td class="max-sm:hidden py-3 px-3 sm:pr-card text-right text-base/5 tabular-nums whitespace-nowrap">
                     @if (pricesFailed()) {
                       <span class="text-muted">–</span>
                     } @else if (itemPrices) {
@@ -163,7 +163,7 @@
                 <td class="py-3 px-3 max-sm:pl-2 max-sm:pr-1">
                   <span class="flex justify-end"><skeleton class="h-4 w-14" /></span>
                 </td>
-                <td class="max-sm:hidden py-3 px-3 sm:pr-5">
+                <td class="max-sm:hidden py-3 px-3 sm:pr-card">
                   <span class="flex justify-end"><skeleton class="h-4 w-14" /></span>
                 </td>
                 <td class="sm:hidden py-3 pr-2.5"></td>
@@ -175,7 +175,7 @@
 
       @if (items.hasValue()) {
         <div
-          class="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 -mt-px px-5 max-sm:px-4 py-3 border-t border-line"
+          class="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 -mt-px px-card py-3 border-t border-line"
         >
           <span class="text-sm text-muted tabular-nums">
             Showing {{ shownCount() | number }} of {{ total() | number }} {{ total() === 1 ? 'item' : 'items' }}

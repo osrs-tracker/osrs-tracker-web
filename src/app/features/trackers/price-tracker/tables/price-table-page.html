@@ -29,7 +29,7 @@
   <section class="rounded-2xl bg-card overflow-hidden" [attr.aria-label]="title()" [attr.aria-busy]="lists.isLoading()">
     <!-- One row from 1024px. Below it the name filter shares a row with the membership control (High alch) or takes its
          own (Margins); on phones every control is full width, with its label above -->
-    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-5 max-sm:px-4 py-3 border-b border-line">
+    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-card py-3 border-b border-line">
       <div class="relative flex items-center grow basis-60 max-sm:basis-full" [class.max-lg:basis-full]="!isHighAlch()">
         <svg lucideSearch class="absolute left-3 size-4 text-muted pointer-events-none" strokeWidth="2.5" />
         <input
@@ -132,7 +132,7 @@
       </caption>
       <thead>
         <tr class="border-b border-line text-sm text-muted">
-          <th scope="col" class="w-full py-3 pl-5 max-sm:pl-4 pr-3 max-sm:pr-2 text-left font-normal">Item</th>
+          <th scope="col" class="w-full py-3 pl-card pr-3 max-sm:pr-2 text-left font-normal">Item</th>
           @for (column of columns(); track column.key) {
             @let sorted = column.key === options().sort;
             <th
@@ -176,7 +176,7 @@
               class="group border-b border-row hover:bg-row has-focus-visible:outline-2 has-focus-visible:-outline-offset-2 has-focus-visible:outline-accent"
               [class]="open ? 'max-sm:border-b-0' : ''"
             >
-              <th scope="row" class="relative max-w-0 py-3 pl-5 max-sm:pl-4 pr-3 max-sm:pr-2 text-left font-normal">
+              <th scope="row" class="relative max-w-0 py-3 pl-card pr-3 max-sm:pr-2 text-left font-normal">
                 <!-- The row's one link, stretched over it from its cell to the card's edge, which clips it: WebKit
                      doesn't position inside a relative <tr>. Values with a tooltip sit above it -->
                 <a
@@ -338,13 +338,13 @@
       />
     } @else if (view(); as view) {
       @if (view.rows.length === 0) {
-        <div class="flex flex-col items-center gap-1 px-5 py-8 text-center">
+        <div class="flex flex-col items-center gap-1 px-card py-8 text-center">
           <p class="font-bold text-strong">{{ emptyMessage() }}</p>
           <p class="text-sm text-muted">{{ emptyHint() }}</p>
         </div>
       } @else {
         <div
-          class="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 -mt-px px-5 max-sm:px-4 py-3 border-t border-line"
+          class="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 -mt-px px-card py-3 border-t border-line"
         >
           <span class="text-sm text-muted tabular-nums">
             Showing {{ view.rows.length | number }} of {{ view.total | number }}

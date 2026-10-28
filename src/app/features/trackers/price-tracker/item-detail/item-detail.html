@@ -72,7 +72,7 @@
       } @else if (priceSeriesLoading()) {
         <skeleton class="h-70 w-full rounded-xl" />
       } @else if (priceChartEmpty()) {
-        <div class="flex flex-col items-center justify-center gap-1 h-70 px-5 text-center">
+        <div class="flex flex-col items-center justify-center gap-1 h-70 px-card text-center">
           <p class="font-bold text-strong">No trades in the last {{ rangeTitle() }}</p>
           <p class="text-sm text-muted">Rarely traded items can go a while without one.</p>
           @if (nextRange(); as next) {
@@ -105,10 +105,11 @@
         }
       }
 
-      <!-- Without a chart it's only a key, hidden from screen readers -->
+      <!-- Without a chart it's only a key, hidden from screen readers. `-mb-2`: the buttons' own space under their text
+           makes up the rest of the card's 16px, as at the sides -->
       @let charted = !priceSeries.error() && !priceSeriesLoading() && !priceChartEmpty();
       <ul
-        class="flex flex-wrap gap-x-2 -mx-2 mt-2.5 text-sm"
+        class="flex flex-wrap gap-x-2 -mx-2 mt-2 -mb-2 text-sm"
         [attr.aria-label]="charted ? 'Show or hide price lines, with their change over the last ' + rangeTitle() : null"
         [attr.aria-hidden]="charted ? null : true"
       >

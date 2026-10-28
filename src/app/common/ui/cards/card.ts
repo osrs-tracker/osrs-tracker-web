@@ -3,10 +3,7 @@ import { Component, input } from '@angular/core';
 @Component({
   selector: 'article[card]',
   template: `
-    <div
-      class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2.5 px-5 border-b border-line"
-      [class]="subtitle() ? 'py-4' : 'py-1.5 min-h-14'"
-    >
+    <div class="card-header" [class.py-4]="!!subtitle()">
       <div class="min-w-0">
         <div class="text-xl/6 font-bold text-strong">
           <ng-content select="[title]" />
@@ -19,7 +16,7 @@ import { Component, input } from '@angular/core';
       <ng-content select="[actions]" />
     </div>
 
-    <div class="px-5 py-4">
+    <div class="px-card py-4">
       <ng-content />
     </div>
   `,

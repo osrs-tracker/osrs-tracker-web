@@ -2,6 +2,19 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## One padding per kind of surface, through a token (2026-10-28)
+
+- **Context:** cards had grown their own padding: `py-3`, `px-5 py-3`, `p-5`, `px-5 py-4`, `p-3`, and 16px sides on
+  phones for lists only. On an item's page on a phone, Price, Trade volume and Profit calculator started their text at
+  12, 16 and 20px, one above the other. Six cards built their own copy of the 56px header.
+- **Decision:** the table under Padding in the skill's Design system: one value per kind of surface, smaller the deeper
+  it sits (panel 32, card 20, stat tile 16, inner tile 12; the kb's SPACE-021 and SPACE-007). A card's sides are a
+  token, `px-card`, 16px on phones (the one-line list rows need the width) and 20px from `sm`. It changes in `base.css`,
+  so templates carry no `max-sm:` overrides (GOV.UK's responsive spacing, kb SPACE-003). Phone list rows went from 10 to
+  12px above and below: 56px, the header's height, back on the scale. `.card-header` in `components.css` replaces the
+  hand-built headers. Review flags a raw `px-5` on a card.
+- **Revisit:** if a dense view needs tighter cards, add a second token instead of overriding `px-card`.
+
 ## A documented spacing scale, not an enforced one (2026-10-28)
 
 - **Context:** Tailwind 4 compiles any multiple of `--spacing`, so off-scale steps (3, 7, 9, 18px) crept in, some of
@@ -12,8 +25,7 @@ Choices that look like accidents without their context: what was decided, why, a
   box one line tall (`h-lh`), not by a margin, and a label that still sits a pixel off gets `text-trim-cap`
   (`text-box: trim-both cap alphabetic`). Of the steps #477 listed, three stay and say why in a comment: the load
   error's 3px negative margin, the account badges' icon padding and the news skeleton's bars. Older in-between steps
-  elsewhere (14px row gaps, 40px empty-state padding, selects' room for their chevron) stay until their component next
-  changes.
+  elsewhere (14px gaps in the day log, selects' room for their chevron) stay until their component next changes.
 - **Revisit:** if off-scale spacing keeps reappearing in reviews; then name the size steps too and enforce the scale.
 
 ## osrs-tracker.net, with a one-time carry-over of saved data (2026-10-25)

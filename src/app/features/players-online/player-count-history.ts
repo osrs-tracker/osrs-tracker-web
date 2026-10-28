@@ -84,7 +84,7 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
             }
           } @else {
             <p
-              class="flex items-center justify-center h-56 sm:h-70 p-6 rounded-xl border border-dashed border-line text-center text-muted"
+              class="flex items-center justify-center h-56 sm:h-70 p-3 rounded-xl border border-dashed border-line text-center text-muted"
             >
               @if (daily()) {
                 Daily averages start once two full days are counted. Pick 24h or 7D for today's counts.
@@ -119,7 +119,7 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
         </div>
       </div>
 
-      <p class="-mx-5 mt-4 px-5 pt-4 border-t border-line text-sm text-muted text-pretty">
+      <p class="-mx-card mt-4 px-card pt-4 border-t border-line text-sm text-muted text-pretty">
         Players on a world, counted from World Select every 10&nbsp;minutes. The lobby isn't a world, so the official
         total is a little higher.
       </p>

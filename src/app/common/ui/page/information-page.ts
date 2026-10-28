@@ -18,7 +18,7 @@ import { Component, input } from '@angular/core';
         <ng-content select="[intro]" />
       </div>
 
-      <div class="mt-6 px-5 py-6 sm:px-8 sm:py-8 rounded-2xl bg-card">
+      <div class="mt-6 px-card py-6 sm:p-8 rounded-2xl bg-card">
         <ng-content />
       </div>
     </div>

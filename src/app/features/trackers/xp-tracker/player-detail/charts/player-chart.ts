@@ -66,9 +66,7 @@ interface ChartHeading {
 @Component({
   selector: 'player-chart',
   template: `
-    <div
-      class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2.5 min-h-14 px-5 py-1.5 border-b border-line"
-    >
+    <div class="card-header">
       <h2 class="text-xl font-bold text-strong">{{ title() }}</h2>
       <!-- also while a longer period loads, so the header keeps its place -->
       @if (state() !== 'empty') {
@@ -86,7 +84,7 @@ interface ChartHeading {
 
     @switch (state()) {
       @case ('loading') {
-        <div class="flex flex-col grow min-h-0 gap-4 p-5" aria-hidden="true">
+        <div class="flex flex-col grow min-h-0 gap-4 p-card" aria-hidden="true">
           <div class="flex items-center gap-3">
             <skeleton class="size-11 rounded-xl" />
             <div class="flex flex-col grow gap-2">
@@ -104,7 +102,7 @@ interface ChartHeading {
         </div>
       }
       @case ('empty') {
-        <div class="flex flex-col grow items-center justify-center gap-4 px-8 py-10 text-center">
+        <div class="flex flex-col grow items-center justify-center gap-4 px-card py-8 text-center">
           <span class="flex items-center justify-center size-16 rounded-full bg-ground text-accent" aria-hidden="true">
             <svg lucideClock class="size-7.5" />
           </span>
@@ -115,7 +113,7 @@ interface ChartHeading {
         </div>
       }
       @case ('ready') {
-        <div class="flex flex-col grow min-h-0 gap-4 p-5">
+        <div class="flex flex-col grow min-h-0 gap-4 p-card">
           @let h = heading();
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-3 min-w-0">

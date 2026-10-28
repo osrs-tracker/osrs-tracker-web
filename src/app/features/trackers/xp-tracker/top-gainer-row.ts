@@ -17,7 +17,7 @@ import { AccountTile } from './account-tile';
   `,
   host: {
     class:
-      'flex items-center gap-3.5 max-sm:gap-3 px-5 max-sm:px-4 py-3 max-sm:py-2.5 border-b border-row bg-card hover:bg-row focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent',
+      'flex items-center gap-3 px-card py-3 border-b border-row bg-card hover:bg-row focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent',
   },
   imports: [AccountTile, CapitalizePipe, DecimalPipe],
 })

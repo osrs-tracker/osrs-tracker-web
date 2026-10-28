@@ -83,7 +83,7 @@
             <li class="not-first:border-t border-line">
               <!-- The artwork leads: it's the strongest clue to what a post is about -->
               <a
-                class="group flex items-start sm:items-center gap-3 sm:gap-4 lg:gap-5 p-3 sm:pr-5 hover:bg-row focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent focus-visible:rounded-2xl"
+                class="group flex items-start sm:items-center gap-3 sm:gap-4 lg:gap-5 px-card py-3 hover:bg-row focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent focus-visible:rounded-2xl"
                 [href]="post.link"
                 target="_blank"
                 rel="noopener"
@@ -129,7 +129,7 @@
         </ul>
       </section>
     } @empty {
-      <div class="flex flex-col items-center gap-4 px-6 py-10 rounded-2xl bg-card text-center">
+      <div class="flex flex-col items-center gap-4 px-card py-6 sm:p-8 rounded-2xl bg-card text-center">
         <p>{{ emptyText() }}</p>
         <!-- One filter at a time, the category first: with both, every category since the day may have posts -->
         @if (category()) {
@@ -168,7 +168,7 @@
       <skeleton class="h-7 w-40 mb-3" tone="ground" />
       <ul class="rounded-2xl bg-card overflow-hidden">
         @for (row of skeletonRows; track row) {
-          <li class="flex items-center gap-3 sm:gap-4 lg:gap-5 p-3 not-first:border-t border-line">
+          <li class="flex items-center gap-3 sm:gap-4 lg:gap-5 px-card py-3 not-first:border-t border-line">
             <skeleton class="w-26 sm:w-32 lg:w-44 aspect-video shrink-0 rounded-xl" />
             <span class="flex flex-col gap-2.5 flex-1">
               <skeleton class="h-5 w-3/5" />

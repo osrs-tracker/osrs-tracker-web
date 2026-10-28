@@ -64,7 +64,8 @@ type StatusPanelIcon = 'search' | 'alert' | 'clock';
     <ng-content />
   `,
   host: {
-    class: 'flex flex-col items-center gap-6 w-full max-w-160 mx-auto px-8 py-10 rounded-2xl bg-card text-center',
+    class:
+      'flex flex-col items-center gap-6 w-full max-w-160 mx-auto px-card py-6 sm:p-8 rounded-2xl bg-card text-center',
   },
   imports: [FormsModule, LucideDynamicIcon, LucideSearch],
 })

@@ -12,9 +12,10 @@
   --container-cell-xs: 6rem;
 
   /*
-   * Spacing (padding, margins, gaps): 4, 8, 12, 16, 24, 32, 48 and 72px (`p-1` … `pb-18`), 20px inside cards (`px-5`),
-   * and the half-steps 2, 6 and 10px inside small controls (icon gaps, pills, badges). New spacing uses these; some
-   * older components still have in-between steps (14px row gaps, 40px empty states). Centre an icon beside text with
+   * Spacing (padding, margins, gaps): 4, 8, 12, 16, 24, 32, 48 and 72px (`p-1` … `pb-18`), a card's sides (`px-card`,
+   * below), and the half-steps 2, 6 and 10px inside small controls (icon gaps, pills, badges). Which padding each surface
+   * gets is in the osrs-tracker-web skill (Design system, Padding). New spacing uses these; some older components still
+   * have in-between steps (14px row gaps). Centre an icon beside text with
    * `items-center`, not a margin, and trim the label with `text-trim-cap` where it sits a pixel off. The multiplier
    * stays free (no `--spacing: initial` with named steps) because sizes and positions (`w-`, `h-`, `size-`, `inset-`,
    * `translate-`) share it, about 600 of them in the templates.
@@ -157,6 +158,10 @@
   --color-amber: var(--amber);
   --color-sold: var(--sold);
   --color-scrim: var(--scrim);
+
+  /* A card's sides, where its header, rows and body text all start: changes at `sm` in base.css, so no template needs a
+     `max-sm:` override */
+  --spacing-card: var(--card-inset);
 
   /* Floating layers only (dropdowns, popovers); cards are flat */
   --shadow-float: 0 24px 60px var(--float-shadow);
