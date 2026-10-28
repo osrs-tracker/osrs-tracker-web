@@ -189,10 +189,7 @@
                   >
                     <img class="max-w-7.5 max-h-7.5" icon alt="" [name]="row.icon" [wiki]="true" />
                   </span>
-                  <span
-                    class="truncate text-base/5 font-bold group-hover:underline decoration-border underline-offset-3"
-                    >{{ row.name }}</span
-                  >
+                  <span class="truncate text-base/5 font-bold">{{ row.name }}</span>
                 </a>
               </th>
               @for (column of columns(); track column.key) {
