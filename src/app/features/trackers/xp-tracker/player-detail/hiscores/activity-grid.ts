@@ -53,12 +53,16 @@ interface ActivityCell {
               @if (cell.filler) {
                 <div class="h-11 bg-inner" role="gridcell"></div>
               } @else {
-                <div ngGridCell role="gridcell" class="flex">
+                <div ngGridCell role="gridcell" class="flex @container">
                   <button
                     ngGridCellWidget
                     type="button"
-                    class="flex-1 flex items-center justify-center h-11 bg-inner aria-disabled:cursor-default focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-strong"
-                    [class]="(view() === 'minigames' ? 'px-2 ' : 'px-3 ') + corner(r, c, last)"
+                    class="flex-1 flex items-center justify-center min-w-0 h-11 bg-inner aria-disabled:cursor-default focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-strong"
+                    [class]="
+                      (view() === 'minigames' ? 'px-2 ' : 'px-3 @max-cell:px-2 ') +
+                      '@max-cell-xs:px-1 ' +
+                      corner(r, c, last)
+                    "
                     [style.background]="cell.on ? tint(cell.color) : null"
                     [style.box-shadow]="cell.charted ? (cell.on ? ring(cell.color) : pickableRing(cell.color)) : null"
                     [attr.aria-disabled]="!cell.charted"
@@ -73,7 +77,11 @@ interface ActivityCell {
                     @if (cell.activity !== undefined) {
                       <span
                         class="flex items-center w-full"
-                        [class]="view() === 'minigames' ? 'gap-1.5' : 'max-w-21 gap-2'"
+                        [class]="
+                          view() === 'minigames'
+                            ? 'gap-1.5 @max-cell-xs:gap-1'
+                            : 'max-w-21 gap-2 @max-cell:gap-1.5 @max-cell-xs:gap-1'
+                        "
                       >
                         @if (view() === 'minigames') {
                           <!-- minigame icons vary from 16 to 96px, so they're fitted to the box instead of scaled -->
@@ -81,7 +89,7 @@ interface ActivityCell {
                             <img class="size-6" icon alt="" [name]="cell.icon.name" [activity]="cell.icon.activity" />
                             @if (cell.badge) {
                               <span
-                                class="absolute -right-1.5 -bottom-1 min-w-3.5 h-3.5 px-0.75 rounded-full bg-line text-strong text-center text-2xs leading-3.5 font-bold"
+                                class="absolute -right-1.5 -bottom-1 min-w-3.5 h-3.5 px-1 rounded-full bg-line text-strong text-center text-2xs leading-3.5 font-bold"
                                 aria-hidden="true"
                                 >{{ cell.badge }}</span
                               >
@@ -92,9 +100,16 @@ interface ActivityCell {
                             <img icon alt="" [name]="cell.icon.name" [activity]="true" [scale]="1.5" />
                           </span>
                         }
-                        <span class="ml-auto text-base font-bold text-strong tabular-nums">{{
-                          shortScore(cell.activity?.score)
-                        }}</span>
+                        @let score = shortScore(cell.activity?.score);
+                        @let tightScore = shortScore(cell.activity?.score, 1_000);
+                        <span class="ml-auto text-base @max-cell-xs:text-sm font-bold text-strong tabular-nums">
+                          @if (tightScore === score) {
+                            {{ score }}
+                          } @else {
+                            <span class="@max-cell-xs:hidden">{{ score }}</span>
+                            <span class="hidden @max-cell-xs:inline">{{ tightScore }}</span>
+                          }
+                        </span>
                       </span>
                     } @else {
                       <skeleton class="h-5 w-20" />
@@ -196,10 +211,13 @@ export class ActivityGrid extends HiscoresGrid {
     return `${cell.name}, ${this.scoreLabel().toLowerCase()} ${score}`;
   }
 
-  /** Four digits fit a cell; from 10,000 up the score is shortened (18.2K), the tooltip has the exact one */
-  shortScore(score: number | undefined): string {
+  /**
+   * Four digits fit a cell; from 10,000 up the score is shortened (18.2K), the tooltip and label have the exact one.
+   * The narrowest cells (`@max-cell-xs`) shorten from 1,000.
+   */
+  shortScore(score: number | undefined, shortFrom = 10_000): string {
     if (score === undefined) return '–';
-    if (score < 10_000) return formatWhole(score);
+    if (score < shortFrom) return formatWhole(score);
     return formatNumberShort(score);
   }
 

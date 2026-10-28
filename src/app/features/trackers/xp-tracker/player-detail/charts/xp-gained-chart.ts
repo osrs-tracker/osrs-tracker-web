@@ -24,7 +24,7 @@ const CHIPS_SHOWN = 7;
   selector: 'xp-gained-chart',
   template: `
     <!-- Hidden, not removed, while the table shows: the chart is created once, on its canvas -->
-    <div class="relative h-55 lg:h-auto lg:grow lg:min-h-35" [class.hidden]="tableShown()">
+    <div class="relative h-55 lg:h-auto lg:grow lg:basis-0 lg:min-h-35" [class.hidden]="tableShown()">
       <canvas #chart role="img" [class.invisible]="!series().length" [attr.aria-label]="label()"></canvas>
       @if (!series().length) {
         <p class="absolute inset-0 flex items-center justify-center text-base text-muted">
@@ -34,7 +34,7 @@ const CHIPS_SHOWN = 7;
     </div>
     @if (tableShown()) {
       <chart-table
-        class="h-55 lg:h-auto lg:grow lg:min-h-35"
+        class="h-55 lg:h-auto lg:grow lg:basis-0 lg:min-h-35"
         [caption]="tableCaption()"
         [columns]="tableColumns()"
         [rows]="tableRows()"

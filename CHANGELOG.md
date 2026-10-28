@@ -3,6 +3,15 @@
 - On a player's page, a day with nothing gained yet is now a single line in the day log, "No gains since 00:00 UTC"
   beside the date, instead of a card with a sentence of its own. The days that do have gains stand out more, and the
   line still shows when today's count started.
+- Spacing tidy-up: a player's skill levels (and the ones in the home page's preview) now sit exactly level with their
+  skill icons, whatever the browser's text metrics, and the stat tiles, the profit calculator, the player chart, the
+  year picker and the footer now use the site's regular spacing steps instead of in-between values. Nothing moves more
+  than a few pixels; the skills grid is 8px shorter.
+- On small phones, boss kill counts, clue totals and minigame scores no longer lose their last digit: the cells tighten
+  and show four-digit scores as 1.4K (the tooltip keeps the exact number). On an item's page, a long value such as a
+  4,200,000 high alch now shrinks to fit its tile instead of ending in "…", and a low alch from a million up reads 2.8M,
+  with the full amount in its tooltip. On a computer, the XP chart beside the skills can now grow taller when you
+  enlarge the text, instead of cutting off its legend.
 
 ## 2026-10-27
 

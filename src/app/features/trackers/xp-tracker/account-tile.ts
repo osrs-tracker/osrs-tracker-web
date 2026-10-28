@@ -48,6 +48,7 @@ const TYPE_LABELS: Record<PlayerType, string> = {
           <svg lucideX [class]="large() ? 'size-4 stroke-down' : 'size-3 stroke-down'" strokeWidth="4" />
         </span>
       } @else if (player.status === PlayerStatus.DeUltimated) {
+        <!-- the padding sizes the icon inside the badge's border, as on the skull below: 18px, 14px small -->
         <img
           [class]="badgeClass() + (large() ? ' p-0.75' : ' p-0.5')"
           icon

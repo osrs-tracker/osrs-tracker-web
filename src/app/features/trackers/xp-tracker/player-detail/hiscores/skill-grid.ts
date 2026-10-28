@@ -70,10 +70,10 @@ const OVERALL_COLOR = 'var(--accent)';
                 [tooltipDescribe]="false"
                 (click)="cell.charted && playerView.toggleSkill(cell.name)"
               >
-                <span class="flex items-center justify-between h-9.25 pt-1.75 pb-1.5 px-3">
+                <span class="flex items-center justify-between h-9 px-3">
                   @if (cell.loaded) {
                     <img class="h-6 w-auto" icon alt="" [name]="cell.name" [skill]="true" />
-                    <span class="text-base font-bold text-strong tabular-nums">{{ cell.level }}</span>
+                    <span class="text-base font-bold text-strong tabular-nums text-trim-cap">{{ cell.level }}</span>
                   } @else {
                     <skeleton class="mx-auto h-5 w-16" />
                   }

@@ -57,9 +57,9 @@ const LINE = CUMULATIVE_XP.map((xp, day) => `L${day * 50} ${Math.round(62 - (xp 
         <div class="grid grid-cols-3 gap-px rounded-xl bg-line border border-line overflow-hidden">
           @for (skill of SKILLS; track skill.name) {
             <div class="flex flex-col justify-between bg-inner">
-              <div class="flex items-center justify-between px-3 pt-1.75 pb-1.5">
+              <div class="flex items-center justify-between px-3 py-1.5">
                 <img class="size-6" icon alt="" [name]="skill.name" [skill]="true" />
-                <span class="font-bold text-strong tabular-nums">{{ skill.level }}</span>
+                <span class="font-bold text-strong tabular-nums text-trim-cap">{{ skill.level }}</span>
               </div>
               <div class="h-0.75 bg-line">
                 @if (skill.level < 99) {

@@ -131,7 +131,7 @@ interface ResultRow {
 
         <!-- Neutral without the prices, so a missing price doesn't read as a profit of 0 -->
         <div
-          class="@container mt-auto flex flex-col gap-1 px-4.5 py-4 rounded-xl border"
+          class="@container mt-auto flex flex-col gap-1 p-4 rounded-xl border"
           [class]="
             missingPrices()
               ? 'bg-inner border-line'
