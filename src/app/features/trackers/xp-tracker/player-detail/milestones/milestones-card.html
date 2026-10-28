@@ -72,15 +72,9 @@
             <span class="flex-1 flex flex-col gap-1 min-w-0">
               <span class="flex flex-wrap items-baseline gap-x-1.5 text-base/5 font-bold text-strong">
                 <span>{{ row.skill }}</span>
-                <span class="tabular-nums whitespace-nowrap">{{ row.milestone }}</span>
+                <span class="tabular-nums">{{ row.milestone }}</span>
               </span>
-              <!-- wraps after the XP now in a narrow column, rather than cutting the pace off -->
-              <span class="flex flex-wrap gap-x-1 text-sm/4 text-muted tabular-nums">
-                @if (row.now) {
-                  <span class="whitespace-nowrap">{{ row.now }}</span>
-                }
-                <span class="whitespace-nowrap">{{ row.pace }}</span>
-              </span>
+              <span class="text-sm/4 text-muted tabular-nums whitespace-nowrap">{{ row.pace }}</span>
             </span>
             <span class="shrink-0 flex flex-col items-end gap-1 text-right whitespace-nowrap">
               <span class="text-base/5 font-bold text-strong tabular-nums">{{ row.date }}</span>
