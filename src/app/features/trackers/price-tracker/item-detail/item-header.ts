@@ -23,8 +23,9 @@ import { LucideExternalLink, LucideStar, LucideTriangle } from '@lucide/angular'
     <div class="flex flex-col gap-1.5 flex-1 basis-0 min-w-0 sm:basis-65">
       <!-- The name links to the wiki, as the player page's name links to the hiscores. Inline, so the icon follows the
            last word when a long name wraps: the word joiner keeps them together (outside the h1, so copying the name
-           leaves it out; prettier-ignore, as a line break around it would let them part), and the top margin centres
-           the icon on the line (24px, 36px from sm). -->
+           leaves it out; prettier-ignore, as a line break around it would let them part). The icon's box is one line
+           tall and 18px wide, and the SVG draws it centred in that box, so it stays on the line's middle at any font
+           size. -->
       <!-- prettier-ignore -->
       <a
         class="self-start text-2xl/none sm:text-4xl/none font-bold text-balance text-strong hover:text-accent"
@@ -34,7 +35,7 @@ import { LucideExternalLink, LucideStar, LucideTriangle } from '@lucide/angular'
         title="Open on the OSRS Wiki"
       ><h1 class="inline">{{ item().name }}</h1>&#8288;<svg
           lucideExternalLink
-          class="inline size-4.5 ml-2.5 mt-0.75 align-top text-muted sm:mt-2.25"
+          class="inline w-4.5 h-lh ml-2.5 align-top text-muted"
         />
         <span class="sr-only">(opens the OSRS Wiki in a new tab)</span>
       </a>

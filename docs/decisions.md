@@ -2,6 +2,20 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## A documented spacing scale, not an enforced one (2026-10-28)
+
+- **Context:** Tailwind 4 compiles any multiple of `--spacing`, so off-scale steps (3, 7, 9, 18px) crept in, some of
+  them per-breakpoint margins nudging an icon or label into line (osrs-tracker/osrs-tracker-web#477). Tailwind can limit
+  spacing to named steps (`--spacing: initial` plus `--spacing-N`), but sizes and positions (`w-`, `h-`, `size-`,
+  `inset-`, `translate-`) share the same variables: about 600 of them in the templates.
+- **Decision:** list the scale in `theme.css` and keep the multiplier free. Icons sit beside text by flex centring or a
+  box one line tall (`h-lh`), not by a margin, and a label that still sits a pixel off gets `text-trim-cap`
+  (`text-box: trim-both cap alphabetic`). Of the steps #477 listed, three stay and say why in a comment: the load
+  error's 3px negative margin, the account badges' icon padding and the news skeleton's bars. Older in-between steps
+  elsewhere (14px row gaps, 40px empty-state padding, selects' room for their chevron) stay until their component next
+  changes.
+- **Revisit:** if off-scale spacing keeps reappearing in reviews; then name the size steps too and enforce the scale.
+
 ## osrs-tracker.net, with a one-time carry-over of saved data (2026-10-25)
 
 - **Context:** the site moved from osrs-tracker.freekmencke.com to osrs-tracker.net (roadmap

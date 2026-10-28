@@ -17,7 +17,7 @@ const TABS: SegmentedOption<BottomTab>[] = [
   selector: 'article[activities-card]',
   imports: [ActivityGrid, CapitalizePipe, DecimalPipe, Segmented, Skeleton],
   template: `
-    <div class="flex items-center min-h-14 px-4 py-1.5 border-b border-line">
+    <div class="flex items-center min-h-14 px-5 py-1.5 border-b border-line">
       <segmented
         class="grow"
         stretch
@@ -27,7 +27,7 @@ const TABS: SegmentedOption<BottomTab>[] = [
         (picked)="playerView.showBottom($event)"
       />
     </div>
-    <div class="px-4 pt-4">
+    <div class="px-5 pt-5">
       @if (playerView.bottom() === 'clues') {
         <activity-grid
           view="clues"
@@ -64,7 +64,7 @@ const TABS: SegmentedOption<BottomTab>[] = [
     </div>
   `,
   host: {
-    class: 'min-w-0 pb-4 rounded-2xl bg-card overflow-hidden',
+    class: 'min-w-0 pb-5 rounded-2xl bg-card overflow-hidden',
   },
 })
 export class ActivitiesCard {

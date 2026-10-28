@@ -179,6 +179,16 @@ describe('itemStats', () => {
     ]);
   });
 
+  it('shortens a low alch from 1M, with the exact value in its tooltip', () => {
+    const stats = itemStats({ ...LOADED, item: { ...LOADED.item, highalch: 4_200_000, lowalch: 2_800_000 } });
+
+    expect(tile(stats, 'High alch')).toMatchObject({
+      value: '4,200,000',
+      sub: 'Low alch 2.8M',
+      subTip: 'Low alch 2,800,000 gp',
+    });
+  });
+
   it('shows a failed price load on the price tiles and the margin', () => {
     const stats = itemStats({ ...LOADED, latest: undefined, latestFailed: true });
 

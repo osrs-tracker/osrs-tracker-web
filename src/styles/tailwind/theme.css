@@ -6,6 +6,20 @@
 
   --container-page: 75rem;
 
+  /* A hiscores grid cell (`@container`): below `cell` its padding and gap tighten, below `cell-xs` (phones under about
+     350px) its score drops to 14px and shortens from 1,000, so scores fit beside their 28px icons */
+  --container-cell: 6.75rem;
+  --container-cell-xs: 6rem;
+
+  /*
+   * Spacing (padding, margins, gaps): 4, 8, 12, 16, 24, 32, 48 and 72px (`p-1` … `pb-18`), 20px inside cards (`px-5`),
+   * and the half-steps 2, 6 and 10px inside small controls (icon gaps, pills, badges). New spacing uses these; some
+   * older components still have in-between steps (14px row gaps, 40px empty states). Centre an icon beside text with
+   * `items-center`, not a margin, and trim the label with `text-trim-cap` where it sits a pixel off. The multiplier
+   * stays free (no `--spacing: initial` with named steps) because sizes and positions (`w-`, `h-`, `size-`, `inset-`,
+   * `translate-`) share it, about 600 of them in the templates.
+   */
+
   /* The sticky nav's height from sm up (its 44px theme button, 16px above and below, the 1px border): the nav is set to
      it, and the page scrolls focused elements and anchors clear of it (`scroll-padding-top` in base.css) */
   --spacing-nav: 4.8125rem;

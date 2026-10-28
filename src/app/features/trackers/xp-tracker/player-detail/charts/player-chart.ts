@@ -86,7 +86,7 @@ interface ChartHeading {
 
     @switch (state()) {
       @case ('loading') {
-        <div class="flex flex-col grow min-h-0 gap-4 px-5 py-4.5" aria-hidden="true">
+        <div class="flex flex-col grow min-h-0 gap-4 p-5" aria-hidden="true">
           <div class="flex items-center gap-3">
             <skeleton class="size-11 rounded-xl" />
             <div class="flex flex-col grow gap-2">
@@ -115,7 +115,7 @@ interface ChartHeading {
         </div>
       }
       @case ('ready') {
-        <div class="flex flex-col grow min-h-0 gap-4 px-5 py-4.5">
+        <div class="flex flex-col grow min-h-0 gap-4 p-5">
           @let h = heading();
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-3 min-w-0">
@@ -156,7 +156,9 @@ interface ChartHeading {
       }
     }
   `,
-  host: { class: 'flex flex-col min-w-0 rounded-2xl bg-card overflow-hidden lg:h-115.5' },
+  // From lg, as tall as the Skills tab beside it (also its placeholder's height in player-detail.html); a minimum, so
+  // larger text spacing grows the card instead of clipping the legend
+  host: { class: 'flex flex-col min-w-0 rounded-2xl bg-card overflow-hidden lg:min-h-115.5' },
   imports: [ActivityChart, ChartDisplaySwitch, Icon, Segmented, Skeleton, XpGainedChart, LucideClock],
 })
 export class PlayerChart {

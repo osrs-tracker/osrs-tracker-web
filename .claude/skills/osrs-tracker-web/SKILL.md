@@ -97,9 +97,12 @@ value the scale lacks becomes a token in `src/styles/tailwind/theme.css`.
 - **Type:** Tailwind's `text-xs`…`text-6xl`, line heights like `text-xl/6`. Page titles `text-2xl sm:text-3xl`, landing
   heroes `text-4xl md:text-5xl` (Home up to `lg:text-6xl`), card titles `text-xl`. Standalone values (`tabular-nums`):
   prices, XP, levels, tiles, axes.
-- **Spacing:** steps of 4, 8, 12, 16, 24, 32, 48, 72px; card padding 20px (`px-5`). 24px between cards and sections,
-  16px between stat tiles; pages `max-w-page mx-auto px-4 sm:px-6`, 48px from the nav or a hero band (`pt-12`) and 72px
-  above the footer (`pb-18`); reading pages narrow to `max-w-3xl`.
+- **Spacing:** steps of 4, 8, 12, 16, 24, 32, 48, 72px (2, 6, 10px inside small controls; the scale is listed in
+  `theme.css`, enforced only in review: `docs/decisions.md`); card padding 20px (`px-5`). An icon beside text is centred
+  with `items-center` (or a `h-lh` box when it follows inline text), never a margin; `text-trim-cap` on the label when
+  it still sits a pixel off. 24px between cards and sections, 16px between stat tiles; pages
+  `max-w-page mx-auto px-4 sm:px-6`, 48px from the nav or a hero band (`pt-12`) and 72px above the footer (`pb-18`);
+  reading pages narrow to `max-w-3xl`.
 - **Phones** (below `sm`): keep pages symmetric inside the 16px margins and check balance against the cards around a
   change. Pictures are never cropped (Home's news is a 2×2 grid of picture-on-top cards; tablets show four of them in a
   row, the `compact:` variant). List rows are one line: no second line, 40px tiles as on desktop, 16px names, the item

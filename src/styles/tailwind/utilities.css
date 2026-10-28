@@ -45,6 +45,16 @@
   grid-template-rows: auto 1fr;
 }
 
+/*
+ * Trims a label's line box to its capitals and baseline, so `items-center` lines its capitals up with the icon beside
+ * it. Browsers without `text-box` keep the half-leading, centred to within a pixel. Put it on the element holding the
+ * text: it doesn't apply through flex or grid, nor across padding, and it clips truncated text. Both edges, as Chromium
+ * drops `trim-both cap`.
+ */
+@utility text-trim-cap {
+  text-box: trim-both cap alphabetic;
+}
+
 @utility grid-cols-log {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
 }
@@ -58,6 +68,10 @@
 /* The profit calculator's inputs (16px to 12px), inside their 12px padding, border and caret */
 @utility fit-input-digits {
   font-size: max(var(--text-xs), min(var(--text-base), calc((100cqi - 1.75rem) / (var(--digits) * 0.75))));
+}
+/* A compact stat tile's value (24px to 18px), so "4,200,000" fits a 320px phone's two-column tiles instead of being cut */
+@utility fit-tile-digits {
+  font-size: max(var(--text-lg), min(var(--text-2xl), calc(100cqi / (var(--digits) * 0.75))));
 }
 /* The profit calculator's total (36px to 16px, then it wraps), beside its "gp" */
 @utility fit-total-digits {

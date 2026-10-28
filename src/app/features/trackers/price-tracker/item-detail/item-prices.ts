@@ -3,7 +3,13 @@ import { Item } from '@osrs-tracker/models';
 import { DAY, utcDayStart } from '../utc-day';
 import { geTax, isGeTaxExempt } from './ge-tax';
 import { AveragePricesAtTime, LatestPrices } from '@app/common/api/osrs-prices-repo';
-import { formatPercentChange, formatWhole, formatWholeCompact, PercentChange } from '@app/common/format/number-format';
+import {
+  formatNumberLegible,
+  formatPercentChange,
+  formatWhole,
+  formatWholeCompact,
+  PercentChange,
+} from '@app/common/format/number-format';
 import { ChartTableRow } from '@app/common/charts/chart-table';
 import { binByTime, TimeBin, timeBinLabel } from '@app/common/charts/time-bins';
 
@@ -13,6 +19,7 @@ export interface ItemStat {
   sub: string;
   info: string;
   tip?: string;
+  subTip?: string;
   loading?: boolean;
 }
 
@@ -100,11 +107,17 @@ function buyLimitStat(item: Item): ItemStat {
 }
 
 function highAlchStat(item: Item): ItemStat {
+  const lowAlch = item.lowalch ?? 0;
+  // Shortened from 1M, as "Low alch 2,800,000" doesn't fit a phone's tile; the tooltip has it in full
+  const short = lowAlch >= 1_000_000;
   return {
     label: 'High alch',
     info: 'Coins received from casting High Level Alchemy on the item.',
     ...(item.highalch ? amount(item.highalch, 'gp') : { value: '–' }),
-    sub: item.highalch ? `Low alch ${formatWholeCompact(item.lowalch ?? 0)}` : "Can't be alched for coins",
+    sub: item.highalch
+      ? `Low alch ${short ? formatNumberLegible(lowAlch) : formatWholeCompact(lowAlch)}`
+      : "Can't be alched for coins",
+    subTip: item.highalch && short ? `Low alch ${formatWhole(lowAlch)} gp` : undefined,
   };
 }
 

@@ -18,7 +18,7 @@ const TABS: SegmentedOption<TopTab>[] = [
   selector: 'article[skills-card]',
   imports: [ActivityGrid, InfoTooltip, LoadError, Segmented, SkillGrid],
   template: `
-    <div class="flex items-center min-h-14 px-4 py-1.5 border-b border-line">
+    <div class="flex items-center min-h-14 px-5 py-1.5 border-b border-line">
       <segmented
         class="grow"
         stretch
@@ -33,7 +33,7 @@ const TABS: SegmentedOption<TopTab>[] = [
         >
       }
     </div>
-    <div class="px-4 pt-4">
+    <div class="px-5 pt-5">
       @if (failed()) {
         <load-error source="player-hiscore" message="Couldn't load the hiscores." (retry)="retry.emit()" />
       } @else {
@@ -64,7 +64,7 @@ const TABS: SegmentedOption<TopTab>[] = [
     </div>
   `,
   host: {
-    class: 'min-w-0 pb-4 rounded-2xl bg-card overflow-hidden',
+    class: 'min-w-0 pb-5 rounded-2xl bg-card overflow-hidden',
   },
 })
 export class SkillsCard {

@@ -1,4 +1,4 @@
-import { booleanAttribute, Component, input } from '@angular/core';
+import { booleanAttribute, Component, computed, input } from '@angular/core';
 import { InfoTooltip } from '../tooltip/info-tooltip';
 import { Tooltip } from '../tooltip/tooltip';
 import { Skeleton } from '../loading/skeleton';
@@ -26,7 +26,8 @@ import { Skeleton } from '../loading/skeleton';
       </span>
       <span
         class="font-bold text-strong tabular-nums truncate"
-        [class]="compact() ? 'text-2xl/7.5' : 'text-3xl/8.5'"
+        [class]="compact() ? 'fit-tile-digits leading-7.5' : 'text-3xl/8.5'"
+        [style.--digits]="compact() ? digits() : null"
         [attr.title]="tip() || null"
         >{{ value() }}</span
       >
@@ -49,8 +50,9 @@ import { Skeleton } from '../loading/skeleton';
     }
   `,
   host: {
-    'class': 'flex flex-col gap-1 min-w-0 px-4.5 py-4 rounded-2xl bg-card',
+    'class': 'flex flex-col gap-1 min-w-0 p-4 rounded-2xl bg-card',
     '[attr.aria-busy]': 'loading()',
+    '[style.container-type]': "compact() ? 'inline-size' : null",
   },
   imports: [InfoTooltip, Skeleton, Tooltip],
 })
@@ -65,4 +67,7 @@ export class StatTile {
   readonly subTip = input('');
   readonly compact = input(false, { transform: booleanAttribute });
   readonly loading = input(false, { transform: booleanAttribute });
+
+  /** What `fit-tile-digits` sizes by: digits and unit letters (672.87M is 6) */
+  protected readonly digits = computed(() => Math.max(1, this.value().replace(/[^\dA-Z]/g, '').length));
 }
