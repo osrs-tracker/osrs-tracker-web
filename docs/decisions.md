@@ -10,8 +10,10 @@ Choices that look like accidents without their context: what was decided, why, a
   `inset-`, `translate-`) share the same variables: about 600 of them in the templates.
 - **Decision:** list the scale in `theme.css` and keep the multiplier free. Icons sit beside text by flex centring or a
   box one line tall (`h-lh`), not by a margin, and a label that still sits a pixel off gets `text-trim-cap`
-  (`text-box: trim-both cap alphabetic`). The few off-scale steps left say why in a comment: the load error's 3px
-  negative margin, the account badges' icon padding and the news skeleton's bars.
+  (`text-box: trim-both cap alphabetic`). Of the steps #477 listed, three stay and say why in a comment: the load
+  error's 3px negative margin, the account badges' icon padding and the news skeleton's bars. Older in-between steps
+  elsewhere (14px row gaps, 40px empty-state padding, selects' room for their chevron) stay until their component next
+  changes.
 - **Revisit:** if off-scale spacing keeps reappearing in reviews; then name the size steps too and enforce the scale.
 
 ## osrs-tracker.net, with a one-time carry-over of saved data (2026-10-25)

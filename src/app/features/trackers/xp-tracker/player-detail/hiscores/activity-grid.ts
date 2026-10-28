@@ -59,7 +59,7 @@ interface ActivityCell {
                     type="button"
                     class="flex-1 flex items-center justify-center min-w-0 h-11 bg-inner aria-disabled:cursor-default focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-strong"
                     [class]="
-                      (view() === 'minigames' ? 'px-2 ' : 'px-3 @max-cell:px-2 ') +
+                      (view() === 'minigames' ? 'px-2 ' : 'px-2 @cell:px-3 ') +
                       '@max-cell-xs:px-1 ' +
                       corner(r, c, last)
                     "
@@ -80,7 +80,7 @@ interface ActivityCell {
                         [class]="
                           view() === 'minigames'
                             ? 'gap-1.5 @max-cell-xs:gap-1'
-                            : 'max-w-21 gap-2 @max-cell:gap-1.5 @max-cell-xs:gap-1'
+                            : 'max-w-21 gap-1.5 @cell:gap-2 @max-cell-xs:gap-1'
                         "
                       >
                         @if (view() === 'minigames') {

@@ -13,7 +13,8 @@
 
   /*
    * Spacing (padding, margins, gaps): 4, 8, 12, 16, 24, 32, 48 and 72px (`p-1` … `pb-18`), 20px inside cards (`px-5`),
-   * and the half-steps 2, 6 and 10px inside small controls (icon gaps, pills, badges). Centre an icon beside text with
+   * and the half-steps 2, 6 and 10px inside small controls (icon gaps, pills, badges). New spacing uses these; some
+   * older components still have in-between steps (14px row gaps, 40px empty states). Centre an icon beside text with
    * `items-center`, not a margin, and trim the label with `text-trim-cap` where it sits a pixel off. The multiplier
    * stays free (no `--spacing: initial` with named steps) because sizes and positions (`w-`, `h-`, `size-`, `inset-`,
    * `translate-`) share it, about 600 of them in the templates.
