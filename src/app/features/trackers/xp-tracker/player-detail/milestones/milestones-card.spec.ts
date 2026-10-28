@@ -70,6 +70,7 @@ describe('MilestonesCard', () => {
   it('starts on the first target with milestones: 200M when every skill is 99', () => {
     expect(checked()).toBe('200M');
     expect(rows()).toBe(6);
+    expect(element().querySelector('li')?.textContent).toContain('20M → 200M');
     expect(element().textContent).toContain('At Zezima’s pace');
   });
 
