@@ -118,11 +118,12 @@ value the scale lacks becomes a token in `src/styles/tailwind/theme.css`.
   In a card, the header title, body text, row tiles, the first and last table columns and the footer all start at
   `px-card`: pictures, charts, dividers and row hovers may run to the edge, their text may not. Padding belongs to the
   component, not the page: use `.card-header` and `px-card` rather than `px-5`, and never a `max-sm:` padding override
-  (the token already changes at `sm`). Home's tilted preview card is a picture, not a card, and keeps its own. A chart's
-  key under it (the item page's price and volume) is 8px below the chart, in 32px items (`h-8 px-2`, the row `-mx-2`)
-  with an 18×12px swatch, whether the items are buttons or not, so keys on one page line up; the card gets 8px less
-  padding under it (`-mb-2` or `pb-2`), as the items' own space under their text makes up the rest; the XP chart's skill
-  chips are their own control.
+  (the token already changes at `sm`); lint fails 20px sides by hand (`px-5`, `p-5`, `-mx-5`) and `max-sm:px-4`
+  (`CARD_PADDING` in `eslint.config.js`). Home's tilted preview card is a picture, not a card, and keeps its own. A
+  chart's key under it (the item page's price and volume) is 8px below the chart, in 32px items (`h-8 px-2`, the row
+  `-mx-2`) with an 18×12px swatch, whether the items are buttons or not, so keys on one page line up; the card gets 8px
+  less padding under it (`-mb-2` or `pb-2`), as the items' own space under their text makes up the rest; the XP chart's
+  skill chips are their own control.
 
 - **Phones** (below `sm`): keep pages symmetric inside the 16px margins and check balance against the cards around a
   change. Pictures are never cropped (Home's news is a 2×2 grid of picture-on-top cards; tablets show four of them in a
@@ -243,8 +244,9 @@ agent.
 - Rules that span files, checked against the whole diff: a new or renamed route and `src/server/utils/route-label.ts`;
   changed icons and `local-icons.generated.ts`; a change that needs an entry under CLAUDE.md's changelog rule and
   `CHANGELOG.md`.
-- Padding on a card surface or its header, rows, body or footer that isn't Design system's Padding (`px-5`, `p-5`,
-  `max-sm:px-4`, a hand-built 56px header): **violates**, naming the class from that table.
+- Padding on a card surface or its header, rows, body or footer that isn't Design system's Padding (a hand-built 56px
+  header, `p-6` on an inner tile; lint already fails `px-5`, `p-5`, `-mx-5` and `max-sm:px-4`): **violates**, naming the
+  class from that table.
 - **breaks** here also covers: blocks scripts under the CSP, refetches on hydration. A typical **check**: the API's
   `Cache-Control` for a new SSR request (name the endpoint and the header to verify).
 

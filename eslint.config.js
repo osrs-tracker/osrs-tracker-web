@@ -12,6 +12,12 @@ const FEATURES = readdirSync('src/app/features');
 // Home is a dashboard over the trackers: it shows their search boxes, rows and stored players and items
 const ALLOWED_FEATURE_IMPORTS = { home: ['trackers'] };
 
+// A card's sides are `px-card` (16px on phones, 20px from sm): 20px written by hand, or a phone-only 16px, is the drift
+// the token replaced. Matched in class strings, templates and host bindings alike.
+const CARD_PADDING = String.raw`(^|[\s"'\x60])(-?mx|p[xlrse]?)-5([\s"'\x60]|$)|max-sm:p[xlrse]?-4([\s"'\x60]|$)`;
+const CARD_PADDING_MESSAGE =
+  'Card padding is `px-card`, `.card-header` or another value from Padding in the osrs-tracker-web skill, not 20px or a `max-sm:` 16px by hand.';
+
 export default defineConfig(
   {
     files: ['**/*.ts'],
@@ -46,6 +52,11 @@ export default defineConfig(
         },
       ],
       'no-console': 'error',
+      'no-restricted-syntax': [
+        'error',
+        // Host and computed class strings; inline templates go through the template rule below
+        { selector: `Literal[value=/${CARD_PADDING}/]`, message: CARD_PADDING_MESSAGE },
+      ],
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': 'error',
     },
@@ -111,6 +122,11 @@ export default defineConfig(
     files: ['**/*.html'],
     extends: [...angular.configs.templateRecommended, ...angular.configs.templateAccessibility],
     rules: {
+      'no-restricted-syntax': [
+        'error',
+        { selector: `TextAttribute[name='class'][value=/${CARD_PADDING}/]`, message: CARD_PADDING_MESSAGE },
+        { selector: `LiteralPrimitive[value=/${CARD_PADDING}/]`, message: CARD_PADDING_MESSAGE },
+      ],
       '@angular-eslint/template/eqeqeq': [
         'error',
         {

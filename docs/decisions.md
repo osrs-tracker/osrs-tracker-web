@@ -12,7 +12,9 @@ Choices that look like accidents without their context: what was decided, why, a
   token, `px-card`, 16px on phones (the one-line list rows need the width) and 20px from `sm`. It changes in `base.css`,
   so templates carry no `max-sm:` overrides (GOV.UK's responsive spacing, kb SPACE-003). Phone list rows went from 10 to
   12px above and below: 56px, the header's height, back on the scale. `.card-header` in `components.css` replaces the
-  hand-built headers. Review flags a raw `px-5` on a card.
+  hand-built headers. Lint fails `px-5`, `p-5`, `-mx-5` and `max-sm:px-4` anywhere in `src/app` (`CARD_PADDING` in
+  `eslint.config.js`): a pattern rule rather than a `--spacing: initial` scale, which would also drop the sizes that
+  share the multiplier; review catches the rest.
 - **Revisit:** if a dense view needs tighter cards, add a second token instead of overriding `px-card`.
 
 ## A documented spacing scale, not an enforced one (2026-10-28)

@@ -27,7 +27,8 @@
   20px on bigger screens, so cards stacked above each other line up (on an item's page they started at three different
   distances). List rows on phones are as tall as on a computer again, the news list lines up with its cards, and the
   "not found" and error panels give phones more room for their text. On an item's page, the trade volume chart's key now
-  has the same size and spacing as the price chart's.
+  has the same size and spacing as the price chart's. Behind the scenes, a lint check stops new cards from drifting back
+  to padding of their own.
 - On small phones, boss kill counts, clue totals and minigame scores no longer lose their last digit: the cells tighten
   and show four-digit scores as 1.4K (the tooltip keeps the exact number). On an item's page, a long value such as a
   4,200,000 high alch now shrinks to fit its tile instead of ending in "…", and a low alch from a million up reads 2.8M,
