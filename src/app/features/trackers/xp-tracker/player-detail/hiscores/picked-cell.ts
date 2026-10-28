@@ -4,6 +4,12 @@ export function pickedCellBackground(color: string): string {
   return `linear-gradient(${tint}, ${tint}), var(--inner)`;
 }
 
+/** Two thirds of the picked tint, on hover; a background-image layer over the cell's own background colour */
+export function hoverCellTint(color: string): string {
+  const tint = `color-mix(in oklch, ${color} 12%, transparent)`;
+  return `linear-gradient(${tint}, ${tint})`;
+}
+
 export function pickedCellRing(color: string): string {
   return `inset 0 0 0 2px ${color}`;
 }

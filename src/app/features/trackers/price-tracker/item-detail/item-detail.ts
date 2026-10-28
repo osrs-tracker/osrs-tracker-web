@@ -17,6 +17,7 @@ import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { isHumanVisitor } from '@app/core/platform/human-visitor';
 import { PriceTrackerStore } from '../price-tracker-store';
 import { browseLetterOf, startingWith } from '../browse/browse-letters';
+import { MarginBreakdown } from '../margin-breakdown';
 import { PriceChart } from './charts/price-chart';
 import { ItemHeader } from './item-header';
 import {
@@ -48,6 +49,7 @@ const VOLUME_DAYS = 7;
     ChartTable,
     Card,
     LoadError,
+    MarginBreakdown,
     Segmented,
     Skeleton,
     StatTile,

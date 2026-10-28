@@ -17,6 +17,9 @@ export interface ItemStat {
   label: string;
   value: string;
   sub: string;
+  valueTone?: 'up' | 'down';
+  /** The margin tile's sum, for its tooltip */
+  margin?: { buy: number; sell: number; tax: number; exempt: boolean; margin: number };
   info: string;
   tip?: string;
   subTip?: string;
@@ -74,12 +77,18 @@ function marginStat({ item, latest, latestLoading, latestFailed }: ItemStatsInpu
   const exempt = isGeTaxExempt(item.id);
   const high = latest?.high;
   const low = latest?.low;
+  const tax = high ? geTax(item.id, high) : 0;
   return {
     label: 'Margin after tax',
     info: exempt
       ? 'Instant buy minus instant sell. This item is exempt from GE tax.'
       : 'Instant buy minus instant sell, minus the 2% GE tax on the sale.',
-    ...(high && low ? amount(high - low - geTax(item.id, high), 'gp') : { value: '–' }),
+    ...(high && low
+      ? {
+          ...signedAmount(high - low - tax, 'gp'),
+          margin: { buy: low, sell: high, tax, exempt, margin: high - low - tax },
+        }
+      : { value: '–' }),
     sub: latestFailed ? 'Not loaded' : exempt ? 'No tax on this item' : 'Buy − sell − 2% tax',
     loading: latestLoading,
   };
@@ -119,6 +128,11 @@ function highAlchStat(item: Item): ItemStat {
       : "Can't be alched for coins",
     subTip: item.highalch && short ? `Low alch ${formatWhole(lowAlch)} gp` : undefined,
   };
+}
+
+/** Green for a profit and red for a loss, as in the margins table */
+function signedAmount(value: number, unit: string): Pick<ItemStat, 'value' | 'tip' | 'valueTone'> {
+  return { ...amount(value, unit), valueTone: value > 0 ? 'up' : value < 0 ? 'down' : undefined };
 }
 
 function amount(value: number, unit: string): Pick<ItemStat, 'value' | 'tip'> {

@@ -28,7 +28,8 @@ export interface SegmentedOption<T> {
 /**
  * `variant="slate"` is Home's Player/Item switch, beside the accent Search button. Disabled options stay reachable by
  * the arrow keys (`aria-disabled`) but can't be chosen, so keyboard users find them and their `title`. `picked` also
- * fires when the checked option is chosen again.
+ * fires when the checked option is chosen again. `stretch` options pad 8px on phones, so the hiscores card's four fit a
+ * 320px screen.
  */
 @Component({
   selector: 'segmented',
@@ -43,7 +44,7 @@ export interface SegmentedOption<T> {
           variant() === 'slate'
             ? 'h-10 px-3.5 max-sm:flex-1 md:max-xl:flex-1 rounded-xl text-base ' +
               (option.value === value() ? 'bg-line text-strong' : 'text-muted hover:text-strong')
-            : (option.lucide ? 'h-8 px-2.5' : 'h-8 px-3') +
+            : (option.lucide ? 'h-8 px-2.5' : stretch() ? 'h-8 px-2 sm:px-3' : 'h-8 px-3') +
               ' rounded-full text-sm ' +
               (option.value === value()
                 ? 'bg-accent text-on-accent'
@@ -75,7 +76,7 @@ export interface SegmentedOption<T> {
     '(focusout)': 'onFocusOut($event)',
     '[class]':
       "(stretch() ? 'grid grid-flow-col auto-cols-fr ' : 'flex w-fit max-w-full overflow-x-auto ') + " +
-      "(variant() === 'slate' ? 'gap-1 p-1 rounded-2xl bg-ground' : 'p-1 rounded-full bg-inner')",
+      "(variant() === 'slate' ? 'gap-1 p-1 rounded-2xl bg-ground' : (flush() ? '' : 'p-1 ') + 'rounded-full bg-inner')",
   },
   imports: [Icon, LucideDynamicIcon, ToolbarWidget],
 })
@@ -87,6 +88,8 @@ export class Segmented<T> {
   readonly label = input.required<string>();
   readonly variant = input<'accent' | 'slate'>('accent');
   readonly stretch = input(false, { transform: booleanAttribute });
+  /** No padding round the options, so the checked one lines up with the cards' edges above and below it */
+  readonly flush = input(false, { transform: booleanAttribute });
 
   protected readonly focusWithin = signal(false);
 

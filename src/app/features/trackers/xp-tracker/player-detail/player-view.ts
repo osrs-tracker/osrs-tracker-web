@@ -2,9 +2,9 @@ import { inject, Service, signal } from '@angular/core';
 import { SkillEnum } from '@osrs-tracker/models';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 
-export type TopTab = 'skills' | 'bosses' | 'raids';
-export type BottomTab = 'clues' | 'minigames';
-export type ChartView = TopTab | BottomTab;
+/** Other holds Clues and Minigames, one grid above the other */
+export type TopTab = 'skills' | 'bosses' | 'raids' | 'other';
+export type ChartView = Exclude<TopTab, 'other'> | 'clues' | 'minigames';
 export type ActivityView = Exclude<ChartView, 'skills'>;
 export type Period = 7 | 30 | 60 | 90;
 
@@ -13,7 +13,6 @@ export class PlayerView {
   private readonly analyticsService = inject(AnalyticsService);
 
   readonly top = signal<TopTab>('skills');
-  readonly bottom = signal<BottomTab>('clues');
   readonly chart = signal<ChartView>('skills');
   readonly period = signal<Period>(7);
   /** Apart from the chart's period; 7 is what the page loads first */
@@ -36,13 +35,7 @@ export class PlayerView {
   showTop(tab: TopTab): void {
     this.analyticsService.trackOption('hiscores_tab', tab);
     this.top.set(tab);
-    this.showChart(tab);
-  }
-
-  showBottom(tab: BottomTab): void {
-    this.analyticsService.trackOption('hiscores_tab', tab);
-    this.bottom.set(tab);
-    this.showChart(tab);
+    this.showChart(tab === 'other' ? 'clues' : tab);
   }
 
   toggleSkill(skill: string): void {

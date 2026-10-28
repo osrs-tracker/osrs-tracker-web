@@ -42,24 +42,26 @@ const OVERALL_COLOR = 'var(--accent)';
 @Component({
   selector: 'skill-grid',
   template: `
-    <!-- Rows of three, the total level as a full-width last row; one Tab stop, the arrow keys move between cells -->
+    <!--
+      Rows of three, the total level as a full-width last row; one Tab stop, the arrow keys move between cells
+    -->
     <div
       ngGrid
-      class="flex flex-col gap-px overflow-hidden rounded-xl border border-line bg-line"
+      class="flex flex-col gap-px border-x border-b border-line rounded-b-2xl bg-line"
       colWrap="continuous"
       rowWrap="nowrap"
       aria-label="Skills"
     >
-      @for (row of rows(); track $index; let r = $index) {
+      @for (row of rows(); track $index) {
         <div ngGridRow class="grid grid-cols-3 gap-px">
-          @for (cell of row; track cell.name; let c = $index) {
+          @for (cell of row; track cell.name) {
             <div ngGridCell role="gridcell" class="flex">
               <button
                 ngGridCellWidget
                 type="button"
-                class="flex-1 flex flex-col justify-between bg-inner aria-disabled:cursor-default focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-strong"
-                [class]="r === 0 ? (c === 0 ? 'rounded-tl-xl' : c === 2 ? 'rounded-tr-xl' : '') : ''"
+                class="flex-1 flex flex-col justify-between h-10 bg-inner hover:bg-(image:--hover-tint) aria-disabled:cursor-default focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-strong"
                 [style.background]="cell.on ? tint(cell.color) : null"
+                [style.--hover-tint]="cell.charted && !cell.on ? hoverTint(cell.color) : null"
                 [style.box-shadow]="cell.charted ? (cell.on ? ring(cell.color) : pickableRing(cell.color)) : null"
                 [attr.aria-disabled]="!cell.charted"
                 [attr.aria-pressed]="cell.charted ? cell.on : null"
@@ -70,9 +72,10 @@ const OVERALL_COLOR = 'var(--accent)';
                 [tooltipDescribe]="false"
                 (click)="cell.charted && playerView.toggleSkill(cell.name)"
               >
-                <span class="flex items-center justify-between h-9 px-3">
+                <!-- Capped at the boss cells' 84px plus padding, so in a wide cell the level stays beside its icon -->
+                <span class="flex grow items-center justify-between w-full max-w-27 mx-auto px-3">
                   @if (cell.loaded) {
-                    <img class="h-6 w-auto" icon alt="" [name]="cell.name" [skill]="true" />
+                    <img class="h-5 w-auto" icon alt="" [name]="cell.name" [skill]="true" />
                     <span class="text-base font-bold text-strong tabular-nums text-trim-cap">{{ cell.level }}</span>
                   } @else {
                     <skeleton class="mx-auto h-5 w-16" />
@@ -111,6 +114,10 @@ const OVERALL_COLOR = 'var(--accent)';
               <div class="pt-1 text-muted">
                 {{ cell.charted ? '+' + (cell.gain | number) + ' XP in these days' : 'No XP gained in these days' }}
               </div>
+              <!-- In place of the header's (i): what the coloured ring means -->
+              @if (cell.charted && !cell.on) {
+                <div class="text-muted">Pick it to show it on the chart</div>
+              }
             </ng-template>
           }
         </div>
@@ -121,20 +128,41 @@ const OVERALL_COLOR = 'var(--accent)';
           <button
             ngGridCellWidget
             type="button"
-            class="flex-1 flex items-center justify-center gap-2 h-11 bg-inner rounded-b-xl focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-strong"
+            class="flex-1 flex items-center justify-center gap-2 h-11 bg-inner hover:bg-(image:--hover-tint) rounded-b-2xl-inner focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-strong"
             [style.background]="overallOn() ? tint(OVERALL_COLOR) : null"
+            [style.--hover-tint]="overallOn() ? null : hoverTint(OVERALL_COLOR)"
             [style.box-shadow]="overallOn() ? ring(OVERALL_COLOR) : null"
             [attr.aria-pressed]="overallOn()"
+            [tooltip]="!!overall()"
+            [tooltipTemplate]="overallTooltip"
+            [tooltipUnderline]="false"
+            [tooltipDescribe]="false"
             (click)="playerView.toggleSkill(SkillEnum.Overall)"
           >
             @if (overall(); as overall) {
-              <img class="h-5.5 w-auto" icon alt="" [name]="SkillEnum.Overall" [skill]="true" />
+              <img class="h-5 w-auto" icon alt="" [name]="SkillEnum.Overall" [skill]="true" />
               <span>Total level:</span>
               <span class="text-base font-bold text-strong tabular-nums">{{ overall.level | number }}</span>
             } @else {
               <skeleton class="h-5 w-32" />
             }
           </button>
+          <ng-template #overallTooltip>
+            @if (overall(); as overall) {
+              @let gain = gains().get(SkillEnum.Overall) ?? 0;
+              <div class="flex justify-between gap-4">
+                <div>Total XP:</div>
+                <div class="tabular-nums">{{ overall.xp | number }}</div>
+              </div>
+              <rank-lines kind="skills" [name]="SkillEnum.Overall" [rank]="overall.rank" />
+              <div class="pt-1 text-muted">
+                {{ gain > 0 ? '+' + (gain | number) + ' XP in these days' : 'No XP gained in these days' }}
+              </div>
+              @if (!overallOn()) {
+                <div class="text-muted">Pick it to show it on the chart</div>
+              }
+            }
+          </ng-template>
         </div>
       </div>
     </div>

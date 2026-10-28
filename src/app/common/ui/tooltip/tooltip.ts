@@ -34,7 +34,7 @@ import { Subject, debounceTime, fromEvent } from 'rxjs';
 
     <ng-template #tooltipTemplateContainer>
       <div
-        class="max-w-xs mb-2 px-3 py-2 rounded-xl border border-line bg-card text-sm text-text shadow-float"
+        class="max-w-xs mb-2 px-3 py-2 rounded-xl border border-line bg-card text-sm text-text shadow-tooltip"
         (mouseenter)="onMouseEnter()"
         (mouseleave)="onMouseLeave()"
       >

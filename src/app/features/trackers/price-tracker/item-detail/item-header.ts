@@ -47,7 +47,8 @@ import { LucideExternalLink, LucideStar, LucideTriangle } from '@lucide/angular'
         class="flex flex-col items-start gap-1.5 flex-1 sm:items-end"
         title="Latest instant sell price, compared with yesterday's 24-hour average (UTC)"
       >
-        <span class="text-sm text-muted">Instant sell price</span>
+        <!-- The number speaks for itself on screen; screen readers still need to hear which price it is -->
+        <span class="sr-only">Instant sell price</span>
         @if (loading()) {
           <skeleton class="h-7.5 sm:h-9 w-50 rounded-lg" tone="ground" />
           <skeleton class="h-4 w-30 my-0.5" tone="ground" />
@@ -99,7 +100,7 @@ import { LucideExternalLink, LucideStar, LucideTriangle } from '@lucide/angular'
       }
     </div>
   `,
-  host: { class: 'max-w-page mx-auto flex flex-wrap items-center gap-4 px-4 sm:px-6 py-2' },
+  host: { class: 'max-w-page mx-auto flex flex-wrap items-center gap-4 px-4 sm:px-6 pt-3 pb-2' },
   imports: [Icon, LoadError, Skeleton, LucideExternalLink, LucideStar, LucideTriangle],
 })
 export class ItemHeader {

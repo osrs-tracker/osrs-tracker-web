@@ -1,5 +1,18 @@
 ## 2026-10-28
 
+- A player's hiscores card is tidier and fits the chart beside it exactly. The skill, boss, raid and clue cells now run
+  to the card's edges inside a thin outline, all at the same height, with smaller icons and a slimmer level bar. A cell
+  you can chart now lights up in its colour when you point at it, and its tooltip says you can pick it. Total level and
+  Total clues have tooltips with their rank, and Total clues has its own icon. Clues and minigames moved into a new
+  **Other** tab next to Skills, Bosses and Raids, so the page has one card less.
+- The chart's legend now always fits on one row, keeping the skills you picked first, with the rest behind "+N". Opening
+  it makes the card taller instead of squeezing the chart. The Days and Compare controls above it sit flush with the
+  cards, with half the space around them.
+- Tooltips cast a smaller, softer shadow, so they no longer darken the cells around them.
+- On an item's page, the Margin tile is green for a profit and red for a loss, and its tooltip breaks the margin down
+  (buy at, sell at, GE tax) like the tables do. The "Instant sell price" label above the price is gone (screen readers
+  still hear it).
+- The "Back" link above a player's or item's page, and on the price lists, takes less room and lines up with its arrow.
 - On a player's page, a day with nothing gained yet is now a single line in the day log, "No gains since 00:00 UTC"
   beside the date, instead of a card with a sentence of its own. The days that do have gains stand out more, and the
   line still shows when today's count started.

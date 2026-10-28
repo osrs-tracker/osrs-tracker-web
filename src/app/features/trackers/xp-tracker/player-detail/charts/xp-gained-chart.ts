@@ -18,13 +18,14 @@ import { TooltipMarkers } from './tooltip-markers';
 /** Above this many days, the points crowd the line */
 const MAX_POINTS = 15;
 
-const CHIPS_SHOWN = 7;
-
 @Component({
   selector: 'xp-gained-chart',
   template: `
-    <!-- Hidden, not removed, while the table shows: the chart is created once, on its canvas -->
-    <div class="relative h-55 lg:h-auto lg:grow lg:basis-0 lg:min-h-35" [class.hidden]="tableShown()">
+    <!--
+      Hidden, not removed, while the table shows: the chart is created once, on its canvas. Its minimum fills the card
+      beside the Skills tab under one row of chips, so expanding the chips grows the card instead of shrinking it.
+    -->
+    <div class="relative h-55 lg:h-auto lg:grow lg:basis-0 lg:min-h-54.25" [class.hidden]="tableShown()">
       <canvas #chart role="img" [class.invisible]="!series().length" [attr.aria-label]="label()"></canvas>
       @if (!series().length) {
         <p class="absolute inset-0 flex items-center justify-center text-base text-muted">
@@ -34,19 +35,13 @@ const CHIPS_SHOWN = 7;
     </div>
     @if (tableShown()) {
       <chart-table
-        class="h-55 lg:h-auto lg:grow lg:basis-0 lg:min-h-35"
+        class="h-55 lg:h-auto lg:grow lg:basis-0 lg:min-h-54.25"
         [caption]="tableCaption()"
         [columns]="tableColumns()"
         [rows]="tableRows()"
       />
     }
-    <chart-legend
-      class="mt-4"
-      kind="skill"
-      [items]="chips()"
-      [collapseAfter]="CHIPS_SHOWN"
-      (toggled)="playerView.toggleSkill($event)"
-    />
+    <chart-legend class="mt-4" kind="skill" [items]="chips()" (toggled)="playerView.toggleSkill($event)" />
   `,
   host: { class: 'flex flex-col grow min-h-0' },
   imports: [ChartLegend, ChartTable],
@@ -55,8 +50,6 @@ export class XpGainedChart extends LogChart<'line'> {
   protected readonly type = 'line';
 
   readonly playerView = inject(PlayerView);
-
-  readonly CHIPS_SHOWN = CHIPS_SHOWN;
 
   readonly #markers = new TooltipMarkers(inject(DOCUMENT), 'skill', inject(LOCAL_ICONS, { optional: true }));
 

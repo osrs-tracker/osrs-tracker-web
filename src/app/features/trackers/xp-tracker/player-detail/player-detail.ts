@@ -35,7 +35,6 @@ import { isHumanVisitor } from '@app/core/platform/human-visitor';
 import { isNotFound, resolverErrorHandler } from '@app/core/routing/resolver-error';
 import { MINIGAME_ROWS, UNCHARTED_MINIGAMES } from './activity-categories';
 import { XpTrackerStore } from '../xp-tracker-store';
-import { ActivitiesCard } from './hiscores/activities-card';
 import { ModeRanks } from './hiscores/mode-ranks';
 import { MilestonesCard } from './milestones/milestones-card';
 import { SkillsCard } from './hiscores/skills-card';
@@ -61,7 +60,6 @@ const LOG_VIEWS: SegmentedOption<LogView>[] = [
   selector: 'player-detail',
   templateUrl: './player-detail.html',
   imports: [
-    ActivitiesCard,
     CompareDays,
     LoadError,
     MilestonesCard,
