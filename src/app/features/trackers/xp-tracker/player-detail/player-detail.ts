@@ -121,6 +121,9 @@ export default class PlayerDetail implements OnInit {
     milestonePeriod: this.playerView.milestonePeriod,
   });
 
+  private readonly retried = signal(false);
+  // only after Try again: the first load, and SSR (which never asks the hiscores), aren't a retry
+  readonly retrying = computed(() => this.retried() && this.history.todayLoading());
   readonly stale = computed(
     () =>
       !this.history.today() &&
@@ -218,7 +221,11 @@ export default class PlayerDetail implements OnInit {
 
   constructor() {
     // The notice appears after the page loaded, when today's hiscores fail: a status region added with it isn't read
-    announceChanges(() => (this.stale() ? this.staleNotice() : null));
+    // Try again changes only its own text, so its start and outcome are announced here too
+    announceChanges(() => {
+      if (this.stale()) return this.retrying() ? 'Checking the hiscores…' : this.staleNotice();
+      return this.retried() ? 'The hiscores responded: these are today’s stats.' : null;
+    });
     inject(ModeRanks).connect({ username: this.username, player: this.playerDetail, hiscore: this.history.current });
 
     // Only during SSR: the page is a 404 when there's no such player
@@ -268,6 +275,8 @@ export default class PlayerDetail implements OnInit {
   }
 
   reloadToday(): void {
+    if (this.retrying()) return;
+    this.retried.set(true);
     this.history.reloadToday();
     this.analyticsService.trackEvent('retry', { source: 'player-stale' });
   }

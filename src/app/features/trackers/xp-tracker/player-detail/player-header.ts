@@ -47,7 +47,15 @@ export type TrackingState = 'tracked' | 'started' | 'untracked';
           <svg lucideTriangleAlert class="size-4.5 shrink-0 stroke-amber" />
           <span class="text-strong">Hiscores not responding: stats from {{ lastCheckedAt() | timeAgo }}</span>
           ·
-          <button type="button" class="link font-bold" (click)="retry.emit()">Try again</button>
+          <!-- aria-disabled, not disabled: a disabled button drops focus to <body> -->
+          <button
+            type="button"
+            class="link font-bold aria-disabled:text-muted aria-disabled:cursor-wait"
+            [attr.aria-disabled]="retrying() || null"
+            (click)="retry.emit()"
+          >
+            {{ retrying() ? 'Checking…' : 'Try again' }}
+          </button>
         </p>
       } @else {
         <p class="text-base text-muted">
@@ -107,6 +115,7 @@ export class PlayerHeader {
   readonly trackedAt = input.required<string>();
   readonly lastCheckedAt = input.required<Date | undefined>();
   readonly stale = input(false);
+  readonly retrying = input(false);
   readonly retry = output();
 
   readonly isFavorite = computed(() => this.xpTrackerStore.isFavoritePlayer(this.playerDetail().username));

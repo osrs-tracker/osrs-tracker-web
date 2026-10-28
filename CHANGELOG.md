@@ -3,6 +3,9 @@
 - On a player's page, a day with nothing gained yet is now a single line in the day log, "No gains since 00:00 UTC"
   beside the date, instead of a card with a sentence of its own. The days that do have gains stand out more, and the
   line still shows when today's count started.
+- When the hiscores don't respond on a player's page, Try again now shows that it's working: it reads "Checking…" and
+  today's card in the day log turns back into a loading card until the hiscores answer. Before, nothing changed, so it
+  looked like the button did nothing.
 - Spacing tidy-up: a player's skill levels (and the ones in the home page's preview) now sit exactly level with their
   skill icons, whatever the browser's text metrics, and the stat tiles, the profit calculator, the player chart, the
   year picker and the footer now use the site's regular spacing steps instead of in-between values, and the skills and
