@@ -29,6 +29,8 @@
   "not found" and error panels give phones more room for their text. On an item's page, the trade volume chart's key now
   has the same size and spacing as the price chart's. Behind the scenes, a lint check stops new cards from drifting back
   to padding of their own.
+- The High-alch profit, Margins and New on the GE tables show item pictures at their full size, in the same 40px tiles
+  as Browse A–Z and the item lists, instead of shrinking them to fit a smaller tile.
 - On small phones, boss kill counts, clue totals and minigame scores no longer lose their last digit: the cells tighten
   and show four-digit scores as 1.4K (the tooltip keeps the exact number). On an item's page, a long value such as a
   4,200,000 high alch now shrinks to fit its tile instead of ending in "…", and a low alch from a million up reads 2.8M,
