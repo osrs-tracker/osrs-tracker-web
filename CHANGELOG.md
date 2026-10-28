@@ -1,3 +1,9 @@
+## 2026-10-28
+
+- On a player's page, a day with nothing gained yet is now a single line in the day log, "No gains since 00:00 UTC"
+  beside the date, instead of a card with a sentence of its own. The days that do have gains stand out more, and the
+  line still shows when today's count started.
+
 ## 2026-10-27
 
 - New page: **How it works**, linked at the bottom of every page. It answers the questions the trackers raise most: why

@@ -114,14 +114,11 @@
         }
       </article>
     } @else if (group.type === 'today') {
-      <article class="rounded-2xl border border-line">
-        <div
-          class="flex flex-wrap items-center justify-between gap-2 min-h-14 px-5 py-1.5 border-b border-line text-muted"
-        >
-          <h3 class="text-base font-bold">{{ group.date | shortDate }}</h3>
-          <span class="text-sm">since {{ group.since }}</span>
-        </div>
-        <p class="px-5 py-3.5 text-base text-muted">Nothing gained yet today.</p>
+      <article
+        class="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 min-h-14 px-5 py-1.5 rounded-2xl border border-line text-muted"
+      >
+        <h3 class="text-base font-bold">{{ group.date | shortDate }}</h3>
+        <span class="text-sm">No gains since {{ group.since }}</span>
       </article>
     } @else {
       <article class="rounded-2xl border border-line">
