@@ -1,12 +1,12 @@
-<div class="max-w-page mx-auto px-4 sm:px-6 pt-4">
-  <a routerLink="/trackers/xp" class="link inline-flex items-center gap-1.5 min-h-11 text-base">
-    <svg lucideArrowLeft class="size-4.5" strokeWidth="2.5" />
+<div class="max-w-page mx-auto flex px-4 sm:px-6 pt-3">
+  <a routerLink="/trackers/xp" class="link inline-flex items-center gap-1.5 min-h-6 text-sm">
+    <svg lucideArrowLeft class="size-4" strokeWidth="2.5" />
     XP Tracker
   </a>
 </div>
 
 @if (playerDetail(); as player) {
-  <header class="max-w-page mx-auto px-4 sm:px-6 pt-2 flex flex-col gap-6">
+  <header class="max-w-page mx-auto px-4 sm:px-6 pt-3 flex flex-col gap-6">
     <player-header
       [playerDetail]="player"
       [trackingState]="trackingState()"
@@ -50,28 +50,30 @@
   <div class="max-w-page mx-auto px-4 sm:px-6 pt-6 pb-18 grid items-start gap-6 md:grid-player-tablet lg:grid-player">
     <aside class="contents md:flex md:flex-col md:gap-6 md:col-start-1 md:row-start-1 md:row-span-2 min-w-0">
       <!--
-        Skills, Bosses or Raids: beside the chart, so on phones it comes first. It hydrates when the browser is idle, a
-        task after the page's hydration (#247). Not `hydrate on interaction` or `when` the live hiscores are in: while
-        the hiscores request hangs, neither fired. On client-side navigation the placeholder, the Skills tab's height,
-        keeps the chart from moving while the card's chunk loads.
+        Skills, Bosses, Raids or Other: beside the chart, so on phones it comes first. It hydrates when the browser is
+        idle, a task after the page's hydration (#247). Not `hydrate on interaction` or `when` the live hiscores are in:
+        while the hiscores request hangs, neither fired. On client-side navigation the placeholder, the Skills tab's
+        height, keeps the chart from moving while the card's chunk loads.
       -->
       @defer (on immediate; hydrate on idle) {
         <article
           skills-card
           class="order-1"
+          [username]="player.username"
           [hiscore]="history.current()"
           [skillGains]="skillGains()"
           [activityGains]="activityGains()"
+          [minigame]="chartedMinigame()"
           [failed]="hiscoresFailed()"
           (retry)="history.retry()"
         ></article>
       } @placeholder {
-        <article class="order-1 h-115.5 rounded-2xl bg-card" aria-busy="true"></article>
+        <article class="order-1 h-107.25 rounded-2xl bg-card" aria-busy="true"></article>
       }
 
       <!--
-        When each skill reaches its next level, 99 or 200M (#250): on phones after the chart, ahead of Clues or
-        Minigames, so it hydrates when scrolled to. A new player's single entry has nothing to project from.
+        When each skill reaches its next level, 99 or 200M (#250): on phones after the chart, so it hydrates
+        when scrolled to. A new player's single entry has nothing to project from.
       -->
       @if (!history.firstPageFailed() && (!history.loaded() || history.entries().length > 1)) {
         @defer (on immediate; hydrate on viewport) {
@@ -84,18 +86,6 @@
             [lastCheckedAt]="history.lastCheckedAt()"
           />
         }
-      }
-
-      <!-- Clues or Minigames: on phones after the chart, so it hydrates when scrolled to, like the day log -->
-      @defer (on immediate; hydrate on viewport) {
-        <article
-          activities-card
-          class="order-3"
-          [username]="player.username"
-          [hiscore]="history.current()"
-          [gains]="activityGains()"
-          [minigame]="chartedMinigame()"
-        ></article>
       }
     </aside>
 
@@ -121,8 +111,10 @@
       <div class="order-4 md:col-start-2 md:row-start-2 min-w-0 flex flex-col gap-6">
         <!-- The day log, or two days compared in its place (#252), so neither pushes the other down -->
         @if (history.entries().length > 1) {
-          <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <!-- Controls, not a card: half the 24px between cards above and below it -->
+          <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 -my-3">
             <segmented
+              flush
               label="Days or Compare"
               [options]="logViews"
               [value]="logView()"

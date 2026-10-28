@@ -1,4 +1,4 @@
-import { booleanAttribute, Component, computed, input } from '@angular/core';
+import { booleanAttribute, Component, computed, input, TemplateRef } from '@angular/core';
 import { InfoTooltip } from '../tooltip/info-tooltip';
 import { Tooltip } from '../tooltip/tooltip';
 import { Skeleton } from '../loading/skeleton';
@@ -24,13 +24,26 @@ import { Skeleton } from '../loading/skeleton';
           >
         }
       </span>
-      <span
-        class="font-bold text-strong tabular-nums truncate"
-        [class]="compact() ? 'fit-tile-digits leading-7.5' : 'text-3xl/8.5'"
-        [style.--digits]="compact() ? digits() : null"
-        [attr.title]="tip() || null"
-        >{{ value() }}</span
-      >
+      @if (valueTip(); as valueTip) {
+        <span
+          class="font-bold tabular-nums truncate cursor-help decoration-dotted underline-offset-6 hover:underline pointer-coarse:underline"
+          [class]="valueClass()"
+          [style.--digits]="compact() ? digits() : null"
+          tabindex="0"
+          [tooltip]="true"
+          [tooltipTemplate]="valueTip"
+          [tooltipUnderline]="false"
+          >{{ value() }}</span
+        >
+      } @else {
+        <span
+          class="font-bold tabular-nums truncate"
+          [class]="valueClass()"
+          [style.--digits]="compact() ? digits() : null"
+          [attr.title]="tip() || null"
+          >{{ value() }}</span
+        >
+      }
       @if (sub()) {
         <span
           class="text-sm/4.5 truncate"
@@ -61,6 +74,15 @@ export class StatTile {
   readonly value = input('');
   readonly sub = input('');
   readonly tone = input<'muted' | 'up' | 'down'>('muted');
+  /** For a value that's a gain or a loss in itself, such as a margin */
+  readonly valueTone = input<'up' | 'down' | undefined>();
+  /** How the value adds up, as a tooltip in place of `tip` */
+  readonly valueTip = input<TemplateRef<unknown>>();
+  protected readonly valueClass = computed(
+    () =>
+      (this.compact() ? 'fit-tile-digits leading-7.5 ' : 'text-3xl/8.5 ') +
+      (this.valueTone() === 'up' ? 'text-up' : this.valueTone() === 'down' ? 'text-down' : 'text-strong'),
+  );
   readonly info = input('');
   readonly tip = input('');
   /** `\n` starts a new line */

@@ -91,7 +91,8 @@ value the scale lacks becomes a token in `src/styles/tailwind/theme.css`.
   `transparent`/`current`/`inherit` remain. A new colour is a token in `base.css`, built from a `--palette-*` step in
   `theme.css` (add the step there if it's missing).
 - **Tints:** `hiscores/picked-cell.ts` and the chart legend layer one over the surface.
-- **Surfaces:** cards are flat; only floating layers (dropdowns, tooltips, Home's preview card) get `shadow-float`.
+- **Surfaces:** cards are flat; only floating layers (dropdowns, Home's preview card) get `shadow-float`, and tooltips
+  the smaller `shadow-tooltip`, as the float shadow falls over what they explain.
 - **Radii:** `rounded-3xl` hero surfaces (search box, preview card), `rounded-2xl` cards, stat tiles and buttons in the
   search box, `rounded-xl` inner tiles, inputs and icon tiles, `rounded-full` pills and standalone buttons.
 - **Type:** Tailwind's `text-xs`…`text-6xl`, line heights like `text-xl/6`. Page titles `text-2xl sm:text-3xl`, landing

@@ -28,6 +28,7 @@ import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
 import { Tooltip } from '@app/common/ui/tooltip/tooltip';
 import { isGeTaxExempt } from '../item-detail/ge-tax';
+import { MarginBreakdown } from '../margin-breakdown';
 import { yesterdayStart } from '../utc-day';
 import {
   BuyAt,
@@ -86,6 +87,7 @@ interface Column {
     Icon,
     InfoTooltip,
     LoadError,
+    MarginBreakdown,
     Segmented,
     Skeleton,
     StaleNote,

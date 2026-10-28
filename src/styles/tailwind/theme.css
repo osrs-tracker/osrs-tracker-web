@@ -30,6 +30,8 @@
 
   /* The big search box on phones, a step tighter than its 24px (rounded-3xl) */
   --radius-search-phone: 1.25rem;
+  /* Inside a rounded-2xl card's 1px border, whose clip curves at 1px less: content in its corners curves with it */
+  --radius-2xl-inner: calc(1rem - 1px);
 
   --text-2xs: 0.625rem;
 
@@ -156,6 +158,8 @@
   --color-sold: var(--sold);
   --color-scrim: var(--scrim);
 
-  /* Floating layers only (dropdowns, tooltips, popovers); cards are flat */
+  /* Floating layers only (dropdowns, popovers); cards are flat */
   --shadow-float: 0 24px 60px var(--float-shadow);
+  /* A tooltip sits 8px above what it explains: the float shadow would fall over that and darken it */
+  --shadow-tooltip: 0 4px 12px var(--float-shadow);
 }

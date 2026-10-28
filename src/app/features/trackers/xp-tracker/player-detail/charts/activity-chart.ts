@@ -13,14 +13,15 @@ import { logChartOptions } from './log-chart-options';
 import { activitySeries, logTableRows } from './log-chart-series';
 import { TooltipMarkers } from './tooltip-markers';
 
-const CHIPS_SHOWN = 8;
-
 /** Minigames show only the one picked, as their units differ too much to stack. */
 @Component({
   selector: 'activity-chart',
   template: `
-    <!-- Hidden, not removed, while the table shows: the chart is created once, on its canvas -->
-    <div class="relative h-55 lg:h-auto lg:grow lg:basis-0 lg:min-h-35" [class.hidden]="tableShown()">
+    <!--
+      Hidden, not removed, while the table shows: the chart is created once, on its canvas. Its minimum fills the card
+      beside the Skills tab under one row of chips, so expanding the chips grows the card instead of shrinking it.
+    -->
+    <div class="relative h-55 lg:h-auto lg:grow lg:basis-0 lg:min-h-54.25" [class.hidden]="tableShown()">
       <canvas #chart [class.invisible]="!series().length"></canvas>
       @if (!series().length) {
         <p class="absolute inset-0 flex items-center justify-center px-4 text-center text-base text-muted">
@@ -32,21 +33,14 @@ const CHIPS_SHOWN = 8;
     </div>
     @if (tableShown()) {
       <chart-table
-        class="h-55 lg:h-auto lg:grow lg:basis-0 lg:min-h-35"
+        class="h-55 lg:h-auto lg:grow lg:basis-0 lg:min-h-54.25"
         [caption]="tableCaption()"
         [columns]="tableColumns()"
         [rows]="tableRows()"
       />
     }
     @if (legendItems().length) {
-      <chart-legend
-        class="mt-4"
-        kind="activity"
-        prefix="+"
-        [items]="legendItems()"
-        [collapseAfter]="CHIPS_SHOWN"
-        (toggled)="toggle($event)"
-      />
+      <chart-legend class="mt-4" kind="activity" prefix="+" [items]="legendItems()" (toggled)="toggle($event)" />
     }
   `,
   host: { class: 'flex flex-col grow min-h-0' },
@@ -56,8 +50,6 @@ export class ActivityChart extends LogChart<'bar'> {
   protected readonly type = 'bar';
 
   private readonly playerView = inject(PlayerView);
-
-  readonly CHIPS_SHOWN = CHIPS_SHOWN;
 
   readonly #markers = new TooltipMarkers(inject(DOCUMENT), 'activity', inject(LOCAL_ICONS, { optional: true }));
 

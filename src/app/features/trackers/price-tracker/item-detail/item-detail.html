@@ -1,12 +1,12 @@
-<div class="max-w-page mx-auto flex flex-wrap items-center justify-between gap-x-4 px-4 sm:px-6 pt-4">
-  <a routerLink="/trackers/price" class="link inline-flex items-center gap-1.5 min-h-11">
-    <svg lucideArrowLeft class="size-4.5" strokeWidth="2.5" />
+<div class="max-w-page mx-auto flex flex-wrap items-center justify-between gap-x-4 px-4 sm:px-6 pt-3">
+  <a routerLink="/trackers/price" class="link inline-flex items-center gap-1.5 min-h-6 text-sm">
+    <svg lucideArrowLeft class="size-4" strokeWidth="2.5" />
     Price Tracker
   </a>
   @if (browseLetter(); as letter) {
-    <a class="link inline-flex items-center gap-1.5 min-h-11" [routerLink]="['/trackers/price/browse', letter]">
+    <a class="link inline-flex items-center gap-1.5 min-h-6 text-sm" [routerLink]="['/trackers/price/browse', letter]">
       Items {{ browseStartingWith() }}
-      <svg lucideArrowRight class="size-4.5" strokeWidth="2.5" />
+      <svg lucideArrowRight class="size-4" strokeWidth="2.5" />
     </a>
   }
 </div>
@@ -32,11 +32,24 @@
           [label]="stat.label"
           [value]="stat.value"
           [sub]="stat.sub"
+          [valueTone]="stat.valueTone"
+          [valueTip]="stat.margin ? marginTip : undefined"
           [info]="stat.info"
           [tip]="stat.tip ?? ''"
           [subTip]="stat.subTip ?? ''"
           [loading]="!!stat.loading"
         />
+        <ng-template #marginTip>
+          @if (stat.margin; as margin) {
+            <margin-breakdown
+              [buy]="margin.buy"
+              [sell]="margin.sell"
+              [tax]="margin.tax"
+              [exempt]="margin.exempt"
+              [margin]="margin.margin"
+            />
+          }
+        </ng-template>
       }
     </div>
 

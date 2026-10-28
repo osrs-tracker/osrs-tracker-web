@@ -2,21 +2,22 @@ import { Component, inject, input, output } from '@angular/core';
 import { HiscoreEntry } from '@osrs-tracker/models';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { LoadError } from '@app/common/ui/loading/load-error';
-import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
 import { BOSS_LAYOUT, RAID_LAYOUT } from '../activity-categories';
 import { PlayerView, TopTab } from '../player-view';
 import { ActivityGrid } from './activity-grid';
+import { OtherGrids } from './other-grids';
 import { SkillGrid } from './skill-grid';
 
 const TABS: SegmentedOption<TopTab>[] = [
   { value: 'skills', label: 'Skills' },
   { value: 'bosses', label: 'Bosses' },
   { value: 'raids', label: 'Raids' },
+  { value: 'other', label: 'Other', title: 'Clues and minigames' },
 ];
 
 @Component({
   selector: 'article[skills-card]',
-  imports: [ActivityGrid, InfoTooltip, LoadError, Segmented, SkillGrid],
+  imports: [ActivityGrid, LoadError, OtherGrids, Segmented, SkillGrid],
   template: `
     <div class="flex items-center min-h-14 px-5 py-1.5 border-b border-line">
       <segmented
@@ -27,59 +28,59 @@ const TABS: SegmentedOption<TopTab>[] = [
         [value]="playerView.top()"
         (picked)="playerView.showTop($event)"
       />
-      @if (!failed()) {
-        <info-tooltip label="About the coloured rings"
-          ><ng-template>{{ ringTip[playerView.top()] }}</ng-template></info-tooltip
-        >
-      }
     </div>
-    <div class="px-5 pt-5">
-      @if (failed()) {
+    <!-- The grids run to the card's edges: its cells already have edges, a gutter around them is wasted width -->
+    @if (failed()) {
+      <div class="p-5">
         <load-error source="player-hiscore" message="Couldn't load the hiscores." (retry)="retry.emit()" />
-      } @else {
-        @switch (playerView.top()) {
-          @case ('skills') {
-            <skill-grid [hiscore]="hiscore()" [gains]="skillGains()" />
-          }
-          @case ('bosses') {
-            <activity-grid
-              view="bosses"
-              scoreLabel="Kill count"
-              [layout]="bossLayout"
-              [hiscore]="hiscore()"
-              [gains]="activityGains()"
-            />
-          }
-          @case ('raids') {
-            <activity-grid
-              view="raids"
-              scoreLabel="Completed"
-              [layout]="raidLayout"
-              [hiscore]="hiscore()"
-              [gains]="activityGains()"
-            />
-          }
+      </div>
+    } @else {
+      @switch (playerView.top()) {
+        @case ('skills') {
+          <skill-grid [hiscore]="hiscore()" [gains]="skillGains()" />
+        }
+        @case ('bosses') {
+          <activity-grid
+            view="bosses"
+            scoreLabel="Kill count"
+            [layout]="bossLayout"
+            [hiscore]="hiscore()"
+            [gains]="activityGains()"
+          />
+        }
+        @case ('raids') {
+          <activity-grid
+            view="raids"
+            scoreLabel="Completed"
+            [layout]="raidLayout"
+            [hiscore]="hiscore()"
+            [gains]="activityGains()"
+          />
+        }
+        @case ('other') {
+          <other-grids
+            [username]="username()"
+            [hiscore]="hiscore()"
+            [gains]="activityGains()"
+            [minigame]="minigame()"
+          />
         }
       }
-    </div>
+    }
   `,
   host: {
-    class: 'min-w-0 pb-5 rounded-2xl bg-card overflow-hidden',
+    class: 'min-w-0 rounded-2xl bg-card overflow-hidden',
   },
 })
 export class SkillsCard {
   readonly playerView = inject(PlayerView);
 
-  readonly ringTip: Record<TopTab, string> = {
-    skills: 'A coloured ring marks a skill that gained XP in these days: pick it to show it on the chart.',
-    bosses: 'A coloured ring marks a boss killed in these days: pick it to show it on the chart.',
-    raids: 'A coloured ring marks a raid completed in these days: pick it to show it on the chart.',
-  };
-
+  readonly username = input.required<string>();
   /** `undefined` while the hiscores load */
   readonly hiscore = input.required<HiscoreEntry | undefined>();
   readonly skillGains = input.required<ReadonlyMap<string, number>>();
   readonly activityGains = input.required<ReadonlyMap<string, number>>();
+  readonly minigame = input<string>();
   /** Neither the live hiscores nor a stored entry could be loaded */
   readonly failed = input(false);
   readonly retry = output();

@@ -154,6 +154,8 @@ describe('itemStats', () => {
         label: 'Margin after tax',
         info: 'Instant buy minus instant sell, minus the 2% GE tax on the sale.',
         value: '20,000', // 1,500,000 − 1,450,000 − 30,000 tax
+        valueTone: 'up',
+        margin: { buy: 1_450_000, sell: 1_500_000, tax: 30_000, exempt: false, margin: 20_000 },
         sub: 'Buy − sell − 2% tax',
         loading: false,
       },
@@ -211,6 +213,14 @@ describe('itemStats', () => {
     expect(tile(stats, 'Instant buy')?.value).toBe('1,500,000');
     expect(tile(stats, 'Instant sell')).toMatchObject({ value: '–', sub: 'No recent trades', loading: false });
     expect(tile(stats, 'Margin after tax')?.value).toBe('–');
+  });
+
+  it('marks a margin that loses money red, and an even one neither colour', () => {
+    const margin = (low: number) =>
+      tile(itemStats({ ...LOADED, latest: { ...LOADED.latest!, high: 1_500_000, low } }), 'Margin after tax');
+
+    expect(margin(1_480_000)).toMatchObject({ value: '−10,000', valueTone: 'down' }); // 20,000 − 30,000 tax
+    expect(margin(1_470_000)?.valueTone).toBeUndefined();
   });
 
   it('takes no tax off the margin of a tax-exempt item', () => {

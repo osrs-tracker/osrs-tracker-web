@@ -1,18 +1,18 @@
-<div class="max-w-page mx-auto flex flex-wrap items-center justify-between gap-x-4 px-4 sm:px-6 pt-4">
-  <a routerLink="/trackers/price" class="link inline-flex items-center gap-1.5 min-h-11">
-    <svg lucideArrowLeft class="size-4.5" strokeWidth="2.5" />
+<div class="max-w-page mx-auto flex flex-wrap items-center justify-between gap-x-4 px-4 sm:px-6 pt-3">
+  <a routerLink="/trackers/price" class="link inline-flex items-center gap-1.5 min-h-6 text-sm">
+    <svg lucideArrowLeft class="size-4" strokeWidth="2.5" />
     Price Tracker
   </a>
   <a
-    class="link inline-flex items-center gap-1.5 min-h-11"
+    class="link inline-flex items-center gap-1.5 min-h-6 text-sm"
     [routerLink]="isHighAlch() ? '/trackers/price/margins' : '/trackers/price/high-alch'"
   >
     {{ isHighAlch() ? 'Margins' : 'High-alch profit' }}
-    <svg lucideArrowRight class="size-4.5" strokeWidth="2.5" />
+    <svg lucideArrowRight class="size-4" strokeWidth="2.5" />
   </a>
 </div>
 
-<header class="max-w-page mx-auto flex flex-col gap-1 px-4 sm:px-6 pt-2">
+<header class="max-w-page mx-auto flex flex-col gap-1 px-4 sm:px-6 pt-3">
   <h1 class="text-2xl sm:text-3xl font-bold text-strong">{{ title() }}</h1>
   <p class="max-w-180 text-muted">
     @if (isHighAlch()) {
@@ -212,8 +212,8 @@
                         >{{ formatTableNumber(row.key, true) }}</span
                       >
                       <ng-template #breakdown>
-                        <span class="flex flex-col min-w-48 tabular-nums">
-                          @if (isHighAlch()) {
+                        @if (isHighAlch()) {
+                          <span class="flex flex-col min-w-48 tabular-nums">
                             <span class="flex justify-between gap-6"
                               ><span>Buy price</span><span>−{{ formatWhole(row.buy) }}</span></span
                             >
@@ -223,23 +223,20 @@
                             <span class="flex justify-between gap-6"
                               ><span>Alch value</span><span>+{{ formatWhole(row.alch ?? 0) }}</span></span
                             >
-                          } @else {
-                            <span class="flex justify-between gap-6"
-                              ><span>Buy at</span><span>−{{ formatWhole(row.buy) }}</span></span
+                            <span
+                              class="flex justify-between gap-6 mt-2 pt-2 border-t border-line font-bold text-strong"
+                              ><span>Profit</span><span>{{ formatWhole(row.key, true) }}</span></span
                             >
-                            <span class="flex justify-between gap-6"
-                              ><span>Sell at</span><span>+{{ formatWhole(row.sell ?? 0) }}</span></span
-                            >
-                            <span class="flex justify-between gap-6"
-                              ><span>GE tax</span
-                              ><span>{{ isGeTaxExempt(row.id) ? 'None' : '−' + formatWhole(row.tax ?? 0) }}</span></span
-                            >
-                          }
-                          <span class="flex justify-between gap-6 mt-2 pt-2 border-t border-line font-bold text-strong"
-                            ><span>{{ isHighAlch() ? 'Profit' : 'Margin' }}</span
-                            ><span>{{ formatWhole(row.key, true) }}</span></span
-                          >
-                        </span>
+                          </span>
+                        } @else {
+                          <margin-breakdown
+                            [buy]="row.buy"
+                            [sell]="row.sell ?? 0"
+                            [tax]="row.tax ?? 0"
+                            [exempt]="isGeTaxExempt(row.id)"
+                            [margin]="row.key"
+                          />
+                        }
                       </ng-template>
                     }
                     @case ('perLimit') {
