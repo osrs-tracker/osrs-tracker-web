@@ -158,7 +158,7 @@ interface ChartHeading {
   `,
   // From lg, as tall as the Skills tab beside it (also its placeholder's height in player-detail.html); a minimum, so
   // larger text spacing grows the card instead of clipping the legend
-  host: { class: 'flex flex-col min-w-0 rounded-2xl bg-card overflow-hidden lg:min-h-113.5' },
+  host: { class: 'flex flex-col min-w-0 rounded-2xl bg-card overflow-hidden lg:min-h-115.5' },
   imports: [ActivityChart, ChartDisplaySwitch, Icon, Segmented, Skeleton, XpGainedChart, LucideClock],
 })
 export class PlayerChart {

@@ -5,8 +5,9 @@
   line still shows when today's count started.
 - Spacing tidy-up: a player's skill levels (and the ones in the home page's preview) now sit exactly level with their
   skill icons, whatever the browser's text metrics, and the stat tiles, the profit calculator, the player chart, the
-  year picker and the footer now use the site's regular spacing steps instead of in-between values. Nothing moves more
-  than a few pixels; the skills grid is 8px shorter.
+  year picker and the footer now use the site's regular spacing steps instead of in-between values, and the skills and
+  activity cards on a player's page now have the same padding as the cards beside them. Nothing moves more than a few
+  pixels.
 - On small phones, boss kill counts, clue totals and minigame scores no longer lose their last digit: the cells tighten
   and show four-digit scores as 1.4K (the tooltip keeps the exact number). On an item's page, a long value such as a
   4,200,000 high alch now shrinks to fit its tile instead of ending in "…", and a low alch from a million up reads 2.8M,
