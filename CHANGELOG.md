@@ -38,6 +38,8 @@
   4,200,000 high alch now shrinks to fit its tile instead of ending in "…", and a low alch from a million up reads 2.8M,
   with the full amount in its tooltip. On a computer, the XP chart beside the skills can now grow taller when you
   enlarge the text, instead of cutting off its legend.
+- Dependency updates: the build tools are on their latest patch version, which brings security fixes for the local
+  development server. The site itself looks and works the same.
 
 ## 2026-10-27
 
