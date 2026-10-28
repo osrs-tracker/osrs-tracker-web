@@ -29,7 +29,6 @@ interface MilestoneRow {
   /** The icon tile's outline: the skill's chart colour, or `undefined` for a skill without one (a new one) */
   color?: string;
   milestone: string;
-  now?: string;
   pace: string;
   date: string;
   left: string;
@@ -114,8 +113,8 @@ export class MilestonesCard {
     return {
       skill,
       color: SKILL_COLORS[skill as ChartSkill]?.[theme],
-      milestone: goal === '200M' ? goal : `${level} → ${goal}`,
-      now: goal === '200M' ? `${formatNumberShort(xp)} XP now ·` : undefined,
+      // a no-break space after the arrow: a 320px phone's column breaks "48.1M → 200M" before it, not after
+      milestone: `${goal === '200M' ? formatNumberShort(xp) : level} →\u00a0${goal}`,
       pace: `${formatNumberShort(Math.round(pace))} XP a day`,
       date,
       left: far ? 'at this pace' : daysLeft === 1 ? 'tomorrow' : `in ${formatWhole(daysLeft)} days`,

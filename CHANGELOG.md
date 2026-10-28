@@ -19,6 +19,8 @@
 - When the hiscores don't respond on a player's page, Try again now shows that it's working: it reads "Checking…" and
   today's card in the day log turns back into a loading card until the hiscores answer. Before, nothing changed, so it
   looked like the button did nothing.
+- A player's 200M milestones now read like the level ones: the XP they have now sits in the title ("Magic 23.4M →
+  200M"), so the line under it is only the pace and no longer wraps onto a second line.
 - Spacing tidy-up: a player's skill levels (and the ones in the home page's preview) now sit exactly level with their
   skill icons, whatever the browser's text metrics, and the stat tiles, the profit calculator, the player chart, the
   year picker and the footer now use the site's regular spacing steps instead of in-between values, and the skills and
