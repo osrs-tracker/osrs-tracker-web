@@ -19,7 +19,7 @@ export const ITEM_SKELETON_WIDTHS = [
   selector: 'td[item-cell-skeleton]',
   template: `
     <span class="flex items-center gap-3">
-      <skeleton class="size-8 rounded-xl" />
+      <skeleton class="size-10 rounded-xl" />
       <skeleton class="h-4" [class]="width()" />
     </span>
   `,

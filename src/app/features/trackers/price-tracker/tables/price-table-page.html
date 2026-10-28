@@ -184,15 +184,12 @@
                   [routerLink]="['/trackers/price', row.id]"
                 >
                   <span
-                    class="flex items-center justify-center size-8 shrink-0 rounded-xl bg-deep border border-line"
+                    class="flex items-center justify-center size-10 shrink-0 rounded-xl bg-deep border border-line"
                     aria-hidden="true"
                   >
-                    <img class="max-w-6 max-h-6" icon alt="" [name]="row.icon" [wiki]="true" />
+                    <img class="max-w-7.5 max-h-7.5" icon alt="" [name]="row.icon" [wiki]="true" />
                   </span>
-                  <span
-                    class="truncate text-base/5 font-bold group-hover:underline decoration-border underline-offset-3"
-                    >{{ row.name }}</span
-                  >
+                  <span class="truncate text-base/5 font-bold">{{ row.name }}</span>
                 </a>
               </th>
               @for (column of columns(); track column.key) {
@@ -294,7 +291,7 @@
             </tr>
             @if (open) {
               <tr class="sm:hidden border-b border-row" [id]="'price-row-details-' + row.id">
-                <td class="pb-4 pl-15 pr-4" [attr.colspan]="columns().length + 2">
+                <td class="pb-4 pl-17 pr-4" [attr.colspan]="columns().length + 2">
                   <p class="text-sm font-bold text-strong">{{ row.name }}</p>
                   <dl class="flex flex-col gap-1.5 mt-2 text-sm">
                     @for (column of detailColumns(); track column.key) {
