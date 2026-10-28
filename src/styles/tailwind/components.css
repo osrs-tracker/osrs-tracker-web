@@ -14,6 +14,11 @@
     @apply rounded-full;
   }
 
+  /* A card's title band: 56px for one line, `py-4` beside it for a title with a subtitle */
+  .card-header {
+    @apply flex flex-wrap items-center justify-between gap-x-3 gap-y-2 min-h-14 px-card py-1.5 border-b border-line;
+  }
+
   .link {
     @apply font-bold text-accent hover:text-accent-hover;
   }

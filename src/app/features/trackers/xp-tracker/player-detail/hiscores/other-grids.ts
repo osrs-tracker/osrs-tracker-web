@@ -14,7 +14,7 @@ import { RankLines } from './rank-lines';
   selector: 'other-grids',
   imports: [ActivityGrid, CapitalizePipe, DecimalPipe, Icon, RankLines, Skeleton, Tooltip],
   template: `
-    <h2 class="flex items-center h-10 px-5 border-b border-line text-sm font-bold text-muted">Clues</h2>
+    <h2 class="flex items-center h-10 px-card border-b border-line text-sm font-bold text-muted">Clues</h2>
     <activity-grid
       view="clues"
       scoreLabel="Completed"
@@ -53,7 +53,7 @@ import { RankLines } from './rank-lines';
       </ng-template>
     </activity-grid>
 
-    <h2 class="flex items-center h-10 px-5 border-b border-line text-sm font-bold text-muted">Minigames</h2>
+    <h2 class="flex items-center h-10 px-card border-b border-line text-sm font-bold text-muted">Minigames</h2>
     @if (!hiscore() || minigameLayout().length) {
       <activity-grid
         view="minigames"
@@ -63,7 +63,7 @@ import { RankLines } from './rank-lines';
         [minigame]="minigame()"
       />
     } @else {
-      <p class="px-5 py-8 text-center text-base text-muted">
+      <p class="px-card py-8 text-center text-base text-muted">
         {{ username() | capitalizeWords }} isn’t ranked in any minigame.
       </p>
     }

@@ -27,9 +27,9 @@
     <div aria-busy="true">
       <span class="sr-only">Loading the milestones</span>
       <skeleton class="block -mx-1 h-10 rounded-full" />
-      <ul class="-mx-5 -mb-4 mt-1 divide-y divide-row" aria-hidden="true">
+      <ul class="-mx-card -mb-4 mt-1 divide-y divide-row" aria-hidden="true">
         @for (width of skeletonRows; track $index) {
-          <li class="flex items-center gap-3 px-5 py-3">
+          <li class="flex items-center gap-3 px-card py-3">
             <skeleton class="size-8 shrink-0 rounded-xl" />
             <span class="flex-1 flex flex-col gap-2 py-0.5">
               <skeleton class="h-4" [class]="width" />
@@ -59,9 +59,9 @@
     />
 
     @if (rows().length) {
-      <ul class="-mx-5 mt-1 divide-y divide-row" [class.-mb-4]="!hasMore()">
+      <ul class="-mx-card mt-1 divide-y divide-row" [class.-mb-4]="!hasMore()">
         @for (row of rows(); track row.skill) {
-          <li class="flex items-center gap-3 px-5 py-3">
+          <li class="flex items-center gap-3 px-card py-3">
             <span
               class="flex items-center justify-center size-8 shrink-0 rounded-xl bg-deep border border-line"
               [style.border-color]="row.color"
@@ -94,7 +94,7 @@
     }
 
     @if (hasMore()) {
-      <div class="flex justify-center -mx-5 -mb-4 border-t border-line">
+      <div class="flex justify-center -mx-card -mb-4 border-t border-line">
         <button
           type="button"
           class="min-h-11 px-4 text-sm font-bold text-accent hover:text-accent-hover"

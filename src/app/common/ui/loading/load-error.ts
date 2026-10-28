@@ -49,7 +49,7 @@ import { LucideRefreshCw } from '@lucide/angular';
         <svg lucideRefreshCw class="size-3.5 shrink-0" strokeWidth="2.5" />
       </button>
     } @else {
-      <div role="alert" class="flex flex-col items-center justify-center gap-1 h-full px-5 py-8 text-center">
+      <div role="alert" class="flex flex-col items-center justify-center gap-1 h-full px-card py-8 text-center">
         <p class="font-bold text-strong">{{ message() }}</p>
         <p class="text-sm text-muted">{{ shownHint() }}</p>
         <button

@@ -1,5 +1,5 @@
 <article class="rounded-2xl bg-card">
-  <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 min-h-14 px-5 py-3 border-b border-line">
+  <div class="card-header">
     <div class="relative flex flex-wrap items-center gap-2">
       <day-picker
         label="Day"
@@ -43,7 +43,7 @@
 
   @if (history.error()) {
     <load-error
-      class="block px-5 py-4"
+      class="block px-card py-4"
       source="player-compare"
       message="Couldn't load the history."
       [error]="history.error()"
@@ -53,7 +53,7 @@
     @let diff = changes();
     @if (diff && !allStats()) {
       @if (diff.skills.length) {
-        <ul class="grid grid-cols-log gap-x-6 gap-y-2 px-5 py-4">
+        <ul class="grid grid-cols-log gap-x-6 gap-y-2 px-card py-4">
           @for (row of diff.skills; track row.name) {
             <li class="flex items-center gap-2.5 min-h-6" [attr.title]="cellTitle(row, true)">
               <span class="flex items-center justify-center size-6 shrink-0">
@@ -72,7 +72,7 @@
         </ul>
       }
       @if (diff.activities.length) {
-        <ul class="grid grid-cols-log gap-x-6 gap-y-2 px-5 py-4 border-row" [class.border-t]="diff.skills.length">
+        <ul class="grid grid-cols-log gap-x-6 gap-y-2 px-card py-4 border-row" [class.border-t]="diff.skills.length">
           @for (row of diff.activities; track row.name) {
             <li class="flex items-center gap-2.5 min-h-6" [attr.title]="cellTitle(row, false)">
               <span class="flex items-center justify-center size-6 shrink-0">
@@ -85,17 +85,17 @@
         </ul>
       }
       @if (!diff.skills.length && !diff.activities.length) {
-        <p class="px-5 py-4 text-base text-muted">Nothing was gained between these days.</p>
+        <p class="px-card py-4 text-base text-muted">Nothing was gained between these days.</p>
       }
     } @else {
       @let comparing = !!diff;
-      <div class="px-5 pt-4 pb-2">
+      <div class="px-card pt-4 pb-2">
         <segmented label="Stats" [options]="tabs" [value]="tab()" (valueChange)="setTab($event)" />
       </div>
       <table class="w-full text-sm">
         <thead>
           <tr class="text-left text-muted">
-            <th class="py-2 pl-5 pr-1.5 sm:pr-3 font-normal" scope="col">
+            <th class="py-2 pl-card pr-1.5 sm:pr-3 font-normal" scope="col">
               {{ tab() === 'skills' ? 'Skill' : 'Activity' }}
             </th>
             <th class="py-2 px-1.5 sm:px-3 font-normal text-right" scope="col">
@@ -114,7 +114,7 @@
               <th class="py-2 px-1.5 sm:px-3 font-normal text-right" scope="col">Gained</th>
             }
             <th
-              class="py-2 pl-1.5 sm:pl-3 pr-5 font-normal text-right"
+              class="py-2 pl-1.5 sm:pl-3 pr-card font-normal text-right"
               [class]="comparing ? 'max-sm:hidden' : ''"
               scope="col"
             >
@@ -126,7 +126,7 @@
           @for (row of rows(); track row.name) {
             @let changed = !!row.gained;
             <tr class="border-t border-row">
-              <td class="max-w-0 w-full py-2 pl-5 pr-1.5 sm:pr-3">
+              <td class="max-w-0 w-full py-2 pl-card pr-1.5 sm:pr-3">
                 <span class="flex items-center gap-2 sm:gap-2.5 min-w-0">
                   <span class="flex items-center justify-center size-6 shrink-0">
                     <img
@@ -174,7 +174,7 @@
                 </td>
               }
               <td
-                class="py-2 pl-1.5 sm:pl-3 pr-5 text-right whitespace-nowrap"
+                class="py-2 pl-1.5 sm:pl-3 pr-card text-right whitespace-nowrap"
                 [class]="comparing ? 'max-sm:hidden' : ''"
               >
                 @if (row.rank === null) {
@@ -195,14 +195,14 @@
             </tr>
           } @empty {
             <tr class="border-t border-row">
-              <td class="py-3 px-5 text-muted" colspan="5">Not ranked in any activity on these days.</td>
+              <td class="py-3 px-card text-muted" colspan="5">Not ranked in any activity on these days.</td>
             </tr>
           }
         </tbody>
       </table>
     }
 
-    <div class="flex flex-wrap items-center gap-x-4 gap-y-2 mt-1 px-5 py-3 border-t border-line">
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-2 mt-1 px-card py-3 border-t border-line">
       @if (diff) {
         <button type="button" class="link text-sm font-bold" (click)="toggleAllStats()">
           {{ allStats() ? 'Show only what changed' : 'Show all stats' }}
@@ -212,9 +212,9 @@
       }
     </div>
   } @else if (history.hasValue()) {
-    <p class="px-5 py-4 text-base text-muted">No days are stored at this check time yet.</p>
+    <p class="px-card py-4 text-base text-muted">No days are stored at this check time yet.</p>
   } @else {
-    <div class="grid grid-cols-log gap-x-6 gap-y-2 px-5 py-4" aria-hidden="true">
+    <div class="grid grid-cols-log gap-x-6 gap-y-2 px-card py-4" aria-hidden="true">
       @for (row of [0, 1, 2, 3, 4, 5]; track row) {
         <skeleton class="h-6 w-full" />
       }

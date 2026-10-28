@@ -19,7 +19,7 @@ const TABS: SegmentedOption<TopTab>[] = [
   selector: 'article[skills-card]',
   imports: [ActivityGrid, LoadError, OtherGrids, Segmented, SkillGrid],
   template: `
-    <div class="flex items-center min-h-14 px-5 py-1.5 border-b border-line">
+    <div class="card-header">
       <segmented
         class="grow"
         stretch
@@ -31,7 +31,7 @@ const TABS: SegmentedOption<TopTab>[] = [
     </div>
     <!-- The grids run to the card's edges: its cells already have edges, a gutter around them is wasted width -->
     @if (failed()) {
-      <div class="p-5">
+      <div class="p-card">
         <load-error source="player-hiscore" message="Couldn't load the hiscores." (retry)="retry.emit()" />
       </div>
     } @else {

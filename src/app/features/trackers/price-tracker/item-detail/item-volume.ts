@@ -52,7 +52,7 @@ interface VolumeSummary {
 @Component({
   selector: 'article[item-volume]',
   template: `
-    <div class="flex flex-wrap items-center justify-between gap-2 min-h-14 px-5 py-1.5 border-b border-line">
+    <div class="card-header">
       <h2 class="text-xl/6 font-bold text-strong">Trade volume</h2>
       @if (!error()) {
         <div class="flex flex-wrap gap-2">
@@ -72,7 +72,7 @@ interface VolumeSummary {
     } @else {
       <dl class="grid sm:grid-cols-3 gap-px bg-line border-b border-line">
         @for (stat of summary(); track stat.label) {
-          <div class="flex items-center justify-between gap-1 px-4 py-3 bg-card sm:flex-col sm:items-start sm:px-5">
+          <div class="flex items-center justify-between gap-1 px-card py-3 bg-card sm:flex-col sm:items-start">
             <dt class="flex items-center text-sm text-muted">
               {{ stat.label }}
               <info-tooltip [label]="'About ' + stat.label"
@@ -92,7 +92,7 @@ interface VolumeSummary {
         }
       </dl>
 
-      <div class="relative flex-1 min-h-50 mx-5 mt-4 mb-2">
+      <div class="relative flex-1 min-h-50 mx-card mt-4 mb-2">
         @if (chart() === 'loading') {
           <skeleton class="absolute inset-0 h-full w-full rounded-xl" />
         } @else if (chart() === 'not loaded') {
@@ -106,7 +106,7 @@ interface VolumeSummary {
             (retry)="retryChart.emit()"
           />
         } @else if (empty()) {
-          <p class="absolute inset-0 flex items-center justify-center px-5 text-center font-bold text-strong">
+          <p class="absolute inset-0 flex items-center justify-center px-card text-center font-bold text-strong">
             No trades in the last {{ rangeTitle() }}
           </p>
         } @else {
@@ -133,19 +133,23 @@ interface VolumeSummary {
       </div>
       <!-- The chart's ends, kept while there's no chart so the card keeps its height -->
       <div
-        class="flex justify-between px-5 text-sm text-muted"
+        class="flex justify-between px-card text-sm text-muted"
         [class.invisible]="chart() !== 'ready' || empty() || display() === 'table'"
       >
         <span>{{ firstBin() }}</span>
         <span>{{ labels().end }}</span>
       </div>
-      <div class="flex flex-wrap gap-x-5 gap-y-1 px-5 pt-3 pb-4 text-sm">
-        <span class="flex items-center gap-1.5">
-          <span class="size-2.5 rounded bg-accent" aria-hidden="true"></span>Bought (instant buy)
-        </span>
-        <span class="flex items-center gap-1.5">
-          <span class="size-2.5 rounded bg-sold" aria-hidden="true"></span>Sold (instant sell)
-        </span>
+      <!-- Rows and swatches the size of the price card's legend buttons, so the two keys line up; the rows' own space
+           under their text makes up the rest of the card's 16px, as at the sides -->
+      <div class="px-card pt-2 pb-2">
+        <div class="flex flex-wrap gap-x-2 -mx-2 text-sm">
+          <span class="flex items-center gap-2 h-8 px-2">
+            <span class="w-4.5 h-3 rounded-sm bg-accent" aria-hidden="true"></span>Bought (instant buy)
+          </span>
+          <span class="flex items-center gap-2 h-8 px-2">
+            <span class="w-4.5 h-3 rounded-sm bg-sold" aria-hidden="true"></span>Sold (instant sell)
+          </span>
+        </div>
       </div>
     }
   `,

@@ -314,7 +314,7 @@ export default class PriceTablePage {
     return (
       (key === 'limit' && !sorted ? 'max-lg:hidden ' : '') +
       (key === 'key' || sorted ? '' : 'max-sm:hidden ') +
-      (last ? 'sm:pr-5' : '')
+      (last ? 'sm:pr-card' : '')
     );
   }
 

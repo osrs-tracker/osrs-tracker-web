@@ -23,7 +23,12 @@
   skill icons, whatever the browser's text metrics, and the stat tiles, the profit calculator, the player chart, the
   year picker and the footer now use the site's regular spacing steps instead of in-between values, and the skills and
   activity cards on a player's page now have the same padding as the cards beside them. Nothing moves more than a few
-  pixels.
+  pixels. Every card now follows one padding rule: on a phone, everything in every card starts 16px from its edge, and
+  20px on bigger screens, so cards stacked above each other line up (on an item's page they started at three different
+  distances). List rows on phones are as tall as on a computer again, the news list lines up with its cards, and the
+  "not found" and error panels give phones more room for their text. On an item's page, the trade volume chart's key now
+  has the same size and spacing as the price chart's. Behind the scenes, a lint check stops new cards from drifting back
+  to padding of their own.
 - On small phones, boss kill counts, clue totals and minigame scores no longer lose their last digit: the cells tighten
   and show four-digit scores as 1.4K (the tooltip keeps the exact number). On an item's page, a long value such as a
   4,200,000 high alch now shrinks to fit its tile instead of ending in "…", and a low alch from a million up reads 2.8M,

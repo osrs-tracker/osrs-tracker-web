@@ -29,6 +29,12 @@
     --scrim: oklch(0.208 0.042 265.755 / 0.25);
     /* The hero dot grid: --row is too close to --deep in the light theme, so the dots get a darker step */
     --dot: var(--palette-slate-350);
+
+    /* `px-card`: 16px on phones, where one-line list rows need the width, 20px from sm */
+    --card-inset: 1rem;
+    @variant sm {
+      --card-inset: 1.25rem;
+    }
   }
 
   .dark {

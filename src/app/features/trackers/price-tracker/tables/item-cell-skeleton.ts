@@ -23,7 +23,7 @@ export const ITEM_SKELETON_WIDTHS = [
       <skeleton class="h-4" [class]="width()" />
     </span>
   `,
-  host: { class: 'py-3 pl-5 max-sm:pl-4 pr-3' },
+  host: { class: 'py-3 pl-card pr-3' },
   imports: [Skeleton],
 })
 export class ItemCellSkeleton {

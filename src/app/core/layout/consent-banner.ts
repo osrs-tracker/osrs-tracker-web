@@ -15,7 +15,7 @@ import { LucideChartNoAxesColumn } from '@lucide/angular';
   selector: 'consent-banner',
   template: `
     <section
-      class="flex flex-col gap-4 p-5 rounded-2xl border border-line bg-card shadow-float outline-none"
+      class="flex flex-col gap-4 p-card rounded-2xl border border-line bg-card shadow-float outline-none"
       aria-labelledby="consent-heading"
       tabindex="-1"
       data-nosnippet
