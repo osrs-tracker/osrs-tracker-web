@@ -1,4 +1,4 @@
-// Imports the .ts helper directly, which relies on Node's type stripping (Node 24).
+// Imports the .ts helper directly, which relies on Node's type stripping (Node 26).
 const { GE_TAX_CAP, GE_TAX_EXEMPT_IDS, GE_TAX_PERCENT } =
   await import('../../src/app/features/trackers/price-tracker/item-detail/ge-tax.ts');
 

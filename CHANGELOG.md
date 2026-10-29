@@ -1,3 +1,8 @@
+## 2026-10-29
+
+- The site now runs on Node 26, the long-term-support version of Node.js since yesterday, so it keeps getting security
+  fixes for years to come. Nothing changes on the pages.
+
 ## 2026-10-28
 
 - A player's hiscores card is tidier and fits the chart beside it exactly. The skill, boss, raid and clue cells now run

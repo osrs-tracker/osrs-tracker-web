@@ -49,7 +49,7 @@ Live hiscores come from the official Old School RuneScape hiscores, and prices c
 
 ## Running it locally
 
-You need Node 24 or later.
+You need Node 26 or later.
 
 ```bash
 npm ci
@@ -92,7 +92,7 @@ release flow are in [.claude/skills/osrs-tracker-web/SKILL.md](.claude/skills/os
 
 ## Built with
 
-Angular with server-side rendering, Tailwind CSS and Chart.js, running on Node 24 in Docker on Kubernetes.
+Angular with server-side rendering, Tailwind CSS and Chart.js, running on Node 26 in Docker on Kubernetes.
 
 ## Development
 
