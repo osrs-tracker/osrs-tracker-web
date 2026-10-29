@@ -40,7 +40,7 @@ updates:
     commit-message:
       prefix: ci
 
-  # The base image is pinned by digest, so this opens a PR when node:24-alpine is rebuilt (Node patches, Alpine fixes)
+  # The base image is pinned by digest, so this opens a PR when node:26-alpine is rebuilt (Node patches, Alpine fixes)
   - package-ecosystem: docker
     directory: /
     schedule:

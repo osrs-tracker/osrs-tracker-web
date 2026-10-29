@@ -8,12 +8,12 @@ runs:
   steps:
     - uses: actions/setup-node@v7
       with:
-        node-version: '24.x'
+        node-version: '26.x'
     - id: cache
       uses: actions/cache/restore@v6
       with:
         path: node_modules
-        key: node-modules-${{ runner.os }}-${{ runner.arch }}-node24-${{ hashFiles('package-lock.json') }}
+        key: node-modules-${{ runner.os }}-${{ runner.arch }}-node26-${{ hashFiles('package-lock.json') }}
     - if: steps.cache.outputs.cache-hit != 'true'
       run: npm ci
       shell: bash
