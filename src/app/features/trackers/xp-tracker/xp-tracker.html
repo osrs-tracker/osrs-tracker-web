@@ -52,35 +52,69 @@
       }
     </section>
 
-    @defer {
-      <section
-        list-card
-        heading="Your favourites"
-        subtitle="Starred on a player's page"
-        kind="player"
-        [state]="xpTrackerStore.favoritePlayers().length ? 'ready' : 'empty'"
-        [count]="xpTrackerStore.favoritePlayers().length"
-        emptyText="No favourites yet."
-        emptyHint="Star a player on their page to pin them here."
-      >
-        @for (username of xpTrackerStore.favoritePlayers(); track username) {
-          <a
-            player-row
-            [routerLink]="['/trackers/xp', username]"
-            [username]="username"
-            [scrapingOffset]="scrapingOffset()"
-          ></a>
-        }
-      </section>
-    } @placeholder {
-      <section
-        list-card
-        heading="Your favourites"
-        subtitle="Starred on a player's page"
-        kind="player"
-        state="loading"
-      ></section>
-    }
+    <!-- One cell over both rows, so a short favourites list leaves no hole beside the top gainers -->
+    <div class="flex flex-col gap-6 min-w-0 md:col-start-2 md:row-start-1 md:row-span-2">
+      @defer {
+        <section
+          list-card
+          heading="Your favourites"
+          subtitle="Starred on a player's page"
+          kind="player"
+          [state]="xpTrackerStore.favoritePlayers().length ? 'ready' : 'empty'"
+          [count]="xpTrackerStore.favoritePlayers().length"
+          emptyText="No favourites yet."
+          emptyHint="Star a player on their page to pin them here."
+        >
+          @for (username of xpTrackerStore.favoritePlayers(); track username) {
+            <a
+              player-row
+              [routerLink]="['/trackers/xp', username]"
+              [username]="username"
+              [scrapingOffset]="scrapingOffset()"
+            ></a>
+          }
+        </section>
+      } @placeholder {
+        <section
+          list-card
+          heading="Your favourites"
+          subtitle="Starred on a player's page"
+          kind="player"
+          state="loading"
+        ></section>
+      }
+
+      <!-- Deferred because these are read from local storage, which isn't available during SSR -->
+      @defer {
+        <section
+          list-card
+          heading="Your recent lookups"
+          subtitle="On this device"
+          kind="player"
+          [state]="xpTrackerStore.recentPlayers().length ? 'ready' : 'empty'"
+          [count]="xpTrackerStore.recentPlayers().length"
+          emptyText="No players looked up on this device yet."
+          emptyHint="Search for a player above to start tracking them."
+        >
+          @for (username of xpTrackerStore.recentPlayers(); track username) {
+            <a
+              player-row
+              [routerLink]="['/trackers/xp', username]"
+              [username]="username"
+              [scrapingOffset]="scrapingOffset()"
+            ></a>
+          }
+        </section>
+      } @placeholder {
+        <section
+          list-card
+          heading="Your recent lookups"
+          subtitle="On this device"
+          kind="player"
+          state="loading"
+        ></section>
+      }
+    </div>
 
     <section
       list-card
@@ -106,36 +140,5 @@
         }
       }
     </section>
-
-    <!-- Deferred because these are read from local storage, which isn't available during SSR -->
-    @defer {
-      <section
-        list-card
-        heading="Your recent lookups"
-        subtitle="On this device"
-        kind="player"
-        [state]="xpTrackerStore.recentPlayers().length ? 'ready' : 'empty'"
-        [count]="xpTrackerStore.recentPlayers().length"
-        emptyText="No players looked up on this device yet."
-        emptyHint="Search for a player above to start tracking them."
-      >
-        @for (username of xpTrackerStore.recentPlayers(); track username) {
-          <a
-            player-row
-            [routerLink]="['/trackers/xp', username]"
-            [username]="username"
-            [scrapingOffset]="scrapingOffset()"
-          ></a>
-        }
-      </section>
-    } @placeholder {
-      <section
-        list-card
-        heading="Your recent lookups"
-        subtitle="On this device"
-        kind="player"
-        state="loading"
-      ></section>
-    }
   </div>
 </div>
