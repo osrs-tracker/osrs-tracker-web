@@ -95,7 +95,8 @@ export class PriceMoversCard {
       }).pipe(
         map(({ mapping, yesterday, dayBefore }) => buildPriceMovers(mapping, yesterday, dayBefore)),
         tap(movers => {
-          if (this.isServer) this.transferState.set(MOVERS_KEY, movers);
+          // Without rows the day's lists aren't in yet: transferred, they'd stop the browser from looking again
+          if (this.isServer && movers.rising.length) this.transferState.set(MOVERS_KEY, movers);
         }),
       ),
   });
@@ -103,9 +104,9 @@ export class PriceMoversCard {
   private readonly movers = computed(() => this.transferred ?? (this.lists.hasValue() ? this.lists.value() : null));
   readonly rows = computed(() => this.movers()?.[this.direction()] ?? []);
 
-  /** On the server a failed load renders as loading, and the browser loads the lists itself */
+  /** On the server a load that failed or found nothing renders as loading, and the browser loads the lists itself */
   readonly state = computed((): ListCardState => {
-    if (this.lists.isLoading() || (this.isServer && this.lists.error())) return 'loading';
+    if (this.lists.isLoading() || (this.isServer && !this.rows().length)) return 'loading';
     if (this.lists.error()) return 'error';
     return this.rows().length ? 'ready' : 'empty';
   });
