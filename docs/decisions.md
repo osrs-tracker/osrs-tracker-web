@@ -2,6 +2,26 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## Yesterday's movers compare two finished days, from the server's copies (2026-11-01)
+
+- **Context:** a price version of the XP Tracker's top gainers. Ranked by raw percentage, the top was items that barely
+  trade (a Crier bell from 1 gp to 2K). The site's usual change (latest price against yesterday's average) with a 10M gp
+  floor still topped the fallers with one odd last trade (Nickel ore 932 to 8). The Wiki's
+  [acceptable use policy](https://oldschool.runescape.wiki/w/RuneScape:Real-time_Prices) asks for a descriptive
+  User-Agent and bulk lists, has no explicit rate limit, and puts the line at about "multiple large queries per second
+  for a sustained period".
+- **Decision:** rank each item's average on yesterday against the day before (midpoint of both sides' averages), with at
+  least 10M gp traded on both days, valued at the cheaper side, trades on both sides, and a price of at least 100 gp, as
+  one gp is over 1% below it. The server keeps the second day as its own list and transfers only the 20 rows, so each
+  replica adds one `/24h` request a day (72 KB compressed, from the Wiki's CDN) and hydration fetches nothing. The
+  browser loads that list only after a client-side navigation, with its HTTP cache honouring the Wiki's `max-age=3600`.
+  No new endpoint or stored data. An empty list isn't kept: an unfinished day's bucket is empty, and keeping it would
+  blank that list until the next day.
+- **Revisit:** `/24h` isn't on the Wiki's documented routes (`/latest`, `/mapping`, `/5m`, `/1h`, `/timeseries`), though
+  the tables and item rows rely on it already: if it goes, the alternatives are 48 `/1h` lists or the API storing daily
+  averages. Also if the same few items top the list every day, or a wider range (7 days) is wanted, which needs seven
+  lists and belongs in the API.
+
 ## One padding per kind of surface, through a token (2026-10-28)
 
 - **Context:** cards had grown their own padding: `py-3`, `px-5 py-3`, `p-5`, `px-5 py-4`, `p-3`, and 16px sides on
@@ -558,13 +578,12 @@ Choices that look like accidents without their context: what was decided, why, a
   - **Segmented:** the active pill is accent-filled, except beside an accent button (Home's Player/Item switch), where
     two accent fills would compete.
   - **Tabular figures on values only:** in a line of text ("Regular · Total 2,316") they look spaced out.
-  - **Tracker landings keep equal cards**, each list scrolling in its card: the Price Tracker's three (global lookups,
-    your lookups, your favourites) in a row from 1280px; the XP Tracker's four two by two from 768px since
-    [#445](https://github.com/osrs-tracker/osrs-tracker-web/issues/445) (yesterday's top gainers beside your favourites,
-    the global and your recent lookups below). The top gainers spanning the page above or below the lists, and in the
-    global lookups' place beside them, were mocked up and not picked. Favourites as hero tiles, to avoid identical
-    cards, was tried and reverted: parallel lists read more clearly. The hero accents the subject ("XP", "Price"), not
-    "Tracker".
+  - **Tracker landings keep equal cards**, each list scrolling in its card: both trackers' four two by two from 768px,
+    the first card (yesterday's movers, yesterday's top gainers since
+    [#445](https://github.com/osrs-tracker/osrs-tracker-web/issues/445)) beside your favourites, the global and your
+    recent lookups below. The top gainers spanning the page above or below the lists, and in the global lookups' place
+    beside them, were mocked up and not picked. Favourites as hero tiles, to avoid identical cards, was tried and
+    reverted: parallel lists read more clearly. The hero accents the subject ("XP", "Price"), not "Tracker".
 - **Revisit:** when a component needs a value the scales lack: add a token, don't make a one-off.
 
 ## Semantic colour tokens instead of `dark:` pairs (2026-10-07)

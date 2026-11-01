@@ -1,3 +1,12 @@
+## 2026-11-01
+
+- The Price Tracker has a new card, **Yesterday's movers**: the ten items whose average price rose or fell the most
+  between the last two UTC days, with a switch between the two. Only items worth at least 100 gp with at least 10M gp
+  traded on both days count, so a 1 gp item that sold once for 2K doesn't top the list. The four cards now sit two by
+  two, with the movers beside your favourites.
+- The messages meant only for screen readers, such as "Showing 25 of 375 items" on the price tables, no longer show up
+  as plain text under the footer.
+
 ## 2026-10-29
 
 - The site now runs on Node 26, the long-term-support version of Node.js since yesterday, so it keeps getting security

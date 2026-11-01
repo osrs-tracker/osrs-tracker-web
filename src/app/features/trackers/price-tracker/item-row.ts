@@ -5,6 +5,7 @@ import { forkJoin, map } from 'rxjs';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Icon } from '@app/common/icon/icon';
+import { ChangePill } from './change-pill';
 import { yesterdayStart } from './utc-day';
 import { formatNumberLegible, formatPercentChange, formatSign, formatWhole } from '@app/common/format/number-format';
 import { OsrsPricesRepo, TimeSpan } from '@app/common/api/osrs-prices-repo';
@@ -58,19 +59,7 @@ interface ItemRowPrice {
         >
       }
       @if (change(); as change) {
-        <span
-          class="shrink-0 min-w-18 px-2.5 py-1 rounded-full text-center text-sm/4 font-bold whitespace-nowrap tabular-nums"
-          [class]="
-            change.tone === 'up'
-              ? 'text-up bg-up/16'
-              : change.tone === 'down'
-                ? 'text-down bg-down-pill'
-                : 'text-muted bg-ground'
-          "
-          [title]="changeTitle()"
-        >
-          {{ change.signed }}
-        </span>
+        <span change-pill [change]="change" [title]="changeTitle()"></span>
       } @else {
         <!-- Fills the pill's column, so prices line up on phones, without claiming the price didn't move -->
         <span
@@ -85,7 +74,7 @@ interface ItemRowPrice {
     class:
       'flex items-center gap-3 px-card py-3 border-b border-row bg-card hover:bg-row focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent',
   },
-  imports: [DecimalPipe, Icon, LoadError, Skeleton],
+  imports: [ChangePill, DecimalPipe, Icon, LoadError, Skeleton],
 })
 export class ItemRow {
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);

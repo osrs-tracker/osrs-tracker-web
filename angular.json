@@ -24,7 +24,11 @@
             "polyfills": [],
             "tsConfig": "tsconfig.app.json",
             "assets": [{ "glob": "**/*", "input": "public" }],
-            "styles": ["@angular/cdk/overlay-prebuilt.css", "src/styles/tailwind.css"],
+            "styles": [
+              "@angular/cdk/overlay-prebuilt.css",
+              "@angular/cdk/a11y-prebuilt.css",
+              "src/styles/tailwind.css"
+            ],
             "scripts": [],
             "browser": "src/main.ts",
             "server": "src/main.server.ts",
