@@ -7,11 +7,13 @@ Choices that look like accidents without their context: what was decided, why, a
 - **Context:** the first card on both landings always fills its 390px list, so short favourites left a hole above your
   recent lookups in the plain two-by-two grid.
 - **Decision:** favourites and your recent lookups share one grid cell over both rows, from `md`. The blank moves to the
-  bottom of the page, and with full lists the cards line up as before. CSS `columns` was rejected, as its balancing can
-  move cards between columns. The DOM order is the phones' order: the first card, favourites, your recent lookups, the
-  global lookups, so nothing needs `order`. The cost: with few favourites, your recent lookups visibly jump up when
-  hydration swaps the skeletons (260px with one favourite, 940 to 680). CLS reads 0 to 0.004 all the same, as `@defer`
-  replaces those cards with new elements, so don't take the metric as proof of stillness here.
+  bottom of the page, and with full lists the cards line up as before. The second row is `1fr`, so when the right column
+  is the taller one (an empty or failed first card) the spare height stays under the global lookups, not above them. CSS
+  `columns` was rejected, as its balancing can move cards between columns. The DOM order is the phones' order: the first
+  card, favourites, your recent lookups, the global lookups, so nothing needs `order`. The cost: with few favourites,
+  your recent lookups visibly jump up when hydration swaps the skeletons (260px with one favourite, 940 to 680). CLS
+  reads 0 to 0.004 all the same, as `@defer` replaces those cards with new elements, so don't take the metric as proof
+  of stillness here.
 - **Revisit:** if the jump draws complaints: the rejected fixes (see the UI review entry below) were an empty-card-sized
   placeholder and fixed-height cards.
 
