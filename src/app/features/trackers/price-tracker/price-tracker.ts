@@ -9,12 +9,23 @@ import { TrackerHero } from '../tracker-hero';
 import { ItemSearch } from './item-search';
 import { PriceTrackerLinks } from './price-tracker-links';
 import { ItemRow } from './item-row';
+import { PriceMoversCard } from './price-movers/price-movers-card';
 import { PriceTrackerStore } from './price-tracker-store';
 
 @Component({
   selector: 'price-tracker',
   templateUrl: './price-tracker.html',
-  imports: [RouterLink, InfoTooltip, ListCard, Icon, TrackerHero, ItemSearch, PriceTrackerLinks, ItemRow],
+  imports: [
+    RouterLink,
+    InfoTooltip,
+    ListCard,
+    Icon,
+    TrackerHero,
+    ItemSearch,
+    PriceTrackerLinks,
+    ItemRow,
+    PriceMoversCard,
+  ],
 })
 export default class PriceTracker {
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);

@@ -10,7 +10,34 @@
 </header>
 
 <div class="max-w-page mx-auto px-4 sm:px-6 pt-12 pb-18">
-  <div class="grid md:grid-cols-2 xl:grid-cols-3 items-start gap-6">
+  <div class="grid md:grid-cols-2 items-start gap-6">
+    <price-movers-card />
+
+    @defer {
+      <section
+        list-card
+        heading="Your favourites"
+        subtitle="Starred on an item's page"
+        kind="item"
+        [state]="favoriteItems().length ? 'ready' : 'empty'"
+        [count]="favoriteItems().length"
+        emptyText="No favourites yet."
+        emptyHint="Star an item on its page to pin it here."
+      >
+        @for (item of favoriteItems(); track item.id) {
+          <a item-row [routerLink]="['/trackers/price', item.id]" [item]="item"></a>
+        }
+      </section>
+    } @placeholder {
+      <section
+        list-card
+        heading="Your favourites"
+        subtitle="Starred on an item's page"
+        kind="item"
+        state="loading"
+      ></section>
+    }
+
     <section
       list-card
       heading="Global recent lookups"
@@ -54,31 +81,6 @@
       </section>
     } @placeholder {
       <section list-card heading="Your recent lookups" subtitle="On this device" kind="item" state="loading"></section>
-    }
-
-    @defer {
-      <section
-        list-card
-        heading="Your favourites"
-        subtitle="Starred on an item's page"
-        kind="item"
-        [state]="favoriteItems().length ? 'ready' : 'empty'"
-        [count]="favoriteItems().length"
-        emptyText="No favourites yet."
-        emptyHint="Star an item on its page to pin it here."
-      >
-        @for (item of favoriteItems(); track item.id) {
-          <a item-row [routerLink]="['/trackers/price', item.id]" [item]="item"></a>
-        }
-      </section>
-    } @placeholder {
-      <section
-        list-card
-        heading="Your favourites"
-        subtitle="Starred on an item's page"
-        kind="item"
-        state="loading"
-      ></section>
     }
   </div>
 </div>

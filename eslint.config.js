@@ -136,7 +136,7 @@ export default defineConfig(
       // Row components on an <a> render the link's content from their own template, which the rule can't see
       '@angular-eslint/template/elements-content': [
         'error',
-        { allowList: ['player-row', 'item-row', 'top-gainer-row'] },
+        { allowList: ['player-row', 'item-row', 'top-gainer-row', 'price-mover-row'] },
       ],
     },
   },

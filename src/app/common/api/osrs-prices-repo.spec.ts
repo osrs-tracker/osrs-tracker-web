@@ -116,6 +116,60 @@ describe('OsrsPricesRepo', () => {
     });
   });
 
+  describe('two days on the server', () => {
+    let week = 100;
+
+    beforeEach(() => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          provideZonelessChangeDetection(),
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          { provide: PLATFORM_ID, useValue: 'server' },
+        ],
+      });
+      repo = TestBed.inject(OsrsPricesRepo);
+      httpTesting = TestBed.inject(HttpTestingController);
+
+      vi.useFakeTimers({ toFake: ['Date'] });
+      vi.setSystemTime(++week * 7 * 86_400_000);
+    });
+
+    afterEach(() => vi.useRealTimers());
+
+    const url = (seconds: number) => `${config.pricesBaseUrl}/24h?timestamp=${seconds}`;
+
+    it('asks for each day, and keeps both, when they load at the same time', () => {
+      const yesterday = new Date(Date.now() - 86_400_000);
+      const dayBefore = new Date(Date.now() - 2 * 86_400_000);
+      const seen: unknown[] = [];
+
+      repo.getAveragePrices(TimeSpan.DAY, yesterday).subscribe(data => seen.push(data));
+      repo.getDayBeforeAverages(dayBefore).subscribe(data => seen.push(data));
+
+      httpTesting.expectOne(url(yesterday.getTime() / 1000)).flush({ data: { 1: { avgLowPrice: 2 } }, timestamp: 0 });
+      httpTesting.expectOne(url(dayBefore.getTime() / 1000)).flush({ data: { 1: { avgLowPrice: 1 } }, timestamp: 0 });
+
+      expect(seen).toEqual([{ 1: { avgLowPrice: 2 } }, { 1: { avgLowPrice: 1 } }]);
+
+      repo.getAveragePrices(TimeSpan.DAY, yesterday).subscribe();
+      repo.getDayBeforeAverages(dayBefore).subscribe();
+      httpTesting.expectNone(() => true);
+    });
+
+    it('asks again for a day that came back empty', () => {
+      const yesterday = new Date(Date.now() - 86_400_000);
+      const request = url(yesterday.getTime() / 1000);
+
+      repo.getAveragePrices(TimeSpan.DAY, yesterday).subscribe();
+      httpTesting.expectOne(request).flush({ data: {}, timestamp: 0 });
+
+      repo.getAveragePrices(TimeSpan.DAY, yesterday).subscribe();
+      httpTesting.expectOne(request).flush({ data: { 1: { avgLowPrice: 2 } }, timestamp: 0 });
+    });
+  });
+
   it('shares the mapping, and a day of averages with the item rows, for the session', () => {
     repo.getItemMapping().subscribe();
     repo.getItemMapping().subscribe();

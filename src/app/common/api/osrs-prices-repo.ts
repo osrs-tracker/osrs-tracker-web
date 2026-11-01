@@ -57,11 +57,17 @@ interface ServerLists {
   mapping: ItemMapping[];
   /** A finished UTC day's `/24h` bucket doesn't change: the key (its timestamp) moves on the next day */
   day: Record<string, AveragePrices>;
+  /**
+   * The day before `day`, for yesterday's movers: in a list of its own, as a list holds and requests one key at
+   * a time, so two days in `day` would evict each other and answer each other's requests
+   */
+  dayBefore: Record<string, AveragePrices>;
 }
 const SERVER_LIST_TTL: Record<keyof ServerLists, number> = {
   latest: 60_000,
   mapping: 6 * 3_600_000,
   day: 86_400_000,
+  dayBefore: 86_400_000,
 };
 
 /**
@@ -135,11 +141,14 @@ export class OsrsPricesRepo {
 
   /** The browser shares the request with `getCachedPriceAverage`; the server keeps the day for every render */
   getAveragePrices(timeSpan: TimeSpan, timestamp: Date): Observable<Record<string, AveragePrices>> {
-    if (this.isServer && timeSpan === TimeSpan.DAY)
-      return this.serverList('day', String(getUnixTime(timestamp)), () =>
-        this.fetchAveragePrice(timeSpan, timestamp, { transferCache: false }).pipe(map(response => response.data)),
-      );
+    if (this.isServer && timeSpan === TimeSpan.DAY) return this.serverDay('day', timestamp);
     return this.cachedAveragePrice(timeSpan, timestamp).pipe(map(response => response.data));
+  }
+
+  /** `getAveragePrices` for the day before the one it's asked for, which the server keeps as well */
+  getDayBeforeAverages(timestamp: Date): Observable<Record<string, AveragePrices>> {
+    if (this.isServer) return this.serverDay('dayBefore', timestamp);
+    return this.cachedAveragePrice(TimeSpan.DAY, timestamp).pipe(map(response => response.data));
   }
 
   getPriceTimeSeries(
@@ -189,6 +198,12 @@ export class OsrsPricesRepo {
     return this.serverList('latest', '', () => this.fetchLatestPrices({ ...options, transferCache: false }));
   }
 
+  private serverDay(list: 'day' | 'dayBefore', timestamp: Date): Observable<Record<string, AveragePrices>> {
+    return this.serverList(list, String(getUnixTime(timestamp)), () =>
+      this.fetchAveragePrice(TimeSpan.DAY, timestamp, { transferCache: false }).pipe(map(response => response.data)),
+    );
+  }
+
   private serverList<K extends keyof ServerLists>(
     name: K,
     key: string,
@@ -200,7 +215,11 @@ export class OsrsPricesRepo {
     if (kept && kept.key === key && age >= 0 && age < SERVER_LIST_TTL[name]) return of(kept.data);
 
     return (this.serverListRequests[name] ??= fetch().pipe(
-      tap(data => (serverLists[name] = { data, key, fetchedAt: Date.now() } as (typeof serverLists)[K])),
+      tap(data => {
+        // An unfinished day's bucket is empty: kept, it would blank every list that uses it for the whole day
+        if (Object.keys(data).length)
+          serverLists[name] = { data, key, fetchedAt: Date.now() } as (typeof serverLists)[K];
+      }),
       finalize(() => delete this.serverListRequests[name]),
       share(),
     )) as Observable<ServerLists[K]>;
