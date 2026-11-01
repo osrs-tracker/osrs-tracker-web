@@ -28,7 +28,8 @@ const transferred: PriceMovers = {
 describe('PriceMoversCard', () => {
   let fixture: ComponentFixture<PriceMoversCard>;
   let httpTesting: HttpTestingController;
-  let week = 0;
+  // The server's lists are shared by the specs in a test worker: far from the weeks `osrs-prices-repo.spec.ts` uses
+  let week = 1_000;
   const page = () => fixture.nativeElement as HTMLElement;
   const rowNames = () => [...page().querySelectorAll('a[price-mover-row]')].map(row => row.textContent);
 
@@ -67,8 +68,9 @@ describe('PriceMoversCard', () => {
   });
 
   afterEach(() => {
-    httpTesting.verify();
+    // First, as a failing `verify` would leave the fake clock on for the next spec in the worker
     vi.useRealTimers();
+    httpTesting.verify();
   });
 
   it('shows the transferred rows and fetches nothing while hydrating', () => {
