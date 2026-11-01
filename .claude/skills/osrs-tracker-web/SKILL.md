@@ -290,7 +290,9 @@ The `browser-checker` agent does the check, so its screenshots stay out of the m
    (`browser_run_code_unsafe`).
 5. Pass on the scan's violations, its `VERDICT:`, contrast failures, keyboard issues, request counts, failed requests,
    console errors and its "Not checked" list, and send its screenshots with `SendUserFile` without `Read`ing them: it
-   has looked, and a `Read` puts each image back in your context. For another look, delegate again. Then delete them and
+   has looked, and a `Read` puts each image back in your context. In a remote session, where `SendUserFile` can't
+   deliver files, embed them in a private Artifact page (data URIs) and give the user the link instead; the user deletes
+   that page, as the session can't confirm a delete. For another look, delegate again. Then delete them and
    `.playwright-mcp/`, and stop the server.
 
 The rules it follows (it reads them here):
