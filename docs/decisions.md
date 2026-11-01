@@ -2,6 +2,21 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## Tracker landings stack the visitor's own lists in one column (2026-11-01)
+
+- **Context:** the first card on both landings always fills its 390px list, so short favourites left a hole above your
+  recent lookups in the plain two-by-two grid.
+- **Decision:** favourites and your recent lookups share one grid cell over both rows, from `md`. The blank moves to the
+  bottom of the page, and with full lists the cards line up as before. The second row is `1fr`, so when the right column
+  is the taller one (an empty or failed first card) the spare height stays under the global lookups, not above them. CSS
+  `columns` was rejected, as its balancing can move cards between columns. The DOM order is the phones' order: the first
+  card, favourites, your recent lookups, the global lookups, so nothing needs `order`. The cost: with few favourites,
+  your recent lookups visibly jump up when hydration swaps the skeletons (260px with one favourite, 940 to 680). CLS
+  reads 0 to 0.004 all the same, as `@defer` replaces those cards with new elements, so don't take the metric as proof
+  of stillness here.
+- **Revisit:** if the jump draws complaints: the rejected fixes (see the UI review entry below) were an empty-card-sized
+  placeholder and fixed-height cards.
+
 ## Yesterday's movers compare two finished days, from the server's copies (2026-11-01)
 
 - **Context:** a price version of the XP Tracker's top gainers. Ranked by raw percentage, the top was items that barely
@@ -80,13 +95,14 @@ Choices that look like accidents without their context: what was decided, why, a
   the server renders as five skeleton rows before the browser reads local storage and shrinks them to the empty message,
   the 768px grid that leaves favourites under the global card, cut-off item names on phones, and empty states for news
   and A–Z letters.
-- **Decision:** keep the skeleton placeholders and the plain grid. The measured layout shift on a first visit to
-  `/trackers/xp` is 0 at 375×812 (below the fold), 0.024 at 768×1024 and 0.014 at 1440×900, well under the 0.1 "good"
-  line, and there's no field data for it to affect. Tried and rejected: an empty-card-sized placeholder (regulars' cards
-  jump the other way), fixed-height per-device cards (tall empty cards), and spanning the global card over two rows at
-  768 (the blank only moves to the other column once lists fill). Rows stay one line: stacking the price above the pill
-  on phones and two-line names were mocked up and rejected; names that don't fit carry a `title`. No empty state for the
-  news (Jagex's feed always has posts) or a browse letter (every letter has items), and A–Z keeps reading across rows.
+- **Decision:** keep the skeleton placeholders and the plain grid (replaced since: "Tracker landings stack the visitor's
+  own lists in one column"). The measured layout shift on a first visit to `/trackers/xp` is 0 at 375×812 (below the
+  fold), 0.024 at 768×1024 and 0.014 at 1440×900, well under the 0.1 "good" line, and there's no field data for it to
+  affect. Tried and rejected: an empty-card-sized placeholder (regulars' cards jump the other way), fixed-height
+  per-device cards (tall empty cards), and spanning the global card over two rows at 768 (the blank only moves to the
+  other column once lists fill). Rows stay one line: stacking the price above the pill on phones and two-line names were
+  mocked up and rejected; names that don't fit carry a `title`. No empty state for the news (Jagex's feed always has
+  posts) or a browse letter (every letter has items), and A–Z keeps reading across rows.
 - **Revisit:** with field data showing a poor CLS on the landings, or when a browse letter or the news can come back
   empty.
 
@@ -578,11 +594,11 @@ Choices that look like accidents without their context: what was decided, why, a
   - **Segmented:** the active pill is accent-filled, except beside an accent button (Home's Player/Item switch), where
     two accent fills would compete.
   - **Tabular figures on values only:** in a line of text ("Regular · Total 2,316") they look spaced out.
-  - **Tracker landings keep equal cards**, each list scrolling in its card: both trackers' four two by two from 768px,
-    the first card (yesterday's movers, yesterday's top gainers since
-    [#445](https://github.com/osrs-tracker/osrs-tracker-web/issues/445)) beside your favourites, the global and your
-    recent lookups below. The top gainers spanning the page above or below the lists, and in the global lookups' place
-    beside them, were mocked up and not picked. Favourites as hero tiles, to avoid identical cards, was tried and
+  - **Tracker landings keep equal cards**, each list scrolling in its card: both trackers' first card (yesterday's
+    movers, yesterday's top gainers since [#445](https://github.com/osrs-tracker/osrs-tracker-web/issues/445)) beside
+    your favourites from 768px, the global lookups under it and your recent lookups under favourites (columns since
+    2026-11-01, see that entry). The top gainers spanning the page above or below the lists, and in the global lookups'
+    place beside them, were mocked up and not picked. Favourites as hero tiles, to avoid identical cards, was tried and
     reverted: parallel lists read more clearly. The hero accents the subject ("XP", "Price"), not "Tracker".
 - **Revisit:** when a component needs a value the scales lack: add a token, don't make a one-off.
 

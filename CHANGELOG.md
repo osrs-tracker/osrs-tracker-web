@@ -2,8 +2,10 @@
 
 - The Price Tracker has a new card, **Yesterday's movers**: the ten items whose average price rose or fell the most
   between the last two UTC days, with a switch between the two. Only items worth at least 100 gp with at least 10M gp
-  traded on both days count, so a 1 gp item that sold once for 2K doesn't top the list. The four cards now sit two by
-  two, with the movers beside your favourites.
+  traded on both days count, so a 1 gp item that sold once for 2K doesn't top the list.
+- On the XP and Price Trackers, your recent lookups now sit right under your favourites, so a short favourites list no
+  longer leaves a gap above them. On phones they also come before the global lookups, so your own lists are closer to
+  the top.
 - The messages meant only for screen readers, such as "Showing 25 of 375 items" on the price tables, no longer show up
   as plain text under the footer.
 

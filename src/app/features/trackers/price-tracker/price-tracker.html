@@ -10,33 +10,62 @@
 </header>
 
 <div class="max-w-page mx-auto px-4 sm:px-6 pt-12 pb-18">
-  <div class="grid md:grid-cols-2 items-start gap-6">
+  <div class="grid md:grid-cols-2 md:grid-rows-[auto_1fr] items-start gap-6">
     <price-movers-card />
 
-    @defer {
-      <section
-        list-card
-        heading="Your favourites"
-        subtitle="Starred on an item's page"
-        kind="item"
-        [state]="favoriteItems().length ? 'ready' : 'empty'"
-        [count]="favoriteItems().length"
-        emptyText="No favourites yet."
-        emptyHint="Star an item on its page to pin it here."
-      >
-        @for (item of favoriteItems(); track item.id) {
-          <a item-row [routerLink]="['/trackers/price', item.id]" [item]="item"></a>
-        }
-      </section>
-    } @placeholder {
-      <section
-        list-card
-        heading="Your favourites"
-        subtitle="Starred on an item's page"
-        kind="item"
-        state="loading"
-      ></section>
-    }
+    <!-- One cell over both rows, so a short favourites list leaves no hole beside the movers; the 1fr row takes any spare height, so the global lookups stay right under them -->
+    <div class="flex flex-col gap-6 min-w-0 md:col-start-2 md:row-start-1 md:row-span-2">
+      @defer {
+        <section
+          list-card
+          heading="Your favourites"
+          subtitle="Starred on an item's page"
+          kind="item"
+          [state]="favoriteItems().length ? 'ready' : 'empty'"
+          [count]="favoriteItems().length"
+          emptyText="No favourites yet."
+          emptyHint="Star an item on its page to pin it here."
+        >
+          @for (item of favoriteItems(); track item.id) {
+            <a item-row [routerLink]="['/trackers/price', item.id]" [item]="item"></a>
+          }
+        </section>
+      } @placeholder {
+        <section
+          list-card
+          heading="Your favourites"
+          subtitle="Starred on an item's page"
+          kind="item"
+          state="loading"
+        ></section>
+      }
+
+      <!-- Deferred because these are read from local storage, which isn't available during SSR -->
+      @defer {
+        <section
+          list-card
+          heading="Your recent lookups"
+          subtitle="On this device"
+          kind="item"
+          [state]="recentItems().length ? 'ready' : 'empty'"
+          [count]="recentItems().length"
+          emptyText="No items looked up on this device yet."
+          emptyHint="Search for an item above to see its price."
+        >
+          @for (item of recentItems(); track item.id) {
+            <a item-row [routerLink]="['/trackers/price', item.id]" [item]="item"></a>
+          }
+        </section>
+      } @placeholder {
+        <section
+          list-card
+          heading="Your recent lookups"
+          subtitle="On this device"
+          kind="item"
+          state="loading"
+        ></section>
+      }
+    </div>
 
     <section
       list-card
@@ -62,25 +91,5 @@
         }
       }
     </section>
-
-    <!-- Deferred because these are read from local storage, which isn't available during SSR -->
-    @defer {
-      <section
-        list-card
-        heading="Your recent lookups"
-        subtitle="On this device"
-        kind="item"
-        [state]="recentItems().length ? 'ready' : 'empty'"
-        [count]="recentItems().length"
-        emptyText="No items looked up on this device yet."
-        emptyHint="Search for an item above to see its price."
-      >
-        @for (item of recentItems(); track item.id) {
-          <a item-row [routerLink]="['/trackers/price', item.id]" [item]="item"></a>
-        }
-      </section>
-    } @placeholder {
-      <section list-card heading="Your recent lookups" subtitle="On this device" kind="item" state="loading"></section>
-    }
   </div>
 </div>
