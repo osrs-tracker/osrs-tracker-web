@@ -51,7 +51,8 @@ export class AnalyticsService {
 
   /**
    * GA4 reports show a parameter only once it's registered as a custom dimension (Admin → Custom definitions). Keep
-   * names snake_case and values to a small set, except `search_term`.
+   * names snake_case and values to a small set, except `search_term`. Never name one `source`: GA4 reads it as the
+   * session's traffic source.
    */
   trackEvent(name: string, params: Record<string, string | number | boolean> = {}) {
     this.send(name, params);

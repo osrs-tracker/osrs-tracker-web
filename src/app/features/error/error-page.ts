@@ -43,12 +43,12 @@ export default class ErrorPage {
     }
 
     // Reported like a <load-error>, so all failures users see are counted the same way
-    afterNextRender(() => this.analyticsService.trackEvent('load_error', { source: 'page' }));
+    afterNextRender(() => this.analyticsService.trackEvent('load_error', { error_source: 'page' }));
   }
 
   /** Loads the failed page again: the address bar still shows its URL (see `resolverErrorHandler`). */
   retry(): void {
-    this.analyticsService.trackEvent('retry', { source: 'page' });
+    this.analyticsService.trackEvent('retry', { error_source: 'page' });
     void this.router.navigateByUrl(this.location.path());
   }
 }

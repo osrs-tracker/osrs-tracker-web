@@ -1,3 +1,8 @@
+## 2026-11-02
+
+- A part of a page that fails to load no longer shows up in the site's analytics as where your visit came from, so the
+  numbers on how people find the site stay honest.
+
 ## 2026-11-01
 
 - The Price Tracker has a new card, **Yesterday's movers**: the ten items whose average price rose or fell the most
