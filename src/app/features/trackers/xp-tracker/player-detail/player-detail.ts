@@ -276,7 +276,7 @@ export default class PlayerDetail implements OnInit {
     if (this.retrying()) return;
     this.retried.set(true);
     this.history.reloadToday();
-    this.analyticsService.trackEvent('retry', { source: 'player-stale' });
+    this.analyticsService.trackEvent('retry', { error_source: 'player-stale' });
   }
 
   /**
