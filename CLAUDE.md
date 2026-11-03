@@ -46,6 +46,9 @@ holds the Angular conventions, SSR rules, deploy and release steps. Keep detail 
 - A change to what a page shows or how it looks (layout, copy, icons, states, data shown) also goes into the design
   canvas (link and conventions in the skill's "Design system"), in the same session, so it doesn't drift from the live
   site. Publish it once the change reaches `main`, not before, and say in the report which artboards changed.
+- Adding, removing or renaming a workload, changing its replicas, or changing how traffic or deploys flow makes the map
+  on freekmencke.com stale: open an issue in `FreekMencke/freek-mencke-web`
+  (`src/app/home/fremen-server/cluster-parts.ts`). That repo is public, so no IDs.
 
 ## Where things live
 
