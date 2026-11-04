@@ -115,6 +115,10 @@ export class AccountTile {
     if (status === PlayerStatus.DeUltimated) {
       return { label, change: 'De-ultimated', note: 'Now a regular ironman; ranked on the ironman hiscores.' };
     }
+    if (diedAsHardcore && type === PlayerType.Normal) {
+      const note = 'Formerly Hardcore Worlds; transferred to the main game and ranked on the regular hiscores.';
+      return { label, change: 'Died', note };
+    }
     if (diedAsHardcore) {
       return { label, change: 'Died', note: 'Lost hardcore status; now ranked on the regular ironman hiscores.' };
     }
