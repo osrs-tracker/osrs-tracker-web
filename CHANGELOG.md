@@ -4,7 +4,9 @@
   the in-game Hardcore Worlds icon, and its stats, today's gains and ranks now come from the Hardcore Worlds hiscores.
   Its entry on the regular hiscores stays at Tutorial Island, so until now such a character looked like a fresh account
   with a few thousand XP and no gains. Its ranks read "Hardcore Worlds rank", as they're among Hardcore Worlds
-  characters only, and the link to its hiscores, the link preview card and How it works name it too.
+  characters only, and the link to its hiscores, the link preview card and How it works name it too. A character that
+  dies there and transfers to the main game shows as a **regular account, formerly Hardcore Worlds**, with a skull, and
+  its stats and ranks come from the regular hiscores again.
 - A player whose XP drops below half of the day before now starts a new history from that day, instead of showing huge
   negative gains. That happens when a Hardcore Worlds character is reset to Tutorial Island, or when a name goes to a
   smaller account. The player page counts its gains, milestones, day log and compared days from the reset, and says

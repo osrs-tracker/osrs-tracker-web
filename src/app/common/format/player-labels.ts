@@ -8,7 +8,10 @@ export function capitalise(text: string): string {
 }
 
 export function accountType({ type, status, diedAsHardcore }: Player): string {
-  if (type === PlayerType.Normal) return 'Regular account';
+  if (type === PlayerType.Normal) {
+    // with the flag: a Hardcore Worlds character that died and transferred to the main game (the API keeps it set)
+    return diedAsHardcore ? 'Regular account, formerly Hardcore Worlds' : 'Regular account';
+  }
   // before the ironman statuses: the API's hardcore death check doesn't apply to these characters
   if (type === PlayerType.HardcoreMain) return 'Hardcore main';
   if (status === PlayerStatus.DeIroned) return 'Former ironman';

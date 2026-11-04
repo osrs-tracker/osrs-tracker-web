@@ -4,7 +4,13 @@ import { Player, PlayerStatus, PlayerType } from '@osrs-tracker/models';
 import { describe, expect, it } from 'vitest';
 import { AccountTile } from './account-tile';
 
-async function render(type: PlayerType, status: PlayerStatus, large = false, rank?: number): Promise<HTMLElement> {
+async function render(
+  type: PlayerType,
+  status: PlayerStatus,
+  large = false,
+  rank?: number,
+  diedAsHardcore = false,
+): Promise<HTMLElement> {
   TestBed.configureTestingModule({ providers: [provideZonelessChangeDetection()] });
   const fixture = TestBed.createComponent(AccountTile);
   fixture.componentRef.setInput('account', {
@@ -12,7 +18,7 @@ async function render(type: PlayerType, status: PlayerStatus, large = false, ran
     combatLevel: 3,
     type,
     status,
-    diedAsHardcore: false,
+    diedAsHardcore,
     lastModified: new Date(),
     scrapingOffsets: [0],
   } satisfies Player);
@@ -43,6 +49,16 @@ describe('AccountTile', () => {
 
     expect(tile.querySelector('[role=img]')?.getAttribute('aria-label')).toBe('Hardcore main');
     expect(tile.querySelector('img')?.getAttribute('src')).toContain('/player_type/hardcore_mains.png');
+  });
+
+  it('names a Hardcore Worlds character that transferred to the main game, with the skull on the person', async () => {
+    const tile = await render(PlayerType.Normal, PlayerStatus.Default, true, undefined, true);
+
+    expect(tile.querySelector('[role=img]')?.getAttribute('aria-label')).toBe(
+      'Regular. Died. Formerly Hardcore Worlds; transferred to the main game and ranked on the regular hiscores.',
+    );
+    expect(tile.querySelector('svg[lucideUser]')).not.toBeNull();
+    expect(tile.querySelector('img')?.getAttribute('src')).toContain('/skull.png');
   });
 
   it('draws no rank by default', async () => {

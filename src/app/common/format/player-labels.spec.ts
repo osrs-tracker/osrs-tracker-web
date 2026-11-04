@@ -26,6 +26,10 @@ describe('accountType', () => {
   it('names a Hardcore Worlds character as one, even when marked as a dead hardcore', () => {
     expect(accountType(player({ type: PlayerType.HardcoreMain, diedAsHardcore: true }))).toBe('Hardcore main');
   });
+
+  it('names a transferred Hardcore Worlds character a regular account, not an ironman', () => {
+    expect(accountType(player({ diedAsHardcore: true }))).toBe('Regular account, formerly Hardcore Worlds');
+  });
 });
 
 describe('rankLabel', () => {

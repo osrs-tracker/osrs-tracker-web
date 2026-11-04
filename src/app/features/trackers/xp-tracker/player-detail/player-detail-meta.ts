@@ -64,7 +64,7 @@ function isStored(player: Player): boolean {
 
 /** `?v=` busts the caches of shared links when the card's design changes. */
 function playerImage(player: Player, name: string): PageImage {
-  return { url: `/og/player/${encodeURIComponent(player.username)}.png?v=8`, width: 1200, height: 630, alt: name };
+  return { url: `/og/player/${encodeURIComponent(player.username)}.png?v=9`, width: 1200, height: 630, alt: name };
 }
 
 /** From the player alone: the stats are a separate request. */
