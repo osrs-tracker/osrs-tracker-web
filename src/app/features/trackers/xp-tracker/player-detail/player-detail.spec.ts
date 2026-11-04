@@ -164,6 +164,42 @@ describe('PlayerDetail', () => {
     });
   });
 
+  describe('after a progress reset', () => {
+    /** The history from `entries(8)`, with 10 times the Overall XP before the third newest check */
+    const resetEntries = (): object[] =>
+      entries(8).map((entry, i) => {
+        if (i < 3) return entry;
+        const { skills } = entry as { skills: Record<string, { xp: number }> };
+        return { ...entry, skills: { ...skills, Overall: { ...skills['Overall'], xp: skills['Overall'].xp * 10 } } };
+      });
+
+    it('counts from the first check after it, and loads no older days', async () => {
+      const page = await open(player());
+      firstPage().flush(resetEntries());
+      await settle();
+
+      const resetAt = new Date(Date.UTC(2026, 9, 8, 2));
+      expect(page.run()).toMatchObject({ resetAt });
+      expect(page.run().entries).toHaveLength(3);
+      expect(page.diffs()).toHaveLength(3);
+      expect(page.summary()).toMatchObject({ xp: 0, since: resetAt });
+      expect(page.history.hasMore()).toBe(true);
+      expect(page.hasMore()).toBe(false);
+    });
+
+    it('starts again when the live hiscores are below half the last check', async () => {
+      const page = await open(player());
+      firstPage().flush(entries(8));
+      liveHiscores().flush({ ...TOXSICK, skills: TOXSICK.skills.map(skill => ({ ...skill, xp: 0 })) });
+      await settle();
+
+      expect(page.run().entries).toEqual([]);
+      expect(page.diffs()).toEqual([]);
+      expect(page.summary()).toBeUndefined();
+      expect(page.chartState()).toBe('empty');
+    });
+  });
+
   it('opens Compare from a link with picked days, and Days takes them out of the URL', async () => {
     const page = await open(player(), `${URL}?day=2026-10-10&vs=2026-10-06`);
     expect(page.logView()).toBe('compare');

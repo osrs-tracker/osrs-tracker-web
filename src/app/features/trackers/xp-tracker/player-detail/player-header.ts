@@ -62,7 +62,9 @@ export type TrackingState = 'tracked' | 'started' | 'untracked';
           @switch (trackingState()) {
             @case ('tracked') {
               <!-- trackedSince is unknown for a moment on another offset than the resolver's -->
-              @if (player.trackedSince; as trackedSince) {
+              @if (resetAt(); as resetAt) {
+                Since reset on {{ resetAt | date: 'd MMM' }}
+              } @else if (player.trackedSince; as trackedSince) {
                 History since {{ trackedSince | date: 'd MMM' }}
               } @else {
                 Checked daily at {{ trackedAt() }}
@@ -114,6 +116,8 @@ export class PlayerHeader {
   readonly trackingState = input.required<TrackingState>();
   readonly trackedAt = input.required<string>();
   readonly lastCheckedAt = input.required<Date | undefined>();
+  /** The progress reset the history starts from, when it's in the loaded history */
+  readonly resetAt = input<Date>();
   readonly stale = input(false);
   readonly retrying = input(false);
   readonly retry = output();

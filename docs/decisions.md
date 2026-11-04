@@ -2,6 +2,21 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## A drop below half the XP starts a player's history again (2026-11-04)
+
+- **Context:** a Hardcore Worlds character can be reset to Tutorial Island any number of times under the same name, and
+  a name can go to a smaller account. The Overall XP then drops between two checks, and the page read gains across the
+  drop: "+-104,997,520 XP" in the lists, "gained -99.5M" in Compare, empty tiles and milestones
+  (osrs-tracker/osrs-tracker-web#498).
+- **Decision:** `progressRun` (`xp-tracker/player-detail/progress-run.ts`) cuts the loaded history at the newest check
+  whose Overall XP is below 50% of the check before it, and the page, its milestones, day log, Compare and the list rows
+  count from there. A wipe leaves about 1–2k XP, while rollbacks and one-skill corrections cost a few percent: cutting
+  at any drop blanked pages in a simulation. Only the views are cut, never `history.entries`, as the next page loads
+  from its length; a reset older than the loaded pages stays unseen, which doesn't change the periods shown. Smaller
+  drops show as no gain, never a negative one.
+- **Revisit:** if a real account loses half its XP without a reset (a mass rollback), or the API learns to record resets
+  itself.
+
 ## Tracker landings stack the visitor's own lists in one column (2026-11-01)
 
 - **Context:** the first card on both landings always fills its 390px list, so short favourites left a hole above your

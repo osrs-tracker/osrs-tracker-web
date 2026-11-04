@@ -46,6 +46,7 @@ import { playerHistory } from './player-history';
 import { LogNotice, PlayerLogs } from './player-logs';
 import { failedStatTilesFor, statTilesFor } from './stat-tiles';
 import { dailyGains, periodStart, periodSummary, totalGains } from './player-summary';
+import { progressRun } from './progress-run';
 import { PlayerView } from './player-view';
 import { LucideArrowLeft } from '@lucide/angular';
 
@@ -101,7 +102,7 @@ export default class PlayerDetail implements OnInit {
   readonly logView = signal<LogView>(this.route.snapshot.queryParamMap.has(DAY_PARAM) ? 'compare' : 'days');
   /** Once opened, the comparison stays (hidden on Days), so going back to it keeps the picks and loads nothing again */
   readonly compareOpened = signal(this.logView() === 'compare');
-  readonly comparing = computed(() => this.logView() === 'compare' && this.history.entries().length > 1);
+  readonly comparing = computed(() => this.logView() === 'compare' && this.run().entries.length > 1);
   readonly #pageErrorHandler = resolverErrorHandler('/trackers/xp/' + this.username);
 
   readonly player = input.required<Player | null>();
@@ -123,6 +124,11 @@ export default class PlayerDetail implements OnInit {
     period: this.playerView.period,
     milestonePeriod: this.playerView.milestonePeriod,
   });
+
+  /** The gains count from the newest progress reset in the loaded history, so a reset reads as a new start */
+  readonly run = computed(() => progressRun(this.history.entries(), this.history.today()));
+  /** The history before the reset is no part of this run: the older pages can't add to it */
+  readonly hasMore = computed(() => this.history.hasMore() && !this.run().resetAt);
 
   private readonly retried = signal(false);
   // only after Try again: the first load, and SSR (which never asks the hiscores), aren't a retry
@@ -154,17 +160,17 @@ export default class PlayerDetail implements OnInit {
 
   readonly diffs = computed(() => {
     const current = this.history.current();
-    return current ? dailyGains(current, this.history.entries()) : [];
+    return current ? dailyGains(current, this.run().entries) : [];
   });
   readonly periodDiffs = computed(() => {
     const current = this.history.current();
-    const entries = this.history.entries();
+    const entries = this.run().entries;
     if (!current || !entries.length) return [];
     return this.diffs().slice(0, periodStart(current, entries, this.playerView.period()).index + 1);
   });
   readonly chartState = computed(() => {
     if (!this.history.periodLoaded()) return 'loading';
-    return this.history.entries().length > 1 ? 'ready' : 'empty';
+    return this.run().entries.length > 1 ? 'ready' : 'empty';
   });
 
   readonly emptyChartText = computed(() => {
@@ -197,7 +203,9 @@ export default class PlayerDetail implements OnInit {
 
   readonly summary = computed(() => {
     const current = this.history.current();
-    return current && periodSummary(current, this.history.comparedEntries(), this.playerView.period());
+    if (!current) return undefined;
+    const compared = progressRun(this.history.comparedEntries(), this.history.today()).entries;
+    return periodSummary(current, compared, this.playerView.period());
   });
 
   readonly skillGains = computed(() => totalGains(this.periodDiffs(), 'skills'));
