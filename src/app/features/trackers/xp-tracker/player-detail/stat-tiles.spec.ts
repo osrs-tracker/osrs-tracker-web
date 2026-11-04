@@ -54,6 +54,13 @@ describe('statTilesFor', () => {
     expect(failedStatTilesFor(undefined, 7)[0]).toMatchObject({ label: 'Total level', value: '–', sub: 'Not loaded' });
   });
 
+  it("names a Hardcore Worlds character's rank", () => {
+    expect(statTilesFor(overall, undefined, 7, false, 'Hardcore Worlds rank')[0].sub).toBe(
+      'Hardcore Worlds rank 12,345',
+    );
+    expect(failedStatTilesFor(overall, 7, 'Hardcore Worlds rank')[0].sub).toBe('Hardcore Worlds rank 12,345');
+  });
+
   it('waits for the next check without a summary', () => {
     const [total, xp, levels, kills] = statTilesFor({ ...overall, rank: null }, undefined, 7);
     expect(total).toMatchObject({ value: '2,277', sub: 'Unranked' });

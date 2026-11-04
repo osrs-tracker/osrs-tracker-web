@@ -4,6 +4,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { HiscoreEntry, Player, PlayerStatus, PlayerType, SkillEnum, skillLevel } from '@osrs-tracker/models';
 import { catchError, of, throwError } from 'rxjs';
 import { JagexHiscoreTable, OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
+import { rankLabel } from '@app/common/format/player-labels';
 import { isNotFound } from '@app/core/routing/resolver-error';
 
 export interface RankTable {
@@ -36,12 +37,16 @@ export function modeTable(player: Pick<Player, 'type' | 'status' | 'diedAsHardco
   }
 }
 
-/** Skiller at combat level 3 (who also has 1 Defence), else 1 Defence at Defence level 1 */
+/**
+ * Skiller at combat level 3 (who also has 1 Defence), else 1 Defence at Defence level 1. Not for a Hardcore Worlds
+ * character: these tables rank main-table entries, and its main entry is a stub left at Tutorial Island.
+ */
 export function buildTable(
-  combatLevel: number,
+  player: Pick<Player, 'type' | 'combatLevel'>,
   hiscore: Pick<HiscoreEntry, 'skills'> | undefined,
 ): RankTable | undefined {
-  if (combatLevel === 3) return SKILLER;
+  if (player.type === PlayerType.HardcoreMain) return undefined;
+  if (player.combatLevel === 3) return SKILLER;
   if (hiscore && skillLevel(hiscore.skills[SkillEnum.Defence]) === 1) return ONE_DEFENCE;
   return undefined;
 }
@@ -79,11 +84,13 @@ export class ModeRanks {
   readonly #build = computed(() => {
     const source = this.#source();
     const player = source?.player();
-    return player ? buildTable(player.combatLevel, source!.hiscore()) : undefined;
+    return player ? buildTable(player, source!.hiscore()) : undefined;
   });
 
   readonly #modeRanks = this.ranksOn(this.#mode);
   readonly #buildRanks = this.ranksOn(this.#build);
+  /** What the ranks on the player's own table are called (`rankLabel`) */
+  readonly rankLabel = computed(() => rankLabel(this.#source()?.player()?.type));
   /** Empty until `load()` */
   readonly tables = computed(() =>
     [this.#modeRanks(), this.#buildRanks()].filter((ranks): ranks is TableRanks => !!ranks),

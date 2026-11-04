@@ -55,7 +55,14 @@ describe('playerHistory', () => {
     period.set(7);
     milestonePeriod.set(7);
     history = runInInjectionContext(TestBed.inject(Injector), () =>
-      playerHistory({ username: 'zezima', offset, enabled: signal(true), period, milestonePeriod }),
+      playerHistory({
+        username: 'zezima',
+        offset,
+        table: signal('hiscore_oldschool'),
+        enabled: signal(true),
+        period,
+        milestonePeriod,
+      }),
     );
     TestBed.tick();
   });
@@ -241,6 +248,7 @@ describe('playerHistory in the browser', () => {
       playerHistory({
         username: 'zezima',
         offset: signal(0),
+        table: signal('hiscore_oldschool'),
         enabled: signal(true),
         period: signal<Period>(7),
         milestonePeriod: signal<Period>(7),

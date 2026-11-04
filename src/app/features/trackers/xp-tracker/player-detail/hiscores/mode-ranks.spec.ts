@@ -37,15 +37,23 @@ describe('modeTable', () => {
     expect(table({ type: PlayerType.Ultimate, status: PlayerStatus.DeUltimated })).toBe('hiscore_oldschool_ironman');
     expect(table({ type: PlayerType.Ironman, status: PlayerStatus.DeIroned })).toBeUndefined();
     expect(table({ type: PlayerType.Hardcore, status: PlayerStatus.DeIroned, diedAsHardcore: true })).toBeUndefined();
+    // its own table is the one the page shows
+    expect(table({ type: PlayerType.HardcoreMain })).toBeUndefined();
   });
 });
 
 describe('buildTable', () => {
   it('picks Skiller at combat level 3 and 1 Defence at Defence level 1, never probing', () => {
-    expect(buildTable(3, onePure())?.table).toBe('hiscore_oldschool_skiller');
-    expect(buildTable(45, onePure())?.table).toBe('hiscore_oldschool_skiller_defence');
-    expect(buildTable(126, fromJagex(THE_FRAKING))).toBeUndefined();
-    expect(buildTable(45, undefined)).toBeUndefined();
+    expect(buildTable(player({ combatLevel: 3 }), onePure())?.table).toBe('hiscore_oldschool_skiller');
+    expect(buildTable(player({ combatLevel: 45 }), onePure())?.table).toBe('hiscore_oldschool_skiller_defence');
+    expect(buildTable(player({ combatLevel: 126 }), fromJagex(THE_FRAKING))).toBeUndefined();
+    expect(buildTable(player({ combatLevel: 45 }), undefined)).toBeUndefined();
+  });
+
+  // their main-table entry, which those tables rank, is a stub
+  it('picks none for a Hardcore Worlds character', () => {
+    expect(buildTable(player({ type: PlayerType.HardcoreMain, combatLevel: 3 }), onePure())).toBeUndefined();
+    expect(buildTable(player({ type: PlayerType.HardcoreMain, combatLevel: 45 }), onePure())).toBeUndefined();
   });
 });
 

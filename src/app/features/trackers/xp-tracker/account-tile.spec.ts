@@ -38,6 +38,13 @@ describe('AccountTile', () => {
     expect(tile.querySelector('img')).toBeNull();
   });
 
+  it('names a Hardcore Worlds character and draws its icon', async () => {
+    const tile = await render(PlayerType.HardcoreMain, PlayerStatus.Default, true);
+
+    expect(tile.querySelector('[role=img]')?.getAttribute('aria-label')).toBe('Hardcore main');
+    expect(tile.querySelector('img')?.getAttribute('src')).toContain('/player_type/hardcore_mains.png');
+  });
+
   it('draws no rank by default', async () => {
     const tile = await render(PlayerType.Normal, PlayerStatus.Default);
 

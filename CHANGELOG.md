@@ -1,3 +1,11 @@
+## 2026-11-04
+
+- The XP Tracker knows Hardcore Worlds, which opened today. A character playing there shows as a **Hardcore main**, with
+  the in-game Hardcore Worlds icon, and its stats, today's gains and ranks now come from the Hardcore Worlds hiscores.
+  Its entry on the regular hiscores stays at Tutorial Island, so until now such a character looked like a fresh account
+  with a few thousand XP and no gains. Its ranks read "Hardcore Worlds rank", as they're among Hardcore Worlds
+  characters only, and the link to its hiscores, the link preview card and How it works name it too.
+
 ## 2026-11-02
 
 - A part of a page that fails to load no longer shows up in the site's analytics as where your visit came from, so the

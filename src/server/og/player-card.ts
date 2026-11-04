@@ -3,6 +3,7 @@ import { type GridSkill, SKILL_LAYOUT } from '@app/common/format/skill-layout';
 import { LucideUser } from '@lucide/angular';
 import { type HiscoreEntry, type Player, PlayerStatus, PlayerType, SkillEnum, skillLevel } from '@osrs-tracker/models';
 import hardcoreIcon from '../../../public/assets/icons/player_type/hardcore_ironman.png';
+import hardcoreMainIcon from '../../../public/assets/icons/player_type/hardcore_mains.png';
 import ironmanIcon from '../../../public/assets/icons/player_type/ironman.png';
 import ultimateIcon from '../../../public/assets/icons/player_type/ultimate.png';
 import agility from '../../../public/assets/icons/skills/skill_icon_agility1.gif';
@@ -64,6 +65,7 @@ const HELMS: Record<Exclude<PlayerType, PlayerType.Normal>, Uint8Array> = {
   [PlayerType.Ironman]: ironmanIcon,
   [PlayerType.Hardcore]: hardcoreIcon,
   [PlayerType.Ultimate]: ultimateIcon,
+  [PlayerType.HardcoreMain]: hardcoreMainIcon,
 };
 
 // The card's inner height (630 - 2 × 48 - 48 - 28 for the footer - 2 × 40): the grid fills it

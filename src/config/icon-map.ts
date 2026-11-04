@@ -9,4 +9,5 @@ export const iconMap: Record<string, string> = {
   [PlayerType.Ironman]: '/player_type/ironman.png',
   [PlayerType.Ultimate]: '/player_type/ultimate.png',
   [PlayerType.Hardcore]: '/player_type/hardcore_ironman.png',
+  [PlayerType.HardcoreMain]: '/player_type/hardcore_mains.png',
 };

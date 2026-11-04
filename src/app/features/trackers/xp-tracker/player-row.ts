@@ -4,12 +4,12 @@ import { Component, OnInit, PLATFORM_ID, computed, inject, input } from '@angula
 import { rxResource } from '@angular/core/rxjs-interop';
 import { getOverallXpDiff } from '@osrs-tracker/hiscores';
 import { HiscoreEntry, overallOf, Player } from '@osrs-tracker/models';
-import { Observable, catchError, forkJoin, map, throwError } from 'rxjs';
+import { Observable, catchError, map, switchMap, throwError } from 'rxjs';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { CapitalizePipe } from '@app/common/format/capitalize-pipe';
 import { timeAgo } from '@app/common/format/time-ago-pipe';
-import { OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
+import { liveTable, OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { AccountTile } from './account-tile';
@@ -120,22 +120,22 @@ export class PlayerRow implements OnInit {
   }
 
   private fetchFromUsername(username: string, offset: number): Observable<PlayerRowData> {
-    return forkJoin([
-      this.osrsProxyRepo.getPlayerHiscore(username, offset),
-      this.osrsTrackerRepo.getPlayerInfo(username, offset, { includeLatestHiscoreEntry: true, preview: false }),
-    ]).pipe(
-      map(([hiscore, player]) => this.toRowData(hiscore, player)),
-      catchError(err => {
-        // Only a player that no longer exists is removed, never one that failed to load for another reason
-        if (err instanceof HttpErrorResponse && err.status === 404) this.removeMissingPlayer(username);
-        return throwError(() => err);
-      }),
-    );
+    // One after the other: the player's type says which table holds their live stats
+    return this.osrsTrackerRepo
+      .getPlayerInfo(username, offset, { includeLatestHiscoreEntry: true, preview: false })
+      .pipe(
+        switchMap(player => this.fetchFromPlayer(player, offset)),
+        catchError(err => {
+          // Only a player that no longer exists is removed, never one that failed to load for another reason
+          if (err instanceof HttpErrorResponse && err.status === 404) this.removeMissingPlayer(username);
+          return throwError(() => err);
+        }),
+      );
   }
 
   private fetchFromPlayer(player: Player, offset: number): Observable<PlayerRowData> {
     return this.osrsProxyRepo
-      .getPlayerHiscore(player.username, offset)
+      .getPlayerHiscore(player.username, offset, liveTable(player.type))
       .pipe(map(hiscore => this.toRowData(hiscore, player)));
   }
 

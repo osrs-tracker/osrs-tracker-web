@@ -15,6 +15,7 @@ const TYPE_LABELS: Record<PlayerType, string> = {
   [PlayerType.Ironman]: 'Ironman',
   [PlayerType.Hardcore]: 'Hardcore ironman',
   [PlayerType.Ultimate]: 'Ultimate ironman',
+  [PlayerType.HardcoreMain]: 'Hardcore main',
 };
 
 @Component({
