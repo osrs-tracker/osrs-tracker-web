@@ -61,6 +61,19 @@ describe('AccountTile', () => {
     expect(tile.querySelector('img')?.getAttribute('src')).toContain('/skull.png');
   });
 
+  it('names a Hardcore Worlds character that died and has not transferred, with the skull on its helm', async () => {
+    const tile = await render(PlayerType.HardcoreMain, PlayerStatus.Default, true, undefined, true);
+
+    expect(tile.querySelector('[role=img]')?.getAttribute('aria-label')).toBe(
+      'Hardcore main. Died. Died on Hardcore Worlds; its stats stay as at death until it resets or transfers to the main game.',
+    );
+    const sources = [...tile.querySelectorAll('img')].map(img => img.getAttribute('src'));
+    expect(sources).toEqual([
+      expect.stringContaining('/player_type/hardcore_mains.png'),
+      expect.stringContaining('/skull.png'),
+    ]);
+  });
+
   it('draws no rank by default', async () => {
     const tile = await render(PlayerType.Normal, PlayerStatus.Default);
 

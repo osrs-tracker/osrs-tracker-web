@@ -12,7 +12,7 @@ export function accountType({ type, status, diedAsHardcore }: Player): string {
     // with the flag: a Hardcore Worlds character that died and transferred to the main game (the API keeps it set)
     return diedAsHardcore ? 'Regular account, formerly Hardcore Worlds' : 'Regular account';
   }
-  // before the ironman statuses: the API's hardcore death check doesn't apply to these characters
+  // before the ironman statuses: a Hardcore Worlds character that died stays one until it resets or transfers
   if (type === PlayerType.HardcoreMain) return 'Hardcore main';
   if (status === PlayerStatus.DeIroned) return 'Former ironman';
   if (status === PlayerStatus.DeUltimated) return 'Ironman, formerly ultimate';
