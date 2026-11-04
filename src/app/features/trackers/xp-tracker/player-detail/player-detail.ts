@@ -110,8 +110,9 @@ export default class PlayerDetail implements OnInit {
   readonly scrapingOffset = this.xpTrackerStore.scrapingOffset;
   readonly trackedAt = computed(() => `${String((this.scrapingOffset() + 24) % 24).padStart(2, '0')}:00\u00a0UTC`);
 
-  private readonly hiscoreTable = computed(() => liveTable(this.player()?.type));
-  private readonly rankLabel = computed(() => rankLabel(this.player()?.type));
+  // playerDetail: a lookup can find the player has moved to Hardcore Worlds, and only a change of table refetches
+  private readonly hiscoreTable = computed(() => liveTable(this.playerDetail()?.type));
+  private readonly rankLabel = computed(() => rankLabel(this.playerDetail()?.type));
 
   readonly history = playerHistory({
     username: this.username,

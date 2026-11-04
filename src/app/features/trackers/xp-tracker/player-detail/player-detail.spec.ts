@@ -115,6 +115,18 @@ describe('PlayerDetail', () => {
     });
   });
 
+  // the stored type is from before the lookup, which is where the API finds a character moved to Hardcore Worlds
+  it("fetches today's stats again from the Hardcore Worlds table when the lookup finds the player plays there", async () => {
+    await open(player());
+    await settle();
+    expect(liveHiscores().request.url).toContain('/m=hiscore_oldschool/');
+
+    lookup().flush(player({ type: PlayerType.HardcoreMain }));
+    await settle();
+
+    expect(liveHiscores().request.url).toContain('/m=hiscore_oldschool_hardcore_mains/');
+  });
+
   describe('trackingState', () => {
     it('is untracked for a player without a history at the offset', async () => {
       const page = await open(player({ scrapingOffsets: [2] }));
