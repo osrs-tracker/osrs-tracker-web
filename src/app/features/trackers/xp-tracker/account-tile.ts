@@ -119,6 +119,11 @@ export class AccountTile {
       const note = 'Formerly Hardcore Worlds; transferred to the main game and ranked on the regular hiscores.';
       return { label, change: 'Died', note };
     }
+    // the API clears the flag again once the character resets, and makes it `normal` once it transfers
+    if (diedAsHardcore && type === PlayerType.HardcoreMain) {
+      const note = 'Died on Hardcore Worlds; its stats stay as at death until it resets or transfers to the main game.';
+      return { label, change: 'Died', note };
+    }
     if (diedAsHardcore) {
       return { label, change: 'Died', note: 'Lost hardcore status; now ranked on the regular ironman hiscores.' };
     }
