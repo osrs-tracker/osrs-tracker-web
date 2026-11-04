@@ -42,12 +42,12 @@ describe('CompareDays', () => {
   let harness: RouterTestingHarness;
 
   /** Opens the player page at `url` with the card on it (the template is left out: this is its state), loaded */
-  const open = async (url: string = PAGE): Promise<CompareDays> => {
+  const open = async (url: string = PAGE, entries: object[] = history): Promise<CompareDays> => {
     harness = await RouterTestingHarness.create();
     await harness.navigateByUrl(url);
     TestBed.inject(HttpTestingController)
       .expectOne(req => req.url === '/players/zezima/hiscores' && req.params.get('limit') === '91')
-      .flush(history);
+      .flush(entries);
     await settle();
     return harness.fixture.debugElement.query(By.directive(CompareDays)).componentInstance;
   };
@@ -74,6 +74,22 @@ describe('CompareDays', () => {
 
     expect(picks(card)).toBe('2026-10-10 vs 2026-10-06');
     expect(addressBar()).toBe(PAGE);
+  });
+
+  it('compares with the first check after a progress reset at most, not the stats before it', async () => {
+    // the two oldest checks have 10 times the Overall XP
+    const reset = history.map((entry, i) =>
+      i < 3
+        ? entry
+        : {
+            ...entry,
+            skills: { ...entry.skills, Overall: { ...entry.skills['Overall']!, xp: 10 * entry.skills['Overall']!.xp } },
+          },
+    );
+    const card = await open(PAGE, reset);
+
+    expect(picks(card)).toBe('2026-10-10 vs 2026-10-08');
+    expect(card.options().map(day => day.key)).toEqual(['2026-10-10', '2026-10-09', '2026-10-08']);
   });
 
   it('puts the picked days in the URL without navigating', async () => {

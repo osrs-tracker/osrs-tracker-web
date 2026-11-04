@@ -5,6 +5,11 @@
   Its entry on the regular hiscores stays at Tutorial Island, so until now such a character looked like a fresh account
   with a few thousand XP and no gains. Its ranks read "Hardcore Worlds rank", as they're among Hardcore Worlds
   characters only, and the link to its hiscores, the link preview card and How it works name it too.
+- A player whose XP drops below half of the day before now starts a new history from that day, instead of showing huge
+  negative gains. That happens when a Hardcore Worlds character is reset to Tutorial Island, or when a name goes to a
+  smaller account. The player page counts its gains, milestones, day log and compared days from the reset, and says
+  "Since reset on" with its date; the player lists say "Progress reset" until the next daily check. Small drops, such as
+  a hiscores rollback, still count as no gain rather than a negative one.
 
 ## 2026-11-02
 

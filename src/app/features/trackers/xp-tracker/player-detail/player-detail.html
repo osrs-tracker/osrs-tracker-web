@@ -12,6 +12,7 @@
       [trackingState]="trackingState()"
       [trackedAt]="trackedAt()"
       [lastCheckedAt]="history.lastCheckedAt()"
+      [resetAt]="run().resetAt"
       [stale]="stale()"
       [retrying]="retrying()"
       (retry)="reloadToday()"
@@ -75,13 +76,13 @@
         When each skill reaches its next level, 99 or 200M (#250): on phones after the chart, so it hydrates
         when scrolled to. A new player's single entry has nothing to project from.
       -->
-      @if (!history.firstPageFailed() && (!history.loaded() || history.entries().length > 1)) {
+      @if (!history.firstPageFailed() && (!history.loaded() || run().entries.length > 1)) {
         @defer (on immediate; hydrate on viewport) {
           <milestones-card
             class="order-3"
             [username]="player.username"
             [current]="history.current()"
-            [entries]="history.entries()"
+            [entries]="run().entries"
             [loaded]="history.milestonePeriodLoaded()"
             [lastCheckedAt]="history.lastCheckedAt()"
           />
@@ -110,7 +111,7 @@
 
       <div class="order-4 md:col-start-2 md:row-start-2 min-w-0 flex flex-col gap-6">
         <!-- The day log, or two days compared in its place (#252), so neither pushes the other down -->
-        @if (history.entries().length > 1) {
+        @if (run().entries.length > 1) {
           <!-- Controls, not a card: half the 24px between cards above and below it -->
           <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 -my-3">
             <segmented
@@ -153,7 +154,7 @@
                 [notice]="logNotice()"
               />
 
-              @if (history.hasMore()) {
+              @if (hasMore()) {
                 @if (history.loadMoreFailed()) {
                   <load-error
                     source="player-history-more"

@@ -13,12 +13,15 @@ import { liveTable, OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { AccountTile } from './account-tile';
+import { progressRun } from './player-detail/progress-run';
 import { XpTrackerStore } from './xp-tracker-store';
 
 interface PlayerRowData {
   player: Player;
   /** XP gained since the player was last tracked, `null` when they haven't been tracked at this offset yet. */
   overallDiff: number | null;
+  /** Their progress was reset (or the name went to a smaller account) since the last check */
+  reset: boolean;
   totalLevel: number | null;
 }
 
@@ -54,6 +57,8 @@ interface PlayerRowData {
         message="Couldn't load this player."
         (retry)="overallDiffResource.reload()"
       />
+    } @else if (reset()) {
+      <span class="shrink-0 text-sm text-muted" [title]="resetTitle()">Progress reset</span>
     } @else if (overallDiff() === null) {
       <span class="shrink-0 text-sm text-muted" title="This player hasn't been tracked at this offset yet.">
         Not tracked yet<span class="sr-only"> at this offset</span>
@@ -101,6 +106,7 @@ export class PlayerRow implements OnInit {
   readonly playerDetails = computed(() => this.player() ?? this.data()?.player ?? null);
   readonly overallDiff = computed(() => this.data()?.overallDiff ?? null);
   readonly totalLevel = computed(() => this.data()?.totalLevel ?? null);
+  readonly reset = computed(() => !!this.data()?.reset);
   // The server renders skeletons, the browser fetches
   readonly loading = computed(() => !this.isBrowser || this.overallDiffResource.isLoading());
 
@@ -109,6 +115,10 @@ export class PlayerRow implements OnInit {
     this.lastTrackedAgo()
       ? `XP gained since ${this._username()} was last tracked, ${this.lastTrackedAgo()}.`
       : `XP gained since ${this._username()} was last tracked.`,
+  );
+  readonly resetTitle = computed(
+    () =>
+      `${this._username()}'s XP dropped by more than half since the last check: gains count again from the next one.`,
   );
   /** The title's time span for screen readers and keyboard users, as part of the row link's name */
   readonly sinceText = computed(() => (this.lastTrackedAgo() ? `, since last tracked ${this.lastTrackedAgo()}` : ''));
@@ -140,9 +150,12 @@ export class PlayerRow implements OnInit {
   }
 
   private toRowData(hiscore: HiscoreEntry, player: Player): PlayerRowData {
+    const lastTracked = player.hiscoreEntries?.[0];
     return {
       player,
-      overallDiff: player.hiscoreEntries?.length ? getOverallXpDiff(hiscore, player.hiscoreEntries[0]) : null,
+      // a rollback or a correction lowers the XP a little, which isn't a negative gain
+      overallDiff: lastTracked ? Math.max(0, getOverallXpDiff(hiscore, lastTracked)) : null,
+      reset: !!lastTracked && !!progressRun([lastTracked], hiscore).resetAt,
       totalLevel: overallOf(hiscore).level,
     };
   }

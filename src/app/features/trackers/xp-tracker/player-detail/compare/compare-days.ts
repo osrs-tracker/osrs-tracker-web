@@ -26,6 +26,7 @@ import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { DayPicker, PickerDay } from '@app/common/ui/controls/day-picker';
 import { PERIOD_SIZE } from '../player-history';
+import { progressRun } from '../progress-run';
 import { activityRows, CompareRow, skillRows } from './compare-rows';
 import { ComparePicks, NO_DAY, readComparePicks, writeComparePicks } from './compare-url';
 
@@ -88,7 +89,8 @@ export class CompareDays {
   });
 
   readonly options = computed<DayOption[]>(() => {
-    const entries = this.history.hasValue() ? this.history.value() : [];
+    // days before a progress reset would compare two different characters' stats
+    const entries = this.history.hasValue() ? progressRun(this.history.value()).entries : [];
     const gains = entries.map((entry, i) =>
       i + 1 < entries.length ? getOverallXpDiff(entry, entries[i + 1]) : undefined,
     );
