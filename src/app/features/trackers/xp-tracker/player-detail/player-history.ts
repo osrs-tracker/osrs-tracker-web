@@ -3,7 +3,7 @@ import { PLATFORM_ID, Signal, computed, effect, inject, untracked } from '@angul
 import { rxResource } from '@angular/core/rxjs-interop';
 import { HiscoreEntry } from '@osrs-tracker/models';
 import { map } from 'rxjs';
-import { OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
+import { JagexHiscoreTable, OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { paging } from '@app/common/paging/paging';
 
@@ -61,11 +61,13 @@ export interface PlayerHistory {
 export function playerHistory(params: {
   username: string;
   offset: Signal<number>;
+  /** The table with the player's live stats, `liveTable` */
+  table: Signal<JagexHiscoreTable>;
   enabled: Signal<boolean>;
   period: Signal<number>;
   milestonePeriod: Signal<number>;
 }): PlayerHistory {
-  const { username, offset, enabled, period, milestonePeriod } = params;
+  const { username, offset, table, enabled, period, milestonePeriod } = params;
   const osrsProxyRepo = inject(OsrsProxyRepo);
   const osrsTrackerRepo = inject(OsrsTrackerRepo);
   const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -82,8 +84,8 @@ export function playerHistory(params: {
   const loadMoreFailed = computed(() => !!more.failed());
 
   const todayResource = rxResource({
-    params: () => (isBrowser && enabled() ? { username, offset: offset() } : undefined),
-    stream: ({ params }) => osrsProxyRepo.getPlayerHiscore(params.username, params.offset),
+    params: () => (isBrowser && enabled() ? { username, offset: offset(), table: table() } : undefined),
+    stream: ({ params }) => osrsProxyRepo.getPlayerHiscore(params.username, params.offset, params.table),
   });
   const firstPage = rxResource({
     params: () => (enabled() ? { username, offset: offset() } : undefined),

@@ -1,20 +1,30 @@
 import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { fromJagex, HiscoreTable, JagexHiscoreJson } from '@osrs-tracker/hiscores';
-import { HiscoreEntry } from '@osrs-tracker/models';
+import { HiscoreEntry, PlayerType } from '@osrs-tracker/models';
 import { map, Observable } from 'rxjs';
 import { BASE_URL_PREFIX } from '@app/core/interceptors/base-url-interceptor';
 import { config } from '@config/config';
 
-/** The two builds are level-3 skillers and 1 Defence */
-export type JagexHiscoreTable = HiscoreTable | 'hiscore_oldschool_skiller' | 'hiscore_oldschool_skiller_defence';
+/** The two builds are level-3 skillers and 1 Defence; Hardcore Worlds characters have a table of their own */
+export type JagexHiscoreTable =
+  HiscoreTable | 'hiscore_oldschool_skiller' | 'hiscore_oldschool_skiller_defence' | 'hiscore_oldschool_hardcore_mains';
+
+/**
+ * The table with a player's progress. A Hardcore Worlds character's entry on the main table is a stub left at
+ * Tutorial Island, so its stats and ranks come from its own table only.
+ */
+export function liveTable(type: PlayerType | undefined): JagexHiscoreTable {
+  return type === PlayerType.HardcoreMain ? 'hiscore_oldschool_hardcore_mains' : 'hiscore_oldschool';
+}
 
 @Service()
 export class OsrsProxyRepo {
   private readonly httpClient = inject(HttpClient);
 
-  getPlayerHiscore(username: string, scrapingOffset: number): Observable<HiscoreEntry> {
-    return this.getHiscoreTable(username, 'hiscore_oldschool').pipe(
+  /** `table` is the player's `liveTable` */
+  getPlayerHiscore(username: string, scrapingOffset: number, table: JagexHiscoreTable): Observable<HiscoreEntry> {
+    return this.getHiscoreTable(username, table).pipe(
       map(({ skills, activities }) => ({ date: new Date(), scrapingOffset, skills, activities })),
     );
   }

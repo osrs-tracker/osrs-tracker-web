@@ -20,8 +20,10 @@ export function statTilesFor(
   summary: PeriodSummary | undefined,
   period: Period,
   comparisonFailed = false,
+  /** `rankLabel` of the player's type */
+  rankLabel = 'Rank',
 ): StatTileView[] {
-  const totalLevel = totalLevelTile(overall);
+  const totalLevel = totalLevelTile(overall, rankLabel);
   const since = summary?.since;
   const xpLabel = since ? `XP since ${format(since, 'd MMM')}` : `XP last ${period} days`;
   if (!summary) {
@@ -62,21 +64,25 @@ export function statTilesFor(
   ];
 }
 
-export function failedStatTilesFor(overall: HiscoreSkill | undefined, period: Period): StatTileView[] {
+export function failedStatTilesFor(
+  overall: HiscoreSkill | undefined,
+  period: Period,
+  rankLabel = 'Rank',
+): StatTileView[] {
   const notLoaded = (label: string): StatTileView => ({ label, value: '–', sub: 'Not loaded', tone: 'muted' });
   return [
-    overall ? totalLevelTile(overall) : notLoaded('Total level'),
+    overall ? totalLevelTile(overall, rankLabel) : notLoaded('Total level'),
     notLoaded(`XP last ${period} days`),
     notLoaded('Levels gained'),
     notLoaded('Boss kills'),
   ];
 }
 
-function totalLevelTile(overall: HiscoreSkill): StatTileView {
+function totalLevelTile(overall: HiscoreSkill, rankLabel: string): StatTileView {
   return {
     label: 'Total level',
     value: formatWhole(overall.level),
-    sub: overall.rank !== null ? `Rank ${formatWhole(overall.rank)}` : 'Unranked',
+    sub: overall.rank !== null ? `${rankLabel} ${formatWhole(overall.rank)}` : 'Unranked',
     tone: 'muted',
   };
 }

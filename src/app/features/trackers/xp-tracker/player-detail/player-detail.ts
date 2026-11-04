@@ -25,9 +25,9 @@ import { StatTile } from '@app/common/ui/cards/stat-tile';
 import { StatusPanel } from '@app/common/ui/page/status-panel';
 import { localIcons } from '@app/common/icon/local-icons.generated';
 import { LOCAL_ICONS } from '@app/common/icon/local-icons-token';
-import { capitalise } from '@app/common/format/player-labels';
+import { capitalise, rankLabel } from '@app/common/format/player-labels';
 import { timeAgo } from '@app/common/format/time-ago-pipe';
-import { OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
+import { liveTable, OsrsProxyRepo } from '@app/common/api/osrs-proxy-repo';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { announceChanges } from '@app/common/a11y/announcer';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
@@ -110,9 +110,14 @@ export default class PlayerDetail implements OnInit {
   readonly scrapingOffset = this.xpTrackerStore.scrapingOffset;
   readonly trackedAt = computed(() => `${String((this.scrapingOffset() + 24) % 24).padStart(2, '0')}:00\u00a0UTC`);
 
+  // playerDetail: a lookup can find the player has moved to Hardcore Worlds, and only a change of table refetches
+  private readonly hiscoreTable = computed(() => liveTable(this.playerDetail()?.type));
+  private readonly rankLabel = computed(() => rankLabel(this.playerDetail()?.type));
+
   readonly history = playerHistory({
     username: this.username,
     offset: this.scrapingOffset,
+    table: this.hiscoreTable,
     // the resolved player, not playerDetail: trackPlayer replacing it mustn't restart the requests
     enabled: computed(() => !!this.player()),
     period: this.playerView.period,
@@ -211,10 +216,16 @@ export default class PlayerDetail implements OnInit {
     const overall = this.overall();
     // the total level still shows, once the live hiscores are in or failed
     if (this.history.firstPageFailed() && !this.history.todayLoading()) {
-      return failedStatTilesFor(overall, this.playerView.period());
+      return failedStatTilesFor(overall, this.playerView.period(), this.rankLabel());
     }
     if (!overall || !this.history.comparedLoaded()) return undefined;
-    return statTilesFor(overall, this.summary(), this.playerView.period(), this.history.previousPeriodFailed());
+    return statTilesFor(
+      overall,
+      this.summary(),
+      this.playerView.period(),
+      this.history.previousPeriodFailed(),
+      this.rankLabel(),
+    );
   });
 
   constructor() {
@@ -289,7 +300,7 @@ export default class PlayerDetail implements OnInit {
     link.setAttribute('as', 'fetch');
     // like the app's request (no credentials), or the browser doesn't use it and fetches again
     link.setAttribute('crossorigin', '');
-    link.setAttribute('href', this.osrsProxyRepo.hiscoreTableUrl(this.username, 'hiscore_oldschool'));
+    link.setAttribute('href', this.osrsProxyRepo.hiscoreTableUrl(this.username, this.hiscoreTable()));
     this.document.head.appendChild(link);
   }
 

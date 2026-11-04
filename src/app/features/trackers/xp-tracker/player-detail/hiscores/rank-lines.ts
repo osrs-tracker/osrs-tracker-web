@@ -38,11 +38,11 @@ export class RankLines implements OnInit {
 
   readonly kind = input.required<'skills' | 'activities'>();
   readonly name = input.required<string>();
-  /** On the main table; `null` or `undefined` unranked */
+  /** On the player's own table (`liveTable`); `null` or `undefined` unranked */
   readonly rank = input.required<number | null | undefined>();
 
   readonly lines = computed<RankLine[]>(() => [
-    { label: 'Rank', rank: this.rank() ?? null, failed: false },
+    { label: this.modeRanks.rankLabel(), rank: this.rank() ?? null, failed: false },
     ...this.modeRanks.tables().map(table => ({
       label: `${table.label} rank`,
       rank: table.hiscore ? this.rankOn(table.hiscore) : undefined,

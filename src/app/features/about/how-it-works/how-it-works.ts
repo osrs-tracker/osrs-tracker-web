@@ -111,7 +111,9 @@ export default class HowItWorks {
       question: 'Why did my account type change?',
       text:
         'It follows the hiscores you’re listed on. A hardcore ironman who dies moves to the ironman hiscores, and an ' +
-        'ironman who de-irons to the regular ones. The player page marks the change.',
+        'ironman who de-irons to the regular ones. The player page marks the change. A character on Hardcore Worlds ' +
+        'is a Hardcore main: its stats and ranks come from the Hardcore Worlds hiscores, as its entry on the regular ' +
+        'ones stays at Tutorial Island.',
     },
     {
       question: 'How long is history kept?',

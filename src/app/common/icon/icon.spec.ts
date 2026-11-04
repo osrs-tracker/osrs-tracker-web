@@ -98,6 +98,20 @@ describe('Icon', () => {
     expect(img.alt).toBe(`${PlayerType.Ironman} icon`);
   });
 
+  // `iconMap` is a Record<string, string>, so a missing entry would still compile
+  it('maps every PlayerType but Normal to an icon', async () => {
+    for (const type of Object.values(PlayerType).filter(type => type !== PlayerType.Normal)) {
+      fixture.componentRef.setInput('name', type);
+      await fixture.whenStable();
+
+      expect(img.src).toMatch(/\/player_type\/\w+\.png$/);
+    }
+
+    fixture.componentRef.setInput('name', PlayerType.HardcoreMain);
+    await fixture.whenStable();
+    expect(img.src).toContain('/player_type/hardcore_mains.png');
+  });
+
   it('should map SkillEnum to icon', async () => {
     fixture.componentRef.setInput('name', SkillEnum.Firemaking);
     fixture.componentRef.setInput('skill', true);
