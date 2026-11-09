@@ -21,6 +21,7 @@ export default class PlayersOnline {
 
   readonly count = this.playerCountStore.count;
   readonly failed = this.playerCountStore.failed;
+  readonly frozen = this.playerCountStore.frozen;
 
   readonly locations = computed(() => {
     const count = this.count();

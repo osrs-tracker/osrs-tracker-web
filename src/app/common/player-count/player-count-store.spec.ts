@@ -82,4 +82,33 @@ describe('PlayerCountStore', () => {
     await settle();
     expect(store.count()?.total).toBe(130);
   });
+
+  it('is frozen when the live count repeats a count read five minutes or more before it', async () => {
+    const load = async (stored: object, live: object): Promise<void> => {
+      store.refresh();
+      TestBed.tick();
+      httpTesting.expectOne('/player-counts/latest').flush(stored);
+      httpTesting.expectOne('/player-counts/live').flush(live);
+      await settle();
+    };
+
+    await load(count(100, '2026-11-09T17:25:00Z'), count(100, '2026-11-09T17:29:00Z'));
+    expect(store.frozen()).toBe(false);
+
+    await load(count(100, '2026-11-09T17:25:00Z'), count(100, '2026-11-09T17:30:00Z'));
+    expect(store.frozen()).toBe(true);
+
+    // A new sample, still the same count: the live count matches the first reading of it
+    await load(count(100, '2026-11-09T17:35:00Z'), count(100, '2026-11-09T17:36:00Z'));
+    expect(store.frozen()).toBe(true);
+
+    // Another stale list, first seen now, then again five minutes later
+    await load(count(100, '2026-11-09T17:35:00Z'), count(130, '2026-11-09T17:37:00Z'));
+    expect(store.frozen()).toBe(false);
+    await load(count(100, '2026-11-09T17:35:00Z'), count(130, '2026-11-09T17:42:00Z'));
+    expect(store.frozen()).toBe(true);
+
+    await load(count(100, '2026-11-09T17:45:00Z'), count(140, '2026-11-09T17:46:00Z'));
+    expect(store.frozen()).toBe(false);
+  });
 });

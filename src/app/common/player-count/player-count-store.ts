@@ -1,13 +1,17 @@
 import { isPlatformBrowser } from '@angular/common';
-import { afterNextRender, computed, DestroyRef, inject, PLATFORM_ID } from '@angular/core';
+import { afterNextRender, computed, DestroyRef, inject, linkedSignal, PLATFORM_ID } from '@angular/core';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { patchState, signalStore, withComputed, withMethods, withProps, withState } from '@ngrx/signals';
 import { PlayerCount } from '@osrs-tracker/models';
 import { defer, filter, fromEvent, interval, map, merge, share } from 'rxjs';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { WINDOW } from '@app/core/platform/window-token';
+import { isFrozen } from './frozen-count';
 
 const MINUTE = 60_000;
+const FROZEN_AFTER = 5 * MINUTE;
+/** An hour of minute-by-minute counts that all differ */
+const SEEN_LIMIT = 60;
 
 /**
  * Shared by the Players online page and the Game menu's card so they show the same number: the live count from Jagex's
@@ -41,10 +45,34 @@ export const PlayerCountStore = signalStore(
       _live.hasValue() ? _live.value() : _stored.hasValue() ? _stored.value() : undefined,
     );
 
+    /** The distinct counts read so far, each at its first reading */
+    const seen = linkedSignal<(PlayerCount | undefined)[], PlayerCount[]>({
+      source: () => [_stored.hasValue() ? _stored.value() : undefined, _live.hasValue() ? _live.value() : undefined],
+      computation: (readings, previous) => {
+        const known = previous?.value ?? [];
+        const added = readings.filter(
+          (reading): reading is PlayerCount => !!reading && !known.some(count => isFrozen(count, reading)),
+        );
+        return added.length ? [...known, ...added].slice(-SEEN_LIMIT) : known;
+      },
+    });
+
     return {
       count,
       /** Neither count loaded. Never during SSR: a failed count renders as loading, as the browser loads both again */
       failed: computed<boolean>(() => _isBrowser && !count() && !!_live.error()),
+      /**
+       * The live count repeats a reading taken at least `FROZEN_AFTER` before it on every number: the world list stopped
+       * updating, possibly an outage. Not sooner, as two reads a minute apart may get the same list. During an outage
+       * Jagex may alternate between stale lists, so it's compared with every count seen, not only the stored sample.
+       */
+      frozen: computed<boolean>(() => {
+        if (!_live.hasValue()) return false;
+        const live = _live.value();
+        return seen().some(
+          reading => live.date.getTime() - reading.date.getTime() >= FROZEN_AFTER && isFrozen(reading, live),
+        );
+      }),
     };
   }),
   withMethods(store => ({
