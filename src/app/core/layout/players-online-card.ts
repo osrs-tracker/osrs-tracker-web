@@ -101,9 +101,14 @@ export class PlayersOnlineCard {
       const y = HEIGHT - 4 - ((total - min) / range) * (HEIGHT - 8);
       return `${x.toFixed(1)} ${y.toFixed(1)}`;
     });
+    // One subpath per run of like segments: a dash pattern starts over on every subpath, so a subpath per segment would
+    // draw a dot at every sample however far apart the dashes are
     const segments = (ofDotted: boolean) =>
       points
-        .map((point, i) => (i && dotted[i] === ofDotted ? `M${points[i - 1]} L${point}` : ''))
+        .map((point, i) => {
+          if (!i || dotted[i] !== ofDotted) return '';
+          return (i > 1 && dotted[i - 1] === ofDotted ? '' : `M${points[i - 1]} `) + `L${point}`;
+        })
         .filter(Boolean)
         .join(' ');
     return {

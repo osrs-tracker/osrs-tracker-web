@@ -55,9 +55,10 @@ describe('PlayersOnlineCard', () => {
 
     const card = fixture.componentInstance;
     expect(card.frozen()).toBe(true);
-    // Four points: the first segment is solid, the repeat and the live count's are dotted
+    // Four points: the first segment is solid, the repeat and the live count's are one dotted run
     expect(card.paths()?.solid.match(/M/g)).toHaveLength(1);
-    expect(card.paths()?.dotted.match(/M/g)).toHaveLength(2);
+    expect(card.paths()?.dotted.match(/M/g)).toHaveLength(1);
+    expect(card.paths()?.dotted.match(/L/g)).toHaveLength(2);
     expect(fixture.nativeElement.textContent).toContain('Possible game outage');
   });
 });

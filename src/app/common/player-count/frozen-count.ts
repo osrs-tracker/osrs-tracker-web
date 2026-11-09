@@ -6,8 +6,8 @@ import { PlayerCount, PlayerCountPoint, PlayerCountRange } from '@osrs-tracker/m
  */
 export const FROZEN_MESSAGE = 'World Select stopped updating, possibly a game outage';
 
-/** Dots for a frozen stretch of a line: zero-length dashes with round caps, far enough apart to read as dots, not a line */
-export const FROZEN_DASH = [0, 8];
+/** Dots for a frozen stretch of a line: zero-length dashes with round caps */
+export const FROZEN_DASH = [0, 6];
 
 type Counts = Pick<PlayerCount, 'total' | 'members' | 'f2p' | 'byLocation'>;
 
