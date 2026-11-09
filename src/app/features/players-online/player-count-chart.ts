@@ -4,7 +4,7 @@ import { Chart, ChartOptions, Point, TooltipModel } from 'chart.js';
 import { PlayerCountPoint, PlayerCountRange } from '@osrs-tracker/models';
 import { format } from 'date-fns';
 import { BaseChart } from '@app/common/charts/base-chart';
-import { FROZEN_MESSAGE } from '@app/common/player-count/frozen-count';
+import { FROZEN_DASH, FROZEN_MESSAGE } from '@app/common/player-count/frozen-count';
 import { token, withAlpha } from '@app/common/charts/chart-setup';
 import { setTimeAxisUnit, timeAxis } from '@app/common/charts/time-axis';
 import { formatNumberShort } from '@app/common/format/number-format';
@@ -38,8 +38,6 @@ interface HoveredPoint {
   /** The chart's width, for placing the tooltip from the right */
   width: number;
 }
-
-const FROZEN_DASH = [0, 6];
 
 const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
 

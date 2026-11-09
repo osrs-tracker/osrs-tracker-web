@@ -3,7 +3,7 @@ import { Component, computed, effect, inject, input, signal, untracked } from '@
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
-import { frozenPoints } from '@app/common/player-count/frozen-count';
+import { FROZEN_DASH, frozenPoints } from '@app/common/player-count/frozen-count';
 import { PlayerCountStore } from '@app/common/player-count/player-count-store';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
@@ -25,10 +25,7 @@ const HEIGHT = 64;
         <span class="font-bold group-hover:text-accent transition-colors">Players online</span>
         @if (frozen()) {
           <span class="flex items-center gap-1.5"
-            ><span class="size-2 shrink-0 rounded-full bg-amber" aria-hidden="true"></span>Not updating<span
-              class="sr-only"
-              >, possibly an outage</span
-            ></span
+            ><span class="size-2 shrink-0 rounded-full bg-amber" aria-hidden="true"></span>Possible game outage</span
           >
         } @else {
           <span>Last 24 hours</span>
@@ -55,7 +52,7 @@ const HEIGHT = 64;
               [attr.d]="paths.dotted"
               stroke-width="2.5"
               stroke-linecap="round"
-              stroke-dasharray="0 6"
+              [attr.stroke-dasharray]="frozenDash"
               vector-effect="non-scaling-stroke"
             />
           </svg>
@@ -116,6 +113,7 @@ export class PlayersOnlineCard {
     };
   });
 
+  protected readonly frozenDash = FROZEN_DASH.join(' ');
   protected readonly viewBox = `0 0 ${WIDTH} ${HEIGHT}`;
   protected readonly area = ` L${WIDTH} ${HEIGHT} L0 ${HEIGHT} Z`;
 

@@ -58,6 +58,6 @@ describe('PlayersOnlineCard', () => {
     // Four points: the first segment is solid, the repeat and the live count's are dotted
     expect(card.paths()?.solid.match(/M/g)).toHaveLength(1);
     expect(card.paths()?.dotted.match(/M/g)).toHaveLength(2);
-    expect(fixture.nativeElement.textContent).toContain('Not updating');
+    expect(fixture.nativeElement.textContent).toContain('Possible game outage');
   });
 });

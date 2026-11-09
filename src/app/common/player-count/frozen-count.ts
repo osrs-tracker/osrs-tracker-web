@@ -1,7 +1,13 @@
 import { PlayerCount, PlayerCountPoint, PlayerCountRange } from '@osrs-tracker/models';
 
-/** Shown wherever a count is flagged: the live label, the chart's tooltip, legend and table */
-export const FROZEN_MESSAGE = 'Count not updating, possibly an outage';
+/**
+ * Shown wherever a count is flagged: the live label, the chart's tooltip, legend and table. Names World Select and the
+ * game, so it doesn't read as this site's own fault
+ */
+export const FROZEN_MESSAGE = 'World Select stopped updating, possibly a game outage';
+
+/** Dots for a frozen stretch of a line: zero-length dashes with round caps, far enough apart to read as dots, not a line */
+export const FROZEN_DASH = [0, 8];
 
 type Counts = Pick<PlayerCount, 'total' | 'members' | 'f2p' | 'byLocation'>;
 
