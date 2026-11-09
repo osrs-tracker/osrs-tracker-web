@@ -4,6 +4,7 @@ import { Chart, ChartOptions, Point, TooltipModel } from 'chart.js';
 import { PlayerCountPoint, PlayerCountRange } from '@osrs-tracker/models';
 import { format } from 'date-fns';
 import { BaseChart } from '@app/common/charts/base-chart';
+import { FROZEN_MESSAGE } from '@app/common/player-count/frozen-count';
 import { token, withAlpha } from '@app/common/charts/chart-setup';
 import { setTimeAxisUnit, timeAxis } from '@app/common/charts/time-axis';
 import { formatNumberShort } from '@app/common/format/number-format';
@@ -67,7 +68,7 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
         <span class="font-bold text-strong">{{ tip().title }}</span>
         @if (tip().frozen) {
           <span class="flex items-center gap-1.5">
-            <span class="size-2 shrink-0 rounded-full bg-amber"></span>Count not updating, possibly an outage
+            <span class="size-2 shrink-0 rounded-full bg-amber"></span>{{ frozenMessage }}
           </span>
         }
         @for (row of tip().rows; track row.label) {
@@ -104,6 +105,8 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
 })
 export class PlayerCountChart extends BaseChart<'line', PlayerCountSeries> {
   protected readonly type = 'line';
+
+  protected readonly frozenMessage = FROZEN_MESSAGE;
 
   protected readonly hovered = signal<HoveredPoint | null>(null);
 

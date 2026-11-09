@@ -3,8 +3,8 @@
 - Players online now shows when the count stops updating. Sometimes Jagex's world list freezes and keeps giving the same
   numbers, usually while the game has trouble, and the charts drew that as a flat line that looked like real players. On
   the 24h and 7D ranges, a stretch where every number repeats is now dotted, with a note in its tooltip, in the table
-  and under the chart, and the pulsing dot above the count turns amber with "Not updating, possibly an outage" until the
-  numbers move again.
+  and under the chart, and the pulsing dot above the count turns amber with "Count not updating, possibly an outage"
+  until the numbers move again.
 
 ## 2026-11-04
 

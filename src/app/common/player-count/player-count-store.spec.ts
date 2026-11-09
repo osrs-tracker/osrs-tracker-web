@@ -111,4 +111,19 @@ describe('PlayerCountStore', () => {
     await load(count(100, '2026-11-09T17:45:00Z'), count(140, '2026-11-09T17:46:00Z'));
     expect(store.frozen()).toBe(false);
   });
+
+  it('remembers counts read while nothing reads frozen, such as the Game menu card polling', async () => {
+    const load = async (stored: object, live: object): Promise<void> => {
+      store.refresh();
+      TestBed.tick();
+      httpTesting.expectOne('/player-counts/latest').flush(stored);
+      httpTesting.expectOne('/player-counts/live').flush(live);
+      await settle();
+    };
+
+    await load(count(100, '2026-11-09T17:25:00Z'), count(130, '2026-11-09T17:26:00Z'));
+    await load(count(100, '2026-11-09T17:35:00Z'), count(100, '2026-11-09T17:36:00Z'));
+    await load(count(100, '2026-11-09T17:35:00Z'), count(130, '2026-11-09T17:37:00Z'));
+    expect(store.frozen()).toBe(true);
+  });
 });

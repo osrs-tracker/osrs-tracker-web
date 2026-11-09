@@ -1,5 +1,8 @@
 import { PlayerCount } from '@osrs-tracker/models';
 
+/** Shown wherever a count is flagged: the live label, the chart's tooltip, legend and table */
+export const FROZEN_MESSAGE = 'Count not updating, possibly an outage';
+
 type Counts = Pick<PlayerCount, 'total' | 'members' | 'f2p' | 'byLocation'>;
 
 /**

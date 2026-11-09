@@ -1,6 +1,7 @@
 import { DecimalPipe } from '@angular/common';
 import { afterNextRender, Component, computed, inject, signal } from '@angular/core';
 import { format } from 'date-fns';
+import { FROZEN_MESSAGE } from '@app/common/player-count/frozen-count';
 import { PlayerCountStore } from '@app/common/player-count/player-count-store';
 import { Card } from '@app/common/ui/cards/card';
 import { LoadError } from '@app/common/ui/loading/load-error';
@@ -22,6 +23,7 @@ export default class PlayersOnline {
   readonly count = this.playerCountStore.count;
   readonly failed = this.playerCountStore.failed;
   readonly frozen = this.playerCountStore.frozen;
+  protected readonly frozenMessage = FROZEN_MESSAGE;
 
   readonly locations = computed(() => {
     const count = this.count();

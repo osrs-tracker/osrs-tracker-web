@@ -6,7 +6,7 @@ import { PLAYER_COUNT_RANGES, PlayerCountPoint, PlayerCountRange } from '@osrs-t
 import { map, of, tap } from 'rxjs';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
-import { isFrozen } from '@app/common/player-count/frozen-count';
+import { FROZEN_MESSAGE, isFrozen } from '@app/common/player-count/frozen-count';
 import { PlayerCountStore } from '@app/common/player-count/player-count-store';
 import { ChartTable, ChartTableRow } from '@app/common/charts/chart-table';
 import { ChartDisplay, ChartDisplaySwitch } from '@app/common/charts/chart-display-switch';
@@ -110,8 +110,7 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
               }
               @if (hasFrozen()) {
                 <span class="flex items-center gap-2"
-                  ><span class="w-4.5 border-t-3 border-dotted border-accent"></span>Not updating, possibly an
-                  outage</span
+                  ><span class="w-4.5 border-t-3 border-dotted border-accent"></span>{{ frozenMessage }}</span
                 >
               }
             </div>
@@ -202,6 +201,8 @@ export class PlayerCountHistory {
   readonly daily = computed(() => isDaily(this.series()?.range ?? this.range()));
   readonly lineName = computed(() => lineName(this.series()?.range ?? this.range()));
 
+  protected readonly frozenMessage = FROZEN_MESSAGE;
+
   readonly hasFrozen = computed(() => !!this.series()?.frozen.includes(true));
 
   readonly charted = computed(() => (this.series()?.points.length ?? 0) > 1);
@@ -275,10 +276,10 @@ export class PlayerCountHistory {
  * on bins with a frozen point (`frozen` per point, as in `PlayerCountSeries`)
  */
 export function playerCountRows(points: PlayerCountPoint[], bin: TimeBin, frozen: boolean[] = []): ChartTableRow[] {
-  const frozenPoints = new Set(points.filter((_, i) => frozen[i]));
+  const flagged = new Set(points.filter((_, i) => frozen[i]));
   return binByTime(points, point => point.date, bin).map(({ start, points }) => ({
     key: start,
-    note: points.some(point => frozenPoints.has(point)) ? 'Count not updating, possibly an outage' : undefined,
+    note: points.some(point => flagged.has(point)) ? FROZEN_MESSAGE : undefined,
     cells: [
       timeBinLabel(start, bin),
       fmt(points.reduce((sum, point) => sum + point.total, 0) / points.length),

@@ -33,7 +33,7 @@
               [class]="frozen() ? 'bg-amber after:bg-amber' : 'bg-accent after:bg-accent'"
               aria-hidden="true"
             ></span
-            >{{ frozen() ? 'Not updating, possibly an outage' : 'Online now' }}
+            >{{ frozen() ? frozenMessage : 'Online now' }}
           </span>
           <span class="text-5xl/none md:text-7xl/none font-bold text-strong tabular-nums">{{
             count.total | number

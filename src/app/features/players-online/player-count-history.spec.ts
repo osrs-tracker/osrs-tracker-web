@@ -1,4 +1,5 @@
 import { PlayerCountPoint } from '@osrs-tracker/models';
+import { FROZEN_MESSAGE } from '@app/common/player-count/frozen-count';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { frozenPoints, fullDays, playerCountRows, startsCounting } from './player-count-history';
 
@@ -69,6 +70,6 @@ describe('frozen points', () => {
     const rows = playerCountRows(points, 'hour', [false, false, false, false, false]);
     expect(rows.map(row => row.note)).toEqual([undefined]);
     const frozenRows = playerCountRows(points, 'hour', frozenPoints('24h', points));
-    expect(frozenRows.map(row => row.note)).toEqual(['Count not updating, possibly an outage']);
+    expect(frozenRows.map(row => row.note)).toEqual([FROZEN_MESSAGE]);
   });
 });
