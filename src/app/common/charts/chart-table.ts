@@ -4,6 +4,8 @@ import { Component, input } from '@angular/core';
 export interface ChartTableRow {
   key: string | number;
   cells: string[];
+  /** Under the row's time, after an amber dot: something to know about its values */
+  note?: string;
 }
 
 /**
@@ -39,7 +41,14 @@ export interface ChartTableRow {
             <tr class="border-b border-row last:border-b-0">
               @for (cell of row.cells; track $index) {
                 @if ($first) {
-                  <th scope="row" class="py-2 px-4 text-left font-normal text-text whitespace-nowrap">{{ cell }}</th>
+                  <th scope="row" class="py-2 px-4 text-left font-normal text-text whitespace-nowrap">
+                    {{ cell }}
+                    @if (row.note) {
+                      <span class="flex items-center gap-1.5 text-xs text-muted">
+                        <span class="size-1.5 shrink-0 rounded-full bg-amber" aria-hidden="true"></span>{{ row.note }}
+                      </span>
+                    }
+                  </th>
                 } @else {
                   <td class="py-2 px-4 text-right tabular-nums text-strong whitespace-nowrap">{{ cell }}</td>
                 }

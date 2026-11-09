@@ -6,6 +6,7 @@ import { PLAYER_COUNT_RANGES, PlayerCountPoint, PlayerCountRange } from '@osrs-t
 import { map, of, tap } from 'rxjs';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
+import { FROZEN_MESSAGE, isFrozen } from '@app/common/player-count/frozen-count';
 import { PlayerCountStore } from '@app/common/player-count/player-count-store';
 import { ChartTable, ChartTableRow } from '@app/common/charts/chart-table';
 import { ChartDisplay, ChartDisplaySwitch } from '@app/common/charts/chart-display-switch';
@@ -107,6 +108,11 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
                   ><span class="w-4.5 border-t-2 border-dashed border-muted"></span>Daily peak</span
                 >
               }
+              @if (hasFrozen()) {
+                <span class="flex items-center gap-2"
+                  ><span class="w-4.5 border-t-3 border-dotted border-accent"></span>{{ frozenMessage }}</span
+                >
+              }
             </div>
           }
           @if (countingStarted(); as started) {
@@ -188,11 +194,16 @@ export class PlayerCountHistory {
       range,
       points: isDaily(range) ? fullDays(points, startsCounting(range, points)) : points,
       locationOrder: this.locationOrder(),
+      frozen: frozenPoints(range, points),
     };
   });
 
   readonly daily = computed(() => isDaily(this.series()?.range ?? this.range()));
   readonly lineName = computed(() => lineName(this.series()?.range ?? this.range()));
+
+  protected readonly frozenMessage = FROZEN_MESSAGE;
+
+  readonly hasFrozen = computed(() => !!this.series()?.frozen.includes(true));
 
   readonly charted = computed(() => (this.series()?.points.length ?? 0) > 1);
 
@@ -233,7 +244,7 @@ export class PlayerCountHistory {
   readonly dataTable = computed(() => {
     const series = this.series();
     if (!series) return { caption: '', columns: [], rows: [] };
-    const { range, points } = series;
+    const { range, points, frozen } = series;
     const { bin, name } = RANGES[range];
     return {
       // The daily ranges' days are UTC days, drawn at the visitor's midnight
@@ -243,7 +254,7 @@ export class PlayerCountHistory {
         'Average (players)',
         range === '30d' ? 'Busiest hour (players)' : 'Peak (players)',
       ],
-      rows: playerCountRows(points, bin),
+      rows: playerCountRows(points, bin, frozen),
     };
   });
 
@@ -260,16 +271,30 @@ export class PlayerCountHistory {
   }
 }
 
-/** Per bin, newest first: the average count (the average of the daily averages on daily ranges) and the highest */
-export function playerCountRows(points: PlayerCountPoint[], bin: TimeBin): ChartTableRow[] {
+/**
+ * Per bin, newest first: the average count (the average of the daily averages on daily ranges) and the highest; a note
+ * on bins with a frozen point (`frozen` per point, as in `PlayerCountSeries`)
+ */
+export function playerCountRows(points: PlayerCountPoint[], bin: TimeBin, frozen: boolean[] = []): ChartTableRow[] {
+  const flagged = new Set(points.filter((_, i) => frozen[i]));
   return binByTime(points, point => point.date, bin).map(({ start, points }) => ({
     key: start,
+    note: points.some(point => flagged.has(point)) ? FROZEN_MESSAGE : undefined,
     cells: [
       timeBinLabel(start, bin),
       fmt(points.reduce((sum, point) => sum + point.total, 0) / points.length),
       fmt(Math.max(...points.map(point => point.peak ?? point.total))),
     ],
   }));
+}
+
+/**
+ * Per point, whether it repeats the one before on every number. Only on 24h and 7D, whose points are every sample:
+ * hourly and daily averages almost never repeat exactly.
+ */
+export function frozenPoints(range: PlayerCountRange, points: PlayerCountPoint[]): boolean[] {
+  if (range !== '24h' && range !== '7d') return points.map(() => false);
+  return points.map((point, i) => i > 0 && isFrozen(points[i - 1], point));
 }
 
 export function startsCounting(range: PlayerCountRange, points: PlayerCountPoint[]): boolean {

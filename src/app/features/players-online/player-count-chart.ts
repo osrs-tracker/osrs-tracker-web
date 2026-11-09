@@ -4,6 +4,7 @@ import { Chart, ChartOptions, Point, TooltipModel } from 'chart.js';
 import { PlayerCountPoint, PlayerCountRange } from '@osrs-tracker/models';
 import { format } from 'date-fns';
 import { BaseChart } from '@app/common/charts/base-chart';
+import { FROZEN_MESSAGE } from '@app/common/player-count/frozen-count';
 import { token, withAlpha } from '@app/common/charts/chart-setup';
 import { setTimeAxisUnit, timeAxis } from '@app/common/charts/time-axis';
 import { formatNumberShort } from '@app/common/format/number-format';
@@ -14,6 +15,8 @@ export interface PlayerCountSeries {
   /** Oldest first; daily points dated at the local midnight of their UTC day */
   points: PlayerCountPoint[];
   locationOrder: readonly string[];
+  /** Per point: it repeats the one before on every number, the world list stopped updating (24h and 7D only) */
+  frozen: boolean[];
 }
 
 export function lineName(range: PlayerCountRange): string {
@@ -26,6 +29,7 @@ export function lineName(range: PlayerCountRange): string {
 
 interface HoveredPoint {
   point: PlayerCountPoint;
+  index: number;
   /** The point's x and the plot's top and bottom in the chart, in px */
   x: number;
   top: number;
@@ -34,6 +38,8 @@ interface HoveredPoint {
   /** The chart's width, for placing the tooltip from the right */
   width: number;
 }
+
+const FROZEN_DASH = [0, 6];
 
 const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
 
@@ -60,6 +66,11 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
         aria-hidden="true"
       >
         <span class="font-bold text-strong">{{ tip().title }}</span>
+        @if (tip().frozen) {
+          <span class="flex items-center gap-1.5">
+            <span class="size-2 shrink-0 rounded-full bg-amber"></span>{{ frozenMessage }}
+          </span>
+        }
         @for (row of tip().rows; track row.label) {
           <span class="flex items-center gap-1.5 tabular-nums">
             <span class="size-2 shrink-0 rounded-full" [class]="row.dot"></span>{{ row.label }}: {{ row.value }}
@@ -95,16 +106,19 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
 export class PlayerCountChart extends BaseChart<'line', PlayerCountSeries> {
   protected readonly type = 'line';
 
+  protected readonly frozenMessage = FROZEN_MESSAGE;
+
   protected readonly hovered = signal<HoveredPoint | null>(null);
 
   protected readonly tip = computed(() => {
-    const point = this.hovered()!.point;
-    const { range, locationOrder } = this.data();
+    const { point, index } = this.hovered()!;
+    const { range, locationOrder, frozen } = this.data();
     const daily = range === '1y' || range === 'all';
     const players = point.members + point.f2p;
 
     return {
       title: format(point.date, daily ? 'MMMM do yyyy' : 'MMMM do - HH:mm'),
+      frozen: frozen[index],
       rows: daily
         ? [
             { label: 'Daily average', value: fmt(point.total), dot: 'bg-accent' },
@@ -155,7 +169,7 @@ export class PlayerCountChart extends BaseChart<'line', PlayerCountSeries> {
     };
   }
 
-  protected setData(chart: Chart<'line', Point[]>, { range, points }: PlayerCountSeries): void {
+  protected setData(chart: Chart<'line', Point[]>, { range, points, frozen }: PlayerCountSeries): void {
     setTimeAxisUnit(chart, points.length ? points.at(-1)!.date.getTime() - points[0].date.getTime() : 0);
     this.hovered.set(null);
 
@@ -172,6 +186,11 @@ export class PlayerCountChart extends BaseChart<'line', PlayerCountSeries> {
         pointRadius: context => (!daily && context.dataIndex === last ? 4 : 0),
         pointBorderWidth: 2,
         borderWidth: 2.5,
+        // Dots, not dashes: the Daily peak line and the grid are dashed. Zero-length dashes with round caps draw dots
+        segment: {
+          borderDash: context => (frozen[context.p1DataIndex] ? FROZEN_DASH : undefined),
+          borderCapStyle: context => (frozen[context.p1DataIndex] ? 'round' : undefined),
+        },
         fill: 'start',
         order: 0,
       },
@@ -206,6 +225,7 @@ export class PlayerCountChart extends BaseChart<'line', PlayerCountSeries> {
     const right = x > chart.width / 2;
     this.hovered.set({
       point,
+      index,
       x,
       top: chart.chartArea.top,
       bottom: chart.chartArea.bottom,
