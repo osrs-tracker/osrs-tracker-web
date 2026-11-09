@@ -1,7 +1,7 @@
 import { PlayerCountPoint } from '@osrs-tracker/models';
-import { FROZEN_MESSAGE } from '@app/common/player-count/frozen-count';
+import { FROZEN_MESSAGE, frozenPoints } from '@app/common/player-count/frozen-count';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { frozenPoints, fullDays, playerCountRows, startsCounting } from './player-count-history';
+import { fullDays, playerCountRows, startsCounting } from './player-count-history';
 
 /** A daily point as the component maps it: the UTC day at the viewer's midnight */
 const day = (y: number, m: number, d: number): PlayerCountPoint =>
@@ -59,12 +59,6 @@ describe('frozen points', () => {
     members: total,
   });
   const points = [sample(5, 100), sample(15, 90), sample(25, 90), sample(35, 90), sample(45, 120)];
-
-  it('mark a sample that repeats the one before, on 24h and 7D only', () => {
-    expect(frozenPoints('24h', points)).toEqual([false, false, true, true, false]);
-    expect(frozenPoints('7d', points)).toEqual([false, false, true, true, false]);
-    expect(frozenPoints('30d', points)).toEqual([false, false, false, false, false]);
-  });
 
   it('add a note to the table rows that hold one', () => {
     const rows = playerCountRows(points, 'hour', [false, false, false, false, false]);

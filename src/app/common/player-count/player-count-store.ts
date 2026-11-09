@@ -64,7 +64,7 @@ export const PlayerCountStore = signalStore(
       failed: computed<boolean>(() => _isBrowser && !count() && !!_live.error()),
       /**
        * The live count repeats a reading taken at least `FROZEN_AFTER` before it on every number: the world list stopped
-       * updating, possibly an outage. Not sooner, as two reads a minute apart may get the same list. Compared with every
+       * updating, possibly a game outage. Not sooner, as two reads a minute apart may get the same list. Compared with every
        * count seen, not only the stored sample: during the 2026-11-09 outage Jagex served two stale lists in turn.
        */
       frozen: computed<boolean>(() => {

@@ -6,7 +6,7 @@ import { PLAYER_COUNT_RANGES, PlayerCountPoint, PlayerCountRange } from '@osrs-t
 import { map, of, tap } from 'rxjs';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
-import { FROZEN_MESSAGE, isFrozen } from '@app/common/player-count/frozen-count';
+import { FROZEN_MESSAGE, frozenPoints } from '@app/common/player-count/frozen-count';
 import { PlayerCountStore } from '@app/common/player-count/player-count-store';
 import { ChartTable, ChartTableRow } from '@app/common/charts/chart-table';
 import { ChartDisplay, ChartDisplaySwitch } from '@app/common/charts/chart-display-switch';
@@ -286,15 +286,6 @@ export function playerCountRows(points: PlayerCountPoint[], bin: TimeBin, frozen
       fmt(Math.max(...points.map(point => point.peak ?? point.total))),
     ],
   }));
-}
-
-/**
- * Per point, whether it repeats the one before on every number. Only on 24h and 7D, whose points are every sample:
- * hourly and daily averages almost never repeat exactly.
- */
-export function frozenPoints(range: PlayerCountRange, points: PlayerCountPoint[]): boolean[] {
-  if (range !== '24h' && range !== '7d') return points.map(() => false);
-  return points.map((point, i) => i > 0 && isFrozen(points[i - 1], point));
 }
 
 export function startsCounting(range: PlayerCountRange, points: PlayerCountPoint[]): boolean {
