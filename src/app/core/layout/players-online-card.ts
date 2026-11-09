@@ -80,20 +80,21 @@ export class PlayersOnlineCard {
 
   readonly failed = this.playerCountStore.failed;
 
-  /** Shown once the history has loaded too, so the number and the line's end appear together */
+  /** Shown once the history has loaded too, so the number and the line appear together */
   readonly latest = computed(() => (this.history.hasValue() ? this.playerCountStore.count()?.total : undefined));
 
   readonly frozen = this.playerCountStore.frozen;
 
-  /** The whole line, for the area under it, and its segments split by whether they end on a repeated count */
+  /**
+   * The stored samples only, as on the Players online chart, not the live count: the whole line, for the area under it,
+   * and its segments split by whether they end on a repeated count
+   */
   readonly paths = computed(() => {
-    const latest = this.latest();
-    if (latest === undefined) return undefined;
+    if (this.latest() === undefined) return undefined;
     const history = this.history.value()!;
-    const totals = [...history.map(point => point.total), latest];
+    const totals = history.map(point => point.total);
     if (totals.length < 2) return undefined;
-    // The last segment ends on the live count, which the store judges against every count it has read
-    const dotted = [...frozenPoints('24h', history), this.frozen()];
+    const dotted = frozenPoints('24h', history);
     const min = Math.min(...totals);
     const range = Math.max(...totals) - min || 1;
     const points = totals.map((total, i) => {
