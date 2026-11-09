@@ -4,7 +4,8 @@
   numbers, usually while the game has trouble, and the charts drew that as a flat line that looked like real players. On
   the 24h and 7D ranges, a stretch where every number repeats is now dotted, with a note in its tooltip, in the table
   and under the chart, and the pulsing dot above the count turns amber with "Count not updating, possibly an outage"
-  until the numbers move again.
+  until the numbers move again. The Players online card in the Game menu says "Not updating" and dots its line the same
+  way.
 
 ## 2026-11-04
 
