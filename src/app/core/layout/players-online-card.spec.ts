@@ -38,7 +38,7 @@ describe('PlayersOnlineCard', () => {
     httpTesting = TestBed.inject(HttpTestingController);
   });
 
-  it('dots the segments that end on a repeated count and says the count is not updating', async () => {
+  it('draws the stored samples, dotting a repeat, and shows the live count only as the number', async () => {
     const fixture = TestBed.createComponent(PlayersOnlineCard);
     fixture.componentRef.setInput('active', true);
     await settle();
@@ -50,15 +50,26 @@ describe('PlayersOnlineCard', () => {
         count(90, '2026-11-09T17:35:00Z'),
       ]);
     httpTesting.expectOne('/player-counts/latest').flush(count(90, '2026-11-09T17:35:00Z'));
-    httpTesting.expectOne('/player-counts/live').flush(count(90, '2026-11-09T17:41:00Z'));
+    httpTesting.expectOne('/player-counts/live').flush(count(130, '2026-11-09T17:41:00Z'));
     await settle();
 
     const card = fixture.componentInstance;
-    expect(card.frozen()).toBe(true);
-    // Four points: the first segment is solid, the repeat and the live count's are one dotted run
-    expect(card.paths()?.solid.match(/M/g)).toHaveLength(1);
-    expect(card.paths()?.dotted.match(/M/g)).toHaveLength(1);
-    expect(card.paths()?.dotted.match(/L/g)).toHaveLength(2);
+    expect(card.paths()?.line.match(/L/g)).toHaveLength(2);
+    expect(card.paths()?.solid).toMatch(/^M\S+ \S+ L\S+ \S+$/);
+    expect(card.paths()?.dotted).toMatch(/^M\S+ \S+ L\S+ \S+$/);
+    expect(fixture.nativeElement.textContent).toContain('130');
+  });
+
+  it('says when the live count repeats a count read five minutes before it', async () => {
+    const fixture = TestBed.createComponent(PlayersOnlineCard);
+    fixture.componentRef.setInput('active', true);
+    await settle();
+    httpTesting.expectOne(request => request.url === '/player-counts').flush([count(90, '2026-11-09T17:35:00Z')]);
+    httpTesting.expectOne('/player-counts/latest').flush(count(90, '2026-11-09T17:35:00Z'));
+    httpTesting.expectOne('/player-counts/live').flush(count(90, '2026-11-09T17:41:00Z'));
+    await settle();
+
+    expect(fixture.componentInstance.frozen()).toBe(true);
     expect(fixture.nativeElement.textContent).toContain('Possible game outage');
   });
 });

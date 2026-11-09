@@ -5,7 +5,8 @@
   the 24h and 7D ranges, a stretch where every number repeats is now dotted, with a note in its tooltip, in the table
   and under the chart, and the pulsing dot above the count turns amber with "World Select stopped updating, possibly a
   game outage" until the numbers move again. The Players online card in the Game menu says "Possible game outage" and
-  dots its line the same way.
+  dots its line the same way. Its line now ends at the last 10-minute count, like the page's chart, instead of jumping
+  to the live count, which only the number above it shows.
 
 ## 2026-11-04
 
