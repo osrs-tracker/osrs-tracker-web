@@ -1,3 +1,8 @@
+## 2026-11-11
+
+- Behind the scenes, a visitor who leaves or reloads a page while it is still loading no longer shows up as an error in
+  the server logs, so real errors stand out.
+
 ## 2026-11-09
 
 - Players online now shows when the count stops updating. Sometimes Jagex's world list freezes and keeps giving the same

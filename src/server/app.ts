@@ -78,6 +78,13 @@ export function createApp({
   // Log errors and respond with a generic 500, Express' default handler leaks the stack trace unless NODE_ENV=production
   const uncaughtLog = logger.child({ type: 'uncaught' satisfies WebLogType });
   app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
+    // The engine rejects with an AbortError when the client leaves mid-render. The request's `incoming` line already
+    // says `aborted`, and nobody receives a 500. An AbortError while the client is still connected (our own timeout)
+    // stays a real failure.
+    if (err instanceof DOMException && err.name === 'AbortError' && req.destroyed) {
+      logger.debug(`${req.method} ${req.originalUrl} aborted by the client`);
+      return;
+    }
     uncaughtLog.error({ error: err }, `${req.method} ${req.originalUrl} failed`);
     if (res.headersSent) return next(err);
     res.status(500).send('Internal Server Error');

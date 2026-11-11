@@ -231,6 +231,32 @@ describe('createApp', () => {
     );
   });
 
+  it('does not log a render the client aborted as an uncaught error', async () => {
+    let received!: () => void;
+    const handled = new Promise<void>(resolve => (received = resolve));
+    let rejectRender!: (reason: unknown) => void;
+    handle.mockImplementation(() => (received(), new Promise((_, reject) => (rejectRender = reject))));
+    const controller = new AbortController();
+    const request = get('/trackers/xp/the%20fraking', { signal: controller.signal }).catch(() => undefined);
+    await handled;
+    controller.abort();
+    await request;
+    await vi.waitFor(() => expect(logs.lines.some(line => line['type'] === 'incoming')).toBe(true));
+
+    rejectRender(new DOMException('Request for: /trackers/xp/the%20fraking was aborted.', 'AbortError'));
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    expect(logs.lines.filter(line => line['level'] === 'error')).toEqual([]);
+  });
+
+  it('still logs an AbortError on a connected request as an uncaught error', async () => {
+    handle.mockRejectedValue(new DOMException('The operation was aborted due to timeout', 'AbortError'));
+
+    expect((await get('/trackers/price/4151')).status).toBe(500);
+
+    expect(logs.lines).toContainEqual(expect.objectContaining({ level: 'error', type: 'uncaught' }));
+  });
+
   it('logs the cache field of a request, but not for one the client aborted before the headers were sent', async () => {
     pageCache.set('/', '<html>cached</html>');
     await (await get('/')).text();
