@@ -80,8 +80,9 @@ function splitTile(members: number, f2p: number): Node {
       side('Members', share(members, players), 'flex-start'),
       side('Free-to-play', share(f2p, players), 'flex-end'),
     ]),
+    // Neutral, light against dark, as on the page: green there means the main game, against Hardcore Worlds' violet
     el({ display: 'flex', gap: 3, height: 8 }, [
-      el({ width: `${players ? (members / players) * 100 : 0}%`, borderRadius: 8, backgroundColor: COLORS.accent }),
+      el({ width: `${players ? (members / players) * 100 : 0}%`, borderRadius: 8, backgroundColor: COLORS.text }),
       el({ flex: 1, borderRadius: 8, backgroundColor: COLORS.faint }),
     ]),
   ]);
