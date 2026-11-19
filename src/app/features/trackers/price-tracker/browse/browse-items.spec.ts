@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest';
 import { PRICE_WORLD, PriceWorld } from '@app/common/api/price-world';
 import { GTAG_TOKEN } from '@app/common/analytics/gtag-token';
 import BrowseItems from './browse-items';
+import { mainPriceLinks } from '../testing/main-price-links';
 
 describe('BrowseItems', () => {
   function render(world: PriceWorld) {
@@ -52,8 +53,6 @@ describe('BrowseItems', () => {
         '/trackers/price/hardcore/4151',
       ]),
     );
-    expect(
-      links.filter(href => href?.startsWith('/trackers/price/') && !href.startsWith('/trackers/price/hardcore')),
-    ).toEqual([]);
+    expect(mainPriceLinks(links)).toEqual([]);
   });
 });

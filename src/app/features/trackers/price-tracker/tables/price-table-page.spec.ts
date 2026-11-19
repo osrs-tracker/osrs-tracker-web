@@ -11,6 +11,7 @@ import { PRICE_WORLD, PriceWorld } from '@app/common/api/price-world';
 import { config } from '@config/config';
 import PriceTablePage from './price-table-page';
 import { TableRow } from './price-table';
+import { mainPriceLinks } from '../testing/main-price-links';
 
 // 60 items that each alch for a profit, the first the most; traded a minute before `now`
 const now = 1_792_243_860_000;
@@ -127,9 +128,7 @@ describe('PriceTablePage', () => {
     expect(hrefs).toContain('/trackers/price/hardcore');
     expect(hrefs).toContain('/trackers/price/hardcore/margins');
     expect(hrefs).toContain('/trackers/price/hardcore/1000');
-    expect(
-      hrefs.filter(href => href?.startsWith('/trackers/price/') && !href.startsWith('/trackers/price/hardcore')),
-    ).toEqual([]);
+    expect(mainPriceLinks(hrefs)).toEqual([]);
   });
 
   it('loads the lists straight away without transferred rows, shows 25 at a time', async () => {

@@ -8,6 +8,7 @@ import { GTAG_TOKEN } from '@app/common/analytics/gtag-token';
 import { PRICE_WORLD, PriceWorld } from '@app/common/api/price-world';
 import { config } from '@config/config';
 import NewItemsPage, { NewItemPrices } from './new-items-page';
+import { mainPriceLinks } from '../testing/main-price-links';
 
 const now = Date.UTC(2026, 10, 4, 12);
 // 30 items: 12 from one update, 18 from the one before, newest first as the API sends them
@@ -118,6 +119,7 @@ describe('NewItemsPage', () => {
     const hrefs = [...page().querySelectorAll('a')].map(a => a.getAttribute('href'));
     expect(hrefs).toContain('/trackers/price/hardcore');
     expect(hrefs).toContain('/trackers/price/hardcore/34000');
+    expect(mainPriceLinks(hrefs)).toEqual([]);
   });
 
   it("uses the server's prices for every listed item, so it fetches only the list", async () => {
