@@ -14,11 +14,12 @@ Choices that look like accidents without their context: what was decided, why, a
   one. Real stacking (`scales.y.stacked`) would need a `total - hardcore` series, a stack of its own for the Daily peak
   line and null handling in the lower layer, for the same picture. A third bucket beside members and free-to-play would
   break `total = members + f2p` and every share on the page, so Hardcore Worlds is shown as a part of the total: in the
-  tooltip an "of which" row indented under it, and in the current count a split of its own, main game against Hardcore
-  Worlds, above the members and free-to-play split, so the total is split two ways, by world type and by membership. It
-  isn't drawn inside the Members bar: the one `hardcore` number can't be divided over members and free-to-play exactly
-  (one free-to-play Hardcore World had 1 to 3 of about 6,800 players on 2026-11-19). The colour is the `sold` token
-  (violet): amber already marks a frozen count in the same tooltip and key.
+  tooltip an "of which" row under it, and in the current count a split of its own, main game against Hardcore Worlds,
+  above the members and free-to-play split, so the total is split two ways, by world type and by membership. It isn't
+  drawn inside the Members bar: the one `hardcore` number can't be divided over members and free-to-play exactly (one
+  free-to-play Hardcore World had 1 to 3 of about 6,800 players on 2026-11-19). The colour is the `sold` token (violet):
+  amber already marks a frozen count in the same tooltip and key. In that split the main game is neutral (`bg-text`),
+  not the accent, which already means Members in the split below it.
 - **Revisit:** at about 7% the band is nearly flat and shows the share, not the trend. If the trend is wanted, a Main |
   HCW | All switch that rescales the axis was the dropped alternative.
 

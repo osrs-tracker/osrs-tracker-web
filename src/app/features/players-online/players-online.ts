@@ -52,7 +52,8 @@ export default class PlayersOnline {
     );
     if (count.hardcore === undefined) return [membership];
     const worldType = split(
-      { label: 'Main game', players: Math.max(count.total - count.hardcore, 0), color: 'bg-accent' },
+      // neutral, not the accent: green already means Members in the split below
+      { label: 'Main game', players: Math.max(count.total - count.hardcore, 0), color: 'bg-text' },
       { label: 'Hardcore Worlds', players: count.hardcore, color: 'bg-sold' },
     );
     return [worldType, membership];
