@@ -9,6 +9,9 @@
   page in the other world. Hardcore Worlds item pages say so with an amber badge, and only offer the price ranges the
   world has history for: the day and the week now, the month from early December and the year after a year. A Hardcore
   Worlds item nobody has traded there yet stays out of search results until someone does.
+- The search on Home has a third choice, **HCW items**, beside **Player** and **Main items**: it looks items up with
+  their Hardcore Worlds prices and opens them in the Hardcore Worlds Price Tracker. The switch now sits on a row of its
+  own above the search box, and the page no longer shifts when you change between the three.
 - Behind the scenes, the price pages can now load the Hardcore Worlds prices from the Wiki next to the main game's, each
   kept apart so one never shows the other's, and have Hardcore Worlds versions under `/trackers/price/hardcore`, each
   with its own title, description and address for search engines and link previews. The Margins, High-alch profit, New

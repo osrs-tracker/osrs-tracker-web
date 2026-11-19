@@ -12,34 +12,29 @@
         Daily XP, boss kills and clue scrolls for you and your friends, and live Grand Exchange prices for every item.
       </p>
 
-      <!-- The switch is recreated with the search it sits in, so setSearchMode() keeps its focus -->
+      <!-- The switch is recreated with the search it sits in, so setSearchMode() keeps its focus. Main and Hardcore
+           Worlds items share one item search, which takes the world as an input. -->
       @if (searchMode() === 'player') {
         <player-search class="max-w-160">
-          <segmented
-            leading
-            class="max-sm:basis-full md:max-xl:basis-full"
-            variant="slate"
-            label="Search for"
-            [options]="SEARCH_MODES"
-            [value]="searchMode()"
-            (valueChange)="setSearchMode($event)"
-          />
+          <ng-container ngProjectAs="[leading]" *ngTemplateOutlet="modeSwitch" />
         </player-search>
-        <tracking-offset />
       } @else {
-        <item-search class="max-w-160">
-          <segmented
-            leading
-            class="max-sm:basis-full md:max-xl:basis-full"
-            variant="slate"
-            label="Search for"
-            [options]="SEARCH_MODES"
-            [value]="searchMode()"
-            (valueChange)="setSearchMode($event)"
-          />
+        <item-search class="max-w-160" [world]="itemWorld()">
+          <ng-container ngProjectAs="[leading]" *ngTemplateOutlet="modeSwitch" />
         </item-search>
-        <div price-tracker-links></div>
       }
+
+      <!-- Both slots share one grid cell and the other is hidden, so the hero is as tall in every mode and switching
+           doesn't move the page. `invisible` also takes the hidden one out of the tab order -->
+      <div class="grid">
+        <tracking-offset class="col-start-1 row-start-1" [class.invisible]="searchMode() !== 'player'" />
+        <div
+          price-tracker-links
+          [world]="itemWorld()"
+          class="col-start-1 row-start-1 self-start"
+          [class.invisible]="searchMode() === 'player'"
+        ></div>
+      </div>
     </div>
 
     <preview-card class="flex-1 basis-90 max-w-110 mx-auto md:max-xl:flex-none md:max-xl:w-75 md:max-xl:mx-0" />
@@ -161,6 +156,18 @@
     </section>
   </div>
 </div>
+
+<!-- On a row of its own at every width, so the box is as tall in every mode -->
+<ng-template #modeSwitch>
+  <segmented
+    class="basis-full"
+    variant="slate"
+    label="Search for"
+    [options]="SEARCH_MODES"
+    [value]="searchMode()"
+    (valueChange)="setSearchMode($event)"
+  />
+</ng-template>
 
 <ng-template #arrow>
   <svg lucideArrowRight class="size-4.5" strokeWidth="2.5" />

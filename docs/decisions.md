@@ -331,8 +331,8 @@ Choices that look like accidents without their context: what was decided, why, a
 - **Context:** between `md` and `xl` (768–1279px), Home stacked the hero's preview card under the search, kept the news
   at two large cards per row and the tracker lists at one column, so a tablet's Home (about 2,750px at 820px wide) was
   longer than the phone's.
-- **Decision:** from `md` to `xl` the preview card stays beside the hero text at 300px (the Player/Item switch takes its
-  own row in the search box), the news is four cards in a row with the phone's compact card (the `compact` variant in
+- **Decision:** from `md` to `xl` the preview card stays beside the hero text at 300px (the search switch takes its own
+  row in the search box), the news is four cards in a row with the phone's compact card (the `compact` variant in
   `tailwind.css`: below `sm`, and `md` to `xl`), and the lists sit side by side from `md`. Tried in the design canvas
   first (Home's tablet artboard, the `layout` tweak); about 1,460px at 820px wide.
 - **Revisit:** if the news gets more than four items, or the hero gets more content beside the search.
@@ -609,8 +609,8 @@ Choices that look like accidents without their context: what was decided, why, a
   - **Flat cards:** depth comes from the lighter card on the navy ground; a shadow is reserved for layers that float.
   - **Up is a true green** (`oklch(0.79 0.22 142)`), so a rise never reads as a link or button. Changes carry a sign
     (−8,402 (−0.6%)), no ▼/▲.
-  - **Segmented:** the active pill is accent-filled, except beside an accent button (Home's Player/Item switch), where
-    two accent fills would compete.
+  - **Segmented:** the active pill is accent-filled, except in Home's search switch (Player | Main items | HCW items, on
+    its own row above the input and its accent button), where two accent fills would compete.
   - **Tabular figures on values only:** in a line of text ("Regular · Total 2,316") they look spaced out.
   - **Tracker landings keep equal cards**, each list scrolling in its card: both trackers' first card (yesterday's
     movers, yesterday's top gainers since [#445](https://github.com/osrs-tracker/osrs-tracker-web/issues/445)) beside

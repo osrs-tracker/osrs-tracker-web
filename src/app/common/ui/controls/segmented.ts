@@ -26,7 +26,8 @@ export interface SegmentedOption<T> {
 }
 
 /**
- * `variant="slate"` is Home's Player/Item switch, beside the accent Search button. Disabled options stay reachable by
+ * `variant="slate"` is Home's Player | Main items | HCW items switch, above the search: equal-width options on a row of
+ * their own, whose icons drop below 390px so the three labels fit a 320px screen. Disabled options stay reachable by
  * the arrow keys (`aria-disabled`) but can't be chosen, so keyboard users find them and their `title`. `picked` also
  * fires when the checked option is chosen again. `stretch` options pad 8px on phones, so the hiscores card's four fit a
  * 320px screen.
@@ -39,12 +40,13 @@ export interface SegmentedOption<T> {
         ngToolbarWidget
         type="button"
         role="radio"
-        class="flex items-center justify-center gap-1.5 font-bold whitespace-nowrap aria-disabled:opacity-40 aria-disabled:cursor-default"
+        class="flex items-center justify-center font-bold whitespace-nowrap aria-disabled:opacity-40 aria-disabled:cursor-default"
         [class]="
           variant() === 'slate'
-            ? 'h-10 px-3.5 max-sm:flex-1 md:max-xl:flex-1 rounded-xl text-base ' +
+            ? 'h-10 flex-1 gap-1 px-2 sm:gap-1.5 sm:px-3.5 rounded-xl text-sm sm:text-base ' +
               (option.value === value() ? 'bg-line text-strong' : 'text-muted hover:text-strong')
-            : (option.lucide ? 'h-8 px-2.5' : stretch() ? 'h-8 px-2 sm:px-3' : 'h-8 px-3') +
+            : 'gap-1.5 ' +
+              (option.lucide ? 'h-8 px-2.5' : stretch() ? 'h-8 px-2 sm:px-3' : 'h-8 px-3') +
               ' rounded-full text-sm ' +
               (option.value === value()
                 ? 'bg-accent text-on-accent'
@@ -60,7 +62,14 @@ export interface SegmentedOption<T> {
           <span class="sr-only">{{ option.label }}</span>
         } @else {
           @if (option.icon; as icon) {
-            <img class="h-4 w-auto" icon alt="" [name]="icon.name" [skill]="!!icon.skill" aria-hidden="true" />
+            <img
+              [class]="variant() === 'slate' ? 'h-4 w-auto max-xs:hidden' : 'h-4 w-auto'"
+              icon
+              alt=""
+              [name]="icon.name"
+              [skill]="!!icon.skill"
+              aria-hidden="true"
+            />
           }
           {{ option.label }}
         }

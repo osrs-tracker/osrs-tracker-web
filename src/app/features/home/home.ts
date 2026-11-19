@@ -20,8 +20,10 @@ import { OsrsNewsCardSkeleton } from './osrs-news-card/osrs-news-card-skeleton';
 import OsrsNewsCard from './osrs-news-card/osrs-news-card';
 import { PreviewCard } from './preview-card';
 import { LucideArrowRight } from '@lucide/angular';
+import { PlayerType } from '@osrs-tracker/models';
+import { PriceWorld } from '@app/common/api/price-world';
 
-type SearchMode = 'player' | 'item';
+type SearchMode = 'player' | 'item' | 'hcw';
 
 @Component({
   selector: 'home',
@@ -55,10 +57,13 @@ export default class Home {
   readonly NEWS_SKELETONS: number[] = [0, 1, 2, 3];
   readonly SEARCH_MODES: SegmentedOption<SearchMode>[] = [
     { value: 'player', label: 'Player', icon: { name: 'overall', skill: true } },
-    { value: 'item', label: 'Item', icon: { name: 'coin stack' } },
+    { value: 'item', label: 'Main items', icon: { name: 'coin stack' } },
+    // The title names the world in full; the visible label stays in the accessible name
+    { value: 'hcw', label: 'HCW items', title: 'Hardcore Worlds items', icon: { name: PlayerType.HardcoreMain } },
   ];
 
   readonly searchMode = signal<SearchMode>('player');
+  readonly itemWorld = computed<PriceWorld>(() => (this.searchMode() === 'hcw' ? 'hardcore' : 'main'));
   readonly scrapingOffset = inject(XpTrackerStore).scrapingOffset;
 
   readonly osrsNewsItems = rxResource({
