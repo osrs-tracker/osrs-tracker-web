@@ -67,6 +67,14 @@ packages) have their own skills (`../` from the main checkout, not from a worktr
   function of the route that builds one from its resolved data and params (`itemDetailMeta`). The meta's `title` wins
   over the route's `title`, which then only names the page without meta (a not-found state). A route without meta gets
   the default description and no canonical or social tags.
+- **Price worlds**: Hardcore Worlds have their own Grand Exchange, so the price tracker's pages are mounted twice
+  (`priceTrackerRoutes(world)`). `PriceWorld` is `'main' | 'hardcore'` (`common/api/price-world.ts`, the keys of
+  `config.pricesBaseUrl`); the `PRICE_WORLD` token defaults to main and the `hardcore` route parent provides
+  `'hardcore'`. Components read the token and pass the world to the repositories. Every price cache and `TransferState`
+  key goes through `worldKey(world, key)` (the server's caches are shared by every render, so an unkeyed one serves
+  main's prices on a Hardcore page), and links, canonicals and breadcrumbs inside price pages through
+  `priceTrackerPath(world)`, not a literal `/trackers/price`. The API's item lookup and recent lookups take `world`
+  (`osrs-tracker-repo.ts`; main sends none). A new price page or price cache must take the world into account.
 
 ## Design system
 
@@ -191,7 +199,9 @@ hover shows library signatures and docs instead.
 - **Secrets**: no token, `Authorization` header or full request body in a log line or error message: log the fields you
   need as separate properties. No hard-coded secret as a fallback (`process.env['X'] || '…'`): fail without it.
 - **Writes** (lookups, starting to track a player): check `isHumanVisitor()` (`core/platform/human-visitor.ts`); a
-  crawler's would fill the recent lookups.
+  crawler's would fill the recent lookups. Headless Chrome (Playwright) counts as a bot, so a gated call (recording a
+  lookup, analytics) doesn't fire there unless the browser's user agent is a normal one's. The dev setup talks to the
+  production API, so such a check writes real data.
 - **Chart.js**: shared registrations and the date adapter in `common/charts/chart-setup.ts`; never `Chart.unregister`.
   Time series charts extend `common/charts/base-chart.ts`; their `setData` may build new datasets, as `BaseChart` keeps
   a drawn one in place when its label and dates match, so only changed points animate (Chart.js redraws a new object
@@ -213,6 +223,11 @@ hover shows library signatures and docs instead.
   `ttf/SOLIX-SemiBold.ttf` as they are: copy them into `src/server/og/fonts/` and bump the cards' `?v=`
   (`item-detail-meta.ts` with its spec, `player-detail-meta.ts`, players online in `app.routes.ts`; `docs/decisions.md`)
   when the release changes outlines, widths or kerning (4.0.0 changed none, so it kept them).
+- **Descenders**: SOLIX's `g` and `y` reach about 0.23em below the baseline, while its metrics declare a 0.167em descent
+  (deliberate: solix `CHANGELOG.md`, "vertical metrics 870 / -167"), so anything that clips text to its line box cuts
+  them. An input with `text-overflow: ellipsis` clips its placeholder (osrs-tracker/osrs-tracker-web#535 pads the bottom
+  of `::placeholder` in `.search-box-input`; open when this was written), and Chrome clips typed text in inputs by about
+  1px regardless. Watch for `overflow: hidden`, `truncate` or `line-clamp` on a single line with a tight line height.
 - **Missing assets**: `middleware/missing-asset.ts` 404s them, so Angular routes can't end in a build asset extension;
   `/og/item/:id.png` (`routers/og-images.ts`) registers before it in `app.ts`.
 - **Static files and compression**: `middleware/static-files.ts` sets the cache lifetimes (hashed bundles a year,
@@ -262,6 +277,10 @@ agent.
   `HOST=localhost PORT=4200 node dist/osrs-tracker-web/server/server.mjs`. Smoke test with
   `curl -s -D - http://localhost:4200/<path>` (unknown routes 404, generated pages `x-cache: HIT`). Stop the server you
   started with `lsof -ti:4200 -sTCP:LISTEN | xargs -r kill`.
+- When another session holds port 4200, build with `npx ng build --configuration production` and run
+  `HOST=localhost PORT=<free port> node dist/osrs-tracker-web/server/server.mjs` for a browser check. Server-side API
+  calls work, but the API's CORS allows only 4200, so browser-side ones fail: pages show their error states (the axe
+  scan and `browser-checker` see the same).
 
 ## Browser check
 
