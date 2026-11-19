@@ -149,28 +149,28 @@ export function createOgImageRouter({
 }) {
   const log = logger.child({ type: 'og-image' satisfies WebLogType });
 
-  // Keyed `<world>:<id>`, as each world has its own card of an item
-  const itemCard = cardCache<`${CardWorld}:${number}`>(async key => {
-    const [world, idText] = key.split(':') as [CardWorld, string];
-    const id = Number(idText);
-    let item: Item | undefined;
-    try {
-      item = await getItem(id);
-    } catch (error) {
-      log.warn({ error, id }, 'Loading the item for its image failed');
-      return { kind: 'not-found' };
-    }
-    if (!item) return { kind: 'not-found' };
+  // A cache per world, as each has its own card of an item
+  const itemCardOf = (world: CardWorld) =>
+    cardCache<number>(async id => {
+      let item: Item | undefined;
+      try {
+        item = await getItem(id);
+      } catch (error) {
+        log.warn({ error, id }, 'Loading the item for its image failed');
+        return { kind: 'not-found' };
+      }
+      if (!item) return { kind: 'not-found' };
 
-    let icon: Uint8Array | undefined;
-    try {
-      icon = await getIcon(item);
-    } catch (error) {
-      log.warn({ error, id }, 'Loading the item icon failed, drawing the card without it');
-    }
-    const png = await render(item, icon, world); // A throw rejects: Express' error handler answers 500
-    return { kind: 'image', png, keep: !!icon };
-  });
+      let icon: Uint8Array | undefined;
+      try {
+        icon = await getIcon(item);
+      } catch (error) {
+        log.warn({ error, id }, 'Loading the item icon failed, drawing the card without it');
+      }
+      const png = await render(item, icon, world); // A throw rejects: Express' error handler answers 500
+      return { kind: 'image', png, keep: !!icon };
+    });
+  const itemCards = { main: itemCardOf('main'), hardcore: itemCardOf('hardcore') } satisfies Record<CardWorld, unknown>;
 
   const playerCard = cardCache<string>(async username => {
     let player: Player | undefined;
@@ -212,7 +212,7 @@ export function createOgImageRouter({
   const router = express.Router();
   router.get(/^\/og\/item\/(hardcore\/)?(\d+)\.png$/, async (req, res) => {
     const world: CardWorld = req.params[0] ? 'hardcore' : 'main';
-    send(res, await itemCard(`${world}:${Number(req.params[1])}`), LONG_CACHE);
+    send(res, await itemCards[world](Number(req.params[1])), LONG_CACHE);
   });
   router.get(/^\/og\/player\/([^/]+)\.png$/, async (req, res) => {
     // One image per player however the name is spelled, as Jagex matches names

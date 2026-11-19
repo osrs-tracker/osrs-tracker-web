@@ -312,6 +312,12 @@ Choices that look like accidents without their context: what was decided, why, a
   own (`public/assets/icons`), bundled like the fonts; satori and resvg draw their GIFs as they are. A regular account's
   person is Lucide's, as on the page: `lucideIcon()` (`og/lucide-icon.ts`) writes a component's static `icon` data
   (`LucideUser.icon`) as an SVG image with Lucide's default stroke, so the shape comes from `@lucide/angular` itself.
+- **Hardcore Worlds cards (2026-11-19):** `/og/item/hardcore/:id.png` is the same card with the Hardcore Worlds badge
+  under the name, a one-line examine and its own footer, so a shared link shows which Grand Exchange it's about; each
+  world keeps its own 200 images. The Hardcore Worlds landing, lists and browse pages share one fixed image,
+  `public/assets/og/hardcore-worlds-prices.png` (`hardcore-image.ts`): it says nothing that changes, so it was drawn
+  once, with satori, resvg, the card fonts and the cards' colours, by a script that isn't in the repo. To change it,
+  draw it again the same way and bump its `?v=`. The site's generic card stays as it was.
 - **satori 0.56 (2026-10-14):** 0.33 to 0.55 were held back because `harfbuzzjs`'s Emscripten loader read `hb.wasm` from
   `__dirname`, which fails inside the bundle; satori now inlines that wasm. Specs never render a card, so check a bump
   in the production build (render each card route). Like browsers, satori defaults to `content-box`: `el()`

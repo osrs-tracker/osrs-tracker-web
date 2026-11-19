@@ -109,7 +109,7 @@ describe('createOgImageRouter', () => {
   });
 
   it('answers 404 for an id that is not all digits', async () => {
-    for (const path of ['/og/item/abc.png', '/og/item/12a.png', '/og/item/-1.png']) {
+    for (const path of ['/og/item/abc.png', '/og/item/12a.png', '/og/item/-1.png', '/og/item/hardcore/abc.png']) {
       expect((await get(path)).status).toBe(404);
     }
     expect(getItem).not.toHaveBeenCalled();
