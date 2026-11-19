@@ -3,7 +3,7 @@ export interface Faq {
   answer: string;
 }
 
-/** Shown on the Hardcore Worlds landing and described to search engines as its FAQPage */
+/** Shown on the Hardcore Worlds landing */
 export const HARDCORE_FAQ: Faq[] = [
   {
     question: 'Are Hardcore Worlds prices the same as the main game’s?',

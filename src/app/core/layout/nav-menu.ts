@@ -81,8 +81,10 @@ export class NavMenus {
       />
     </button>
 
+    <!-- On phones the sheet scrolls in itself when it's taller than the screen below the nav (7rem): scrolling the
+         page closes it, so rows below the fold couldn't be reached -->
     <div
-      class="absolute z-10 top-full bg-card shadow-float font-normal text-left max-sm:inset-x-0 max-sm:px-1.5 max-sm:pt-1 max-sm:pb-2.5 max-sm:rounded-b-2xl max-sm:border-b max-sm:border-line sm:right-6 sm:mt-1 sm:w-95 sm:p-2 sm:rounded-2xl sm:border sm:border-line"
+      class="absolute z-10 top-full bg-card shadow-float font-normal text-left max-sm:max-h-[calc(100dvh-7rem)] max-sm:overflow-y-auto max-sm:overscroll-contain max-sm:inset-x-0 max-sm:px-1.5 max-sm:pt-1 max-sm:pb-2.5 max-sm:rounded-b-2xl max-sm:border-b max-sm:border-line sm:right-6 sm:mt-1 sm:w-95 sm:p-2 sm:rounded-2xl sm:border sm:border-line"
       [class.hidden]="!isOpen()"
       [id]="menuId()"
     >
