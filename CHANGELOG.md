@@ -10,9 +10,9 @@
   device, while the favourites stay one list), with a short FAQ on why they differ from the main game's.
 - An item's price page now shows the item in both worlds, Main and Hardcore Worlds, side by side under the stat tiles:
   each world's latest price, its change over the week and the items traded yesterday, and a click moves to the item's
-  page in the other world. Hardcore Worlds item pages say so with an amber badge, and only offer the price ranges the
-  world has history for: the day and the week now, the month from early December and the year after a year. A Hardcore
-  Worlds item nobody has traded there yet stays out of search results until someone does.
+  page in the other world. Hardcore Worlds item pages say so with an amber badge and offer the same price ranges as
+  Main; the longer ones show what history there is. A Hardcore Worlds item nobody has traded there yet stays out of
+  search results until someone does.
 - The search on Home has a third choice, **HCW items**, beside **Player** and **Main items**: it looks items up with
   their Hardcore Worlds prices and opens them in the Hardcore Worlds Price Tracker. The switch now sits on a row of its
   own above the search box, and the page no longer shifts when you change between the three.

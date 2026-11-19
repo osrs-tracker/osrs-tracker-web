@@ -1,6 +1,5 @@
 import { SegmentedOption } from '@app/common/ui/controls/segmented';
 import { Lookback } from '@app/common/api/osrs-prices-repo';
-import { HARDCORE_WORLDS_OPENED, PriceWorld } from '@app/common/api/price-world';
 import { TimeBin } from '@app/common/charts/time-bins';
 
 export type PriceRange = '1D' | '1W' | '1M' | '1Y';
@@ -18,10 +17,8 @@ export const PRICE_RANGES: Record<
 export type PriceLine = 'Instant buy' | 'Instant sell';
 export const PRICE_LINES: PriceLine[] = ['Instant buy', 'Instant sell'];
 
-/** A range is offered once the world is older than it: Hardcore Worlds only have history since they opened */
-export function rangeOptions(world: PriceWorld, now: Date): SegmentedOption<PriceRange>[] {
-  const age = world === 'hardcore' ? (now.getTime() - HARDCORE_WORLDS_OPENED.getTime()) / 1000 : Infinity;
-  return (Object.keys(PRICE_RANGES) as PriceRange[])
-    .filter(range => PRICE_RANGES[range].seconds <= age)
-    .map(range => ({ value: range, label: range, title: `Last ${PRICE_RANGES[range].title}` }));
-}
+export const RANGE_OPTIONS: SegmentedOption<PriceRange>[] = (Object.keys(PRICE_RANGES) as PriceRange[]).map(range => ({
+  value: range,
+  label: range,
+  title: `Last ${PRICE_RANGES[range].title}`,
+}));

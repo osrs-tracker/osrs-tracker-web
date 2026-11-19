@@ -34,7 +34,7 @@ import {
 import { ChartTable } from '@app/common/charts/chart-table';
 import { ChartDisplay, ChartDisplaySwitch } from '@app/common/charts/chart-display-switch';
 import { ItemVolume, VolumeChartState } from './item-volume';
-import { PRICE_LINES, PRICE_RANGES, PriceLine, PriceRange, rangeOptions } from './price-ranges';
+import { PRICE_LINES, PRICE_RANGES, PriceLine, PriceRange, RANGE_OPTIONS } from './price-ranges';
 import { ProfitCalculator } from './profit-calculator';
 import { WorldTiles, worldTile } from './world-tiles';
 import { LucideArrowLeft, LucideArrowRight } from '@lucide/angular';
@@ -85,15 +85,9 @@ export default class ItemDetail implements OnInit {
   });
   readonly browseStartingWith = computed(() => startingWith(this.browseLetter() ?? ''));
 
-  /** Hardcore Worlds have no history for the longer ranges until they're old enough */
-  readonly rangeOptions = rangeOptions(this.world, new Date());
+  readonly rangeOptions = RANGE_OPTIONS;
   readonly priceTrackerPath = priceTrackerPath(this.world);
   protected readonly hardcore = this.world === 'hardcore';
-  /** What the price history can't show yet, for the note under the chart */
-  readonly missingHistory = (() => {
-    const offered = this.rangeOptions.map(option => option.value);
-    return offered.includes('1M') ? (offered.includes('1Y') ? null : 'year') : 'month or year';
-  })();
   readonly range = signal<PriceRange>('1W');
   readonly volumeRange = signal<PriceRange>('1W');
 
@@ -211,9 +205,7 @@ export default class ItemDetail implements OnInit {
   readonly priceChartEmpty = computed(() => !hasTrades(this.priceChartData()));
   readonly nextRange = computed(() => {
     const next = PRICE_RANGES[this.range()].next;
-    return next && this.rangeOptions.some(option => option.value === next)
-      ? { value: next, title: PRICE_RANGES[next].title }
-      : undefined;
+    return next && { value: next, title: PRICE_RANGES[next].title };
   });
 
   private readonly latestPrices = computed(() => (this.latest.hasValue() ? this.latest.value() : undefined));
