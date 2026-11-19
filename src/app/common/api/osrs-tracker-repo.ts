@@ -14,6 +14,7 @@ import { Observable, map } from 'rxjs';
 import { LOADING_INDICATOR } from '@app/core/interceptors/loading-indicator-interceptor';
 import { SSR_TIMEOUT } from '@app/core/interceptors/ssr-timeout-interceptor';
 import { config } from '@config/config';
+import { PriceWorld } from './price-world';
 
 /** A news post's image (a `cdn.runescape.com` URL) through the API, as WebP */
 export function newsImageUrl(url: string): string {
@@ -28,6 +29,9 @@ export interface TopGainer extends Pick<Player, 'username' | 'type' | 'status' |
 
 /** Only these fields, and always dated */
 export type NewItem = Pick<Item, 'id' | 'name' | 'icon'> & Required<Pick<Item, 'addedAt'>>;
+
+/** Main sends no `world`, so its requests and cache keys stay as they were; only another world adds it */
+const worldParams = (world: PriceWorld): { world?: PriceWorld } => (world === 'main' ? {} : { world });
 
 @Service()
 export class OsrsTrackerRepo {
@@ -119,13 +123,13 @@ export class OsrsTrackerRepo {
     });
   }
 
-  /** Adds the item to the recent lookups. Only call it for `isHumanVisitor()`. */
-  recordItemLookup(itemId: number): Observable<void> {
-    return this.httpClient.post<void>(`/items/${itemId}/lookup`, null);
+  /** Adds the item to the world's recent lookups. Only call it for `isHumanVisitor()`. */
+  recordItemLookup(itemId: number, world: PriceWorld = 'main'): Observable<void> {
+    return this.httpClient.post<void>(`/items/${itemId}/lookup`, null, { params: worldParams(world) });
   }
 
-  getRecentItemLookups(): Observable<Item[]> {
-    return this.httpClient.get<Item[]>('/items', { params: { limit: config.maxStoredItems } });
+  getRecentItemLookups(world: PriceWorld = 'main'): Observable<Item[]> {
+    return this.httpClient.get<Item[]>('/items', { params: { limit: config.maxStoredItems, ...worldParams(world) } });
   }
 
   // Requests refreshed every minute revalidate with the API (a 304 when unchanged) instead of using the browser cache's

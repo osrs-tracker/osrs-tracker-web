@@ -277,10 +277,9 @@ export default class ItemDetail implements OnInit {
     const { id, name, icon } = item;
     this.priceTrackerStore.pushRecentItem({ id, name, icon }, this.world);
 
-    // Lookups aren't kept per world yet, so a Hardcore Worlds page would count towards the main item's (#524)
     // fire and forget: a lookup that isn't recorded only leaves the item out of the recent lookups
-    if (this.isHumanVisitor && this.world === 'main')
-      this.osrsTrackerRepo.recordItemLookup(id).subscribe({ error: () => undefined });
+    if (this.isHumanVisitor)
+      this.osrsTrackerRepo.recordItemLookup(id, this.world).subscribe({ error: () => undefined });
   }
 
   selectRange(range: PriceRange): void {

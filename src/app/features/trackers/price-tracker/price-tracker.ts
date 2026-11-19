@@ -37,10 +37,6 @@ export default class PriceTracker {
 
   readonly world = inject(PRICE_WORLD);
   readonly isHardcore = this.world === 'hardcore';
-  // Lookups are recorded for the main game only until #524
-  readonly lookupsSubtitle = this.isHardcore
-    ? 'Looked up by anyone in the main game, newest first'
-    : 'Looked up by anyone, newest first';
   readonly itemsPath = priceTrackerPath(this.world);
   readonly faqs = HARDCORE_FAQ;
 
@@ -50,7 +46,7 @@ export default class PriceTracker {
   readonly recentItems = computed(() => this.priceTrackerStore.recentItems()[this.world]);
 
   readonly recentItemLookups = rxResource({
-    stream: () => this.osrsTrackerRepo.getRecentItemLookups(),
+    stream: () => this.osrsTrackerRepo.getRecentItemLookups(this.world),
     defaultValue: [],
   });
   readonly recentItemLookupsState = computed(() => listCardState(this.recentItemLookups));
