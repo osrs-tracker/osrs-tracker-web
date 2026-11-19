@@ -18,8 +18,9 @@ Choices that look like accidents without their context: what was decided, why, a
   above the members and free-to-play split, so the total is split two ways, by world type and by membership. It isn't
   drawn inside the Members bar: the one `hardcore` number can't be divided over members and free-to-play exactly (one
   free-to-play Hardcore World had 1 to 3 of about 6,800 players on 2026-11-19). The colour is the `sold` token (violet):
-  amber already marks a frozen count in the same tooltip and key. In that split the main game is neutral (`bg-text`),
-  not the accent, which already means Members in the split below it.
+  amber already marks a frozen count in the same tooltip and key. Each split has its own colour pair, so no colour means
+  two things: green and violet for the world types, as in the chart, and dark against light neutrals (`strong`,
+  `border`) for members and free-to-play, which was green and grey before.
 - **Revisit:** at about 7% the band is nearly flat and shows the share, not the trend. If the trend is wanted, a Main |
   HCW | All switch that rescales the axis was the dropped alternative.
 

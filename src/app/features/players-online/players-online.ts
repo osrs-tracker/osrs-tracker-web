@@ -47,13 +47,13 @@ export default class PlayersOnline {
     const count = this.count();
     if (!count) return [];
     const membership = split(
-      { label: 'Members', players: count.members, color: 'bg-accent' },
-      { label: 'Free-to-play', players: count.f2p, color: 'bg-muted' },
+      // neutral, dark against light: green and violet are the world types', as in the chart
+      { label: 'Members', players: count.members, color: 'bg-strong' },
+      { label: 'Free-to-play', players: count.f2p, color: 'bg-border' },
     );
     if (count.hardcore === undefined) return [membership];
     const worldType = split(
-      // neutral, not the accent: green already means Members in the split below
-      { label: 'Main game', players: Math.max(count.total - count.hardcore, 0), color: 'bg-text' },
+      { label: 'Main game', players: Math.max(count.total - count.hardcore, 0), color: 'bg-accent' },
       { label: 'Hardcore Worlds', players: count.hardcore, color: 'bg-sold' },
     );
     return [worldType, membership];

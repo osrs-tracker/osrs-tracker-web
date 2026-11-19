@@ -91,7 +91,7 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
           <!-- "of which" makes it a part of the total above it, not a count beside it -->
           @if (first && tip().hardcore; as hardcore) {
             <span class="flex items-center gap-1.5 tabular-nums">
-              <span class="size-2 shrink-0 rounded-full bg-sold"></span
+              <span class="size-1.5 mx-px shrink-0 rounded-full bg-sold"></span
               ><span
                 ><span class="text-muted">of which {{ hardcoreName }}:</span> {{ hardcore.value }}
                 <span class="text-muted">({{ hardcore.share }})</span></span
