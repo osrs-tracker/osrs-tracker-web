@@ -191,12 +191,11 @@ describe('PageMetaStrategy', () => {
       expect(robots()).toEqual(['max-image-preview:large']);
     });
 
-    it('sets and removes the tag when there is no site-wide one', async () => {
-      await router.navigateByUrl('/hidden');
-      expect(robots()).toEqual(['noindex']);
+    it("drops a server-rendered page's rules after hydration", async () => {
+      meta.addTag({ name: 'robots', content: 'max-image-preview:large, noindex' });
 
       await router.navigateByUrl('/items');
-      expect(robots()).toEqual([]);
+      expect(robots()).toEqual(['max-image-preview:large']);
     });
   });
 });

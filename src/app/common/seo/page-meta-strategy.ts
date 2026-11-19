@@ -3,6 +3,12 @@ import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRouteSnapshot, RouterStateSnapshot, TitleStrategy } from '@angular/router';
 import { config } from '@config/config';
 
+/**
+ * `index.html`'s robots tag, kept in sync by hand. Not read from the DOM: after hydration the tag holds the server
+ * render's page rules, which would then stick to every later page.
+ */
+const SITE_ROBOTS = 'max-image-preview:large';
+
 export interface PageMeta {
   /** Over the route's `title`, which then only titles the page when there's no meta (a not-found state) */
   title?: string;
@@ -77,9 +83,6 @@ export class PageMetaStrategy extends TitleStrategy {
   private readonly injector = inject(Injector);
   private readonly meta = inject(Meta);
   private readonly title = inject(Title);
-  /** The tag from `index.html`, read before the first navigation changes it */
-  private defaultRobots: string | undefined;
-  private defaultRobotsRead = false;
 
   /** The meta's title, else the route's: also what `AnalyticsService` reports */
   override buildTitle(snapshot: RouterStateSnapshot): string | undefined {
@@ -140,13 +143,7 @@ export class PageMetaStrategy extends TitleStrategy {
 
   private setRobots(pageRobots: string | undefined): void {
     // A page's rules are merged into the site-wide tag: a second tag would leave the rules unclear
-    if (!this.defaultRobotsRead) {
-      this.defaultRobots = this.meta.getTag('name="robots"')?.content;
-      this.defaultRobotsRead = true;
-    }
-    const content = [this.defaultRobots, pageRobots].filter(Boolean).join(', ');
-    if (content) this.meta.updateTag({ name: 'robots', content });
-    else this.meta.removeTag('name="robots"');
+    this.meta.updateTag({ name: 'robots', content: [SITE_ROBOTS, pageRobots].filter(Boolean).join(', ') });
   }
 
   private setCanonical(url: string): void {
