@@ -7,7 +7,8 @@
   game and Hardcore Worlds comes before the members and free-to-play one, and the history chart draws Hardcore Worlds as
   a violet band along its bottom, whose tooltip adds "of which Hardcore Worlds" under the total, with a key under the
   chart and a column in the table. Counting them started today, so the band starts there; the 1Y and All ranges, which
-  show full days only, draw it from the next days on.
+  show full days only, draw it from the next days on. The members and free-to-play bar is now dark and light grey
+  instead of green and grey, so green and violet mean the main game and Hardcore Worlds, as in the chart.
 - A shared link to a Hardcore Worlds price page now shows its own preview: an item's card carries the Hardcore Worlds
   badge, and the Hardcore Worlds Price Tracker, its lists and its A–Z pages show a "Hardcore Worlds GE prices" card.
   They looked like the main game's before.
