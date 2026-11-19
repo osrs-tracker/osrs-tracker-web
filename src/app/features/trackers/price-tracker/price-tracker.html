@@ -8,7 +8,11 @@
       : 'Real-time Grand Exchange prices and market trends for every tradeable item. Stay ahead and make smart decisions with the latest prices.'
   "
 >
-  <img icon alt="" name="coin stack" [scale]="2" />
+  @if (isHardcore) {
+    <img icon class="size-8" alt="" name="hardcore_mains" eager />
+  } @else {
+    <img icon alt="" name="coin stack" [scale]="2" />
+  }
 
   <item-search #search class="max-w-180" [initialQuery]="q() ?? ''">
     <nav world-switch leading class="max-sm:basis-full" [current]="world" [query]="search.query()"></nav>

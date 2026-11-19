@@ -1,5 +1,6 @@
 ## 2026-11-19
 
+- On phones, the bottom of a g or y in a search box's example text is no longer cut off.
 - Looking up an item on Hardcore Worlds now counts too. The Hardcore Worlds Price Tracker's "Global recent lookups"
   lists what visitors looked up there, and no longer says "in the main game"; Home and the main Price Tracker still list
   the main game's lookups only.
@@ -16,7 +17,8 @@
   search results until someone does.
 - The search on Home has a third choice, **HCW items**, beside **Player** and **Main items**: it looks items up with
   their Hardcore Worlds prices and opens them in the Hardcore Worlds Price Tracker. The switch now sits on a row of its
-  own above the search box, and the page no longer shifts when you change between the three.
+  own above the search box, and the page no longer shifts when you change between the three. The price links under it
+  now end level with the tracking offset that replaces them for **Player**, so they no longer seem to jump.
 - Behind the scenes, the price pages can now load the Hardcore Worlds prices from the Wiki next to the main game's, each
   kept apart so one never shows the other's, and have Hardcore Worlds versions under `/trackers/price/hardcore`, each
   with its own title, description and address for search engines and link previews. The Margins, High-alch profit, New
