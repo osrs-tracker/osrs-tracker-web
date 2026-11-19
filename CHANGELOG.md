@@ -4,6 +4,11 @@
   beside the item search to switch; your search comes along. Hardcore Worlds has its own Grand Exchange, so it shows its
   own prices in the search results, yesterday's movers, your favourites and your recent lookups (kept per world on this
   device, while the favourites stay one list), with a short FAQ on why they differ from the main game's.
+- An item's price page now shows the item in both worlds, Main and Hardcore Worlds, side by side under the stat tiles:
+  each world's latest price, its change over the week and the items traded yesterday, and a click moves to the item's
+  page in the other world. Hardcore Worlds item pages say so with an amber badge, and only offer the price ranges the
+  world has history for: the day and the week now, the month from early December and the year after a year. A Hardcore
+  Worlds item nobody has traded there yet stays out of search results until someone does.
 - Behind the scenes, the price pages can now load the Hardcore Worlds prices from the Wiki next to the main game's, each
   kept apart so one never shows the other's, and have Hardcore Worlds versions under `/trackers/price/hardcore`, each
   with its own title, description and address for search engines and link previews. The Margins, High-alch profit, New

@@ -3,7 +3,7 @@ import { Component, computed, inject, input, model, output, signal } from '@angu
 import { PRICE_WORLD } from '@app/common/api/price-world';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
-import { Segmented } from '@app/common/ui/controls/segmented';
+import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { ChartTable, ChartTableRow } from '@app/common/charts/chart-table';
 import { ChartDisplay, ChartDisplaySwitch } from '@app/common/charts/chart-display-switch';
 import { TimeBin, timeBinLabel } from '@app/common/charts/time-bins';
@@ -12,7 +12,7 @@ import { formatWhole } from '@app/common/format/number-format';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { VolumeChart } from './charts/volume-chart';
 import { BinVolume, DailyVolume } from './item-prices';
-import { PRICE_RANGES, PriceRange, RANGE_OPTIONS } from './price-ranges';
+import { PRICE_RANGES, PriceRange } from './price-ranges';
 
 export type VolumeChartState = 'loading' | 'failed' | 'not loaded' | 'ready';
 
@@ -59,7 +59,7 @@ interface VolumeSummary {
         <div class="flex flex-wrap gap-2">
           <segmented
             label="Volume range"
-            [options]="RANGE_OPTIONS"
+            [options]="rangeOptions()"
             [value]="range()"
             (valueChange)="selectRange($event)"
           />
@@ -161,7 +161,8 @@ export class ItemVolume {
   private readonly analyticsService = inject(AnalyticsService);
   private readonly world = inject(PRICE_WORLD);
 
-  protected readonly RANGE_OPTIONS = RANGE_OPTIONS;
+  /** The ranges the world has history for */
+  readonly rangeOptions = input.required<SegmentedOption<PriceRange>[]>();
 
   /** Oldest first, today (so far) last */
   readonly volumes = input.required<DailyVolume[]>();
