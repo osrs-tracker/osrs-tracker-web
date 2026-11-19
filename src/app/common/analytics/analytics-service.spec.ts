@@ -34,4 +34,24 @@ describe('AnalyticsService', () => {
 
     expect(send).not.toHaveBeenCalled();
   });
+
+  it('adds the price world to the events of the price pages, and nothing to the others', () => {
+    const { send } = setup(vi.fn());
+    const service = TestBed.inject(AnalyticsService);
+
+    service.trackSearch('item', ' Whip ', 3, 'hardcore');
+    service.trackOption('item_range', 'week', 'main');
+    service.trackSearch('player', 'Zezima');
+    service.trackOption('log_view', 'all');
+
+    expect(send).toHaveBeenCalledWith('search', {
+      search_term: 'whip',
+      search_type: 'item',
+      results: 3,
+      world: 'hardcore',
+    });
+    expect(send).toHaveBeenCalledWith('select_option', { control: 'item_range', option: 'week', world: 'main' });
+    expect(send).toHaveBeenCalledWith('search', { search_term: 'zezima', search_type: 'player' });
+    expect(send).toHaveBeenCalledWith('select_option', { control: 'log_view', option: 'all' });
+  });
 });

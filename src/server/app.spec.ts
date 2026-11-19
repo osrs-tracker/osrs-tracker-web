@@ -139,6 +139,8 @@ describe('createApp', () => {
       ['/trackers/price/browse', '/trackers/price/browse/a'],
       ['/trackers/price/browse?q=x', '/trackers/price/browse/a?q=x'],
       ['/trackers/price/browse/', '/trackers/price/browse/a'],
+      ['/trackers/price/hardcore/browse', '/trackers/price/hardcore/browse/a'],
+      ['/trackers/price/hardcore/browse/?q=x', '/trackers/price/hardcore/browse/a?q=x'],
     ]) {
       const res = await get(path);
 
@@ -293,5 +295,13 @@ describe('createApp', () => {
 
     expect(metrics).toContain('path="/trackers/xp/:username"');
     expect(metrics).not.toContain('ToxSick');
+  });
+
+  it('labels a Hardcore Worlds item page by its route, not as a main one', async () => {
+    await get('/trackers/price/hardcore/4151');
+    const metrics = await (await getMetrics('/metrics')).text();
+
+    expect(metrics).toContain('path="/trackers/price/hardcore/:id"');
+    expect(metrics).not.toContain('4151"');
   });
 });

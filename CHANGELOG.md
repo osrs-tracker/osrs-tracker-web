@@ -2,6 +2,9 @@
 
 - Behind the scenes, the price pages can now load the Hardcore Worlds prices from the Wiki next to the main game's, each
   kept apart so one never shows the other's. Nothing changes on the site yet.
+- Behind the scenes, the price pages now also have Hardcore Worlds versions under `/trackers/price/hardcore`, each with
+  its own title, description and address for search engines and link previews. Nothing links to them yet. The price
+  events in Google Analytics now say which world they come from.
 
 ## 2026-11-11
 

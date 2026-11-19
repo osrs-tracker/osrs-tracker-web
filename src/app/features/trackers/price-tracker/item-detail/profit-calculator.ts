@@ -345,7 +345,7 @@ export class ProfitCalculator {
 
   selectMode(mode: Mode): void {
     this.mode.set(mode);
-    this.analyticsService.trackOption('calculator_mode', mode);
+    this.analyticsService.trackOption('calculator_mode', mode, this.world);
   }
 
   useLatestPrices(): void {

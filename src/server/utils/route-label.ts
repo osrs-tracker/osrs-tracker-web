@@ -8,6 +8,11 @@ const PAGE_ROUTES: [RegExp, string][] = [
   [/^\/trackers\/price\/(high-alch|margins|new)$/, '/trackers/price/$1'],
   [/^\/trackers\/price\/browse$/, '/trackers/price/browse'],
   [/^\/trackers\/price\/browse\/[^/]+$/, '/trackers/price/browse/:letter'],
+  // Hardcore Worlds: before `:id`, which matches `hardcore`
+  [/^\/trackers\/price\/hardcore$/, '/trackers/price/hardcore'],
+  [/^\/trackers\/price\/hardcore\/(high-alch|margins|new|browse)$/, '/trackers/price/hardcore/$1'],
+  [/^\/trackers\/price\/hardcore\/browse\/[^/]+$/, '/trackers/price/hardcore/browse/:letter'],
+  [/^\/trackers\/price\/hardcore\/[^/]+$/, '/trackers/price/hardcore/:id'],
   [/^\/trackers\/price\/[^/]+$/, '/trackers/price/:id'],
   [/^\/trackers\/xp$/, '/trackers/xp'],
   [/^\/trackers\/xp\/[^/]+$/, '/trackers/xp/:username'],

@@ -12,3 +12,7 @@ export const PRICE_WORLD = new InjectionToken<PriceWorld>('PRICE_WORLD', { facto
  * would serve main prices (the server's caches are shared by every render).
  */
 export const worldKey = (world: PriceWorld, key: string): string => (world === 'main' ? key : `${world}-${key}`);
+
+/** The price tracker's base path in a world, for links, canonicals and breadcrumbs */
+export const priceTrackerPath = (world: PriceWorld): string =>
+  world === 'main' ? '/trackers/price' : `/trackers/price/${world}`;

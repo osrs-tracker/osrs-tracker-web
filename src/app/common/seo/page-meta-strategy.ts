@@ -13,6 +13,8 @@ export interface PageMeta {
   card?: 'summary' | 'summary_large_image';
   /** With absolute URLs */
   jsonLd?: JsonLdNode[];
+  /** Added to the site-wide robots rules (`index.html`) for this page only, e.g. `noindex` */
+  robots?: string;
 }
 
 /** A function, not a resolver: the page's own resolver already fetched what it describes. */
@@ -75,6 +77,9 @@ export class PageMetaStrategy extends TitleStrategy {
   private readonly injector = inject(Injector);
   private readonly meta = inject(Meta);
   private readonly title = inject(Title);
+  /** The tag from `index.html`, read before the first navigation changes it */
+  private defaultRobots: string | undefined;
+  private defaultRobotsRead = false;
 
   /** The meta's title, else the route's: also what `AnalyticsService` reports */
   override buildTitle(snapshot: RouterStateSnapshot): string | undefined {
@@ -89,6 +94,7 @@ export class PageMetaStrategy extends TitleStrategy {
     this.meta.updateTag({ name: 'description', content: pageMeta?.description ?? DEFAULT_DESCRIPTION });
 
     this.setJsonLd(pageMeta?.jsonLd);
+    this.setRobots(pageMeta?.robots);
 
     if (!pageMeta) {
       SOCIAL_TAGS.forEach(selector => this.meta.removeTag(selector));
@@ -130,6 +136,17 @@ export class PageMetaStrategy extends TitleStrategy {
       this.injector.get(ErrorHandler).handleError(error);
       return undefined;
     }
+  }
+
+  private setRobots(pageRobots: string | undefined): void {
+    // A page's rules are merged into the site-wide tag: a second tag would leave the rules unclear
+    if (!this.defaultRobotsRead) {
+      this.defaultRobots = this.meta.getTag('name="robots"')?.content;
+      this.defaultRobotsRead = true;
+    }
+    const content = [this.defaultRobots, pageRobots].filter(Boolean).join(', ');
+    if (content) this.meta.updateTag({ name: 'robots', content });
+    else this.meta.removeTag('name="robots"');
   }
 
   private setCanonical(url: string): void {

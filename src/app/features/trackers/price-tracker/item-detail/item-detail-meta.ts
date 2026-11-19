@@ -1,23 +1,28 @@
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
 import { wikiIconUrl } from '@app/common/icon/icon';
-import { PageImage, PageMeta } from '@app/common/seo/page-meta-strategy';
-import { breadcrumbList, webPage } from '@app/common/seo/structured-data';
+import { PriceWorld, priceTrackerPath } from '@app/common/api/price-world';
+import { PageImage, PageMeta, RouteMeta } from '@app/common/seo/page-meta-strategy';
+import { webPage } from '@app/common/seo/structured-data';
 import { formatWhole } from '@app/common/format/number-format';
+import { priceBreadcrumbs } from '../price-breadcrumbs';
 
 const MAX_DESCRIPTION_LENGTH = 160;
 
 /** None for an unknown item (`null`): its not-found state is titled by the route, without a canonical. */
-export function itemDetailMeta(route: ActivatedRouteSnapshot): PageMeta | undefined {
-  const item: Item | null = route.data['item'];
-  return item ? itemPageMeta(item) : undefined;
-}
+export const itemDetailMeta =
+  (world: PriceWorld): RouteMeta =>
+  (route: ActivatedRouteSnapshot): PageMeta | undefined => {
+    const item: Item | null = route.data['item'];
+    return item ? itemPageMeta(item, world) : undefined;
+  };
 
 /**
  * The item's name first, as most searches name only the item. Without the site name, which search results and link
  * previews show on their own (as the landing pages' titles do).
  */
-export function itemTitle(item: Item): string {
+export function itemTitle(item: Item, world: PriceWorld = 'main'): string {
+  if (world === 'hardcore') return `${item.name} - OSRS Hardcore Worlds price and buy limit`;
   const facts = ['price', item.highalch ? 'high alch' : '', item.limit ? 'buy limit' : ''].filter(Boolean);
   const listed = facts.length > 1 ? `${facts.slice(0, -1).join(', ')} and ${facts.at(-1)}` : facts[0];
   return `${item.name} - OSRS ${listed}`;
@@ -28,23 +33,21 @@ export function itemTitle(item: Item): string {
  * snippet for days. The image is the item's preview card, which the server draws (`src/server/routers/og-images.ts`).
  * The structured data describes the item as a `Thing`, never a `Product` or `Offer`: nothing is sold here.
  */
-export function itemPageMeta(item: Item): PageMeta {
-  const canonicalPath = `/trackers/price/${item.id}`;
-  const description = itemDescription(item);
+export function itemPageMeta(item: Item, world: PriceWorld = 'main'): PageMeta {
+  const canonicalPath = `${priceTrackerPath(world)}/${item.id}`;
+  const description = itemDescription(item, world);
+  const title = itemTitle(item, world);
   return {
-    title: itemTitle(item),
+    title,
     description,
     canonicalPath,
     image: itemImage(item),
     card: 'summary_large_image',
     jsonLd: [
-      breadcrumbList([
-        { name: 'Price Tracker', path: '/trackers/price' },
-        { name: item.name, path: canonicalPath },
-      ]),
+      priceBreadcrumbs(world, { name: item.name, path: canonicalPath }),
       webPage({
         path: canonicalPath,
-        title: itemTitle(item),
+        title,
         description,
         about: { '@type': 'Thing', 'name': item.name, 'description': item.examine, 'image': wikiIconUrl(item.icon) },
       }),
@@ -66,7 +69,7 @@ function itemImage(item: Item): PageImage {
  * last first, or the examine text if even that alone is too long. Not whether it's members only: nearly every visitor is
  * a member or doesn't care.
  */
-export function itemDescription(item: Item): string {
+export function itemDescription(item: Item, world: PriceWorld = 'main'): string {
   const facts = [
     item.limit ? `Buy limit ${formatWhole(item.limit)}` : '',
     item.highalch ? `High alch ${formatWhole(item.highalch)} gp` : '',
@@ -75,7 +78,15 @@ export function itemDescription(item: Item): string {
   const describe = (start: string) => {
     const shown = [...facts];
     const join = () =>
-      [start, [...shown, 'Live Grand Exchange prices and price history.'].join(' · ')].filter(Boolean).join(' ');
+      [
+        start,
+        [
+          ...shown,
+          `Live ${world === 'hardcore' ? 'Hardcore Worlds ' : ''}Grand Exchange prices and price history.`,
+        ].join(' · '),
+      ]
+        .filter(Boolean)
+        .join(' ');
     while (shown.length && join().length > MAX_DESCRIPTION_LENGTH) shown.pop();
     return join();
   };
