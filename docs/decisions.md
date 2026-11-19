@@ -615,7 +615,7 @@ Choices that look like accidents without their context: what was decided, why, a
     (−8,402 (−0.6%)), no ▼/▲.
   - **Segmented:** the active pill is accent-filled, except in Home's search switch (Player | Main items | HCW items, on
     its own row above the input and its accent button), where two accent fills would compete, and the nav menu's 24px
-    Main | HCW switch beside the Price Tracker heading, which sits among rows whose icons already carry the accent.
+    Main | HCW switch beside the Item lists heading, which sits among rows whose icons already carry the accent.
   - **Tabular figures on values only:** in a line of text ("Regular · Total 2,316") they look spaced out.
   - **Tracker landings keep equal cards**, each list scrolling in its card: both trackers' first card (yesterday's
     movers, yesterday's top gainers since [#445](https://github.com/osrs-tracker/osrs-tracker-web/issues/445)) beside

@@ -5,12 +5,13 @@
   lists what visitors looked up there, and no longer says "in the main game"; Home and the main Price Tracker still list
   the main game's lookups only.
 
-- The Price Tracker has a Hardcore Worlds version at `/trackers/price/hardcore`, reachable from the Price Tracker menu,
-  whose small **Main | HCW** switch, with room around it to tap, points its price pages at either world. Pick **Main**
-  or **Hardcore Worlds** beside the item search to switch; your search comes along. Hardcore Worlds has its own Grand
-  Exchange, so it shows its own prices in the search results, yesterday's movers, your favourites and your recent
-  lookups (kept per world on this device, while the favourites stay one list), with a short FAQ on why they differ from
-  the main game's.
+- The Price Tracker has a Hardcore Worlds version at `/trackers/price/hardcore`. The Trackers menu opens it with
+  **Search Hardcore Worlds items**, right under **Search items**, and its small **Main | HCW** switch, now beside **Item
+  lists** with room around it to tap, points the four lists below it at either world. Home's Price Tracker card links to
+  the Hardcore Worlds prices too, beside **Browse items A–Z**. Pick **Main** or **Hardcore Worlds** beside the item
+  search to switch; your search comes along. Hardcore Worlds has its own Grand Exchange, so it shows its own prices in
+  the search results, yesterday's movers, your favourites and your recent lookups (kept per world on this device, while
+  the favourites stay one list), with a short FAQ on why they differ from the main game's.
 - An item's price page now shows the item in both worlds, Main and Hardcore Worlds, side by side under the stat tiles:
   each world's latest price, its change over the week and the items traded yesterday, and a click moves to the item's
   page in the other world. Hardcore Worlds item pages say so with an amber badge and offer the same price ranges as
@@ -27,7 +28,12 @@
   link to Hardcore Worlds pages. The price events in Google Analytics now say which world they come from.
 - Behind the scenes, search engines can now find the Hardcore Worlds price pages: the sitemaps list the Hardcore Worlds
   landing, Margins, High-alch profit, New on the GE and Items A–Z pages, and a new sitemap lists each item traded there
-  yesterday, built from the Wiki when requested.
+  yesterday, built from the Wiki when requested. Every page now links to them: the menu's Hardcore Worlds links are in
+  the page from the start, not only after a click on the switch. Their titles say what people search for ("OSRS Hardcore
+  Worlds GE Tracker", "OSRS Hardcore Worlds items starting with A", and an item's title lists its high alch and buy
+  limit as the main game's does). An untraded Hardcore Worlds item now stays out of search results after the page has
+  loaded in the browser as well, and the landing no longer describes its FAQ to search engines, as Google stopped
+  showing those.
 
 ## 2026-11-11
 
