@@ -49,6 +49,24 @@ describe('playerCountRows', () => {
       ['September 2026', '100', '150'],
     ]);
   });
+
+  it('adds the Hardcore Worlds average over the points that have one, empty for a bin with none', () => {
+    const hardcore = (minute: number, players?: number) => ({
+      ...count(new Date(2026, 10, 19, minute < 60 ? 16 : 17, minute % 60), 100),
+      hardcore: players,
+    });
+    const points = [hardcore(15), hardcore(35), hardcore(45, 10), hardcore(55, 20), hardcore(65, 0)];
+    expect(playerCountRows(points, 'hour').map(row => row.cells)).toEqual([
+      ['19 Nov, 17:00', '100', '100', '0'],
+      ['19 Nov, 16:00', '100', '100', '15'],
+    ]);
+
+    const before = [hardcore(15), hardcore(65, 30)];
+    expect(playerCountRows(before, 'hour').map(row => row.cells)).toEqual([
+      ['19 Nov, 17:00', '100', '100', '30'],
+      ['19 Nov, 16:00', '100', '100', ''],
+    ]);
+  });
 });
 
 describe('frozen points', () => {

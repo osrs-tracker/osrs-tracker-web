@@ -38,19 +38,25 @@ export default class PlayersOnline {
 
   readonly locationOrder = computed(() => this.locations().map(location => location.key));
 
-  readonly split = computed(() => {
+  /**
+   * The total split two ways, each over one two-part bar. Hardcore Worlds gets a split of its own, not a part of the
+   * Members bar: the one `hardcore` count can't be divided over members and free-to-play exactly. Counts from before
+   * Hardcore Worlds were counted (2026-11-19), or from an older API, have no `hardcore`: unknown, so no split, never 0.
+   */
+  readonly splits = computed(() => {
     const count = this.count();
     if (!count) return [];
-    const players = count.members + count.f2p;
-    return [
-      { label: 'Members', players: count.members, share: formatShare(count.members, players), color: 'bg-accent' },
-      { label: 'Free-to-play', players: count.f2p, share: formatShare(count.f2p, players), color: 'bg-muted' },
-    ];
-  });
-
-  readonly membersPercent = computed(() => {
-    const count = this.count();
-    return count && count.members + count.f2p ? (count.members / (count.members + count.f2p)) * 100 : 0;
+    const membership = split(
+      // neutral, dark against light: green and violet are the world types', as in the chart
+      { label: 'Members', players: count.members, color: 'bg-strong' },
+      { label: 'Free-to-play', players: count.f2p, color: 'bg-border' },
+    );
+    if (count.hardcore === undefined) return [membership];
+    const worldType = split(
+      { label: 'Main game', players: Math.max(count.total - count.hardcore, 0), color: 'bg-accent' },
+      { label: 'Hardcore Worlds', players: count.hardcore, color: 'bg-sold' },
+    );
+    return [worldType, membership];
   });
 
   /** The count's time in the viewer's time zone, so only set in the browser, after hydration */
@@ -69,4 +75,19 @@ export default class PlayersOnline {
   retry(): void {
     this.playerCountStore.refresh();
   }
+}
+
+interface SplitPart {
+  label: string;
+  players: number;
+  color: string;
+}
+
+/** `percent`: the first part's width in the bar */
+function split(first: SplitPart, second: SplitPart) {
+  const players = first.players + second.players;
+  return {
+    parts: [first, second].map(part => ({ ...part, share: formatShare(part.players, players) })),
+    percent: players ? (first.players / players) * 100 : 0,
+  };
 }

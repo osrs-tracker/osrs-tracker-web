@@ -43,25 +43,28 @@
           >
         </div>
 
-        <div class="flex flex-col gap-2.5 max-w-110">
-          <div class="flex justify-between gap-4">
-            @for (part of split(); track part.label; let last = $last) {
-              <span class="flex flex-col" [class.items-end]="last">
-                <span class="flex items-center gap-2 text-sm text-muted">
-                  <span class="size-2.5 rounded-xs" [class]="part.color"></span>{{ part.label }}
+        <!-- The total split two ways: by world type (once the count has it), then by membership -->
+        @for (split of splits(); track split.parts[0].label) {
+          <div class="flex flex-col gap-2.5 max-w-110">
+            <div class="flex justify-between gap-4">
+              @for (part of split.parts; track part.label; let last = $last) {
+                <span class="flex flex-col" [class.items-end]="last">
+                  <span class="flex items-center gap-2 text-sm text-muted">
+                    <span class="size-2.5 rounded-xs" [class]="part.color"></span>{{ part.label }}
+                  </span>
+                  <span class="text-2xl font-bold text-strong tabular-nums"
+                    >{{ part.players | number }}
+                    <span class="text-base font-normal text-muted">{{ part.share }}</span></span
+                  >
                 </span>
-                <span class="text-2xl font-bold text-strong tabular-nums"
-                  >{{ part.players | number }}
-                  <span class="text-base font-normal text-muted">{{ part.share }}</span></span
-                >
-              </span>
-            }
+              }
+            </div>
+            <div class="flex gap-0.5 h-2" aria-hidden="true">
+              <span class="rounded-l-full" [class]="split.parts[0].color" [style.width.%]="split.percent"></span>
+              <span class="flex-1 rounded-r-full" [class]="split.parts[1].color"></span>
+            </div>
           </div>
-          <div class="flex gap-0.5 h-2" aria-hidden="true">
-            <span class="rounded-l-full bg-accent" [style.width.%]="membersPercent()"></span>
-            <span class="flex-1 rounded-r-full bg-muted"></span>
-          </div>
-        </div>
+        }
       } @else {
         <div class="flex flex-col gap-2" aria-busy="true">
           <skeleton class="h-6 w-28" tone="ground" />

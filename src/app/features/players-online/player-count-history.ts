@@ -15,7 +15,7 @@ import { Card } from '@app/common/ui/cards/card';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
-import { lineName, PlayerCountChart, PlayerCountSeries } from './player-count-chart';
+import { HARDCORE_NAME, hasHardcore, lineName, PlayerCountChart, PlayerCountSeries } from './player-count-chart';
 
 const HOUR = 3_600_000;
 const DAY = 24 * HOUR;
@@ -106,6 +106,11 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
               @if (daily()) {
                 <span class="flex items-center gap-2"
                   ><span class="w-4.5 border-t-2 border-dashed border-muted"></span>Daily peak</span
+                >
+              }
+              @if (hardcoreShown()) {
+                <span class="flex items-center gap-2"
+                  ><span class="w-4.5 h-3 border-t-2 border-sold bg-sold/30"></span>{{ hardcoreName }}</span
                 >
               }
               @if (hasFrozen()) {
@@ -202,8 +207,11 @@ export class PlayerCountHistory {
   readonly lineName = computed(() => lineName(this.series()?.range ?? this.range()));
 
   protected readonly frozenMessage = FROZEN_MESSAGE;
+  protected readonly hardcoreName = HARDCORE_NAME;
 
   readonly hasFrozen = computed(() => !!this.series()?.frozen.includes(true));
+
+  readonly hardcoreShown = computed(() => hasHardcore(this.series()?.points ?? []));
 
   readonly charted = computed(() => (this.series()?.points.length ?? 0) > 1);
 
@@ -235,9 +243,13 @@ export class PlayerCountHistory {
     const series = this.series();
     if (!series) return '';
     const totals = series.points.map(point => point.total);
+    const hardcore = hardcoreCounts(series.points);
     return (
       `${isDaily(series.range) ? 'Daily average players online' : 'Players online'} over ${RANGES[series.range].name}: ` +
-      `between ${fmt(Math.min(...totals))} and ${fmt(Math.max(...totals))}`
+      `between ${fmt(Math.min(...totals))} and ${fmt(Math.max(...totals))}` +
+      (hardcore.length
+        ? `, ${HARDCORE_NAME} between ${fmt(Math.min(...hardcore))} and ${fmt(Math.max(...hardcore))}`
+        : '')
     );
   });
 
@@ -253,6 +265,7 @@ export class PlayerCountHistory {
         bin[0].toUpperCase() + bin.slice(1),
         'Average (players)',
         range === '30d' ? 'Busiest hour (players)' : 'Peak (players)',
+        ...(hasHardcore(points) ? [`${HARDCORE_NAME} (players)`] : []),
       ],
       rows: playerCountRows(points, bin, frozen),
     };
@@ -273,19 +286,35 @@ export class PlayerCountHistory {
 
 /**
  * Per bin, newest first: the average count (the average of the daily averages on daily ranges) and the highest; a note
- * on bins with a frozen point (`frozen` per point, as in `PlayerCountSeries`)
+ * on bins with a frozen point (`frozen` per point, as in `PlayerCountSeries`). When any point has a Hardcore Worlds
+ * count, its average over the bin's points that have one, empty where none has.
  */
 export function playerCountRows(points: PlayerCountPoint[], bin: TimeBin, frozen: boolean[] = []): ChartTableRow[] {
   const flagged = new Set(points.filter((_, i) => frozen[i]));
+  const withHardcore = hasHardcore(points);
   return binByTime(points, point => point.date, bin).map(({ start, points }) => ({
     key: start,
     note: points.some(point => flagged.has(point)) ? FROZEN_MESSAGE : undefined,
     cells: [
       timeBinLabel(start, bin),
-      fmt(points.reduce((sum, point) => sum + point.total, 0) / points.length),
+      fmt(average(points.map(point => point.total))),
       fmt(Math.max(...points.map(point => point.peak ?? point.total))),
+      ...(withHardcore ? [hardcoreCell(points)] : []),
     ],
   }));
+}
+
+function hardcoreCell(points: PlayerCountPoint[]): string {
+  const counts = hardcoreCounts(points);
+  return counts.length ? fmt(average(counts)) : '';
+}
+
+function hardcoreCounts(points: PlayerCountPoint[]): number[] {
+  return points.flatMap(point => (point.hardcore === undefined ? [] : [point.hardcore]));
+}
+
+function average(values: number[]): number {
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
 }
 
 export function startsCounting(range: PlayerCountRange, points: PlayerCountPoint[]): boolean {

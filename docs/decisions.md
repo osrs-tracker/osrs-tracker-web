@@ -2,6 +2,28 @@
 
 Choices that look like accidents without their context: what was decided, why, and when to revisit. Newest first.
 
+## Hardcore Worlds is a band under the players-online total, not a stack (2026-11-19)
+
+- **Context:** players on Hardcore Worlds are inside `total`, `members` and `f2p` (a subset, recorded as `hardcore` from
+  2026-11-19 16:45 UTC; older points have none), about 7% of the total. The players-online chart needed to show them
+  without changing the total line, the Daily peak line, the frozen dots or `BaseChart`'s in-place updates
+  (osrs-tracker/osrs-tracker-web#540).
+- **Decision:** one more dataset in `player-count-chart.ts`, not stacked: `hardcore` filled from zero, drawn over the
+  total's fill (`order: -1`), so it reads as the bottom of a stack whose top edge is still the total. A missing
+  `hardcore` is a gap, never 0, and the band, its tooltip row, key and table column appear only when a shown point has
+  one. Real stacking (`scales.y.stacked`) would need a `total - hardcore` series, a stack of its own for the Daily peak
+  line and null handling in the lower layer, for the same picture. A third bucket beside members and free-to-play would
+  break `total = members + f2p` and every share on the page, so Hardcore Worlds is shown as a part of the total: in the
+  tooltip an "of which" row under it, and in the current count a split of its own, main game against Hardcore Worlds,
+  above the members and free-to-play split, so the total is split two ways, by world type and by membership. It isn't
+  drawn inside the Members bar: the one `hardcore` number can't be divided over members and free-to-play exactly (one
+  free-to-play Hardcore World had 1 to 3 of about 6,800 players on 2026-11-19). The colour is the `sold` token (violet):
+  amber already marks a frozen count in the same tooltip and key. Each split has its own colour pair, so no colour means
+  two things: green and violet for the world types, as in the chart, and dark against light neutrals (`strong`,
+  `border`) for members and free-to-play, which was green and grey before.
+- **Revisit:** at about 7% the band is nearly flat and shows the share, not the trend. If the trend is wanted, a Main |
+  HCW | All switch that rescales the axis was the dropped alternative.
+
 ## A drop below half the XP starts a player's history again (2026-11-04)
 
 - **Context:** a Hardcore Worlds character can be reset to Tutorial Island any number of times under the same name, and

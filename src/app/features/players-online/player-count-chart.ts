@@ -1,6 +1,6 @@
 import { formatNumber } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
-import { Chart, ChartOptions, Point, TooltipModel } from 'chart.js';
+import { Chart, ChartDataset, ChartOptions, Point, TooltipModel } from 'chart.js';
 import { PlayerCountPoint, PlayerCountRange } from '@osrs-tracker/models';
 import { format } from 'date-fns';
 import { BaseChart } from '@app/common/charts/base-chart';
@@ -25,6 +25,21 @@ export function lineName(range: PlayerCountRange): string {
     : range === '30d'
       ? 'Hourly average'
       : 'Players online, every 10 minutes';
+}
+
+export const HARDCORE_NAME = 'Hardcore Worlds';
+/** The band's fill; the legend's swatch uses the same (`bg-sold/30`) */
+const HARDCORE_FILL = 0.3;
+
+/** Points from before Hardcore Worlds were counted (2026-11-19) have no `hardcore`: unknown, not 0 */
+export function hasHardcore(points: PlayerCountPoint[]): boolean {
+  return points.some(point => point.hardcore !== undefined);
+}
+
+/** Every point, so the indices match the total's; a point without a count is a gap */
+export function hardcoreData(points: PlayerCountPoint[]): Point[] {
+  // Chart.js reads a null y as a gap, which its `Point` type doesn't allow
+  return points.map(point => ({ x: point.date.getTime(), y: point.hardcore ?? null })) as Point[];
 }
 
 interface HoveredPoint {
@@ -69,10 +84,22 @@ const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
             <span class="size-2 shrink-0 rounded-full bg-amber"></span>{{ frozenMessage }}
           </span>
         }
-        @for (row of tip().rows; track row.label) {
+        @for (row of tip().rows; track row.label; let first = $first) {
           <span class="flex items-center gap-1.5 tabular-nums">
             <span class="size-2 shrink-0 rounded-full" [class]="row.dot"></span>{{ row.label }}: {{ row.value }}
           </span>
+          <!-- "of which" makes it a part of the total above it, not a count beside it -->
+          @if (first && tip().hardcore; as hardcore) {
+            <span class="flex items-center gap-1.5 tabular-nums">
+              <!-- A smaller dot in the total's dot's 8px slot, so the two labels line up -->
+              <span class="grid size-2 shrink-0 place-items-center"
+                ><span class="size-1.5 rounded-full bg-sold"></span></span
+              ><span
+                ><span class="text-muted">of which {{ hardcoreName }}:</span> {{ hardcore.value }}
+                <span class="text-muted">({{ hardcore.share }})</span></span
+              >
+            </span>
+          }
         }
         <span class="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 mb-0.5 pt-2 border-t border-line">
           @for (location of tip().locations; track location.key) {
@@ -105,6 +132,7 @@ export class PlayerCountChart extends BaseChart<'line', PlayerCountSeries> {
   protected readonly type = 'line';
 
   protected readonly frozenMessage = FROZEN_MESSAGE;
+  protected readonly hardcoreName = HARDCORE_NAME;
 
   protected readonly hovered = signal<HoveredPoint | null>(null);
 
@@ -129,6 +157,11 @@ export class PlayerCountChart extends BaseChart<'line', PlayerCountSeries> {
               dot: 'bg-accent',
             },
           ],
+      // Under the total, apart from the members and free-to-play split, which adds up to 100% on its own
+      hardcore:
+        point.hardcore === undefined
+          ? undefined
+          : { value: fmt(point.hardcore), share: formatShare(point.hardcore, point.total) },
       locations: locationCountsInOrder(point.byLocation, locationOrder).map(location => ({
         ...location,
         players: fmt(location.players),
@@ -206,6 +239,7 @@ export class PlayerCountChart extends BaseChart<'line', PlayerCountSeries> {
             },
           ]
         : []),
+      ...(hasHardcore(points) ? [hardcoreDataset(points)] : []),
     ];
   }
 
@@ -232,4 +266,21 @@ export class PlayerCountChart extends BaseChart<'line', PlayerCountSeries> {
       width: chart.width,
     });
   }
+}
+
+/**
+ * A band from zero, drawn over the total's fill (the lowest `order` is drawn last), so it reads as the bottom of a stack
+ * whose top edge is still the total. Not stacked (`docs/decisions.md`)
+ */
+function hardcoreDataset(points: PlayerCountPoint[]): ChartDataset<'line', Point[]> {
+  return {
+    label: HARDCORE_NAME,
+    data: hardcoreData(points),
+    borderColor: () => token('sold'),
+    backgroundColor: () => withAlpha(token('sold'), HARDCORE_FILL),
+    pointBackgroundColor: () => token('sold'),
+    borderWidth: 1.5,
+    fill: 'origin',
+    order: -1,
+  };
 }
