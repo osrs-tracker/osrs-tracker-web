@@ -5,11 +5,11 @@
   lists what visitors looked up there, and no longer says "in the main game"; Home and the main Price Tracker still list
   the main game's lookups only.
 
-- The Price Tracker has a Hardcore Worlds version at `/trackers/price/hardcore`, also in the Price Tracker menu. Pick
-  **Main** or **Hardcore Worlds** beside the item search to switch; your search comes along. Hardcore Worlds has its own
-  Grand Exchange, so it shows its own prices in the search results, yesterday's movers, your favourites and your recent
-  lookups (kept per world on this device, while the favourites stay one list), with a short FAQ on why they differ from
-  the main game's.
+- The Price Tracker has a Hardcore Worlds version at `/trackers/price/hardcore`, reachable from the Price Tracker menu,
+  whose small **Main | HCW** switch points its price pages at either world. Pick **Main** or **Hardcore Worlds** beside
+  the item search to switch; your search comes along. Hardcore Worlds has its own Grand Exchange, so it shows its own
+  prices in the search results, yesterday's movers, your favourites and your recent lookups (kept per world on this
+  device, while the favourites stay one list), with a short FAQ on why they differ from the main game's.
 - An item's price page now shows the item in both worlds, Main and Hardcore Worlds, side by side under the stat tiles:
   each world's latest price, its change over the week and the items traded yesterday, and a click moves to the item's
   page in the other world. Hardcore Worlds item pages say so with an amber badge and offer the same price ranges as

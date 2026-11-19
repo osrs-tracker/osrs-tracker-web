@@ -26,7 +26,7 @@ export interface SegmentedOption<T> {
 }
 
 /**
- * `variant="slate"` is Home's Player | Main items | HCW items switch, above the search: equal-width options on a row of
+ * `variant="compact"` is the nav menu's small two-option switch. `variant="slate"` is Home's Player | Main items | HCW items switch, above the search: equal-width options on a row of
  * their own, whose icons drop below 390px so the three labels fit a 320px screen. Disabled options stay reachable by
  * the arrow keys (`aria-disabled`) but can't be chosen, so keyboard users find them and their `title`. `picked` also
  * fires when the checked option is chosen again. `stretch` options pad 8px on phones, so the hiscores card's four fit a
@@ -42,15 +42,18 @@ export interface SegmentedOption<T> {
         role="radio"
         class="flex items-center justify-center font-bold whitespace-nowrap aria-disabled:opacity-40 aria-disabled:cursor-default"
         [class]="
-          variant() === 'slate'
-            ? 'h-10 flex-1 gap-1 px-2 sm:gap-1.5 sm:px-3.5 rounded-xl text-sm sm:text-base ' +
+          variant() === 'compact'
+            ? 'h-6 px-2.5 rounded-lg text-xs ' +
               (option.value === value() ? 'bg-line text-strong' : 'text-muted hover:text-strong')
-            : 'gap-1.5 ' +
-              (option.lucide ? 'h-8 px-2.5' : stretch() ? 'h-8 px-2 sm:px-3' : 'h-8 px-3') +
-              ' rounded-full text-sm ' +
-              (option.value === value()
-                ? 'bg-accent text-on-accent'
-                : 'text-strong hover:bg-row aria-disabled:hover:bg-transparent')
+            : variant() === 'slate'
+              ? 'h-10 flex-1 gap-1 px-2 sm:gap-1.5 sm:px-3.5 rounded-xl text-sm sm:text-base ' +
+                (option.value === value() ? 'bg-line text-strong' : 'text-muted hover:text-strong')
+              : 'gap-1.5 ' +
+                (option.lucide ? 'h-8 px-2.5' : stretch() ? 'h-8 px-2 sm:px-3' : 'h-8 px-3') +
+                ' rounded-full text-sm ' +
+                (option.value === value()
+                  ? 'bg-accent text-on-accent'
+                  : 'text-strong hover:bg-row aria-disabled:hover:bg-transparent')
         "
         [attr.aria-checked]="option.value === value()"
         [attr.title]="option.title ?? (option.lucide ? option.label : null)"
@@ -85,7 +88,7 @@ export interface SegmentedOption<T> {
     '(focusout)': 'onFocusOut($event)',
     '[class]':
       "(stretch() ? 'grid grid-flow-col auto-cols-fr ' : 'flex w-fit max-w-full overflow-x-auto ') + " +
-      "(variant() === 'slate' ? 'gap-1 p-1 rounded-2xl bg-ground' : (flush() ? '' : 'p-1 ') + 'rounded-full bg-inner')",
+      "(variant() === 'compact' ? 'gap-0.5 p-0.5 rounded-xl bg-ground' : variant() === 'slate' ? 'gap-1 p-1 rounded-2xl bg-ground' : (flush() ? '' : 'p-1 ') + 'rounded-full bg-inner')",
   },
   imports: [Icon, LucideDynamicIcon, ToolbarWidget],
 })
@@ -95,7 +98,7 @@ export class Segmented<T> {
   /** Every choice, also of the checked option, which `valueChange` skips */
   readonly picked = output<T>();
   readonly label = input.required<string>();
-  readonly variant = input<'accent' | 'slate'>('accent');
+  readonly variant = input<'accent' | 'slate' | 'compact'>('accent');
   readonly stretch = input(false, { transform: booleanAttribute });
   /** No padding round the options, so the checked one lines up with the cards' edges above and below it */
   readonly flush = input(false, { transform: booleanAttribute });
