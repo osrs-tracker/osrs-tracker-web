@@ -179,6 +179,9 @@ hover shows library signatures and docs instead.
 - **Browser-only APIs**: inject `WINDOW` (null on the server) or `StorageService`, check `isPlatformBrowser`, or use
   `@defer` with a `@placeholder`.
 - **CSP**: a path that sends page HTML sets the nonce with `applyCspNonce`.
+- **Links crawlers must find**: a link that belongs in the server HTML but is hidden from view (the Trackers menu's
+  lists of the world the switch isn't on) stays in the DOM under `[attr.hidden]`; `@if` removes the `<a href>`, and
+  crawlers never click the switch.
 - **Response status**: `inject(RESPONSE_INIT, { optional: true })`, not an Express `RESPONSE` token.
 - **Transfer cache**: in `<script id="ng-state">`, look for a news title or an item name.
 - **Transfer state size**: the browser alone loads the Wiki's `/latest` and `/24h` and every item's prices, and item and
@@ -222,7 +225,9 @@ hover shows library signatures and docs instead.
   `base.css` and `index.html`. The link preview cards use the release's `ttf/SOLIX-Regular.ttf` and
   `ttf/SOLIX-SemiBold.ttf` as they are: copy them into `src/server/og/fonts/` and bump the cards' `?v=`
   (`item-detail-meta.ts` with its spec, `player-detail-meta.ts`, players online in `app.routes.ts`; `docs/decisions.md`)
-  when the release changes outlines, widths or kerning (4.0.0 changed none, so it kept them).
+  when the release changes outlines, widths or kerning (4.0.0 changed none, so it kept them). The Hardcore Worlds pages'
+  fixed image (`public/assets/og/hardcore-worlds-prices.png`, `?v=` in `hardcore-image.ts`) was drawn once with the same
+  fonts by a script outside the repo: draw it again then too (`docs/decisions.md`).
 - **Descenders**: SOLIX's `g` and `y` reach about 0.23em below the baseline, while its metrics declare a 0.167em descent
   (deliberate: solix `CHANGELOG.md`, "vertical metrics 870 / -167"), so anything that clips text to its line box cuts
   them. An input with `text-overflow: ellipsis` clips its placeholder (`.search-box-input` pads the bottom of its
