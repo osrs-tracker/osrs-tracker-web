@@ -33,8 +33,8 @@ describe('itemTradedResolver', () => {
     expect(await resolve(() => latest({ low: 6_800_000 }))).toBe(true);
   });
 
-  it('is false when the world has none, as the price tile shows a dash', async () => {
-    expect(await resolve(() => latest({ high: 7_000_000, low: undefined }))).toBe(false);
+  it('is true when the world only has an instant buy for the item', async () => {
+    expect(await resolve(() => latest({ high: 7_000_000, low: undefined }))).toBe(true);
   });
 
   it('is false when the world has no trade at all', async () => {
