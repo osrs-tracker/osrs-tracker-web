@@ -58,12 +58,12 @@ export function worldTile(world: PriceWorld, prices: WorldPrices, now: Date): Wo
     @for (tile of tiles(); track tile.world) {
       @let current = tile.world === world;
       <a
-        class="flex flex-col gap-0.5 min-w-0 p-3 sm:px-4 rounded-xl bg-inner border-2 hover:bg-row"
+        class="flex flex-col gap-0.5 min-w-0 p-3 rounded-xl bg-inner border-2 hover:bg-row"
         [class]="current ? 'border-accent' : 'border-line'"
         [routerLink]="path(tile.world)"
         [attr.aria-current]="current ? 'page' : null"
       >
-        <span class="flex items-center gap-2 text-sm/5 font-bold text-strong">
+        <span class="flex flex-wrap items-center gap-x-2 text-sm/5 font-bold text-strong">
           <img
             class="size-4.5 shrink-0"
             icon
@@ -71,10 +71,12 @@ export function worldTile(world: PriceWorld, prices: WorldPrices, now: Date): Wo
             eager
             [name]="tile.world === 'hardcore' ? PlayerType.HardcoreMain : 'coin stack'"
           />
-          <span class="truncate">{{ tile.world === 'hardcore' ? 'Hardcore Worlds' : 'Main' }}</span>
-          <span class="ml-auto shrink-0 text-xs font-bold" [class]="current ? 'text-muted' : 'text-accent'">{{
-            current ? 'This page' : 'View →'
-          }}</span>
+          <span class="min-w-0 sm:truncate">{{ tile.world === 'hardcore' ? 'Hardcore Worlds' : 'Main' }}</span>
+          <span
+            class="max-sm:basis-full sm:ml-auto sm:shrink-0 text-xs font-bold"
+            [class]="current ? 'text-muted' : 'text-accent'"
+            >{{ current ? 'This page' : 'View →' }}</span
+          >
         </span>
 
         @if (tile.priceLoading) {
@@ -110,7 +112,7 @@ export function worldTile(world: PriceWorld, prices: WorldPrices, now: Date): Wo
     }
   `,
   host: {
-    'class': 'grid grid-cols-2 gap-3 p-3 rounded-2xl bg-card',
+    'class': 'grid grid-cols-2 gap-3 px-card py-4 rounded-2xl bg-card',
     'aria-label': 'Game world',
   },
   imports: [Icon, RouterLink, Skeleton],

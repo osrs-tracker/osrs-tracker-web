@@ -211,7 +211,9 @@ export default class ItemDetail implements OnInit {
   readonly priceChartEmpty = computed(() => !hasTrades(this.priceChartData()));
   readonly nextRange = computed(() => {
     const next = PRICE_RANGES[this.range()].next;
-    return next && { value: next, title: PRICE_RANGES[next].title };
+    return next && this.rangeOptions.some(option => option.value === next)
+      ? { value: next, title: PRICE_RANGES[next].title }
+      : undefined;
   });
 
   private readonly latestPrices = computed(() => (this.latest.hasValue() ? this.latest.value() : undefined));
@@ -273,7 +275,7 @@ export default class ItemDetail implements OnInit {
     }
 
     const { id, name, icon } = item;
-    this.priceTrackerStore.pushRecentItem({ id, name, icon });
+    this.priceTrackerStore.pushRecentItem({ id, name, icon }, this.world);
 
     // Lookups aren't kept per world yet, so a Hardcore Worlds page would count towards the main item's (#524)
     // fire and forget: a lookup that isn't recorded only leaves the item out of the recent lookups
