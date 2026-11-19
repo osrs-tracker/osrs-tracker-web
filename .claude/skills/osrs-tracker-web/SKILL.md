@@ -225,9 +225,9 @@ hover shows library signatures and docs instead.
   when the release changes outlines, widths or kerning (4.0.0 changed none, so it kept them).
 - **Descenders**: SOLIX's `g` and `y` reach about 0.23em below the baseline, while its metrics declare a 0.167em descent
   (deliberate: solix `CHANGELOG.md`, "vertical metrics 870 / -167"), so anything that clips text to its line box cuts
-  them. An input with `text-overflow: ellipsis` clips its placeholder (osrs-tracker/osrs-tracker-web#535 pads the bottom
-  of `::placeholder` in `.search-box-input`; open when this was written), and Chrome clips typed text in inputs by about
-  1px regardless. Watch for `overflow: hidden`, `truncate` or `line-clamp` on a single line with a tight line height.
+  them. An input with `text-overflow: ellipsis` clips its placeholder (`.search-box-input` pads the bottom of its
+  `::placeholder` for this), and Chrome clips typed text in inputs by about 1px regardless. Watch for
+  `overflow: hidden`, `truncate` or `line-clamp` on a single line with a tight line height.
 - **Missing assets**: `middleware/missing-asset.ts` 404s them, so Angular routes can't end in a build asset extension;
   `/og/item/:id.png` (`routers/og-images.ts`) registers before it in `app.ts`.
 - **Static files and compression**: `middleware/static-files.ts` sets the cache lifetimes (hashed bundles a year,
