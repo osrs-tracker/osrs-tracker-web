@@ -37,35 +37,34 @@ async function render(live: PlayerCount): Promise<HTMLElement> {
   return fixture.nativeElement;
 }
 
-const hardcoreSegment = (root: HTMLElement): HTMLElement | null =>
-  root.querySelector<HTMLElement>('[aria-hidden="true"] .bg-sold');
-
-const hardcoreLine = (root: HTMLElement): string | undefined =>
-  [...root.querySelectorAll('p')]
-    .find(line => line.textContent!.includes('Hardcore Worlds'))
-    ?.textContent!.replace(/\s+/g, ' ')
-    .trim();
+/** Each split under the count: its two parts' text and the first part's width in the bar */
+const splits = (root: HTMLElement) =>
+  [...root.querySelectorAll<HTMLElement>('[aria-hidden="true"].h-2')].map(bar => ({
+    parts: [...bar.parentElement!.querySelectorAll('.justify-between > span')].map(part =>
+      part.textContent!.replace(/\s+/g, ' ').trim(),
+    ),
+    percent: bar.querySelector<HTMLElement>('span')!.style.width,
+  }));
 
 describe('PlayersOnline', () => {
-  it('shows the players on Hardcore Worlds as the end of the Members bar, with a key under it', async () => {
-    const root = await render(count(6_300));
-
-    expect(hardcoreSegment(root)?.style.width).toBe('9%');
-    expect(hardcoreLine(root)).toBe('Hardcore Worlds 6,300 7% of all players');
+  it('splits the total into the main game and Hardcore Worlds, above members and free-to-play', async () => {
+    expect(splits(await render(count(6_300)))).toEqual([
+      { parts: ['Main game 83,700 93%', 'Hardcore Worlds 6,300 7%'], percent: '93%' },
+      { parts: ['Members 70,000 78%', 'Free-to-play 20,000 22%'], percent: expect.stringMatching(/^77\.7+9?%$/) },
+    ]);
   });
 
-  it('shows a count of 0 on Hardcore Worlds', async () => {
-    const root = await render(count(0));
+  it('shows a count of 0 on Hardcore Worlds, with no violet in its bar', async () => {
+    const [worldType] = splits(await render(count(0)));
 
-    expect(hardcoreSegment(root)?.style.width).toBe('0%');
-    expect(hardcoreLine(root)).toBe('Hardcore Worlds 0 0% of all players');
+    expect(worldType).toEqual({ parts: ['Main game 90,000 100%', 'Hardcore Worlds 0 0%'], percent: '100%' });
   });
 
-  it('leaves the segment and its key out while the count has no Hardcore Worlds number', async () => {
+  it('shows only members and free-to-play while the count has no Hardcore Worlds number', async () => {
     const root = await render(count());
 
     expect(root.textContent).toContain('90,000');
-    expect(hardcoreSegment(root)).toBeNull();
-    expect(hardcoreLine(root)).toBeUndefined();
+    expect(splits(root).map(split => split.parts)).toEqual([['Members 70,000 78%', 'Free-to-play 20,000 22%']]);
+    expect(root.textContent).not.toContain('Hardcore Worlds');
   });
 });
