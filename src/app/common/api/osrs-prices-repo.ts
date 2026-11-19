@@ -10,9 +10,6 @@ import { config } from '@config/config';
 import { PriceWorld, worldKey } from './price-world';
 
 export enum TimeSpan {
-  FIVE_MINUTES = '5m',
-  HOUR = '1h',
-  SIX_HOURS = '6h',
   DAY = '24h',
 }
 
