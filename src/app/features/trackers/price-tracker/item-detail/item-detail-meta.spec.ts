@@ -1,6 +1,8 @@
+import { ActivatedRouteSnapshot } from '@angular/router';
 import { Item } from '@osrs-tracker/models';
+import { PageMeta } from '@app/common/seo/page-meta-strategy';
 import { describe, expect, it } from 'vitest';
-import { itemDescription, itemPageMeta, itemTitle } from './item-detail-meta';
+import { itemDescription, itemDetailMeta, itemPageMeta, itemTitle } from './item-detail-meta';
 
 const whip = {
   id: 4151,
@@ -30,6 +32,23 @@ describe('itemPageMeta for Hardcore Worlds', () => {
     expect(meta.description.length).toBeLessThanOrEqual(160);
     expect(JSON.stringify(meta.jsonLd![0])).toContain('Hardcore Worlds');
     expect(meta.jsonLd![0]['itemListElement']).toHaveLength(4);
+  });
+});
+
+describe('itemPageMeta robots', () => {
+  it('keeps a Hardcore Worlds page without trades out of search results', () => {
+    expect(itemPageMeta(whip, 'hardcore', false).robots).toBe('noindex');
+    expect(itemPageMeta(whip, 'hardcore', true).robots).toBeUndefined();
+    expect(itemPageMeta(whip, 'hardcore').robots).toBeUndefined();
+  });
+
+  it('reads the traded flag the route resolved, and indexes when there is none (main)', () => {
+    const robots = (world: 'main' | 'hardcore', data: object) =>
+      (itemDetailMeta(world) as (route: ActivatedRouteSnapshot) => PageMeta)({ data } as ActivatedRouteSnapshot).robots;
+
+    expect(robots('hardcore', { item: whip, traded: false })).toBe('noindex');
+    expect(robots('hardcore', { item: whip, traded: true })).toBeUndefined();
+    expect(robots('main', { item: whip })).toBeUndefined();
   });
 });
 

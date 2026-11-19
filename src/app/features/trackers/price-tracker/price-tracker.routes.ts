@@ -4,6 +4,7 @@ import { PageMeta } from '@app/common/seo/page-meta-strategy';
 import { faqPage } from '@app/common/seo/structured-data';
 import { itemDetailResolver } from './item-detail/item-detail-resolver';
 import { itemDetailMeta } from './item-detail/item-detail-meta';
+import { itemTradedResolver } from './item-detail/item-traded-resolver';
 import { browseItemsResolver } from './browse/browse-items-resolver';
 import { browseMeta } from './browse/browse-meta';
 import { HARDCORE_FAQ } from './hardcore-faq';
@@ -116,7 +117,8 @@ export const priceTrackerRoutes = (world: PriceWorld): Route[] => {
       pathMatch: 'full',
       data: { meta: itemDetailMeta(world) },
       loadComponent: () => import('./item-detail/item-detail'),
-      resolve: { item: itemDetailResolver },
+      // Main's items all have a price; Hardcore Worlds list ones nobody has traded there yet
+      resolve: { item: itemDetailResolver, ...(hardcore && { traded: itemTradedResolver }) },
     },
   ];
 };

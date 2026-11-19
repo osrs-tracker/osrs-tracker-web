@@ -1,10 +1,13 @@
 <div class="max-w-page mx-auto flex flex-wrap items-center justify-between gap-x-4 px-4 sm:px-6 pt-3">
-  <a routerLink="/trackers/price" class="link inline-flex items-center gap-1.5 min-h-6 text-sm">
+  <a [routerLink]="priceTrackerPath" class="link inline-flex items-center gap-1.5 min-h-6 text-sm">
     <svg lucideArrowLeft class="size-4" strokeWidth="2.5" />
-    Price Tracker
+    {{ hardcore ? 'Hardcore Worlds prices' : 'Price Tracker' }}
   </a>
   @if (browseLetter(); as letter) {
-    <a class="link inline-flex items-center gap-1.5 min-h-6 text-sm" [routerLink]="['/trackers/price/browse', letter]">
+    <a
+      class="link inline-flex items-center gap-1.5 min-h-6 text-sm"
+      [routerLink]="[priceTrackerPath, 'browse', letter]"
+    >
       Items {{ browseStartingWith() }}
       <svg lucideArrowRight class="size-4" strokeWidth="2.5" />
     </a>
@@ -52,6 +55,8 @@
         </ng-template>
       }
     </div>
+
+    <nav world-tiles aria-label="Game world" [itemId]="item.id" [tiles]="worldTiles()"></nav>
 
     <article card>
       <h2 #priceHeading title tabindex="-1">Price</h2>
@@ -146,6 +151,11 @@
           </li>
         }
       </ul>
+      @if (missingHistory; as missing) {
+        <p class="mt-4 px-4 py-3 rounded-xl bg-inner text-sm text-muted">
+          Hardcore Worlds opened on 4 November 2026, so there’s no {{ missing }} yet.
+        </p>
+      }
     </article>
 
     <div class="grid lg:grid-cols-2 gap-6">
@@ -155,6 +165,7 @@
         [loading]="hourlyLoading()"
         [error]="!!hourly.error() && !priceSeries.error()"
         [notLoaded]="!!hourly.error() && !!priceSeries.error()"
+        [rangeOptions]="rangeOptions"
         [(range)]="volumeRange"
         [bins]="volumeBins()"
         [chart]="volumeChart()"

@@ -12,7 +12,7 @@ import { StatTile } from '@app/common/ui/cards/stat-tile';
 import { StatusPanel } from '@app/common/ui/page/status-panel';
 import { timeAgo } from '@app/common/format/time-ago-pipe';
 import { AveragePricesAtTime, Lookback, OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
-import { PRICE_WORLD } from '@app/common/api/price-world';
+import { PRICE_WORLD, PriceWorld, priceTrackerPath } from '@app/common/api/price-world';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { isHumanVisitor } from '@app/core/platform/human-visitor';
@@ -34,8 +34,9 @@ import {
 import { ChartTable } from '@app/common/charts/chart-table';
 import { ChartDisplay, ChartDisplaySwitch } from '@app/common/charts/chart-display-switch';
 import { ItemVolume, VolumeChartState } from './item-volume';
-import { PRICE_LINES, PRICE_RANGES, PriceLine, PriceRange, RANGE_OPTIONS } from './price-ranges';
+import { PRICE_LINES, PRICE_RANGES, PriceLine, PriceRange, rangeOptions } from './price-ranges';
 import { ProfitCalculator } from './profit-calculator';
+import { WorldTiles, worldTile } from './world-tiles';
 import { LucideArrowLeft, LucideArrowRight } from '@lucide/angular';
 
 /** As many days as the hourly series covers in full, today included: it ends with the last full hour, 168 hours back */
@@ -59,6 +60,7 @@ const VOLUME_DAYS = 7;
     ItemVolume,
     PriceChart,
     ProfitCalculator,
+    WorldTiles,
     LucideArrowLeft,
     LucideArrowRight,
   ],
@@ -83,7 +85,15 @@ export default class ItemDetail implements OnInit {
   });
   readonly browseStartingWith = computed(() => startingWith(this.browseLetter() ?? ''));
 
-  readonly rangeOptions = RANGE_OPTIONS;
+  /** Hardcore Worlds have no history for the longer ranges until they're old enough */
+  readonly rangeOptions = rangeOptions(this.world, new Date());
+  readonly priceTrackerPath = priceTrackerPath(this.world);
+  protected readonly hardcore = this.world === 'hardcore';
+  /** What the price history can't show yet, for the note under the chart */
+  readonly missingHistory = (() => {
+    const offered = this.rangeOptions.map(option => option.value);
+    return offered.includes('1M') ? (offered.includes('1Y') ? null : 'year') : 'month or year';
+  })();
   readonly range = signal<PriceRange>('1W');
   readonly volumeRange = signal<PriceRange>('1W');
 
@@ -125,6 +135,18 @@ export default class ItemDetail implements OnInit {
   });
   /** Never loaded on the server, so it renders as loading there */
   readonly hourlyLoading = computed(() => !this.isBrowser || this.hourly.isLoading());
+
+  /** For the world tiles. Like the current world's, the series is browser only. */
+  private readonly otherWorld: PriceWorld = this.world === 'main' ? 'hardcore' : 'main';
+  private readonly otherLatest = rxResource({
+    params: () => this.item()?.id,
+    stream: ({ params: id }) => this.osrsPricesRepo.getLatestPrices(id, this.otherWorld),
+  });
+  private readonly otherHourly = rxResource({
+    params: () => (this.isBrowser ? this.item()?.id : undefined),
+    stream: ({ params: id }) => this.osrsPricesRepo.getPriceTimeSeries(id, '7d', this.otherWorld),
+    defaultValue: [],
+  });
 
   // A resource cancels the previous request when the range changes, so a slow response can't overwrite a newer one
   readonly priceSeries = rxResource({
@@ -213,6 +235,36 @@ export default class ItemDetail implements OnInit {
     }),
   );
 
+  readonly worldTiles = computed(() => {
+    const now = new Date();
+    const current = worldTile(
+      this.world,
+      {
+        latest: this.latestPrices(),
+        latestLoading: this.latestLoading(),
+        latestFailed: this.latestFailed(),
+        hourly: this.hourlySeries(),
+        hourlyLoading: this.hourlyLoading(),
+        hourlyFailed: !!this.hourly.error(),
+      },
+      now,
+    );
+    const other = worldTile(
+      this.otherWorld,
+      {
+        latest: this.otherLatest.hasValue() ? this.otherLatest.value() : undefined,
+        // As for the current world: a failed load renders as loading during SSR, the browser fetches it again
+        latestLoading: this.otherLatest.isLoading() || (!this.isBrowser && !!this.otherLatest.error()),
+        latestFailed: this.isBrowser && !!this.otherLatest.error(),
+        hourly: this.otherHourly.hasValue() ? this.otherHourly.value() : [],
+        hourlyLoading: !this.isBrowser || this.otherHourly.isLoading(),
+        hourlyFailed: !!this.otherHourly.error(),
+      },
+      now,
+    );
+    return this.world === 'main' ? [current, other] : [other, current];
+  });
+
   ngOnInit(): void {
     const item = this.item();
     if (!item) {
@@ -223,8 +275,10 @@ export default class ItemDetail implements OnInit {
     const { id, name, icon } = item;
     this.priceTrackerStore.pushRecentItem({ id, name, icon });
 
+    // Lookups aren't kept per world yet, so a Hardcore Worlds page would count towards the main item's (#524)
     // fire and forget: a lookup that isn't recorded only leaves the item out of the recent lookups
-    if (this.isHumanVisitor) this.osrsTrackerRepo.recordItemLookup(id).subscribe({ error: () => undefined });
+    if (this.isHumanVisitor && this.world === 'main')
+      this.osrsTrackerRepo.recordItemLookup(id).subscribe({ error: () => undefined });
   }
 
   selectRange(range: PriceRange): void {
@@ -263,6 +317,6 @@ export default class ItemDetail implements OnInit {
   }
 
   searchItem(query: string): void {
-    void this.router.navigate(['/trackers/price'], { queryParams: { q: query } });
+    void this.router.navigate([this.priceTrackerPath], { queryParams: { q: query } });
   }
 }

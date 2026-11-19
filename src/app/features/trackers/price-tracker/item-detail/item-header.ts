@@ -1,5 +1,5 @@
 import { Component, computed, inject, input, output } from '@angular/core';
-import { Item } from '@osrs-tracker/models';
+import { Item, PlayerType } from '@osrs-tracker/models';
 import { PRICE_WORLD } from '@app/common/api/price-world';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
@@ -34,13 +34,25 @@ import { LucideExternalLink, LucideStar, LucideTriangle } from '@lucide/angular'
         target="_blank"
         rel="noopener"
         title="Open on the OSRS Wiki"
-      ><h1 class="inline">{{ item().name }}</h1>&#8288;<svg
+      ><h1 class="inline">{{ item().name }}@if (hardcore) {<span class="sr-only">, Hardcore Worlds</span>}</h1>&#8288;<svg
           lucideExternalLink
           class="inline w-4.5 h-lh ml-2.5 align-top text-muted"
         />
         <span class="sr-only">(opens the OSRS Wiki in a new tab)</span>
       </a>
-      <p class="text-base text-muted">{{ item().examine }}</p>
+      <p class="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-base text-muted">
+        @if (hardcore) {
+          <!-- The h1 says it for screen readers, which skip this badge -->
+          <span
+            class="inline-flex items-center gap-1.5 h-6 px-2.5 rounded-full border border-amber bg-inner text-sm/5 font-bold text-strong"
+            aria-hidden="true"
+          >
+            <img class="size-4" icon alt="" [name]="PlayerType.HardcoreMain" />
+            Hardcore Worlds
+          </span>
+        }
+        {{ item().examine }}
+      </p>
     </div>
 
     <div class="flex items-center gap-4 basis-full sm:basis-auto sm:gap-6">
@@ -108,6 +120,8 @@ export class ItemHeader {
   private readonly analyticsService = inject(AnalyticsService);
   private readonly priceTrackerStore = inject(PriceTrackerStore);
   private readonly world = inject(PRICE_WORLD);
+  protected readonly PlayerType = PlayerType;
+  protected readonly hardcore = this.world === 'hardcore';
 
   readonly item = input.required<Item>();
   readonly price = input<number | null>(null);

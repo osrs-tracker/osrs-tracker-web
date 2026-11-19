@@ -14,7 +14,7 @@ export const itemDetailMeta =
   (world: PriceWorld): RouteMeta =>
   (route: ActivatedRouteSnapshot): PageMeta | undefined => {
     const item: Item | null = route.data['item'];
-    return item ? itemPageMeta(item, world) : undefined;
+    return item ? itemPageMeta(item, world, route.data['traded'] !== false) : undefined;
   };
 
 /**
@@ -31,9 +31,10 @@ export function itemTitle(item: Item, world: PriceWorld = 'main'): string {
 /**
  * From the item alone, so it doesn't depend on the Wiki's prices, and without a live price: search engines show a
  * snippet for days. The image is the item's preview card, which the server draws (`src/server/routers/og-images.ts`).
+ * `traded` is whether the world has a trade for the item: without one the page is `noindex`.
  * The structured data describes the item as a `Thing`, never a `Product` or `Offer`: nothing is sold here.
  */
-export function itemPageMeta(item: Item, world: PriceWorld = 'main'): PageMeta {
+export function itemPageMeta(item: Item, world: PriceWorld = 'main', traded = true): PageMeta {
   const canonicalPath = `${priceTrackerPath(world)}/${item.id}`;
   const description = itemDescription(item, world);
   const title = itemTitle(item, world);
@@ -43,6 +44,8 @@ export function itemPageMeta(item: Item, world: PriceWorld = 'main'): PageMeta {
     canonicalPath,
     image: itemImage(item),
     card: 'summary_large_image',
+    // Hardcore Worlds list items that nobody has traded there yet: pages without a price aren't worth indexing
+    robots: traded ? undefined : 'noindex',
     jsonLd: [
       priceBreadcrumbs(world, { name: item.name, path: canonicalPath }),
       webPage({
