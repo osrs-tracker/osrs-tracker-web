@@ -14,14 +14,18 @@ import ItemDetail from './item-detail';
 const WHIP = { id: 4151, name: 'Abyssal whip', examine: 'A weapon.', icon: 'Abyssal whip.png' } as Item;
 
 describe('ItemDetail', () => {
-  function render(world: PriceWorld, getPriceTimeSeries: () => unknown = () => NEVER) {
+  function render(
+    world: PriceWorld,
+    getPriceTimeSeries: () => unknown = () => NEVER,
+    recordItemLookup: (...args: unknown[]) => unknown = () => NEVER,
+  ) {
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
         provideRouter([]),
         { provide: PRICE_WORLD, useValue: world },
         { provide: OsrsPricesRepo, useValue: { getLatestPrices: () => NEVER, getPriceTimeSeries } },
-        { provide: OsrsTrackerRepo, useValue: { recordItemLookup: () => NEVER } },
+        { provide: OsrsTrackerRepo, useValue: { recordItemLookup } },
         { provide: AnalyticsService, useValue: { trackEvent: vi.fn(), trackOption: vi.fn() } },
       ],
     });
@@ -31,6 +35,18 @@ describe('ItemDetail', () => {
     fixture.detectChanges();
     return { page: fixture.nativeElement as HTMLElement, fixture };
   }
+
+  it.each<PriceWorld>(['main', 'hardcore'])("records a visitor's lookup in the %s world", world => {
+    const recordItemLookup = vi.fn(() => NEVER);
+    // The test browser's own user agent counts as a bot
+    const userAgent = vi
+      .spyOn(navigator, 'userAgent', 'get')
+      .mockReturnValue('Mozilla/5.0 (Windows NT 10.0; Win64; x64) Firefox/140.0');
+    render(world, undefined, recordItemLookup);
+
+    expect(recordItemLookup).toHaveBeenCalledExactlyOnceWith(WHIP.id, world);
+    userAgent.mockRestore();
+  });
 
   const hrefs = (page: HTMLElement) => [...page.querySelectorAll('a[href]')].map(a => a.getAttribute('href'));
 

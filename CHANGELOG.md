@@ -1,5 +1,9 @@
 ## 2026-11-19
 
+- Looking up an item on Hardcore Worlds now counts too. The Hardcore Worlds Price Tracker's "Global recent lookups"
+  lists what visitors looked up there, and no longer says "in the main game"; Home and the main Price Tracker still list
+  the main game's lookups only.
+
 - The Price Tracker has a Hardcore Worlds version at `/trackers/price/hardcore`. Pick **Main** or **Hardcore Worlds**
   beside the item search to switch; your search comes along. Hardcore Worlds has its own Grand Exchange, so it shows its
   own prices in the search results, yesterday's movers, your favourites and your recent lookups (kept per world on this
