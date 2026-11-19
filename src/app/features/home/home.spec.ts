@@ -102,4 +102,22 @@ describe('Home search switch', () => {
     expect(offset.classList.contains('invisible')).toBe(true);
     expect(links.classList.contains('invisible')).toBe(false);
   });
+
+  it("points the price links at the chosen world's tracker", async () => {
+    await render();
+    const hrefs = () => [...root.querySelectorAll('[price-tracker-links] a')].map(a => a.getAttribute('href'));
+
+    await choose('Main items');
+    await fixture.whenStable();
+    expect(hrefs()).toContain('/trackers/price/margins');
+
+    await choose('HCW items');
+    await fixture.whenStable();
+    expect(hrefs()).toEqual([
+      '/trackers/price/hardcore/browse/a',
+      '/trackers/price/hardcore/high-alch',
+      '/trackers/price/hardcore/margins',
+      '/trackers/price/hardcore/new',
+    ]);
+  });
 });

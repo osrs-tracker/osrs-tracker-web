@@ -30,6 +30,7 @@
         <tracking-offset class="col-start-1 row-start-1" [class.invisible]="searchMode() !== 'player'" />
         <div
           price-tracker-links
+          [world]="itemWorld()"
           class="col-start-1 row-start-1 self-start"
           [class.invisible]="searchMode() === 'player'"
         ></div>

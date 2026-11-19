@@ -63,7 +63,7 @@ export interface SegmentedOption<T> {
         } @else {
           @if (option.icon; as icon) {
             <img
-              [class]="variant() === 'slate' ? 'h-4 w-auto max-[389px]:hidden' : 'h-4 w-auto'"
+              [class]="variant() === 'slate' ? 'h-4 w-auto max-xs:hidden' : 'h-4 w-auto'"
               icon
               alt=""
               [name]="icon.name"
