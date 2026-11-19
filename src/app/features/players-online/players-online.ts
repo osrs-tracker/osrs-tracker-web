@@ -1,6 +1,8 @@
 import { DecimalPipe } from '@angular/common';
 import { afterNextRender, Component, computed, inject, signal } from '@angular/core';
 import { format } from 'date-fns';
+import { PlayerType } from '@osrs-tracker/models';
+import { Icon } from '@app/common/icon/icon';
 import { FROZEN_MESSAGE } from '@app/common/player-count/frozen-count';
 import { PlayerCountStore } from '@app/common/player-count/player-count-store';
 import { Card } from '@app/common/ui/cards/card';
@@ -13,7 +15,7 @@ import { LucideActivity } from '@lucide/angular';
 @Component({
   selector: 'players-online',
   templateUrl: './players-online.html',
-  imports: [Card, DecimalPipe, LoadError, PlayerCountHistory, Skeleton, LucideActivity],
+  imports: [Card, DecimalPipe, Icon, LoadError, PlayerCountHistory, Skeleton, LucideActivity],
 })
 export default class PlayersOnline {
   private readonly hydrated = signal(false);
@@ -46,6 +48,15 @@ export default class PlayersOnline {
       { label: 'Members', players: count.members, share: formatShare(count.members, players), color: 'bg-accent' },
       { label: 'Free-to-play', players: count.f2p, share: formatShare(count.f2p, players), color: 'bg-muted' },
     ];
+  });
+
+  protected readonly hardcoreIcon = PlayerType.HardcoreMain;
+
+  /** Counts from before Hardcore Worlds were counted (2026-11-19), or from an older API, have none: unknown, not 0 */
+  readonly hardcore = computed(() => {
+    const count = this.count();
+    if (count?.hardcore === undefined) return undefined;
+    return { players: count.hardcore, share: `${formatShare(count.hardcore, count.total)} of the total` };
   });
 
   readonly membersPercent = computed(() => {

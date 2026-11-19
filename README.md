@@ -27,7 +27,7 @@
 - **Price Tracker**: search any tradeable item and see its current Grand Exchange price, trends, and price and volume
   charts from the last day up to the last year. Tables rank items by high-alch profit and by margin after tax.
 - **Players online**: how many people are playing right now, split by members and free-to-play and by country's worlds,
-  and the count over the last day up to all time.
+  how many of them are on Hardcore Worlds, and the count over the last day up to all time.
 - **OSRS News**: the latest news on the home page, and every news post since the first in the archive at `/news`, by
   category.
 
