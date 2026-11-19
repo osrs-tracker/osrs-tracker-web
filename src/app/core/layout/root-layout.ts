@@ -76,10 +76,14 @@ export default class RootLayout {
     { value: 'hardcore', label: 'HCW', title: 'Hardcore Worlds' },
   ];
 
-  /** The world of the open page; a pick in the menu holds until the next navigation resets it */
-  readonly priceWorld = linkedSignal<PriceWorld>(() =>
-    this.navMenus.url().split(/[?#]/)[0].startsWith(priceTrackerPath('hardcore')) ? 'hardcore' : 'main',
-  );
+  /**
+   * The world of the open page. A pick in the menu holds only while that menu stays open: navigating, closing or
+   * opening a menu resets it, so the menu never shows a world the page isn't in.
+   */
+  readonly priceWorld = linkedSignal<{ url: string; open: string | null }, PriceWorld>({
+    source: () => ({ url: this.navMenus.url(), open: this.navMenus.open() }),
+    computation: ({ url }) => (url.split(/[?#]/)[0].startsWith(priceTrackerPath('hardcore')) ? 'hardcore' : 'main'),
+  });
   readonly priceBase = computed(() => priceTrackerPath(this.priceWorld()));
 
   readonly homeMarked = computed(() => !this.navMenus.open() && this.navMenus.url().split(/[?#]/)[0] === '/');

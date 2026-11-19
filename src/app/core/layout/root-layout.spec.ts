@@ -5,6 +5,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { describe, expect, it } from 'vitest';
 import { GTAG_TOKEN } from '@app/common/analytics/gtag-token';
+import { NavMenus } from './nav-menu';
 import RootLayout from './root-layout';
 
 describe('RootLayout price tracker menu', () => {
@@ -44,7 +45,13 @@ describe('RootLayout price tracker menu', () => {
     '/trackers/price/margins',
     '/trackers/price/new',
   ];
-  const hardcore = main.map(path => path.replace('/price', '/price/hardcore'));
+  const hardcore = [
+    '/trackers/price/hardcore',
+    '/trackers/price/hardcore/browse/a',
+    '/trackers/price/hardcore/high-alch',
+    '/trackers/price/hardcore/margins',
+    '/trackers/price/hardcore/new',
+  ];
 
   it('links to Main by default', async () => {
     expect((await render('/trackers/xp')).hrefs()).toEqual(main);
@@ -53,7 +60,9 @@ describe('RootLayout price tracker menu', () => {
   it('links to Hardcore Worlds on a hardcore URL', async () => {
     const { hrefs, host } = await render('/trackers/price/hardcore/margins?x=1');
     expect(hrefs()).toEqual(hardcore);
-    expect(host.querySelector('segmented [aria-checked="true"]')?.textContent?.trim()).toBe('HCW');
+    const checked = host.querySelector('segmented [aria-checked="true"]');
+    expect(checked?.textContent?.trim()).toBe('HCW');
+    expect(checked?.getAttribute('aria-label')).toBe('HCW (Hardcore Worlds)');
   });
 
   it('follows a pick in the menu, and the next navigation resets it', async () => {
@@ -61,6 +70,18 @@ describe('RootLayout price tracker menu', () => {
     await pick('HCW');
     expect(hrefs()).toEqual(hardcore);
     await TestBed.inject(Router).navigateByUrl('/trackers/price/margins');
+    await fixture.whenStable();
+    expect(hrefs()).toEqual(main);
+  });
+
+  it('drops a pick when the menu closes without navigating', async () => {
+    const { hrefs, pick, fixture } = await render('/trackers/price/margins');
+    const navMenus = fixture.debugElement.injector.get(NavMenus);
+    navMenus.open.set('menu-trackers');
+    await fixture.whenStable();
+    await pick('HCW');
+    expect(hrefs()).toEqual(hardcore);
+    navMenus.open.set(null);
     await fixture.whenStable();
     expect(hrefs()).toEqual(main);
   });

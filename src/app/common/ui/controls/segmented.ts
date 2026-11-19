@@ -26,8 +26,9 @@ export interface SegmentedOption<T> {
 }
 
 /**
- * `variant="compact"` is the nav menu's small two-option switch. `variant="slate"` is Home's Player | Main items | HCW items switch, above the search: equal-width options on a row of
- * their own, whose icons drop below 390px so the three labels fit a 320px screen. Disabled options stay reachable by
+ * An option's `title` (e.g. Hardcore Worlds for HCW) is also read out after its label: a tooltip alone never reaches
+ * touch, keyboard or screen-reader users. `variant="compact"` is the nav menu's 24px Main | HCW switch beside a group heading. `variant="slate"` is Home's
+ * Player | Main items | HCW items switch, above the search: equal-width options on a row of their own, whose icons drop below 390px so the three labels fit a 320px screen. Disabled options stay reachable by
  * the arrow keys (`aria-disabled`) but can't be chosen, so keyboard users find them and their `title`. `picked` also
  * fires when the checked option is chosen again. `stretch` options pad 8px on phones, so the hiscores card's four fit a
  * 320px screen.
@@ -43,7 +44,7 @@ export interface SegmentedOption<T> {
         class="flex items-center justify-center font-bold whitespace-nowrap aria-disabled:opacity-40 aria-disabled:cursor-default"
         [class]="
           variant() === 'compact'
-            ? 'h-6 px-2.5 rounded-lg text-xs ' +
+            ? 'h-6 px-2.5 rounded-full text-xs ' +
               (option.value === value() ? 'bg-line text-strong' : 'text-muted hover:text-strong')
             : variant() === 'slate'
               ? 'h-10 flex-1 gap-1 px-2 sm:gap-1.5 sm:px-3.5 rounded-xl text-sm sm:text-base ' +
@@ -57,6 +58,7 @@ export interface SegmentedOption<T> {
         "
         [attr.aria-checked]="option.value === value()"
         [attr.title]="option.title ?? (option.lucide ? option.label : null)"
+        [attr.aria-label]="option.title && !option.lucide ? option.label + ' (' + option.title + ')' : null"
         [disabled]="!!option.disabled"
         (click)="option.disabled || choose(option.value)"
       >
@@ -88,7 +90,7 @@ export interface SegmentedOption<T> {
     '(focusout)': 'onFocusOut($event)',
     '[class]':
       "(stretch() ? 'grid grid-flow-col auto-cols-fr ' : 'flex w-fit max-w-full overflow-x-auto ') + " +
-      "(variant() === 'compact' ? 'gap-0.5 p-0.5 rounded-xl bg-ground' : variant() === 'slate' ? 'gap-1 p-1 rounded-2xl bg-ground' : (flush() ? '' : 'p-1 ') + 'rounded-full bg-inner')",
+      "(variant() === 'compact' ? 'gap-0.5 p-0.5 rounded-full bg-ground' : variant() === 'slate' ? 'gap-1 p-1 rounded-2xl bg-ground' : (flush() ? '' : 'p-1 ') + 'rounded-full bg-inner')",
   },
   imports: [Icon, LucideDynamicIcon, ToolbarWidget],
 })

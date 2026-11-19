@@ -154,20 +154,20 @@ value the scale lacks becomes a token in `src/styles/tailwind/theme.css`.
 
 Which component to use (in `common/ui/<folder>/` unless noted):
 
-| Need                                                          | Use                                                                                     |
-| ------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| A titled section (`cards/`)                                   | `article[card]`: 56px header, `[title]` and `[actions]` slots, `subtitle` for two lines |
-| A list of players or items (`cards/`)                         | `section[list-card]` with its loading, empty and error states; `list-row-skeleton` rows |
-| One headline number (`cards/`)                                | `stat-tile` (`compact` for six in a row, `loading`, `tone` for a change)                |
-| A choice of views or periods (`controls/`)                    | `segmented` (32px pills, a radio group; `variant="slate"`: Home's search switch)        |
-| The tracking offset                                           | `tracking-offset` (`features/trackers/xp-tracker/`; a 32px select, stored per device)   |
-| A whole page's state: not found, unavailable, error (`page/`) | `status-panel`, with `back-button` or other actions as content                          |
-| Something failed to load (`loading/`)                         | `load-error` (default, `panel`, `compact` or `inline`; see Failures above)              |
-| Something is loading (`loading/`)                             | `skeleton` blocks sized like the content, never a spinner                               |
-| A chart's values as a table (`common/charts/`)                | `chart-table` behind a `chart-display-switch` (see Chart.js in SSR rules)               |
-| A short explanation (`tooltip/`)                              | `info-tooltip`, or `[tooltip]` on any element                                           |
-| A reading page (`page/`)                                      | `information-page` around `<div class="markdown">`                                      |
-| A line icon                                                   | a Lucide component, `<svg lucideSearch />` (see Icons above)                            |
+| Need                                                          | Use                                                                                                                                     |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| A titled section (`cards/`)                                   | `article[card]`: 56px header, `[title]` and `[actions]` slots, `subtitle` for two lines                                                 |
+| A list of players or items (`cards/`)                         | `section[list-card]` with its loading, empty and error states; `list-row-skeleton` rows                                                 |
+| One headline number (`cards/`)                                | `stat-tile` (`compact` for six in a row, `loading`, `tone` for a change)                                                                |
+| A choice of views or periods (`controls/`)                    | `segmented` (32px pills, a radio group; `variant="slate"`: Home's search switch; `variant="compact"`: the nav menu's 24px world switch) |
+| The tracking offset                                           | `tracking-offset` (`features/trackers/xp-tracker/`; a 32px select, stored per device)                                                   |
+| A whole page's state: not found, unavailable, error (`page/`) | `status-panel`, with `back-button` or other actions as content                                                                          |
+| Something failed to load (`loading/`)                         | `load-error` (default, `panel`, `compact` or `inline`; see Failures above)                                                              |
+| Something is loading (`loading/`)                             | `skeleton` blocks sized like the content, never a spinner                                                                               |
+| A chart's values as a table (`common/charts/`)                | `chart-table` behind a `chart-display-switch` (see Chart.js in SSR rules)                                                               |
+| A short explanation (`tooltip/`)                              | `info-tooltip`, or `[tooltip]` on any element                                                                                           |
+| A reading page (`page/`)                                      | `information-page` around `<div class="markdown">`                                                                                      |
+| A line icon                                                   | a Lucide component, `<svg lucideSearch />` (see Icons above)                                                                            |
 
 ## Code navigation
 
