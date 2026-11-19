@@ -24,6 +24,7 @@ const PAGE_ROUTES: [RegExp, string][] = [
   [/^\/sitemap-(items|items-hardcore|players)\.xml$/, '/sitemap-$1.xml'],
   // Drawn by the server (routers/og-images.ts), not static files: their own label, a 404 included
   [/^\/og\/item\/\d+\.png$/, '/og/item/:id.png'],
+  [/^\/og\/item\/hardcore\/\d+\.png$/, '/og/item/hardcore/:id.png'],
   [/^\/og\/player\/[^/]+\.png$/, '/og/player/:username.png'],
   [/^\/og\/players-online\.png$/, '/og/players-online.png'],
   // Answered by the server on the old host (routers/carry-over.ts)

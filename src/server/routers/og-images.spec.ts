@@ -81,7 +81,21 @@ describe('createOgImageRouter', () => {
     expect(res.headers.get('cache-control')).toBe('public, max-age=604800, immutable');
     expect(res.headers.get('cross-origin-resource-policy')).toBe('cross-origin');
     expect(new Uint8Array(await res.arrayBuffer())).toEqual(PNG);
-    expect(render).toHaveBeenCalledExactlyOnceWith(item(4151), ICON);
+    expect(render).toHaveBeenCalledExactlyOnceWith(item(4151), ICON, 'main');
+  });
+
+  it('draws a Hardcore Worlds card of its own for the same item', async () => {
+    await get('/og/item/4151.png');
+    const res = await get('/og/item/hardcore/4151.png?v=1');
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get('content-type')).toBe('image/png');
+    expect(render).toHaveBeenCalledTimes(2);
+    expect(render).toHaveBeenLastCalledWith(item(4151), ICON, 'hardcore');
+
+    render.mockClear();
+    await get('/og/item/hardcore/4151.png');
+    expect(render).not.toHaveBeenCalled();
   });
 
   it('answers a short-lived 404 for an unknown id, without rendering or logging', async () => {
@@ -95,7 +109,7 @@ describe('createOgImageRouter', () => {
   });
 
   it('answers 404 for an id that is not all digits', async () => {
-    for (const path of ['/og/item/abc.png', '/og/item/12a.png', '/og/item/-1.png']) {
+    for (const path of ['/og/item/abc.png', '/og/item/12a.png', '/og/item/-1.png', '/og/item/hardcore/abc.png']) {
       expect((await get(path)).status).toBe(404);
     }
     expect(getItem).not.toHaveBeenCalled();
@@ -118,13 +132,13 @@ describe('createOgImageRouter', () => {
     const first = await get('/og/item/4151.png');
     expect(first.status).toBe(200);
     expect(first.headers.get('cache-control')).toBe('public, max-age=300');
-    expect(render).toHaveBeenLastCalledWith(item(4151), undefined);
+    expect(render).toHaveBeenLastCalledWith(item(4151), undefined, 'main');
     expect(logs.lines).toContainEqual(expect.objectContaining({ type: 'og-image', level: 'warn' }));
 
     const second = await get('/og/item/4151.png');
     expect(second.headers.get('cache-control')).toBe('public, max-age=604800, immutable');
     expect(getIcon).toHaveBeenCalledTimes(2);
-    expect(render).toHaveBeenLastCalledWith(item(4151), ICON);
+    expect(render).toHaveBeenLastCalledWith(item(4151), ICON, 'main');
   });
 
   it('keeps finished images, so a second request loads and renders nothing', async () => {

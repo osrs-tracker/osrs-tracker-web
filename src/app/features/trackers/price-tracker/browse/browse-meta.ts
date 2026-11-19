@@ -1,6 +1,7 @@
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { PriceWorld, priceTrackerPath } from '@app/common/api/price-world';
 import { PageMeta, RouteMeta } from '@app/common/seo/page-meta-strategy';
+import { priceWorldImage } from '../hardcore-image';
 import { priceBreadcrumbs } from '../price-breadcrumbs';
 import { isBrowseLetter, startingWith } from './browse-letters';
 
@@ -24,6 +25,7 @@ export const browseMeta =
         `Every OSRS ${hardcore ? 'Hardcore Worlds ' : ''}Grand Exchange item ${startingWith(letter)}, sorted by name, ` +
         'with its latest price and change since yesterday. Open one for its price history, margin and buy limit.',
       canonicalPath,
+      image: priceWorldImage(world),
       jsonLd: [priceBreadcrumbs(world, { name: `Items ${startingWith(letter)}`, path: canonicalPath })],
     };
   };

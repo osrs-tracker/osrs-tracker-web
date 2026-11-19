@@ -1,5 +1,8 @@
 ## 2026-11-19
 
+- A shared link to a Hardcore Worlds price page now shows its own preview: an item's card carries the Hardcore Worlds
+  badge, and the Hardcore Worlds Price Tracker, its lists and its A–Z pages show a "Hardcore Worlds GE prices" card.
+  They looked like the main game's before.
 - On phones, the bottom of a g or y in a search box's example text is no longer cut off.
 - Looking up an item on Hardcore Worlds now counts too. The Hardcore Worlds Price Tracker's "Global recent lookups"
   lists what visitors looked up there, and no longer says "in the main game"; Home and the main Price Tracker still list

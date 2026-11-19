@@ -41,7 +41,7 @@ export function itemPageMeta(item: Item, world: PriceWorld = 'main', traded = tr
     title,
     description,
     canonicalPath,
-    image: itemImage(item),
+    image: itemImage(item, world),
     card: 'summary_large_image',
     // Hardcore Worlds list items that nobody has traded there yet: pages without a price aren't worth indexing
     robots: traded ? undefined : 'noindex',
@@ -59,10 +59,17 @@ export function itemPageMeta(item: Item, world: PriceWorld = 'main', traded = tr
 
 /**
  * The item's link preview card: its icon, name and static facts, never a price, as chat apps keep a preview for weeks.
- * `?v=` busts the caches of shared links when the card's design changes.
+ * `?v=` busts the caches of shared links when the card's design changes. Hardcore Worlds items have their own, which
+ * says so, as a shared link otherwise looks like the main game's.
  */
-function itemImage(item: Item): PageImage {
-  return { url: `/og/item/${item.id}.png?v=7`, width: 1200, height: 630, alt: item.name };
+function itemImage(item: Item, world: PriceWorld): PageImage {
+  const hardcore = world === 'hardcore';
+  return {
+    url: `/og/item/${hardcore ? 'hardcore/' : ''}${item.id}.png?v=7`,
+    width: 1200,
+    height: 630,
+    alt: hardcore ? `${item.name}, Hardcore Worlds` : item.name,
+  };
 }
 
 /**

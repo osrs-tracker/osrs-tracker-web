@@ -20,6 +20,15 @@ describe('itemPageMeta', () => {
     expect(meta.image).toEqual({ url: '/og/item/4151.png?v=7', width: 1200, height: 630, alt: 'Abyssal whip' });
     expect(meta.card).toBe('summary_large_image');
   });
+
+  it('shows a Hardcore Worlds item its own card, which says so', () => {
+    expect(itemPageMeta(whip, 'hardcore').image).toEqual({
+      url: '/og/item/hardcore/4151.png?v=7',
+      width: 1200,
+      height: 630,
+      alt: 'Abyssal whip, Hardcore Worlds',
+    });
+  });
 });
 
 describe('itemPageMeta for Hardcore Worlds', () => {
