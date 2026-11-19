@@ -3,6 +3,7 @@ import type { Logger } from '@osrs-tracker/logger';
 import type { Item, Player, PlayerCountPoint } from '@osrs-tracker/models';
 import express from 'express';
 import { allowCrossOriginEmbedding } from '../middleware/security';
+import type { CardWorld } from '../og/item-card';
 import { serverConfig } from '../server-config';
 import type { WebLogType } from '../utils/log';
 
@@ -10,7 +11,7 @@ import type { WebLogType } from '../utils/log';
 export type GetItem = (id: number) => Promise<Item | undefined>;
 /** Throws when the icon failed to load */
 export type GetIcon = (item: Item) => Promise<Uint8Array>;
-export type RenderItemCard = (item: Item, iconPng: Uint8Array | undefined) => Promise<Uint8Array>;
+export type RenderItemCard = (item: Item, iconPng: Uint8Array | undefined, world: CardWorld) => Promise<Uint8Array>;
 /** `undefined` when the API doesn't store the player. Throws on any other failure. */
 export type GetPlayer = (username: string) => Promise<Player | undefined>;
 export type RenderPlayerCard = (player: Player) => Promise<Uint8Array>;
@@ -76,8 +77,8 @@ const fetchPlayerCounts: GetPlayerCounts = async () => {
 };
 
 /** Loads the renderers on first use, so their large chunk isn't read at startup */
-const renderItemLazily: RenderItemCard = async (item, iconPng) =>
-  (await import('../og/item-card')).renderItemCard(item, iconPng);
+const renderItemLazily: RenderItemCard = async (item, iconPng, world) =>
+  (await import('../og/item-card')).renderItemCard(item, iconPng, world);
 const renderPlayerLazily: RenderPlayerCard = async player =>
   (await import('../og/player-card')).renderPlayerCard(player, player.hiscoreEntries?.[0]);
 const renderPlayersOnlineLazily: RenderPlayersOnlineCard = async samples =>
@@ -118,7 +119,8 @@ function cardCache<K>(load: (key: K) => Promise<Card>, maxAgeMs?: number) {
 
 /**
  * The link preview images, drawn by `renderItemCard` and `renderPlayerCard`:
- * - `GET /og/item/:id.png`, kept a week. An icon that failed to load gives a card without it that isn't kept.
+ * - `GET /og/item/:id.png` and `GET /og/item/hardcore/:id.png` (the same card with the Hardcore Worlds badge), kept a
+ *   week. An icon that failed to load gives a card without it that isn't kept.
  * - `GET /og/player/:username.png`, a stored player, kept an hour as their stats change daily.
  * - `GET /og/players-online.png`, the players online page's, kept 10 minutes as the count changes that often; its footer
  *   dates the count, as chat apps keep a preview for weeks.
@@ -147,7 +149,10 @@ export function createOgImageRouter({
 }) {
   const log = logger.child({ type: 'og-image' satisfies WebLogType });
 
-  const itemCard = cardCache<number>(async id => {
+  // Keyed `<world>:<id>`, as each world has its own card of an item
+  const itemCard = cardCache<`${CardWorld}:${number}`>(async key => {
+    const [world, idText] = key.split(':') as [CardWorld, string];
+    const id = Number(idText);
     let item: Item | undefined;
     try {
       item = await getItem(id);
@@ -163,7 +168,7 @@ export function createOgImageRouter({
     } catch (error) {
       log.warn({ error, id }, 'Loading the item icon failed, drawing the card without it');
     }
-    const png = await render(item, icon); // A throw rejects: Express' error handler answers 500
+    const png = await render(item, icon, world); // A throw rejects: Express' error handler answers 500
     return { kind: 'image', png, keep: !!icon };
   });
 
@@ -205,8 +210,9 @@ export function createOgImageRouter({
   }
 
   const router = express.Router();
-  router.get(/^\/og\/item\/(\d+)\.png$/, async (req, res) => {
-    send(res, await itemCard(Number(req.params[0])), LONG_CACHE);
+  router.get(/^\/og\/item\/(hardcore\/)?(\d+)\.png$/, async (req, res) => {
+    const world: CardWorld = req.params[0] ? 'hardcore' : 'main';
+    send(res, await itemCard(`${world}:${Number(req.params[1])}`), LONG_CACHE);
   });
   router.get(/^\/og\/player\/([^/]+)\.png$/, async (req, res) => {
     // One image per player however the name is spelled, as Jagex matches names

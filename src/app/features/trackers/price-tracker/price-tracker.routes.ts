@@ -6,6 +6,7 @@ import { itemDetailMeta } from './item-detail/item-detail-meta';
 import { itemTradedResolver } from './item-detail/item-traded-resolver';
 import { browseItemsResolver } from './browse/browse-items-resolver';
 import { browseMeta } from './browse/browse-meta';
+import { priceWorldImage } from './hardcore-image';
 import { priceBreadcrumbs } from './price-breadcrumbs';
 import { TableKind } from './tables/price-table';
 
@@ -30,6 +31,7 @@ export const priceTrackerRoutes = (world: PriceWorld): Route[] => {
             ? 'The OSRS Hardcore Worlds GE tracker: live prices for every Grand Exchange item, with buy and sell prices, margins, buy limits, alch values and price history. Hardcore Worlds have their own Grand Exchange.'
             : 'Check live OSRS prices for every Grand Exchange item: buy and sell prices, margins, buy limits, alch values and price history, all in the OSRS Price Tracker.',
           canonicalPath: path,
+          image: priceWorldImage(world),
           // No FAQPage: Google stopped showing FAQ rich results in May 2026
           jsonLd: [priceBreadcrumbs(world)],
         } satisfies PageMeta,
@@ -48,6 +50,7 @@ export const priceTrackerRoutes = (world: PriceWorld): Route[] => {
             ? 'The high-alch profit of every item on the OSRS Hardcore Worlds Grand Exchange at live prices: alch value minus the buy price and a nature rune, with buy limits, profit per limit and daily volume.'
             : 'The high-alch profit of every OSRS item at live Grand Exchange prices: alch value minus the buy price and a nature rune, with buy limits, profit per limit and daily volume.',
           canonicalPath: `${path}/high-alch`,
+          image: priceWorldImage(world),
           jsonLd: [priceBreadcrumbs(world, { name: 'High-alch profit', path: `${path}/high-alch` })],
         } satisfies PageMeta,
       },
@@ -66,6 +69,7 @@ export const priceTrackerRoutes = (world: PriceWorld): Route[] => {
             ? 'Grand Exchange margins for every OSRS Hardcore Worlds item at live prices: the spread between the instant-sell and instant-buy price after the GE tax, per buy limit, with daily volume.'
             : 'Grand Exchange margins for every OSRS item at live prices: the spread between the instant-sell and instant-buy price after the 2% GE tax, per buy limit, with daily volume.',
           canonicalPath: `${path}/margins`,
+          image: priceWorldImage(world),
           jsonLd: [priceBreadcrumbs(world, { name: 'Margins', path: `${path}/margins` })],
         } satisfies PageMeta,
       },
@@ -83,6 +87,7 @@ export const priceTrackerRoutes = (world: PriceWorld): Route[] => {
             ? 'The newest items on the OSRS Hardcore Worlds Grand Exchange, under the day the game update added them, with their live instant-buy price and daily volume.'
             : 'The newest items on the OSRS Grand Exchange, under the day the game update added them, with their live instant-buy price and daily volume.',
           canonicalPath: `${path}/new`,
+          image: priceWorldImage(world),
           jsonLd: [priceBreadcrumbs(world, { name: 'New on the GE', path: `${path}/new` })],
         } satisfies PageMeta,
       },

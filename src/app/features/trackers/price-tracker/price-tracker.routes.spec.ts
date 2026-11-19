@@ -59,6 +59,13 @@ describe('priceTrackerRoutes', () => {
     expect(metaOf('', hardcore).description).toMatch(/^The OSRS Hardcore Worlds GE tracker: live prices/);
   });
 
+  it("gives the Hardcore Worlds pages their own link preview, and leaves the main ones the site's", () => {
+    for (const path of ['', 'high-alch', 'margins', 'new']) {
+      expect(metaOf(path, hardcore).image?.url).toBe('/assets/og/hardcore-worlds-prices.png?v=1');
+      expect(metaOf(path, main).image).toBeUndefined();
+    }
+  });
+
   it('builds the browse and item metas for the world', () => {
     const route = (params: object, data: object = {}) => ({ params, data }) as unknown as ActivatedRouteSnapshot;
     const meta = (list: typeof main, path: string, snapshot: ActivatedRouteSnapshot) =>
@@ -67,6 +74,7 @@ describe('priceTrackerRoutes', () => {
     expect(meta(hardcore, 'browse/:letter', route({ letter: 'a' }))).toMatchObject({
       title: 'OSRS Hardcore Worlds items starting with A',
       canonicalPath: '/trackers/price/hardcore/browse/a',
+      image: { url: '/assets/og/hardcore-worlds-prices.png?v=1' },
     });
     expect(meta(main, 'browse/:letter', route({ letter: 'a' })).canonicalPath).toBe('/trackers/price/browse/a');
     expect(
