@@ -1,5 +1,6 @@
-import { Component, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { PRICE_WORLD, priceTrackerPath } from '@app/common/api/price-world';
 import { BROWSE_LETTERS, browseLetterLabel, startingWith } from './browse-letters';
 
 // Keys are 4px apart on one row and on phones, 8px on two rows, so "0–9" fits on one line
@@ -11,7 +12,7 @@ import { BROWSE_LETTERS, browseLetterLabel, startingWith } from './browse-letter
         class="flex items-center justify-center h-10 rounded-xl font-bold whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         [class]="letter === current() ? 'bg-accent text-on-accent' : 'bg-card text-strong hover:bg-row'"
         [class.text-sm]="letter === '0'"
-        [routerLink]="['/trackers/price/browse', letter]"
+        [routerLink]="[browsePath, letter]"
         [attr.aria-current]="letter === current() ? 'page' : null"
         [attr.aria-label]="ariaLabel(letter)"
         >{{ label(letter) }}</a
@@ -26,6 +27,7 @@ import { BROWSE_LETTERS, browseLetterLabel, startingWith } from './browse-letter
 })
 export class LetterBar {
   readonly LETTERS = BROWSE_LETTERS;
+  protected readonly browsePath = `${priceTrackerPath(inject(PRICE_WORLD))}/browse`;
   readonly label = browseLetterLabel;
 
   /** Holds the visible text (WCAG 2.5.3, for voice control) */

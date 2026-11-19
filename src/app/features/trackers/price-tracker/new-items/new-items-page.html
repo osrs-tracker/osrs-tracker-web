@@ -1,12 +1,12 @@
 <div class="max-w-page mx-auto flex px-4 sm:px-6 pt-3">
-  <a routerLink="/trackers/price" class="link inline-flex items-center gap-1.5 min-h-6 text-sm">
+  <a [routerLink]="trackerPath" class="link inline-flex items-center gap-1.5 min-h-6 text-sm">
     <svg lucideArrowLeft class="size-4" strokeWidth="2.5" />
-    Price Tracker
+    {{ hardcore ? 'Hardcore Worlds Price Tracker' : 'Price Tracker' }}
   </a>
 </div>
 
 <header class="max-w-page mx-auto flex flex-col gap-1 px-4 sm:px-6 pt-3">
-  <h1 class="text-2xl sm:text-3xl font-bold text-strong">New on the GE</h1>
+  <h1 class="text-2xl sm:text-3xl font-bold text-strong">{{ title }}</h1>
   <p class="max-w-180 text-muted">
     Items the latest game updates added to the Grand Exchange, newest first, at their latest prices. Few trade in a new
     item’s first days, so its price can jump.
@@ -16,7 +16,7 @@
 <div class="max-w-page mx-auto flex flex-col gap-4 px-4 sm:px-6 pt-6 pb-18">
   <section
     class="rounded-2xl bg-card overflow-hidden"
-    aria-label="New on the GE"
+    [attr.aria-label]="title"
     [attr.aria-busy]="items.isLoading() || prices.isLoading()"
   >
     @if (items.error()) {
@@ -76,7 +76,7 @@
                          doesn't position inside a relative <tr>. Values with a tooltip sit above it -->
                     <a
                       class="flex items-center gap-3 min-w-0 text-strong after:content-[''] after:absolute after:inset-y-0 after:left-0 after:w-screen focus-visible:outline-none"
-                      [routerLink]="['/trackers/price', item.id]"
+                      [routerLink]="[trackerPath, item.id]"
                     >
                       <span
                         class="flex items-center justify-center size-10 shrink-0 rounded-xl bg-deep border border-line"

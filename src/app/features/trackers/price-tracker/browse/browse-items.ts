@@ -1,5 +1,6 @@
 import { Component, OnInit, RESPONSE_INIT, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { PRICE_WORLD, priceTrackerPath } from '@app/common/api/price-world';
 import { StatusPanel } from '@app/common/ui/page/status-panel';
 import { ItemRow } from '../item-row';
 import { RecentItem } from '../price-tracker-store';
@@ -17,10 +18,17 @@ export default class BrowseItems implements OnInit {
   // Only available during SSR, `null` in the browser
   private readonly responseInit = inject(RESPONSE_INIT, { optional: true });
 
+  protected readonly world = inject(PRICE_WORLD);
+  protected readonly trackerPath = priceTrackerPath(this.world);
+
   readonly letter = input.required<string>();
   readonly items = input.required<RecentItem[] | null>();
 
-  readonly heading = computed(() => `Items ${startingWith(this.letter())}`);
+  readonly heading = computed(() =>
+    this.world === 'hardcore'
+      ? `Hardcore Worlds items ${startingWith(this.letter())}`
+      : `Items ${startingWith(this.letter())}`,
+  );
 
   ngOnInit(): void {
     if (!this.items() && this.responseInit) this.responseInit.status = 404;
