@@ -100,12 +100,12 @@
     </section>
   </div>
   @if (isHardcore) {
-    <section class="flex flex-col gap-4 mt-12" aria-labelledby="faq-heading">
+    <section class="flex flex-col gap-4 mt-6" aria-labelledby="faq-heading">
       <h2 id="faq-heading" class="text-2xl font-bold text-strong">About Hardcore Worlds prices</h2>
       <div class="grid md:grid-cols-2 gap-4">
         @for (faq of faqs; track faq.question) {
           <div class="rounded-2xl bg-card px-card py-4">
-            <h3 class="mb-2 text-lg font-bold text-strong">{{ faq.question }}</h3>
+            <h3 class="mb-2 text-xl font-bold text-strong">{{ faq.question }}</h3>
             <p>{{ faq.answer }}</p>
           </div>
         }

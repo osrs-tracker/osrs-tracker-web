@@ -14,7 +14,7 @@ import { PriceWorld, priceTrackerPath } from '@app/common/api/price-world';
   template: `
     @for (option of options; track option.world) {
       <a
-        class="flex items-center justify-center gap-1.5 h-10 px-3.5 max-sm:flex-1 rounded-xl text-base font-bold whitespace-nowrap focus-visible:outline-2 focus-visible:outline-accent"
+        class="flex items-center justify-center gap-1.5 h-10 px-3 max-sm:flex-1 rounded-xl text-base font-bold whitespace-nowrap focus-visible:outline-2 focus-visible:outline-accent"
         [class]="option.world === current() ? 'bg-line text-strong' : 'text-muted hover:text-strong'"
         [routerLink]="option.path"
         [queryParams]="query() ? { q: query() } : null"
