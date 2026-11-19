@@ -1,6 +1,7 @@
 import { git, hasFullHistory, SITE_URL, urlset, writeSitemap } from './sitemap-file.js';
 
 const OUTPUT = 'public/sitemap-site.xml';
+const BROWSE_LETTERS = [...'abcdefghijklmnopqrstuvwxyz', '0'];
 
 // For a page in the app, its template holds the text. File timestamps won't do: a fresh checkout (the CD workflow) gives every file the checkout time, so every deploy would
 // move the dates without the pages changing. A rename doesn't count, and older commits are followed across it. A file
@@ -24,7 +25,12 @@ const lastmod = file => git(['log', '-1', '--follow', '--diff-filter=AMT', '--fo
     { loc: `${SITE_URL}/trackers/price/high-alch` },
     { loc: `${SITE_URL}/trackers/price/margins` },
     { loc: `${SITE_URL}/trackers/price/new` },
-    ...[...'abcdefghijklmnopqrstuvwxyz', '0'].map(letter => ({ loc: `${SITE_URL}/trackers/price/browse/${letter}` })),
+    ...BROWSE_LETTERS.map(letter => ({ loc: `${SITE_URL}/trackers/price/browse/${letter}` })),
+    { loc: `${SITE_URL}/trackers/price/hardcore` },
+    { loc: `${SITE_URL}/trackers/price/hardcore/high-alch` },
+    { loc: `${SITE_URL}/trackers/price/hardcore/margins` },
+    { loc: `${SITE_URL}/trackers/price/hardcore/new` },
+    ...BROWSE_LETTERS.map(letter => ({ loc: `${SITE_URL}/trackers/price/hardcore/browse/${letter}` })),
     { loc: `${SITE_URL}/trackers/xp` },
     { loc: `${SITE_URL}/players-online` },
     { loc: `${SITE_URL}/news` },

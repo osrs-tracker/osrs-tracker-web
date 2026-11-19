@@ -8,6 +8,9 @@
     <loc>https://osrs-tracker.net/sitemap-items.xml</loc>
   </sitemap>
   <sitemap>
+    <loc>https://osrs-tracker.net/sitemap-items-hardcore.xml</loc>
+  </sitemap>
+  <sitemap>
     <loc>https://osrs-tracker.net/sitemap-players.xml</loc>
   </sitemap>
 </sitemapindex>
