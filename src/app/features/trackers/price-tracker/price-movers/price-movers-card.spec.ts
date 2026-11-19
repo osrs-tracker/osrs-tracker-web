@@ -85,6 +85,19 @@ describe('PriceMoversCard', () => {
     httpTesting.expectNone(() => true);
   });
 
+  it('links the movers to their world and names it in the subtitle', () => {
+    setUp('browser', transferred);
+    fixture.detectChanges();
+    expect(page().querySelector('a[price-mover-row]')?.getAttribute('href')).toBe('/trackers/price/1');
+    expect(page().textContent).toContain('Average price change on');
+    TestBed.resetTestingModule();
+
+    setUp('browser', undefined, 'hardcore');
+    fixture.detectChanges();
+    expect(page().textContent).toContain('On Hardcore Worlds, average price change on');
+    httpTesting.match(() => true);
+  });
+
   it('switches to the fallers without fetching', async () => {
     setUp('browser', transferred);
     fixture.detectChanges();

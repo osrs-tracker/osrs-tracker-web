@@ -8,6 +8,8 @@ export const enum StorageKey {
   XpTrackerScrapingOffset = 'xp-tracker-scraping-offset',
 
   PriceTrackerRecentItems = 'price-tracker-recent-items',
+  /** Favourites stay one list across worlds, as they are item ids; the recent ones differ per world */
+  PriceTrackerHardcoreRecentItems = 'price-tracker-hardcore-recent-items',
   PriceTrackerFavoriteItems = 'price-tracker-favorite-items',
 
   /** `YYYY-MM-DD` */

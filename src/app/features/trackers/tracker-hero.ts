@@ -12,7 +12,7 @@ import { Component, input } from '@angular/core';
           <ng-content select="[icon]" />
         </span>
         <h1 class="text-4xl/none md:text-5xl/none font-bold text-strong">
-          <span class="text-accent">{{ subject() }}</span> Tracker
+          <span class="text-accent">{{ subject() }}</span> {{ titleRest() }}
         </h1>
       </div>
 
@@ -26,5 +26,7 @@ import { Component, input } from '@angular/core';
 })
 export class TrackerHero {
   readonly subject = input.required<string>();
+  /** What follows the accented subject: Hardcore Worlds reads "Hardcore Worlds prices" */
+  readonly titleRest = input('Tracker');
   readonly intro = input.required<string>();
 }

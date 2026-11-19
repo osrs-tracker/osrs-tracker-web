@@ -15,7 +15,7 @@ import { LucideTrendingDown, LucideTrendingUp } from '@lucide/angular';
 import { forkJoin, map, tap } from 'rxjs';
 import { announceChanges } from '@app/common/a11y/announcer';
 import { OsrsPricesRepo, TimeSpan } from '@app/common/api/osrs-prices-repo';
-import { PRICE_WORLD, worldKey } from '@app/common/api/price-world';
+import { PRICE_WORLD, priceTrackerPath, worldKey } from '@app/common/api/price-world';
 import { ListCard, ListCardState } from '@app/common/ui/cards/list-card';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
@@ -57,7 +57,7 @@ type Direction = keyof PriceMovers;
       <ol class="flex flex-col" role="list">
         @for (mover of rows(); track mover.id; let rank = $index) {
           <li class="flex flex-col">
-            <a price-mover-row [routerLink]="['/trackers/price', mover.id]" [mover]="mover" [rank]="rank + 1"></a>
+            <a price-mover-row [routerLink]="[itemsPath, mover.id]" [mover]="mover" [rank]="rank + 1"></a>
           </li>
         }
       </ol>
@@ -79,7 +79,8 @@ export class PriceMoversCard {
   ];
   readonly direction = signal<Direction>('rising');
 
-  readonly subtitle = `Average price change on ${formatDate(yesterdayStart(), 'EEE d MMM', 'en-US', 'UTC')} (UTC)`;
+  readonly itemsPath = priceTrackerPath(this.world);
+  readonly subtitle = `${this.world === 'hardcore' ? 'On Hardcore Worlds, average' : 'Average'} price change on ${formatDate(yesterdayStart(), 'EEE d MMM', 'en-US', 'UTC')} (UTC)`;
 
   /** What the server hands the browser: the rows, as the three lists behind them are about 1 MB */
   private readonly moversKey = makeStateKey<PriceMovers>(worldKey(this.world, 'price-movers'));

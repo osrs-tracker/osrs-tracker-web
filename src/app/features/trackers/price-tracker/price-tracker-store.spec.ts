@@ -21,14 +21,32 @@ describe('PriceTrackerStore', () => {
       [StorageKey.PriceTrackerFavoriteItems]: stored,
     });
 
-    expect(store.recentItems()).toEqual([]);
+    expect(store.recentItems().main).toEqual([]);
     expect(store.isFavoriteItem(whip.id)).toBe(false);
 
     store.pushRecentItem(whip);
     store.toggleFavoriteItem(whip);
 
-    expect(store.recentItems()).toEqual([whip]);
+    expect(store.recentItems().main).toEqual([whip]);
     expect(store.isFavoriteItem(whip.id)).toBe(true);
     expect(JSON.parse(localStorage.getItem(StorageKey.PriceTrackerFavoriteItems)!)).toEqual([whip]);
+  });
+
+  it('keeps recent items per world, and favourites in one list', () => {
+    const store = createStore({ [StorageKey.PriceTrackerHardcoreRecentItems]: JSON.stringify([whip]) });
+
+    expect(store.recentItems()).toEqual({ main: [], hardcore: [whip] });
+
+    store.pushRecentItem({ ...whip, id: 1 }, 'hardcore');
+    store.pushRecentItem({ ...whip, id: 2 });
+
+    expect(store.recentItems().hardcore.map(item => item.id)).toEqual([1, 4151]);
+    expect(store.recentItems().main.map(item => item.id)).toEqual([2]);
+    expect(JSON.parse(localStorage.getItem(StorageKey.PriceTrackerRecentItems)!)).toHaveLength(1);
+    expect(JSON.parse(localStorage.getItem(StorageKey.PriceTrackerHardcoreRecentItems)!)).toHaveLength(2);
+
+    store.toggleFavoriteItem(whip);
+    expect(JSON.parse(localStorage.getItem(StorageKey.PriceTrackerFavoriteItems)!)).toEqual([whip]);
+    expect(JSON.parse(localStorage.getItem(StorageKey.PriceTrackerHardcoreRecentItems)!)).toHaveLength(2);
   });
 });

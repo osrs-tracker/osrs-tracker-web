@@ -51,6 +51,13 @@ describe('priceTrackerRoutes', () => {
     expect(crumbs(metaOf('margins', hardcore))).toEqual(['Home', 'Price Tracker', 'Hardcore Worlds', 'Margins']);
   });
 
+  it('describes the Hardcore Worlds questions as a FAQPage, on its landing only', () => {
+    const types = (meta: PageMeta) => meta.jsonLd!.map(node => node['@type']);
+
+    expect(types(metaOf('', hardcore))).toEqual(['BreadcrumbList', 'FAQPage']);
+    expect(types(metaOf('', main))).toEqual(['BreadcrumbList']);
+  });
+
   it('builds the browse and item metas for the world', () => {
     const route = (params: object, data: object = {}) => ({ params, data }) as unknown as ActivatedRouteSnapshot;
     const meta = (list: typeof main, path: string, snapshot: ActivatedRouteSnapshot) =>

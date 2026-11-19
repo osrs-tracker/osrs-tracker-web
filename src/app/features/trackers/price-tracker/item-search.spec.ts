@@ -7,6 +7,7 @@ import { delay, of } from 'rxjs';
 import { ANNOUNCE_DELAY } from '@app/common/a11y/announcer';
 import { GTAG_TOKEN } from '@app/common/analytics/gtag-token';
 import { OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
+import { PriceWorld } from '@app/common/api/price-world';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ItemSearch } from './item-search';
@@ -26,7 +27,9 @@ describe('ItemSearch', () => {
 
   const scrollIntoView = Element.prototype.scrollIntoView;
 
-  async function render(): Promise<void> {
+  const getLatestPrices = vi.fn(() => of({ low: 1_000, high: 1_100 }));
+
+  async function render(world?: PriceWorld): Promise<void> {
     // Not in jsdom; the component scrolls the active option into view (restored in afterEach)
     Element.prototype.scrollIntoView = vi.fn();
     TestBed.configureTestingModule({
@@ -36,10 +39,11 @@ describe('ItemSearch', () => {
         { provide: OsrsTrackerRepo, useValue: { searchItems } },
         { provide: GTAG_TOKEN, useValue: null },
         { provide: LiveAnnouncer, useValue: { announce } },
-        { provide: OsrsPricesRepo, useValue: { getLatestPrices: () => of({ low: 1_000, high: 1_100 }) } },
+        { provide: OsrsPricesRepo, useValue: { getLatestPrices } },
       ],
     });
     fixture = TestBed.createComponent(ItemSearch);
+    if (world) fixture.componentRef.setInput('world', world);
     document.body.appendChild(fixture.nativeElement);
     await fixture.whenStable();
     input = fixture.nativeElement.querySelector('input');
@@ -77,6 +81,7 @@ describe('ItemSearch', () => {
     fixture.nativeElement.remove();
     fixture.destroy();
     searchItems.mockClear();
+    getLatestPrices.mockClear();
     announce.mockClear();
     Element.prototype.scrollIntoView = scrollIntoView;
   });
@@ -175,5 +180,22 @@ describe('ItemSearch', () => {
     // Without the input's own Escape, which clears a search field
     expect(await key('Escape')).toBe(false);
     expect(fixture.nativeElement.textContent).not.toContain('No items match');
+  });
+
+  it('links its results to, and prices them in, the world it is given', async () => {
+    await render('hardcore');
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    await type('whip');
+    await key('Enter');
+
+    expect(options().map(option => option.getAttribute('href'))).toEqual([
+      '/trackers/price/hardcore/4151',
+      '/trackers/price/hardcore/12769',
+    ]);
+    expect(getLatestPrices).toHaveBeenCalledWith(4151, 'hardcore');
+
+    await key('ArrowDown');
+    await key('Enter');
+    expect(navigate).toHaveBeenCalledExactlyOnceWith(['/trackers/price/hardcore', 12769]);
   });
 });

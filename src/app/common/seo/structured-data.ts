@@ -18,6 +18,17 @@ export function breadcrumbList(crumbs: Crumb[]): JsonLdNode {
   };
 }
 
+export function faqPage(faqs: { question: string; answer: string }[]): JsonLdNode {
+  return {
+    '@type': 'FAQPage',
+    'mainEntity': faqs.map(({ question, answer }) => ({
+      '@type': 'Question',
+      'name': question,
+      'acceptedAnswer': { '@type': 'Answer', 'text': answer },
+    })),
+  };
+}
+
 /** `about` is a plain `Thing`: no more specific type fits. */
 export function webPage(page: { path: string; title: string; description: string; about: JsonLdNode }): JsonLdNode {
   return {
