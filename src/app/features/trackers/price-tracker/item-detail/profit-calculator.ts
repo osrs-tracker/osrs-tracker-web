@@ -6,6 +6,7 @@ import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
 import { LatestPrices, OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
+import { PRICE_WORLD } from '@app/common/api/price-world';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { breakEvenSellPrice, geTax, isGeTaxExempt } from './ge-tax';
 import { formatNumberLegible, formatSign, formatWhole } from '@app/common/format/number-format';
@@ -166,6 +167,7 @@ interface ResultRow {
 export class ProfitCalculator {
   private readonly analyticsService = inject(AnalyticsService);
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
+  private readonly world = inject(PRICE_WORLD);
 
   readonly item = input.required<Item>();
   readonly latestPrices = input<LatestPrices | undefined>();
@@ -175,7 +177,7 @@ export class ProfitCalculator {
   readonly retry = output();
 
   readonly natureRune = rxResource({
-    stream: () => this.osrsPricesRepo.getLatestPrices(NATURE_RUNE_ID),
+    stream: () => this.osrsPricesRepo.getLatestPrices(NATURE_RUNE_ID, this.world),
   });
 
   readonly mode = signal<Mode>('flip');

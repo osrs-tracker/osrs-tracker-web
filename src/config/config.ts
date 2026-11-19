@@ -2,8 +2,14 @@ export const config = {
   siteUrl: 'https://osrs-tracker.net',
   apiBaseUrl: 'https://osrs-tracker-api.freekmencke.com',
   awsBaseUrl: 'https://runescape-api.freekmencke.com',
-  /** The OSRS Wiki's real-time prices API, used as its guidelines ask: https://oldschool.runescape.wiki/w/RS:PRICES */
-  pricesBaseUrl: 'https://prices.runescape.wiki/api/v2/osrs',
+  /**
+   * The OSRS Wiki's real-time prices API, used as its guidelines ask: https://oldschool.runescape.wiki/w/RS:PRICES.
+   * One per price world, with the same endpoints: Hardcore Worlds have their own Grand Exchange.
+   */
+  pricesBaseUrl: {
+    main: 'https://prices.runescape.wiki/api/v2/osrs',
+    hardcore: 'https://prices.runescape.wiki/api/v2/osrs-hc',
+  },
   wikiBaseUrl: 'https://oldschool.runescape.wiki',
   /** Google Analytics 4; `index.html` has it too, as it can't import this file */
   gaMeasurementId: 'G-PSQN8ELKNJ',

@@ -6,6 +6,7 @@ import { provideRouter } from '@angular/router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { GTAG_TOKEN } from '@app/common/analytics/gtag-token';
 import { AveragePrices, ItemMapping } from '@app/common/api/osrs-prices-repo';
+import { PRICE_WORLD, PriceWorld } from '@app/common/api/price-world';
 import { config } from '@config/config';
 import { PriceMoversCard } from './price-movers-card';
 import { PriceMovers } from './price-movers';
@@ -33,7 +34,7 @@ describe('PriceMoversCard', () => {
   const page = () => fixture.nativeElement as HTMLElement;
   const rowNames = () => [...page().querySelectorAll('a[price-mover-row]')].map(row => row.textContent);
 
-  function setUp(platform: 'browser' | 'server', state?: PriceMovers) {
+  function setUp(platform: 'browser' | 'server', state?: PriceMovers, world: PriceWorld = 'main') {
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
@@ -42,6 +43,7 @@ describe('PriceMoversCard', () => {
         provideRouter([]),
         { provide: PLATFORM_ID, useValue: platform },
         { provide: GTAG_TOKEN, useValue: null },
+        { provide: PRICE_WORLD, useValue: world },
       ],
     });
     if (state) TestBed.inject(TransferState).set(KEY, state);
@@ -52,12 +54,12 @@ describe('PriceMoversCard', () => {
 
   function flushLists(yesterday: Record<string, AveragePrices>, dayBefore: Record<string, AveragePrices>) {
     const today = Date.now() / 1000;
-    httpTesting.expectOne(`${config.pricesBaseUrl}/mapping`).flush(mapping);
+    httpTesting.expectOne(`${config.pricesBaseUrl.main}/mapping`).flush(mapping);
     httpTesting
-      .expectOne(`${config.pricesBaseUrl}/24h?timestamp=${today - DAY}`)
+      .expectOne(`${config.pricesBaseUrl.main}/24h?timestamp=${today - DAY}`)
       .flush({ data: yesterday, timestamp: 0 });
     httpTesting
-      .expectOne(`${config.pricesBaseUrl}/24h?timestamp=${today - 2 * DAY}`)
+      .expectOne(`${config.pricesBaseUrl.main}/24h?timestamp=${today - 2 * DAY}`)
       .flush({ data: dayBefore, timestamp: 0 });
   }
 
@@ -109,6 +111,18 @@ describe('PriceMoversCard', () => {
     expect(rowNames()).toHaveLength(1);
   });
 
+  it('loads the Hardcore Worlds lists, not the main rows transferred for the same card', () => {
+    setUp('browser', transferred, 'hardcore');
+    fixture.detectChanges();
+
+    const today = Date.now() / 1000;
+    const hardcore = 'https://prices.runescape.wiki/api/v2/osrs-hc';
+    httpTesting.expectOne(`${hardcore}/mapping`).flush(mapping);
+    httpTesting.expectOne(`${hardcore}/24h?timestamp=${today - DAY}`).flush({ data: {}, timestamp: 0 });
+    httpTesting.expectOne(`${hardcore}/24h?timestamp=${today - 2 * DAY}`).flush({ data: {}, timestamp: 0 });
+    expect(page().textContent).not.toContain('Dark bow tie');
+  });
+
   it('leaves an unfinished day to the browser, rendering as loading', async () => {
     setUp('server');
 
@@ -122,7 +136,9 @@ describe('PriceMoversCard', () => {
   it('renders a failed load on the server as loading', async () => {
     setUp('server');
 
-    httpTesting.expectOne(`${config.pricesBaseUrl}/mapping`).flush('', { status: 500, statusText: 'Server Error' });
+    httpTesting
+      .expectOne(`${config.pricesBaseUrl.main}/mapping`)
+      .flush('', { status: 500, statusText: 'Server Error' });
     httpTesting.match(() => true);
     await fixture.whenStable();
 
@@ -132,7 +148,9 @@ describe('PriceMoversCard', () => {
   it('loads the lists itself after a client-side navigation, and offers a retry when that fails', async () => {
     setUp('browser');
 
-    httpTesting.expectOne(`${config.pricesBaseUrl}/mapping`).flush('', { status: 500, statusText: 'Server Error' });
+    httpTesting
+      .expectOne(`${config.pricesBaseUrl.main}/mapping`)
+      .flush('', { status: 500, statusText: 'Server Error' });
     httpTesting.match(() => true);
     await fixture.whenStable();
 

@@ -7,11 +7,9 @@ import { BASE_URL_PREFIX } from '@app/core/interceptors/base-url-interceptor';
 import { LOADING_INDICATOR } from '@app/core/interceptors/loading-indicator-interceptor';
 import { SSR_TIMEOUT } from '@app/core/interceptors/ssr-timeout-interceptor';
 import { config } from '@config/config';
+import { PriceWorld, worldKey } from './price-world';
 
 export enum TimeSpan {
-  FIVE_MINUTES = '5m',
-  HOUR = '1h',
-  SIX_HOURS = '6h',
   DAY = '24h',
 }
 
@@ -74,7 +72,10 @@ const SERVER_LIST_TTL: Record<keyof ServerLists, number> = {
  * Server only: the Wiki's full lists, shared by every render (unlike `OngoingRequests`) since they're public and the
  * same for everyone. The data, not the request: a render only waits for its own `HttpClient`'s requests.
  */
-const serverLists: { [K in keyof ServerLists]?: { data: ServerLists[K]; key: string; fetchedAt: number } } = {};
+const serverLists: Record<
+  PriceWorld,
+  { [K in keyof ServerLists]?: { data: ServerLists[K]; key: string; fetchedAt: number } }
+> = { main: {}, hardcore: {} };
 
 /**
  * The OSRS Wiki's prices API (v2), as its guidelines ask: bulk lists over single items, and time series by `lookback`,
@@ -91,18 +92,17 @@ export class OsrsPricesRepo {
 
   /** Browser only: until the app is stable, the rendered items' prices come from the server (like the transfer cache) */
   private useTransferredPrices = !this.isServer;
-  private readonly serverListRequests: Partial<Record<keyof ServerLists, Observable<unknown>>> = {};
-  private mapping$?: Observable<ItemMapping[]>;
-
-  private averagePriceCache: Record<
-    TimeSpan,
-    Record<number, Observable<{ data: Record<string, AveragePrices>; timestamp: number }>>
-  > = {
-    [TimeSpan.FIVE_MINUTES]: {},
-    [TimeSpan.HOUR]: {},
-    [TimeSpan.SIX_HOURS]: {},
-    [TimeSpan.DAY]: {},
+  private readonly serverListRequests: Record<PriceWorld, Partial<Record<keyof ServerLists, Observable<unknown>>>> = {
+    main: {},
+    hardcore: {},
   };
+  private readonly mapping$: Partial<Record<PriceWorld, Observable<ItemMapping[]>>> = {};
+
+  /** By world, time span and timestamp */
+  private readonly averagePriceCache = new Map<
+    string,
+    Observable<{ data: Record<string, AveragePrices>; timestamp: number }>
+  >();
 
   constructor() {
     if (!this.isServer)
@@ -116,10 +116,14 @@ export class OsrsPricesRepo {
    * and waits on the Wiki's own servers (seconds at the 90th percentile). The server keeps the list for every render and
    * hands each item it renders to the browser through `TransferState`, as the list is far too large to embed in the page.
    */
-  getLatestPrices(id: number, options?: { loadingIndicator?: boolean }): Observable<LatestPrices> {
-    const key = makeStateKey<Record<string, number> | null>(`wiki-latest-${id}`);
+  getLatestPrices(
+    id: number,
+    world: PriceWorld = 'main',
+    options?: { loadingIndicator?: boolean },
+  ): Observable<LatestPrices> {
+    const key = makeStateKey<Record<string, number> | null>(worldKey(world, `wiki-latest-${id}`));
     if (this.isServer)
-      return this.serverLatestPrices(options).pipe(
+      return this.serverLatestPrices(world, options).pipe(
         map(data => data[id]),
         tap(price => this.transferState.set(key, price ?? null)),
         map(toLatestPrices),
@@ -127,37 +131,43 @@ export class OsrsPricesRepo {
     if (this.useTransferredPrices && this.transferState.hasKey(key))
       return of(toLatestPrices(this.transferState.get(key, null) ?? {}));
 
-    return this.fetchLatestPrices(options).pipe(map(data => toLatestPrices(data[id])));
+    return this.fetchLatestPrices(world, options).pipe(map(data => toLatestPrices(data[id])));
   }
 
-  getItemMapping(): Observable<ItemMapping[]> {
-    if (this.isServer) return this.serverList('mapping', '', () => this.fetchItemMapping({ transferCache: false }));
-    return (this.mapping$ ??= this.fetchItemMapping().pipe(shareReplay(1)));
+  getItemMapping(world: PriceWorld = 'main'): Observable<ItemMapping[]> {
+    if (this.isServer)
+      return this.serverList(world, 'mapping', '', () => this.fetchItemMapping(world, { transferCache: false }));
+    return (this.mapping$[world] ??= this.fetchItemMapping(world).pipe(shareReplay(1)));
   }
 
-  getAllLatestPrices(): Observable<LatestPriceList> {
-    return this.isServer ? this.serverLatestPrices() : this.fetchLatestPrices();
+  getAllLatestPrices(world: PriceWorld = 'main'): Observable<LatestPriceList> {
+    return this.isServer ? this.serverLatestPrices(world) : this.fetchLatestPrices(world);
   }
 
   /** The browser shares the request with `getCachedPriceAverage`; the server keeps the day for every render */
-  getAveragePrices(timeSpan: TimeSpan, timestamp: Date): Observable<Record<string, AveragePrices>> {
-    if (this.isServer && timeSpan === TimeSpan.DAY) return this.serverDay('day', timestamp);
-    return this.cachedAveragePrice(timeSpan, timestamp).pipe(map(response => response.data));
+  getAveragePrices(
+    timeSpan: TimeSpan,
+    timestamp: Date,
+    world: PriceWorld = 'main',
+  ): Observable<Record<string, AveragePrices>> {
+    if (this.isServer && timeSpan === TimeSpan.DAY) return this.serverDay(world, 'day', timestamp);
+    return this.cachedAveragePrice(world, timeSpan, timestamp).pipe(map(response => response.data));
   }
 
   /** `getAveragePrices` for the day before the one it's asked for, which the server keeps as well */
-  getDayBeforeAverages(timestamp: Date): Observable<Record<string, AveragePrices>> {
-    if (this.isServer) return this.serverDay('dayBefore', timestamp);
-    return this.cachedAveragePrice(TimeSpan.DAY, timestamp).pipe(map(response => response.data));
+  getDayBeforeAverages(timestamp: Date, world: PriceWorld = 'main'): Observable<Record<string, AveragePrices>> {
+    if (this.isServer) return this.serverDay(world, 'dayBefore', timestamp);
+    return this.cachedAveragePrice(world, TimeSpan.DAY, timestamp).pipe(map(response => response.data));
   }
 
   getPriceTimeSeries(
     id: number,
     lookback: Lookback,
+    world: PriceWorld = 'main',
     options?: { loadingIndicator?: boolean },
   ): Observable<AveragePricesAtTime[]> {
     return this.httpClient
-      .get<{ data: AveragePricesAtTime[]; itemId: string }>(`${config.pricesBaseUrl}/timeseries`, {
+      .get<{ data: AveragePricesAtTime[]; itemId: string }>(`${config.pricesBaseUrl[world]}/timeseries`, {
         params: { id, lookback },
         context: wikiContext(options?.loadingIndicator),
       })
@@ -168,8 +178,9 @@ export class OsrsPricesRepo {
     id: number,
     timeSpan: TimeSpan,
     timestamp?: Date,
+    world: PriceWorld = 'main',
   ): Observable<{ averagePrices?: AveragePrices; timestamp: Date }> {
-    return this.mapAveragePriceResponse(id, this.fetchAveragePrice(timeSpan, timestamp));
+    return this.mapAveragePriceResponse(id, this.fetchAveragePrice(world, timeSpan, timestamp));
   }
 
   /**
@@ -180,54 +191,69 @@ export class OsrsPricesRepo {
     id: number,
     timeSpan: TimeSpan,
     timestamp: Date,
+    world: PriceWorld = 'main',
   ): Observable<{ averagePrices?: AveragePrices; timestamp: Date }> {
-    return this.mapAveragePriceResponse(id, this.cachedAveragePrice(timeSpan, timestamp));
+    return this.mapAveragePriceResponse(id, this.cachedAveragePrice(world, timeSpan, timestamp));
   }
 
   private cachedAveragePrice(
+    world: PriceWorld,
     timeSpan: TimeSpan,
     timestamp: Date,
   ): Observable<{ data: Record<string, AveragePrices>; timestamp: number }> {
-    return (this.averagePriceCache[timeSpan][getUnixTime(timestamp)] ??= this.fetchAveragePrice(
-      timeSpan,
-      timestamp,
-    ).pipe(shareReplay(1)));
+    const key = `${world}/${timeSpan}/${getUnixTime(timestamp)}`;
+    let cached = this.averagePriceCache.get(key);
+    if (!cached)
+      this.averagePriceCache.set(
+        key,
+        (cached = this.fetchAveragePrice(world, timeSpan, timestamp).pipe(shareReplay(1))),
+      );
+    return cached;
   }
 
-  private serverLatestPrices(options?: { loadingIndicator?: boolean }): Observable<LatestPriceList> {
-    return this.serverList('latest', '', () => this.fetchLatestPrices({ ...options, transferCache: false }));
+  private serverLatestPrices(world: PriceWorld, options?: { loadingIndicator?: boolean }): Observable<LatestPriceList> {
+    return this.serverList(world, 'latest', '', () =>
+      this.fetchLatestPrices(world, { ...options, transferCache: false }),
+    );
   }
 
-  private serverDay(list: 'day' | 'dayBefore', timestamp: Date): Observable<Record<string, AveragePrices>> {
-    return this.serverList(list, String(getUnixTime(timestamp)), () =>
-      this.fetchAveragePrice(TimeSpan.DAY, timestamp, { transferCache: false }).pipe(map(response => response.data)),
+  private serverDay(
+    world: PriceWorld,
+    list: 'day' | 'dayBefore',
+    timestamp: Date,
+  ): Observable<Record<string, AveragePrices>> {
+    return this.serverList(world, list, String(getUnixTime(timestamp)), () =>
+      this.fetchAveragePrice(world, TimeSpan.DAY, timestamp, { transferCache: false }).pipe(
+        map(response => response.data),
+      ),
     );
   }
 
   private serverList<K extends keyof ServerLists>(
+    world: PriceWorld,
     name: K,
     key: string,
     fetch: () => Observable<ServerLists[K]>,
   ): Observable<ServerLists[K]> {
-    const kept = serverLists[name];
+    const kept = serverLists[world][name];
     // A copy from the future is stale too: a clock set back, or another spec's fake time in the same test worker
     const age = kept ? Date.now() - kept.fetchedAt : -1;
     if (kept && kept.key === key && age >= 0 && age < SERVER_LIST_TTL[name]) return of(kept.data);
 
-    return (this.serverListRequests[name] ??= fetch().pipe(
+    return (this.serverListRequests[world][name] ??= fetch().pipe(
       tap(data => {
         // An unfinished day's bucket is empty: kept, it would blank every list that uses it for the whole day
         if (Object.keys(data).length)
-          serverLists[name] = { data, key, fetchedAt: Date.now() } as (typeof serverLists)[K];
+          serverLists[world][name] = { data, key, fetchedAt: Date.now() } as (typeof serverLists)[PriceWorld][K];
       }),
-      finalize(() => delete this.serverListRequests[name]),
+      finalize(() => delete this.serverListRequests[world][name]),
       share(),
     )) as Observable<ServerLists[K]>;
   }
 
-  private fetchItemMapping(options?: { transferCache?: boolean }): Observable<ItemMapping[]> {
+  private fetchItemMapping(world: PriceWorld, options?: { transferCache?: boolean }): Observable<ItemMapping[]> {
     return this.httpClient
-      .get<(ItemMapping & Record<string, unknown>)[]>(`${config.pricesBaseUrl}/mapping`, {
+      .get<(ItemMapping & Record<string, unknown>)[]>(`${config.pricesBaseUrl[world]}/mapping`, {
         transferCache: options?.transferCache,
         context: wikiContext(),
       })
@@ -239,12 +265,15 @@ export class OsrsPricesRepo {
       );
   }
 
-  private fetchLatestPrices(options?: {
-    loadingIndicator?: boolean;
-    transferCache?: boolean;
-  }): Observable<LatestPriceList> {
+  private fetchLatestPrices(
+    world: PriceWorld,
+    options?: {
+      loadingIndicator?: boolean;
+      transferCache?: boolean;
+    },
+  ): Observable<LatestPriceList> {
     return this.httpClient
-      .get<{ data: LatestPriceList }>(`${config.pricesBaseUrl}/latest`, {
+      .get<{ data: LatestPriceList }>(`${config.pricesBaseUrl[world]}/latest`, {
         transferCache: options?.transferCache,
         context: wikiContext(options?.loadingIndicator),
       })
@@ -252,12 +281,13 @@ export class OsrsPricesRepo {
   }
 
   private fetchAveragePrice(
+    world: PriceWorld,
     timeSpan: TimeSpan,
     timestamp?: Date,
     options?: { transferCache?: boolean },
   ): Observable<{ data: Record<string, AveragePrices>; timestamp: number }> {
     return this.httpClient.get<{ data: Record<string, AveragePrices>; timestamp: number }>(
-      `${config.pricesBaseUrl}/${timeSpan}`,
+      `${config.pricesBaseUrl[world]}/${timeSpan}`,
       {
         transferCache: options?.transferCache,
         ...(timestamp && { params: { timestamp: getUnixTime(timestamp) } }),

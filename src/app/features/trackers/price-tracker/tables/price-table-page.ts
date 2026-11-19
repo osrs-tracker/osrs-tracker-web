@@ -18,6 +18,7 @@ import { forkJoin, map, tap } from 'rxjs';
 import { announceChanges } from '@app/common/a11y/announcer';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { LatestPriceList, OsrsPricesRepo, TimeSpan } from '@app/common/api/osrs-prices-repo';
+import { PRICE_WORLD, worldKey } from '@app/common/api/price-world';
 import { formatWhole } from '@app/common/format/number-format';
 import { Icon } from '@app/common/icon/icon';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
@@ -99,6 +100,7 @@ interface Column {
 export default class PriceTablePage {
   private readonly analyticsService = inject(AnalyticsService);
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
+  private readonly world = inject(PRICE_WORLD);
   private readonly transferState = inject(TransferState);
   private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
   private readonly router = inject(Router);
@@ -114,7 +116,9 @@ export default class PriceTablePage {
   /** Browser only: whether the lists are needed, once a control has changed or nothing was transferred */
   private readonly interacted = signal(false);
 
-  private readonly stateKey = computed(() => makeStateKey<TableView>(`price-table-${this.kind()}`));
+  private readonly stateKey = computed(() =>
+    makeStateKey<TableView>(worldKey(this.world, `price-table-${this.kind()}`)),
+  );
   /** Read once, on the first render: removed afterwards, so a later visit loads the lists */
   private readonly transferred = computed(() => (this.isServer ? null : this.transferState.get(this.stateKey(), null)));
 
@@ -128,9 +132,9 @@ export default class PriceTablePage {
     params: () => (this.listsNeeded() ? this.kind() : undefined),
     stream: ({ params: kind }) =>
       forkJoin({
-        mapping: this.osrsPricesRepo.getItemMapping(),
-        latest: this.osrsPricesRepo.getAllLatestPrices(),
-        day: this.osrsPricesRepo.getAveragePrices(TimeSpan.DAY, yesterdayStart()),
+        mapping: this.osrsPricesRepo.getItemMapping(this.world),
+        latest: this.osrsPricesRepo.getAllLatestPrices(this.world),
+        day: this.osrsPricesRepo.getAveragePrices(TimeSpan.DAY, yesterdayStart(), this.world),
       }).pipe(
         map(lists => {
           // A failed load, not a table without High alch's rune price

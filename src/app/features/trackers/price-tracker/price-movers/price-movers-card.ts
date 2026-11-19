@@ -15,6 +15,7 @@ import { LucideTrendingDown, LucideTrendingUp } from '@lucide/angular';
 import { forkJoin, map, tap } from 'rxjs';
 import { announceChanges } from '@app/common/a11y/announcer';
 import { OsrsPricesRepo, TimeSpan } from '@app/common/api/osrs-prices-repo';
+import { PRICE_WORLD, worldKey } from '@app/common/api/price-world';
 import { ListCard, ListCardState } from '@app/common/ui/cards/list-card';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
 import { InfoTooltip } from '@app/common/ui/tooltip/info-tooltip';
@@ -23,9 +24,6 @@ import { PriceMoverRow } from './price-mover-row';
 import { buildPriceMovers, PriceMovers } from './price-movers';
 
 type Direction = keyof PriceMovers;
-
-/** What the server hands the browser: the rows, as the three lists behind them are about 1 MB */
-const MOVERS_KEY = makeStateKey<PriceMovers>('price-movers');
 
 /**
  * The server builds the rows from its copies of the Wiki's lists and transfers only those, so hydration fetches nothing.
@@ -71,6 +69,7 @@ const MOVERS_KEY = makeStateKey<PriceMovers>('price-movers');
 })
 export class PriceMoversCard {
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
+  private readonly world = inject(PRICE_WORLD);
   private readonly transferState = inject(TransferState);
   private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
 
@@ -82,21 +81,24 @@ export class PriceMoversCard {
 
   readonly subtitle = `Average price change on ${formatDate(yesterdayStart(), 'EEE d MMM', 'en-US', 'UTC')} (UTC)`;
 
+  /** What the server hands the browser: the rows, as the three lists behind them are about 1 MB */
+  private readonly moversKey = makeStateKey<PriceMovers>(worldKey(this.world, 'price-movers'));
+
   /** Read once, on the first render: removed afterwards, so a later visit loads the lists */
-  private readonly transferred = this.isServer ? null : this.transferState.get(MOVERS_KEY, null);
+  private readonly transferred = this.isServer ? null : this.transferState.get(this.moversKey, null);
 
   readonly lists = rxResource({
     params: () => (this.transferred ? undefined : yesterdayStart()),
     stream: ({ params: yesterday }) =>
       forkJoin({
-        mapping: this.osrsPricesRepo.getItemMapping(),
-        yesterday: this.osrsPricesRepo.getAveragePrices(TimeSpan.DAY, yesterday),
-        dayBefore: this.osrsPricesRepo.getDayBeforeAverages(new Date(yesterday.getTime() - DAY * 1000)),
+        mapping: this.osrsPricesRepo.getItemMapping(this.world),
+        yesterday: this.osrsPricesRepo.getAveragePrices(TimeSpan.DAY, yesterday, this.world),
+        dayBefore: this.osrsPricesRepo.getDayBeforeAverages(new Date(yesterday.getTime() - DAY * 1000), this.world),
       }).pipe(
         map(({ mapping, yesterday, dayBefore }) => buildPriceMovers(mapping, yesterday, dayBefore)),
         tap(movers => {
           // Without rows the day's lists aren't in yet: transferred, they'd stop the browser from looking again
-          if (this.isServer && movers.rising.length) this.transferState.set(MOVERS_KEY, movers);
+          if (this.isServer && movers.rising.length) this.transferState.set(this.moversKey, movers);
         }),
       ),
   });
@@ -112,7 +114,7 @@ export class PriceMoversCard {
   });
 
   constructor() {
-    afterNextRender(() => this.transferState.remove(MOVERS_KEY));
+    afterNextRender(() => this.transferState.remove(this.moversKey));
     announceChanges(() =>
       this.state() === 'ready' ? `Yesterday's biggest ${this.direction() === 'rising' ? 'rises' : 'falls'}.` : null,
     );
