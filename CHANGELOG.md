@@ -2,11 +2,12 @@
 
 ### Hardcore Worlds
 
-- Players online now shows Hardcore Worlds. The count at the top says how many players are on Hardcore Worlds and what
-  share of the total that is, and the history chart draws them as a violet band along its bottom, with a row in the
-  tooltip, a key under the chart and a column in the table. They were always inside the total, members and free-to-play
-  numbers, just not apart: the band is the bottom part of the total, not extra players. Counting them started today, so
-  the band starts there; the 1Y and All ranges, which show full days only, draw it from the next days on.
+- Players online now shows how many of the players are on Hardcore Worlds. They were always counted in the total, just
+  not apart, so they show as a part of it, not as extra players: a violet end to the Members bar at the top of the page,
+  with the number and its share of all players under it, and a violet band along the bottom of the history chart, whose
+  tooltip adds "of which Hardcore Worlds" under the total, with a key under the chart and a column in the table.
+  Counting them started today, so the band starts there; the 1Y and All ranges, which show full days only, draw it from
+  the next days on.
 - A shared link to a Hardcore Worlds price page now shows its own preview: an item's card carries the Hardcore Worlds
   badge, and the Hardcore Worlds Price Tracker, its lists and its A–Z pages show a "Hardcore Worlds GE prices" card.
   They looked like the main game's before.

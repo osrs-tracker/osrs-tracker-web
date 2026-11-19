@@ -13,9 +13,12 @@ Choices that look like accidents without their context: what was decided, why, a
   `hardcore` is a gap, never 0, and the band, its tooltip row, key and table column appear only when a shown point has
   one. Real stacking (`scales.y.stacked`) would need a `total - hardcore` series, a stack of its own for the Daily peak
   line and null handling in the lower layer, for the same picture. A third bucket beside members and free-to-play would
-  break `total = members + f2p` and every share on the page, so the tooltip and the current count give Hardcore Worlds
-  as a share of the total, apart from that split. The colour is the `sold` token (violet): amber already marks a frozen
-  count in the same tooltip and key.
+  break `total = members + f2p` and every share on the page, so Hardcore Worlds is always shown as a part of something:
+  in the tooltip an "of which" row indented under the total, and in the current count the violet end of the Members
+  segment of the split bar, with a key line under it (the bar is `aria-hidden`). It sits inside Members because the API
+  gives one `hardcore` number, not split by world type, and nearly all of it is on members worlds (one free-to-play
+  Hardcore World, with 1 to 3 of about 6,800 players on 2026-11-19). The colour is the `sold` token (violet): amber
+  already marks a frozen count in the same tooltip and key.
 - **Revisit:** at about 7% the band is nearly flat and shows the share, not the trend. If the trend is wanted, a Main |
   HCW | All switch that rescales the axis was the dropped alternative.
 

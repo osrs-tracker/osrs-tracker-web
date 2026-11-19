@@ -43,32 +43,39 @@
           >
         </div>
 
-        <div class="flex flex-col gap-4 max-w-110">
-          <div class="flex flex-col gap-2.5">
-            <div class="flex justify-between gap-4">
-              @for (part of split(); track part.label; let last = $last) {
-                <span class="flex flex-col" [class.items-end]="last">
-                  <span class="flex items-center gap-2 text-sm text-muted">
-                    <span class="size-2.5 rounded-xs" [class]="part.color"></span>{{ part.label }}
-                  </span>
-                  <span class="text-2xl font-bold text-strong tabular-nums"
-                    >{{ part.players | number }}
-                    <span class="text-base font-normal text-muted">{{ part.share }}</span></span
-                  >
+        <div class="flex flex-col gap-2.5 max-w-110">
+          <div class="flex justify-between gap-4">
+            @for (part of split(); track part.label; let last = $last) {
+              <span class="flex flex-col" [class.items-end]="last">
+                <span class="flex items-center gap-2 text-sm text-muted">
+                  <span class="size-2.5 rounded-xs" [class]="part.color"></span>{{ part.label }}
                 </span>
-              }
-            </div>
-            <div class="flex gap-0.5 h-2" aria-hidden="true">
-              <span class="rounded-l-full bg-accent" [style.width.%]="membersPercent()"></span>
-              <span class="flex-1 rounded-r-full bg-muted"></span>
-            </div>
+                <span class="text-2xl font-bold text-strong tabular-nums"
+                  >{{ part.players | number }}
+                  <span class="text-base font-normal text-muted">{{ part.share }}</span></span
+                >
+              </span>
+            }
           </div>
-          <!-- Apart from the bar: these players are inside both Members and Free-to-play -->
+          <div class="flex gap-0.5 h-2" aria-hidden="true">
+            <span class="flex overflow-hidden rounded-l-full" [style.width.%]="membersPercent()">
+              <span class="flex-1 bg-accent"></span>
+              @if (hardcore(); as hardcore) {
+                <span class="bg-sold" [style.width.%]="hardcore.percentOfMembers"></span>
+              }
+            </span>
+            <span class="flex-1 rounded-r-full bg-muted"></span>
+          </div>
+          <!-- The bar's key for its violet part, which the bar (aria-hidden) can't say -->
           @if (hardcore(); as hardcore) {
-            <p class="flex items-center gap-2 text-sm text-muted">
-              <img icon class="size-4 shrink-0" eager [name]="hardcoreIcon" alt="" />Hardcore Worlds
-              <span class="font-bold text-strong tabular-nums">{{ hardcore.players | number }}</span>
-              {{ hardcore.share }}
+            <p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted">
+              <span class="flex items-center gap-2"
+                ><span class="size-2.5 rounded-xs bg-sold"></span>Hardcore Worlds</span
+              >&ngsp;
+              <span
+                ><span class="font-bold text-strong tabular-nums">{{ hardcore.players | number }}</span>
+                {{ hardcore.share }}</span
+              >
             </p>
           }
         </div>

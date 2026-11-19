@@ -37,6 +37,9 @@ async function render(live: PlayerCount): Promise<HTMLElement> {
   return fixture.nativeElement;
 }
 
+const hardcoreSegment = (root: HTMLElement): HTMLElement | null =>
+  root.querySelector<HTMLElement>('[aria-hidden="true"] .bg-sold');
+
 const hardcoreLine = (root: HTMLElement): string | undefined =>
   [...root.querySelectorAll('p')]
     .find(line => line.textContent!.includes('Hardcore Worlds'))
@@ -44,21 +47,25 @@ const hardcoreLine = (root: HTMLElement): string | undefined =>
     .trim();
 
 describe('PlayersOnline', () => {
-  it('shows the players on Hardcore Worlds and their share of the total', async () => {
+  it('shows the players on Hardcore Worlds as the end of the Members bar, with a key under it', async () => {
     const root = await render(count(6_300));
 
-    expect(hardcoreLine(root)).toBe('Hardcore Worlds 6,300 7% of the total');
-    expect(root.querySelector('img[icon]')?.getAttribute('alt')).toBe('');
+    expect(hardcoreSegment(root)?.style.width).toBe('9%');
+    expect(hardcoreLine(root)).toBe('Hardcore Worlds 6,300 7% of all players');
   });
 
   it('shows a count of 0 on Hardcore Worlds', async () => {
-    expect(hardcoreLine(await render(count(0)))).toBe('Hardcore Worlds 0 0% of the total');
+    const root = await render(count(0));
+
+    expect(hardcoreSegment(root)?.style.width).toBe('0%');
+    expect(hardcoreLine(root)).toBe('Hardcore Worlds 0 0% of all players');
   });
 
-  it('leaves the line out while the count has no Hardcore Worlds number', async () => {
+  it('leaves the segment and its key out while the count has no Hardcore Worlds number', async () => {
     const root = await render(count());
 
     expect(root.textContent).toContain('90,000');
+    expect(hardcoreSegment(root)).toBeNull();
     expect(hardcoreLine(root)).toBeUndefined();
   });
 });

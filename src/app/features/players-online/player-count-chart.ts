@@ -56,13 +56,6 @@ interface HoveredPoint {
 
 const fmt = (value: number) => formatNumber(value, 'en-US', '1.0-0');
 
-interface TipRow {
-  label: string;
-  value: string;
-  share?: string;
-  dot: string;
-}
-
 /** Hovering shows an HTML tooltip: Chart.js' own can't draw the flags */
 @Component({
   selector: 'player-count-chart',
@@ -91,13 +84,20 @@ interface TipRow {
             <span class="size-2 shrink-0 rounded-full bg-amber"></span>{{ frozenMessage }}
           </span>
         }
-        @for (row of tip().rows; track row.label) {
+        @for (row of tip().rows; track row.label; let first = $first) {
           <span class="flex items-center gap-1.5 tabular-nums">
             <span class="size-2 shrink-0 rounded-full" [class]="row.dot"></span>{{ row.label }}: {{ row.value }}
-            @if (row.share) {
-              <span class="text-muted">({{ row.share }})</span>
-            }
           </span>
+          <!-- A part of the total above it, indented to its label, not a count beside it -->
+          @if (first && tip().hardcore; as hardcore) {
+            <span class="flex items-center gap-1.5 pl-3.5 tabular-nums">
+              <span class="size-1.5 shrink-0 rounded-full bg-sold"></span
+              ><span
+                ><span class="text-muted">of which {{ hardcoreName }}:</span> {{ hardcore.value }}
+                <span class="text-muted">({{ hardcore.share }})</span></span
+              >
+            </span>
+          }
         }
         <span class="grid grid-cols-2 gap-x-4 gap-y-1 mt-1 mb-0.5 pt-2 border-t border-line">
           @for (location of tip().locations; track location.key) {
@@ -130,6 +130,7 @@ export class PlayerCountChart extends BaseChart<'line', PlayerCountSeries> {
   protected readonly type = 'line';
 
   protected readonly frozenMessage = FROZEN_MESSAGE;
+  protected readonly hardcoreName = HARDCORE_NAME;
 
   protected readonly hovered = signal<HoveredPoint | null>(null);
 
@@ -138,18 +139,6 @@ export class PlayerCountChart extends BaseChart<'line', PlayerCountSeries> {
     const { range, locationOrder, frozen } = this.data();
     const daily = range === '1y' || range === 'all';
     const players = point.members + point.f2p;
-    // Under the total it's a part of, apart from the members and free-to-play split, which adds up to 100% on its own
-    const hardcore: TipRow[] =
-      point.hardcore === undefined
-        ? []
-        : [
-            {
-              label: HARDCORE_NAME,
-              value: fmt(point.hardcore),
-              share: `${formatShare(point.hardcore, point.total)} of the total`,
-              dot: 'bg-sold',
-            },
-          ];
 
     return {
       title: format(point.date, daily ? 'MMMM do yyyy' : 'MMMM do - HH:mm'),
@@ -157,7 +146,6 @@ export class PlayerCountChart extends BaseChart<'line', PlayerCountSeries> {
       rows: daily
         ? [
             { label: 'Daily average', value: fmt(point.total), dot: 'bg-accent' },
-            ...hardcore,
             { label: 'Daily peak', value: fmt(point.peak ?? point.total), dot: 'bg-muted' },
           ]
         : [
@@ -166,8 +154,12 @@ export class PlayerCountChart extends BaseChart<'line', PlayerCountSeries> {
               value: fmt(point.total),
               dot: 'bg-accent',
             },
-            ...hardcore,
           ],
+      // Under the total, apart from the members and free-to-play split, which adds up to 100% on its own
+      hardcore:
+        point.hardcore === undefined
+          ? undefined
+          : { value: fmt(point.hardcore), share: formatShare(point.hardcore, point.total) },
       locations: locationCountsInOrder(point.byLocation, locationOrder).map(location => ({
         ...location,
         players: fmt(location.players),
