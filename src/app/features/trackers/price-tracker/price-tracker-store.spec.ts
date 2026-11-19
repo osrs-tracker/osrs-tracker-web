@@ -46,8 +46,7 @@ describe('PriceTrackerStore', () => {
     expect(JSON.parse(localStorage.getItem(StorageKey.PriceTrackerHardcoreRecentItems)!)).toHaveLength(2);
 
     store.toggleFavoriteItem(whip);
-    expect(localStorage.getItem(StorageKey.PriceTrackerHardcoreRecentItems)).not.toBe(
-      localStorage.getItem(StorageKey.PriceTrackerFavoriteItems),
-    );
+    expect(JSON.parse(localStorage.getItem(StorageKey.PriceTrackerFavoriteItems)!)).toEqual([whip]);
+    expect(JSON.parse(localStorage.getItem(StorageKey.PriceTrackerHardcoreRecentItems)!)).toHaveLength(2);
   });
 });

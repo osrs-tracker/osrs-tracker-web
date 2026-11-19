@@ -8,7 +8,7 @@ export const HARDCORE_FAQ: Faq[] = [
   {
     question: 'Are Hardcore Worlds prices the same as the main game’s?',
     answer:
-      'No. Hardcore Worlds have their own Grand Exchange and economy, separate from the main game, so prices differ, sometimes a lot: an Abyssal whip sells for about ten times its main game price, an Old school bond for under a tenth.',
+      'No. Hardcore Worlds have their own Grand Exchange and economy, separate from the main game, so prices differ, sometimes a lot.',
   },
   {
     question: 'Where do the prices come from?',
@@ -23,6 +23,6 @@ export const HARDCORE_FAQ: Faq[] = [
   {
     question: 'How do I see the main game’s prices?',
     answer:
-      'Pick Main in the search box’s switch, or on any item’s page. Your favourites and recent lookups are the same in both, priced in the world you’re viewing.',
+      'Pick Main in the switch beside the search box. Your favourites are the same in both, priced in the world you’re viewing; your recent lookups are kept per world.',
   },
 ];

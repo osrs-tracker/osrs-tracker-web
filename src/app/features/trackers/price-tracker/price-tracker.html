@@ -77,7 +77,7 @@
     <section
       list-card
       heading="Global recent lookups"
-      subtitle="Looked up by anyone, newest first"
+      [subtitle]="lookupsSubtitle"
       kind="item"
       [state]="recentItemLookupsState()"
       emptyText="No items looked up yet."
