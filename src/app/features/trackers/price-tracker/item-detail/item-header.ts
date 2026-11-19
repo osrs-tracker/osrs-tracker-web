@@ -1,5 +1,6 @@
 import { Component, computed, inject, input, output } from '@angular/core';
 import { Item } from '@osrs-tracker/models';
+import { PRICE_WORLD } from '@app/common/api/price-world';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Icon } from '@app/common/icon/icon';
@@ -106,6 +107,7 @@ import { LucideExternalLink, LucideStar, LucideTriangle } from '@lucide/angular'
 export class ItemHeader {
   private readonly analyticsService = inject(AnalyticsService);
   private readonly priceTrackerStore = inject(PriceTrackerStore);
+  private readonly world = inject(PRICE_WORLD);
 
   readonly item = input.required<Item>();
   readonly price = input<number | null>(null);
@@ -137,6 +139,10 @@ export class ItemHeader {
     const { id, name, icon } = this.item();
     this.priceTrackerStore.toggleFavoriteItem({ id, name, icon });
 
-    this.analyticsService.trackEvent('toggle_favorite_item', { item_id: id, favorite: this.isFavorite() });
+    this.analyticsService.trackEvent('toggle_favorite_item', {
+      item_id: id,
+      favorite: this.isFavorite(),
+      world: this.world,
+    });
   }
 }

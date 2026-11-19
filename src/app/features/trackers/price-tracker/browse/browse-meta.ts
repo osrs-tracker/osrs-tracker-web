@@ -1,28 +1,29 @@
 import { ActivatedRouteSnapshot } from '@angular/router';
-import { PageMeta } from '@app/common/seo/page-meta-strategy';
-import { breadcrumbList } from '@app/common/seo/structured-data';
-import { isBrowseLetter, startingWith } from './browse-letters';
+import { PriceWorld, priceTrackerPath } from '@app/common/api/price-world';
+import { PageMeta, RouteMeta } from '@app/common/seo/page-meta-strategy';
+import { priceBreadcrumbs } from '../price-breadcrumbs';
+import { browseLetterLabel, isBrowseLetter, startingWith } from './browse-letters';
 
 /**
  * From the letter alone, so it doesn't wait for the API. None for a letter there's no page for: it's a 404, titled by
  * the route, without a canonical.
  */
-export function browseMeta(route: ActivatedRouteSnapshot): PageMeta | undefined {
-  const letter: string = route.params['letter'];
-  if (!isBrowseLetter(letter)) return undefined;
+export const browseMeta =
+  (world: PriceWorld): RouteMeta =>
+  (route: ActivatedRouteSnapshot): PageMeta | undefined => {
+    const letter: string = route.params['letter'];
+    if (!isBrowseLetter(letter)) return undefined;
 
-  const canonicalPath = `/trackers/price/browse/${letter}`;
-  return {
-    title: `OSRS items ${startingWith(letter)}: Grand Exchange prices`,
-    description:
-      `Every OSRS Grand Exchange item ${startingWith(letter)}, sorted by name, with its latest price and change ` +
-      'since yesterday. Open one for its price history, margin and buy limit.',
-    canonicalPath,
-    jsonLd: [
-      breadcrumbList([
-        { name: 'Price Tracker', path: '/trackers/price' },
-        { name: `Items ${startingWith(letter)}`, path: canonicalPath },
-      ]),
-    ],
+    const canonicalPath = `${priceTrackerPath(world)}/browse/${letter}`;
+    const hardcore = world === 'hardcore';
+    return {
+      title: hardcore
+        ? `Hardcore Worlds items: ${browseLetterLabel(letter)}`
+        : `OSRS items ${startingWith(letter)}: Grand Exchange prices`,
+      description:
+        `Every OSRS ${hardcore ? 'Hardcore Worlds ' : ''}Grand Exchange item ${startingWith(letter)}, sorted by name, ` +
+        'with its latest price and change since yesterday. Open one for its price history, margin and buy limit.',
+      canonicalPath,
+      jsonLd: [priceBreadcrumbs(world, { name: `Items ${startingWith(letter)}`, path: canonicalPath })],
+    };
   };
-}

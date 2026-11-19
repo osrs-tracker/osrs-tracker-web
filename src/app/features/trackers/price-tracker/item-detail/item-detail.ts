@@ -229,7 +229,7 @@ export default class ItemDetail implements OnInit {
 
   selectRange(range: PriceRange): void {
     this.range.set(range);
-    this.analyticsService.trackOption('item_range', range);
+    this.analyticsService.trackOption('item_range', range, this.world);
   }
 
   /** From the empty chart's button, which goes away with the change: focus moves to the card's heading */
@@ -244,7 +244,11 @@ export default class ItemDetail implements OnInit {
     else if (hidden.size < PRICE_LINES.length - 1) hidden.add(line);
     else return;
     this.hiddenLines.set(hidden);
-    this.analyticsService.trackOption('item_price_line', `${line}: ${hidden.has(line) ? 'hidden' : 'shown'}`);
+    this.analyticsService.trackOption(
+      'item_price_line',
+      `${line}: ${hidden.has(line) ? 'hidden' : 'shown'}`,
+      this.world,
+    );
   }
 
   /** One retry for every series, as one failure shows once, in the chart's place */

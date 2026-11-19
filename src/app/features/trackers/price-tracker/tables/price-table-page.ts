@@ -283,24 +283,24 @@ export default class PriceTablePage {
 
   pickMembers(members: Members): void {
     this.setOptions({ members });
-    this.analyticsService.trackOption('price_table_members', members);
+    this.analyticsService.trackOption('price_table_members', members, this.world);
   }
 
   pickVolume(value: string): void {
     const volume = value === 'any' ? 'any' : (Number(value) as Volume);
     this.setOptions({ volume });
-    this.analyticsService.trackOption('price_table_volume', volume);
+    this.analyticsService.trackOption('price_table_volume', volume, this.world);
   }
 
   pickBuyAt(buyAt: BuyAt): void {
     this.setOptions({ buyAt });
-    this.analyticsService.trackOption('price_table_buy_at', buyAt);
+    this.analyticsService.trackOption('price_table_buy_at', buyAt, this.world);
   }
 
   sortBy(sort: SortKey, toggle = true): void {
     const { sort: current, dir } = this.options();
     this.setOptions(toggle && sort === current ? { dir: dir === 'desc' ? 'asc' : 'desc' } : { sort, dir: 'desc' });
-    this.analyticsService.trackOption('price_table_sort', sort);
+    this.analyticsService.trackOption('price_table_sort', sort, this.world);
   }
 
   showMore(): void {

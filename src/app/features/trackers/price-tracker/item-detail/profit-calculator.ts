@@ -345,11 +345,11 @@ export class ProfitCalculator {
 
   selectMode(mode: Mode): void {
     this.mode.set(mode);
-    this.analyticsService.trackOption('calculator_mode', mode);
+    this.analyticsService.trackOption('calculator_mode', mode, this.world);
   }
 
   useLatestPrices(): void {
-    this.analyticsService.trackEvent('use_latest_prices');
+    this.analyticsService.trackEvent('use_latest_prices', { world: this.world });
     if (this.mode() === 'flip') {
       this.buyAt.set(this.latestPrices()?.low ?? 0);
       this.sellAt.set(this.latestPrices()?.high ?? 0);

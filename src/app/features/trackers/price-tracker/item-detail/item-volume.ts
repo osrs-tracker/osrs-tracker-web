@@ -1,5 +1,6 @@
 import { formatDate } from '@angular/common';
 import { Component, computed, inject, input, model, output, signal } from '@angular/core';
+import { PRICE_WORLD } from '@app/common/api/price-world';
 import { LoadError } from '@app/common/ui/loading/load-error';
 import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Segmented } from '@app/common/ui/controls/segmented';
@@ -158,6 +159,7 @@ interface VolumeSummary {
 })
 export class ItemVolume {
   private readonly analyticsService = inject(AnalyticsService);
+  private readonly world = inject(PRICE_WORLD);
 
   protected readonly RANGE_OPTIONS = RANGE_OPTIONS;
 
@@ -229,6 +231,6 @@ export class ItemVolume {
 
   selectRange(range: PriceRange): void {
     this.range.set(range);
-    this.analyticsService.trackOption('item_volume_range', range);
+    this.analyticsService.trackOption('item_volume_range', range, this.world);
   }
 }

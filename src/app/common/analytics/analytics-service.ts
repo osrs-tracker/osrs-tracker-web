@@ -2,6 +2,7 @@ import { inject, Service } from '@angular/core';
 import { NavigationEnd, Router, TitleStrategy } from '@angular/router';
 import { filter } from 'rxjs';
 import type { Metric } from 'web-vitals';
+import type { PriceWorld } from '../api/price-world';
 import { ConsentStore } from './consent-store';
 import { GTAG_TOKEN } from './gtag-token';
 
@@ -58,18 +59,22 @@ export class AnalyticsService {
     this.send(name, params);
   }
 
-  /** `search_term` lowercased, as player and item names don't depend on case */
-  trackSearch(type: 'player' | 'item', term: string, results?: number) {
+  /** `search_term` lowercased, as player and item names don't depend on case. `world` for the price pages. */
+  trackSearch(type: 'player' | 'item', term: string, results?: number, world?: PriceWorld) {
     this.trackEvent('search', {
       search_term: term.trim().toLowerCase(),
       search_type: type,
       ...(results !== undefined ? { results } : {}),
+      ...(world ? { world } : {}),
     });
   }
 
-  /** A choice in a control (a period, a tab, a mode): one event for every control, so it takes two custom dimensions. */
-  trackOption(control: string, option: string | number) {
-    this.trackEvent('select_option', { control, option: String(option) });
+  /**
+   * A choice in a control (a period, a tab, a mode): one event for every control, so it takes two custom dimensions.
+   * `world` for the price pages, which exist for the main game and Hardcore Worlds.
+   */
+  trackOption(control: string, option: string | number, world?: PriceWorld) {
+    this.trackEvent('select_option', { control, option: String(option), ...(world ? { world } : {}) });
   }
 
   trackException(description: string, fatal = false, error?: Error) {

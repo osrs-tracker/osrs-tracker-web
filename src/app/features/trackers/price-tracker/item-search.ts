@@ -184,7 +184,7 @@ export class ItemSearch {
     stream: ({ params: { query } }) =>
       this.osrsTrackerRepo.searchItems(query).pipe(
         map(items => items ?? []),
-        tap(items => this.analyticsService.trackSearch('item', query, items.length)),
+        tap(items => this.analyticsService.trackSearch('item', query, items.length, this.world)),
       ),
   });
   readonly loading = this.search.isLoading;

@@ -8,10 +8,12 @@ import express, { Router } from 'express';
 export function createRedirectRouter(): Router {
   const router = express.Router();
 
-  router.get('/trackers/price/browse', (req, res) => {
-    const queryStart = req.originalUrl.indexOf('?');
-    res.redirect(301, '/trackers/price/browse/a' + (queryStart === -1 ? '' : req.originalUrl.slice(queryStart)));
-  });
+  for (const base of ['/trackers/price', '/trackers/price/hardcore']) {
+    router.get(`${base}/browse`, (req, res) => {
+      const queryStart = req.originalUrl.indexOf('?');
+      res.redirect(301, `${base}/browse/a` + (queryStart === -1 ? '' : req.originalUrl.slice(queryStart)));
+    });
+  }
 
   return router;
 }

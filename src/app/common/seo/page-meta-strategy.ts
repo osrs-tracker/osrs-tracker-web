@@ -3,6 +3,12 @@ import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRouteSnapshot, RouterStateSnapshot, TitleStrategy } from '@angular/router';
 import { config } from '@config/config';
 
+/**
+ * `index.html`'s robots tag, kept in sync by hand. Not read from the DOM: after hydration the tag holds the server
+ * render's page rules, which would then stick to every later page.
+ */
+const SITE_ROBOTS = 'max-image-preview:large';
+
 export interface PageMeta {
   /** Over the route's `title`, which then only titles the page when there's no meta (a not-found state) */
   title?: string;
@@ -13,6 +19,8 @@ export interface PageMeta {
   card?: 'summary' | 'summary_large_image';
   /** With absolute URLs */
   jsonLd?: JsonLdNode[];
+  /** Added to the site-wide robots rules (`index.html`) for this page only, e.g. `noindex` */
+  robots?: string;
 }
 
 /** A function, not a resolver: the page's own resolver already fetched what it describes. */
@@ -89,6 +97,7 @@ export class PageMetaStrategy extends TitleStrategy {
     this.meta.updateTag({ name: 'description', content: pageMeta?.description ?? DEFAULT_DESCRIPTION });
 
     this.setJsonLd(pageMeta?.jsonLd);
+    this.setRobots(pageMeta?.robots);
 
     if (!pageMeta) {
       SOCIAL_TAGS.forEach(selector => this.meta.removeTag(selector));
@@ -130,6 +139,11 @@ export class PageMetaStrategy extends TitleStrategy {
       this.injector.get(ErrorHandler).handleError(error);
       return undefined;
     }
+  }
+
+  private setRobots(pageRobots: string | undefined): void {
+    // A page's rules are merged into the site-wide tag: a second tag would leave the rules unclear
+    this.meta.updateTag({ name: 'robots', content: [SITE_ROBOTS, pageRobots].filter(Boolean).join(', ') });
   }
 
   private setCanonical(url: string): void {

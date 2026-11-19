@@ -67,6 +67,12 @@ describe('PageMetaStrategy', () => {
               }) satisfies RouteMeta,
             },
           },
+          {
+            path: 'hidden',
+            title: 'Hidden',
+            component: PageComponent,
+            data: { meta: { description: 'Hidden', canonicalPath: '/hidden', robots: 'noindex' } satisfies PageMeta },
+          },
           { path: '**', title: 'Not found', component: PageComponent },
         ]),
         { provide: TitleStrategy, useClass: PageMetaStrategy },
@@ -170,5 +176,26 @@ describe('PageMetaStrategy', () => {
     await router.navigateByUrl('/items/4151');
     await router.navigateByUrl('/nope');
     expect(jsonLdScripts()).toHaveLength(0);
+  });
+
+  describe('robots', () => {
+    const robots = () => meta.getTags('name="robots"').map(tag => tag.content);
+
+    it("merges a page's rules into the site-wide tag, and restores it on the next navigation", async () => {
+      meta.addTag({ name: 'robots', content: 'max-image-preview:large' });
+
+      await router.navigateByUrl('/hidden');
+      expect(robots()).toEqual(['max-image-preview:large, noindex']);
+
+      await router.navigateByUrl('/items/4151');
+      expect(robots()).toEqual(['max-image-preview:large']);
+    });
+
+    it("drops a server-rendered page's rules after hydration", async () => {
+      meta.addTag({ name: 'robots', content: 'max-image-preview:large, noindex' });
+
+      await router.navigateByUrl('/items');
+      expect(robots()).toEqual(['max-image-preview:large']);
+    });
   });
 });
