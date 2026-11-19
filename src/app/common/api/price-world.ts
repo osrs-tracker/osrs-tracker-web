@@ -16,6 +16,3 @@ export const worldKey = (world: PriceWorld, key: string): string => (world === '
 /** The price tracker's base path in a world, for links, canonicals and breadcrumbs */
 export const priceTrackerPath = (world: PriceWorld): string =>
   world === 'main' ? '/trackers/price' : `/trackers/price/${world}`;
-
-/** When Hardcore Worlds opened (4 Nov 2026): their price history starts here, so ranges longer than their age are empty */
-export const HARDCORE_WORLDS_OPENED = new Date('2026-11-04T00:00:00Z');

@@ -69,19 +69,20 @@ describe('ItemDetail', () => {
     expect(links).toContain('/trackers/price/hardcore/4151');
   });
 
-  it("doesn't offer the month and year ranges on a Hardcore Worlds page until it is old enough", () => {
-    vi.useFakeTimers({ toFake: ['Date'] });
-    vi.setSystemTime(new Date('2026-11-19T10:00:00Z'));
-    try {
-      const { page } = render('hardcore');
-      const ranges = [...page.querySelectorAll('segmented[label="Price range"] [role="radio"]')].map(r =>
+  it('offers a Hardcore Worlds page every price range, as main does', () => {
+    const ranges = (world: PriceWorld) => {
+      TestBed.resetTestingModule();
+      return [...render(world).page.querySelectorAll('segmented[label="Price range"] [role="radio"]')].map(r =>
         r.textContent?.trim(),
       );
+    };
 
-      expect(ranges).toEqual(['1D', '1W']);
-    } finally {
-      vi.useRealTimers();
-    }
+    expect(ranges('hardcore')).toEqual(['1D', '1W', '1M', '1Y']);
+    expect(ranges('main')).toEqual(ranges('hardcore'));
+  });
+
+  it("doesn't note that Hardcore Worlds are young", () => {
+    expect(render('hardcore').page.textContent).not.toContain('opened on');
   });
 
   it('files a Hardcore Worlds item visit under the Hardcore Worlds recent items, not the main ones', () => {
@@ -94,34 +95,13 @@ describe('ItemDetail', () => {
   });
 
   describe('the empty chart', () => {
-    const nextButton = (page: HTMLElement) =>
-      [...page.querySelectorAll('button')].find(button => button.textContent?.includes('Show the last'));
-
-    async function renderEmpty(world: PriceWorld, now: string) {
-      vi.useFakeTimers({ toFake: ['Date'] });
-      vi.setSystemTime(new Date(now));
-      const { page, fixture } = render(world, () => of([]));
+    it('offers the next range on a Hardcore Worlds page, as on main', async () => {
+      const { page, fixture } = render('hardcore', () => of([]));
       await Promise.resolve();
       fixture.detectChanges();
-      return page;
-    }
+      const next = [...page.querySelectorAll('button')].find(button => button.textContent?.includes('Show the last'));
 
-    it("offers the next range only when the world's ranges include it", async () => {
-      try {
-        expect(nextButton(await renderEmpty('hardcore', '2026-11-19T10:00:00Z'))).toBeUndefined();
-      } finally {
-        vi.useRealTimers();
-      }
-    });
-
-    it('offers the month once the world has history for it', async () => {
-      try {
-        const page = await renderEmpty('hardcore', '2026-12-10T10:00:00Z');
-
-        expect(nextButton(page)?.textContent).toContain('month');
-      } finally {
-        vi.useRealTimers();
-      }
+      expect(next?.textContent).toContain('month');
     });
   });
 });
