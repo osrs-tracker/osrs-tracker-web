@@ -3,7 +3,8 @@ import { git, hasFullHistory, SITE_URL, writeSitemap } from './sitemap-file.js';
 
 const OUTPUT = 'public/sitemap.xml';
 // The site sitemap is a file in public/; the items and players ones are built by the server from the API and, for
-// Hardcore Worlds, the Wiki (src/server/routers/sitemaps.ts), so they change without a deploy and have no build-time date.
+// Hardcore Worlds, the Wiki (src/server/routers/sitemaps.ts), so they change without a deploy and have no build-time
+// date.
 const DATED = ['sitemap-site.xml'];
 const UNDATED = ['sitemap-items.xml', 'sitemap-items-hardcore.xml', 'sitemap-players.xml'];
 

@@ -135,8 +135,9 @@ const fetchHardcorePrices: GetJson = async path => {
 };
 
 /**
- * Built from the API (and the Wiki, for Hardcore Worlds) when requested rather than at build time: players get a new hiscore entry every day and the API new
- * items, neither with a deploy. Cached as long as the API caches the lists (a day for items, an hour for players).
+ * Built from the API (and the Wiki, for Hardcore Worlds) when requested rather than at build time: players get a new
+ * hiscore entry every day and the API new items, neither with a deploy. Cached as long as the API caches the lists (a
+ * day for items, an hour for players).
  */
 export function createSitemapRouter({
   logger,

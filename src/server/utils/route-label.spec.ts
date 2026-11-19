@@ -69,6 +69,8 @@ describe('routeLabel', () => {
   it('labels the server-built sitemaps by their path, also when they fail', () => {
     expect(label('/sitemap-players.xml', 503)).toBe('/sitemap-players.xml');
     expect(label('/sitemap-items.xml')).toBe('/sitemap-items.xml');
+    expect(label('/sitemap-items-hardcore.xml', 503)).toBe('/sitemap-items-hardcore.xml');
+    expect(label('/sitemap-items-hardcore.xml')).toBe('/sitemap-items-hardcore.xml');
     expect(label('/sitemap-site.xml')).toBe('/static');
   });
 
