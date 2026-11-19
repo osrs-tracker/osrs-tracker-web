@@ -25,13 +25,15 @@
       }
 
       <!-- Both slots share one grid cell and the other is hidden, so the hero is as tall in every mode and switching
-           doesn't move the page. `invisible` also takes the hidden one out of the tab order -->
+           doesn't move the page. `invisible` also takes the hidden one out of the tab order. The links end level with
+           the offset picker, so they don't look like they jump when switching; their negative margin keeps them
+           from making the cell taller -->
       <div class="grid">
         <tracking-offset class="col-start-1 row-start-1" [class.invisible]="searchMode() !== 'player'" />
         <div
           price-tracker-links
           [world]="itemWorld()"
-          class="col-start-1 row-start-1 self-start"
+          class="col-start-1 row-start-1 self-end"
           [class.invisible]="searchMode() === 'player'"
         ></div>
       </div>
