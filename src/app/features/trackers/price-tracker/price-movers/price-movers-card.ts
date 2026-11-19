@@ -25,7 +25,6 @@ import { buildPriceMovers, PriceMovers } from './price-movers';
 
 type Direction = keyof PriceMovers;
 
-/** What the server hands the browser: the rows, as the three lists behind them are about 1 MB */
 /**
  * The server builds the rows from its copies of the Wiki's lists and transfers only those, so hydration fetches nothing.
  * The browser loads the lists after a client-side navigation, or when the server's render failed.
@@ -82,6 +81,7 @@ export class PriceMoversCard {
 
   readonly subtitle = `Average price change on ${formatDate(yesterdayStart(), 'EEE d MMM', 'en-US', 'UTC')} (UTC)`;
 
+  /** What the server hands the browser: the rows, as the three lists behind them are about 1 MB */
   private readonly moversKey = makeStateKey<PriceMovers>(worldKey(this.world, 'price-movers'));
 
   /** Read once, on the first render: removed afterwards, so a later visit loads the lists */
