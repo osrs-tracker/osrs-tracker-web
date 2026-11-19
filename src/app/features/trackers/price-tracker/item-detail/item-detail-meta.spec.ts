@@ -26,7 +26,7 @@ describe('itemPageMeta for Hardcore Worlds', () => {
   it('is its own page: title, canonical and breadcrumbs name the world', () => {
     const meta = itemPageMeta(whip, 'hardcore');
 
-    expect(meta.title).toBe('Abyssal whip - OSRS Hardcore Worlds price and buy limit');
+    expect(meta.title).toBe('Abyssal whip - OSRS Hardcore Worlds price, high alch and buy limit');
     expect(meta.canonicalPath).toBe('/trackers/price/hardcore/4151');
     expect(meta.description).toContain('Hardcore Worlds Grand Exchange');
     expect(meta.description.length).toBeLessThanOrEqual(160);
@@ -57,6 +57,9 @@ describe('itemTitle', () => {
     expect(itemTitle(whip)).toBe('Abyssal whip - OSRS price, high alch and buy limit');
     expect(itemTitle({ ...whip, limit: 0 } as Item)).toBe('Abyssal whip - OSRS price and high alch');
     expect(itemTitle({ ...whip, limit: 0, highalch: 0 } as Item)).toBe('Abyssal whip - OSRS price');
+    expect(itemTitle({ ...whip, highalch: 0 } as Item, 'hardcore')).toBe(
+      'Abyssal whip - OSRS Hardcore Worlds price and buy limit',
+    );
   });
 });
 

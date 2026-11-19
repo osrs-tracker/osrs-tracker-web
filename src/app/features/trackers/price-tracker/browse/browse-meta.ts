@@ -2,7 +2,7 @@ import { ActivatedRouteSnapshot } from '@angular/router';
 import { PriceWorld, priceTrackerPath } from '@app/common/api/price-world';
 import { PageMeta, RouteMeta } from '@app/common/seo/page-meta-strategy';
 import { priceBreadcrumbs } from '../price-breadcrumbs';
-import { browseLetterLabel, isBrowseLetter, startingWith } from './browse-letters';
+import { isBrowseLetter, startingWith } from './browse-letters';
 
 /**
  * From the letter alone, so it doesn't wait for the API. None for a letter there's no page for: it's a 404, titled by
@@ -18,7 +18,7 @@ export const browseMeta =
     const hardcore = world === 'hardcore';
     return {
       title: hardcore
-        ? `Hardcore Worlds items: ${browseLetterLabel(letter)}`
+        ? `OSRS Hardcore Worlds items ${startingWith(letter)}`
         : `OSRS items ${startingWith(letter)}: Grand Exchange prices`,
       description:
         `Every OSRS ${hardcore ? 'Hardcore Worlds ' : ''}Grand Exchange item ${startingWith(letter)}, sorted by name, ` +
