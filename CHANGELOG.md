@@ -1,5 +1,7 @@
 ## 2026-11-19
 
+### Hardcore Worlds
+
 - Players online now shows Hardcore Worlds. The count at the top says how many players are on Hardcore Worlds and what
   share of the total that is, and the history chart draws them as a violet band along its bottom, with a row in the
   tooltip, a key under the chart and a column in the table. They were always inside the total, members and free-to-play
@@ -8,11 +10,9 @@
 - A shared link to a Hardcore Worlds price page now shows its own preview: an item's card carries the Hardcore Worlds
   badge, and the Hardcore Worlds Price Tracker, its lists and its A–Z pages show a "Hardcore Worlds GE prices" card.
   They looked like the main game's before.
-- On phones, the bottom of a g or y in a search box's example text is no longer cut off.
 - Looking up an item on Hardcore Worlds now counts too. The Hardcore Worlds Price Tracker's "Global recent lookups"
   lists what visitors looked up there, and no longer says "in the main game"; Home and the main Price Tracker still list
   the main game's lookups only.
-
 - The Price Tracker has a Hardcore Worlds version at `/trackers/price/hardcore`. The Trackers menu opens it with
   **Search Hardcore Worlds items**, right under **Search items**, and its small **Main | HCW** switch, now beside **Item
   lists** with room around it to tap, points the four lists below it at either world. On small phones the menu now
@@ -30,6 +30,13 @@
   their Hardcore Worlds prices and opens them in the Hardcore Worlds Price Tracker. The switch now sits on a row of its
   own above the search box, and the page no longer shifts when you change between the three. The price links under it
   now end level with the tracking offset that replaces them for **Player**, so they no longer seem to jump.
+
+### Fixes
+
+- On phones, the bottom of a g or y in a search box's example text is no longer cut off.
+
+### Behind the scenes
+
 - Behind the scenes, the price pages can now load the Hardcore Worlds prices from the Wiki next to the main game's, each
   kept apart so one never shows the other's, and have Hardcore Worlds versions under `/trackers/price/hardcore`, each
   with its own title, description and address for search engines and link previews. The Margins, High-alch profit, New
