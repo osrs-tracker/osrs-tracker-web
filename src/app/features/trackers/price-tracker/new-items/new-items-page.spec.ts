@@ -64,13 +64,13 @@ describe('NewItemsPage', () => {
       newItems.slice(2).map(item => [item.id, { high: 12_345, highTime: now / 1000 - 60 }]),
     );
     latest[newItems[0].id] = { high: 52_626_135, highTime: now / 1000 - 7200 };
-    httpTesting.expectOne(`${config.pricesBaseUrl}/latest`).flush({ data: latest });
+    httpTesting.expectOne(`${config.pricesBaseUrl.main}/latest`).flush({ data: latest });
     if (day) flushDay();
   }
 
   function flushDay() {
     httpTesting
-      .expectOne(req => req.url === `${config.pricesBaseUrl}/24h`)
+      .expectOne(req => req.url === `${config.pricesBaseUrl.main}/24h`)
       .flush({ data: { [newItems[0].id]: { highPriceVolume: 900, lowPriceVolume: 467 } }, timestamp: 0 });
   }
 
@@ -129,7 +129,9 @@ describe('NewItemsPage', () => {
     flushItems();
     await settle();
     flushDay();
-    httpTesting.expectOne(`${config.pricesBaseUrl}/latest`).flush(null, { status: 503, statusText: 'Unavailable' });
+    httpTesting
+      .expectOne(`${config.pricesBaseUrl.main}/latest`)
+      .flush(null, { status: 503, statusText: 'Unavailable' });
     await fixture.whenStable();
 
     expect(rowNames()).toHaveLength(25);

@@ -54,7 +54,7 @@ describe('OsrsPricesRepo', () => {
       repo.getLatestPrices(4151).subscribe(price => prices.push(price.high));
       repo.getLatestPrices(561).subscribe(price => prices.push(price.high));
 
-      const req = httpTesting.expectOne(`${config.pricesBaseUrl}/latest`);
+      const req = httpTesting.expectOne(`${config.pricesBaseUrl.main}/latest`);
       expect(req.request.transferCache).toBe(false);
       expect(req.request.context.get(SSR_TIMEOUT)).toBe(true);
       req.flush({ data: { 4151: { high: 1_500_000 }, 561: { high: 100 }, 995: { high: 1 } } });
@@ -67,7 +67,7 @@ describe('OsrsPricesRepo', () => {
 
     it('keeps the full list for every render for 60 seconds', () => {
       repo.getLatestPrices(4151).subscribe();
-      httpTesting.expectOne(`${config.pricesBaseUrl}/latest`).flush({ data: { 4151: { high: 1 } } });
+      httpTesting.expectOne(`${config.pricesBaseUrl.main}/latest`).flush({ data: { 4151: { high: 1 } } });
 
       vi.setSystemTime(Date.now() + 59_000);
       let high: number | undefined;
@@ -77,13 +77,13 @@ describe('OsrsPricesRepo', () => {
 
       vi.setSystemTime(Date.now() + 1_000);
       repo.getLatestPrices(4151).subscribe();
-      httpTesting.expectOne(`${config.pricesBaseUrl}/latest`);
+      httpTesting.expectOne(`${config.pricesBaseUrl.main}/latest`);
     });
 
     it('keeps the mapping, cut down, for every render for 6 hours', () => {
       let names: string[] = [];
       repo.getItemMapping().subscribe(items => (names = items.map(item => item.name)));
-      const req = httpTesting.expectOne(`${config.pricesBaseUrl}/mapping`);
+      const req = httpTesting.expectOne(`${config.pricesBaseUrl.main}/mapping`);
       expect(req.request.transferCache).toBe(false);
       req.flush([{ id: 4151, name: 'Abyssal whip', icon: 'Abyssal whip.png', members: true, examine: 'A weapon' }]);
       expect(names).toEqual(['Abyssal whip']);
@@ -96,13 +96,13 @@ describe('OsrsPricesRepo', () => {
 
       vi.setSystemTime(Date.now() + 1);
       repo.getItemMapping().subscribe();
-      httpTesting.expectOne(`${config.pricesBaseUrl}/mapping`);
+      httpTesting.expectOne(`${config.pricesBaseUrl.main}/mapping`);
     });
 
     it('keeps a day of averages until another day is asked for', () => {
       const day = new Date(Date.now() - 86_400_000);
       repo.getAveragePrices(TimeSpan.DAY, day).subscribe();
-      const req = httpTesting.expectOne(`${config.pricesBaseUrl}/24h?timestamp=${day.getTime() / 1000}`);
+      const req = httpTesting.expectOne(`${config.pricesBaseUrl.main}/24h?timestamp=${day.getTime() / 1000}`);
       expect(req.request.transferCache).toBe(false);
       req.flush({ data: { 4151: { highPriceVolume: 1 } }, timestamp: day.getTime() / 1000 });
 
@@ -112,7 +112,53 @@ describe('OsrsPricesRepo', () => {
 
       const nextDay = new Date(day.getTime() + 86_400_000);
       repo.getAveragePrices(TimeSpan.DAY, nextDay).subscribe();
-      httpTesting.expectOne(`${config.pricesBaseUrl}/24h?timestamp=${nextDay.getTime() / 1000}`);
+      httpTesting.expectOne(`${config.pricesBaseUrl.main}/24h?timestamp=${nextDay.getTime() / 1000}`);
+    });
+    describe('for Hardcore Worlds', () => {
+      const main = `${config.pricesBaseUrl.main}`;
+      const hardcore = 'https://prices.runescape.wiki/api/v2/osrs-hc';
+
+      it('asks the Hardcore Worlds API, and does not answer with the main list kept for the same item', () => {
+        let mainHigh: number | undefined;
+        repo.getLatestPrices(4151).subscribe(price => (mainHigh = price.high));
+        httpTesting.expectOne(`${main}/latest`).flush({ data: { 4151: { high: 1_500_000 } } });
+        expect(mainHigh).toBe(1_500_000);
+
+        let hardcoreHigh: number | undefined;
+        repo.getLatestPrices(4151, 'hardcore').subscribe(price => (hardcoreHigh = price.high));
+        httpTesting.expectOne(`${hardcore}/latest`).flush({ data: { 4151: { high: 900_000 } } });
+        expect(hardcoreHigh).toBe(900_000);
+
+        // Each keeps its own list, and its own key for the browser
+        repo.getLatestPrices(4151).subscribe(price => (mainHigh = price.high));
+        repo.getLatestPrices(4151, 'hardcore').subscribe(price => (hardcoreHigh = price.high));
+        httpTesting.expectNone(() => true);
+        expect([mainHigh, hardcoreHigh]).toEqual([1_500_000, 900_000]);
+        const transferState = TestBed.inject(TransferState);
+        expect(transferState.get(makeStateKey<object | null>('wiki-latest-4151'), null)).toEqual({ high: 1_500_000 });
+        expect(transferState.get(makeStateKey<object | null>('hardcore-wiki-latest-4151'), null)).toEqual({
+          high: 900_000,
+        });
+      });
+
+      it('keeps the mapping and a day of averages per world', () => {
+        repo.getItemMapping().subscribe();
+        httpTesting.expectOne(`${main}/mapping`).flush([{ id: 1, name: 'Main item' }]);
+
+        let names: string[] = [];
+        repo.getItemMapping('hardcore').subscribe(items => (names = items.map(item => item.name)));
+        httpTesting.expectOne(`${hardcore}/mapping`).flush([{ id: 1, name: 'Hardcore item' }]);
+        expect(names).toEqual(['Hardcore item']);
+
+        const day = new Date(Date.now() - 86_400_000);
+        const seconds = day.getTime() / 1000;
+        repo.getAveragePrices(TimeSpan.DAY, day).subscribe();
+        httpTesting.expectOne(`${main}/24h?timestamp=${seconds}`).flush({ data: { 1: {} }, timestamp: seconds });
+        repo.getAveragePrices(TimeSpan.DAY, day, 'hardcore').subscribe();
+        httpTesting.expectOne(`${hardcore}/24h?timestamp=${seconds}`).flush({ data: { 1: {} }, timestamp: seconds });
+        repo.getDayBeforeAverages(day, 'hardcore').subscribe();
+        httpTesting.expectOne(`${hardcore}/24h?timestamp=${seconds}`).flush({ data: { 1: {} }, timestamp: seconds });
+      });
     });
   });
 
@@ -138,7 +184,7 @@ describe('OsrsPricesRepo', () => {
 
     afterEach(() => vi.useRealTimers());
 
-    const url = (seconds: number) => `${config.pricesBaseUrl}/24h?timestamp=${seconds}`;
+    const url = (seconds: number) => `${config.pricesBaseUrl.main}/24h?timestamp=${seconds}`;
 
     it('asks for each day, and keeps both, when they load at the same time', () => {
       const yesterday = new Date(Date.now() - 86_400_000);
@@ -173,15 +219,55 @@ describe('OsrsPricesRepo', () => {
   it('shares the mapping, and a day of averages with the item rows, for the session', () => {
     repo.getItemMapping().subscribe();
     repo.getItemMapping().subscribe();
-    httpTesting.expectOne(`${config.pricesBaseUrl}/mapping`).flush([]);
+    httpTesting.expectOne(`${config.pricesBaseUrl.main}/mapping`).flush([]);
     repo.getItemMapping().subscribe();
 
     const day = new Date(86_400_000);
     repo.getAveragePrices(TimeSpan.DAY, day).subscribe();
     repo.getCachedPriceAverage(4151, TimeSpan.DAY, day).subscribe();
-    httpTesting.expectOne(`${config.pricesBaseUrl}/24h?timestamp=86400`).flush({ data: {}, timestamp: 86400 });
+    httpTesting.expectOne(`${config.pricesBaseUrl.main}/24h?timestamp=86400`).flush({ data: {}, timestamp: 86400 });
     repo.getAveragePrices(TimeSpan.DAY, day).subscribe();
     httpTesting.expectNone(() => true);
+  });
+
+  it('shares the mapping, a day of averages and the time series per world in the browser', () => {
+    const hardcore = 'https://prices.runescape.wiki/api/v2/osrs-hc';
+    const day = new Date(86_400_000);
+
+    repo.getItemMapping().subscribe();
+    repo.getItemMapping('hardcore').subscribe();
+    repo.getItemMapping('hardcore').subscribe();
+    httpTesting.expectOne(`${config.pricesBaseUrl.main}/mapping`).flush([]);
+    httpTesting.expectOne(`${hardcore}/mapping`).flush([]);
+
+    repo.getAveragePrices(TimeSpan.DAY, day).subscribe();
+    repo.getAveragePrices(TimeSpan.DAY, day, 'hardcore').subscribe();
+    httpTesting.expectOne(`${config.pricesBaseUrl.main}/24h?timestamp=86400`).flush({ data: {}, timestamp: 86400 });
+    httpTesting.expectOne(`${hardcore}/24h?timestamp=86400`).flush({ data: {}, timestamp: 86400 });
+
+    repo.getPriceTimeSeries(4151, '7d', 'hardcore').subscribe();
+    httpTesting.expectOne(`${hardcore}/timeseries?id=4151&lookback=7d`).flush({ data: [], itemId: '4151' });
+  });
+
+  it('asks the Hardcore Worlds API for an item the server priced in the main game', async () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection(), provideHttpClient(), provideHttpClientTesting()],
+    });
+    const transferState = TestBed.inject(TransferState);
+    transferState.set(makeStateKey<object | null>('wiki-latest-4151'), { high: 1_500_000 });
+    transferState.set(makeStateKey<object | null>('hardcore-wiki-latest-561'), { high: 90 });
+    repo = TestBed.inject(OsrsPricesRepo);
+    httpTesting = TestBed.inject(HttpTestingController);
+
+    let high: number | undefined;
+    repo.getLatestPrices(561, 'hardcore').subscribe(price => (high = price.high));
+    expect(high).toBe(90);
+
+    repo.getLatestPrices(4151, 'hardcore').subscribe();
+    httpTesting
+      .expectOne('https://prices.runescape.wiki/api/v2/osrs-hc/latest')
+      .flush({ data: { 4151: { high: 900_000 } } });
   });
 
   it("uses the server's price for an item until the app is stable", async () => {
@@ -200,6 +286,6 @@ describe('OsrsPricesRepo', () => {
 
     await TestBed.inject(ApplicationRef).whenStable();
     repo.getLatestPrices(4151).subscribe();
-    httpTesting.expectOne(`${config.pricesBaseUrl}/latest`);
+    httpTesting.expectOne(`${config.pricesBaseUrl.main}/latest`);
   });
 });

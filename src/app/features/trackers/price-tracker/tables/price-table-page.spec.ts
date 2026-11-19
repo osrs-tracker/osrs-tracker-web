@@ -59,9 +59,9 @@ describe('PriceTablePage', () => {
 
   function flushLists() {
     TestBed.tick();
-    httpTesting.expectOne(`${config.pricesBaseUrl}/mapping`).flush(items);
-    httpTesting.expectOne(`${config.pricesBaseUrl}/latest`).flush({ data: latest });
-    httpTesting.expectOne(req => req.url === `${config.pricesBaseUrl}/24h`).flush({ data: day, timestamp: 0 });
+    httpTesting.expectOne(`${config.pricesBaseUrl.main}/mapping`).flush(items);
+    httpTesting.expectOne(`${config.pricesBaseUrl.main}/latest`).flush({ data: latest });
+    httpTesting.expectOne(req => req.url === `${config.pricesBaseUrl.main}/24h`).flush({ data: day, timestamp: 0 });
   }
 
   const rowNames = () =>
@@ -148,10 +148,10 @@ describe('PriceTablePage', () => {
     const set = vi.spyOn(TestBed.inject(TransferState), 'set');
     TestBed.tick();
     // The server keeps the lists for every render, so an earlier test may have loaded them
-    httpTesting.match(`${config.pricesBaseUrl}/mapping`).forEach(req => req.flush(items));
-    httpTesting.match(`${config.pricesBaseUrl}/latest`).forEach(req => req.flush({ data: latest }));
+    httpTesting.match(`${config.pricesBaseUrl.main}/mapping`).forEach(req => req.flush(items));
+    httpTesting.match(`${config.pricesBaseUrl.main}/latest`).forEach(req => req.flush({ data: latest }));
     httpTesting
-      .match(req => req.url === `${config.pricesBaseUrl}/24h`)
+      .match(req => req.url === `${config.pricesBaseUrl.main}/24h`)
       .forEach(req => req.flush({ data: day, timestamp: 0 }));
     await fixture.whenStable();
 

@@ -278,10 +278,13 @@ Choices that look like accidents without their context: what was decided, why, a
   ask for a descriptive User-Agent and bulk lists over one request per item, and say v1 "may be removed in the future".
   v1's `timeseries?timestep=` misses the Wiki's CDN; v2's `timeseries?lookback=` is served from it
   (`cf-cache-status: HIT`, cached for minutes to a day by lookback).
-- **Decision:** every Wiki prices call uses `/api/v2/osrs` (`pricesBaseUrl` in `src/config/config.ts`). The item page's
-  ranges map to lookbacks: 1D `24h` (5-minute steps), 1W `7d` (hourly), 1M `30d` (6-hourly), 1Y `1y` (daily). The time
-  series stay browser only and load on demand: one on page load, one more per range clicked, never on a timer. Server
-  requests send `github:osrs-tracker/osrs-tracker-web` (`config.userAgent`).
+- **Decision:** every Wiki prices call uses `/api/v2/osrs`, or `/api/v2/osrs-hc` for Hardcore Worlds, which have their
+  own Grand Exchange and the same endpoints (`pricesBaseUrl` by price world in `src/config/config.ts`; the repository's
+  methods take the world, and every server list, session cache and `TransferState` key includes it, as the server's
+  lists are shared by every render). The item page's ranges map to lookbacks: 1D `24h` (5-minute steps), 1W `7d`
+  (hourly), 1M `30d` (6-hourly), 1Y `1y` (daily). The time series stay browser only and load on demand: one on page
+  load, one more per range clicked, never on a timer. Server requests send `github:osrs-tracker/osrs-tracker-web`
+  (`config.userAgent`).
 - **Revisit:** if the Wiki changes a lookback's step (it doesn't guarantee it), or the site's traffic grows enough that
   the API should fetch and cache the series for every visitor.
 

@@ -14,6 +14,7 @@ import { RouterLink } from '@angular/router';
 import { forkJoin, map, of, tap } from 'rxjs';
 import { announceChanges } from '@app/common/a11y/announcer';
 import { OsrsPricesRepo, TimeSpan } from '@app/common/api/osrs-prices-repo';
+import { PRICE_WORLD, worldKey } from '@app/common/api/price-world';
 import { NewItem, OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { Icon } from '@app/common/icon/icon';
 import { LoadError } from '@app/common/ui/loading/load-error';
@@ -49,8 +50,6 @@ export interface AddedDay {
   items: NewItem[];
 }
 
-const PRICES_KEY = makeStateKey<NewItemPrices>('new-items-prices');
-
 /**
  * The server hands the browser the prices of all the listed items (they're few), so hydration and "Show 25 more" fetch
  * nothing. After a client-side navigation, or when the server's prices failed, the browser loads the Wiki's lists itself.
@@ -75,11 +74,14 @@ const PRICES_KEY = makeStateKey<NewItemPrices>('new-items-prices');
 export default class NewItemsPage {
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
+  private readonly world = inject(PRICE_WORLD);
   private readonly transferState = inject(TransferState);
   private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
 
+  private readonly pricesKey = makeStateKey<NewItemPrices>(worldKey(this.world, 'new-items-prices'));
+
   /** Read once, on the first render: a retry or a later visit loads the lists */
-  private transferred = this.isServer ? null : this.transferState.get(PRICES_KEY, null);
+  private transferred = this.isServer ? null : this.transferState.get(this.pricesKey, null);
 
   readonly items = rxResource({ stream: () => this.osrsTrackerRepo.getNewItems(LIMIT) });
 
@@ -93,8 +95,8 @@ export default class NewItemsPage {
       if (transferred && ids.every(id => id in transferred.byId)) return of(transferred);
 
       return forkJoin({
-        latest: this.osrsPricesRepo.getAllLatestPrices(),
-        day: this.osrsPricesRepo.getAveragePrices(TimeSpan.DAY, yesterdayStart()),
+        latest: this.osrsPricesRepo.getAllLatestPrices(this.world),
+        day: this.osrsPricesRepo.getAveragePrices(TimeSpan.DAY, yesterdayStart(), this.world),
       }).pipe(
         map(({ latest, day }): NewItemPrices => {
           const byId = Object.fromEntries(
@@ -113,7 +115,7 @@ export default class NewItemsPage {
           return { byId, loadedAt: Date.now() };
         }),
         tap(prices => {
-          if (this.isServer) this.transferState.set(PRICES_KEY, prices);
+          if (this.isServer) this.transferState.set(this.pricesKey, prices);
         }),
       );
     },
@@ -156,7 +158,7 @@ export default class NewItemsPage {
   });
 
   constructor() {
-    afterNextRender(() => this.transferState.remove(PRICES_KEY));
+    afterNextRender(() => this.transferState.remove(this.pricesKey));
     announceChanges(this.announcement);
   }
 

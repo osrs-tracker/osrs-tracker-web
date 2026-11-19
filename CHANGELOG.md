@@ -1,3 +1,8 @@
+## 2026-11-19
+
+- Behind the scenes, the price pages can now load the Hardcore Worlds prices from the Wiki next to the main game's, each
+  kept apart so one never shows the other's. Nothing changes on the site yet.
+
 ## 2026-11-11
 
 - Behind the scenes, a visitor who leaves or reloads a page while it is still loading no longer shows up as an error in

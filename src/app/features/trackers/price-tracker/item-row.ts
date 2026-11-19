@@ -9,6 +9,7 @@ import { ChangePill } from './change-pill';
 import { yesterdayStart } from './utc-day';
 import { formatNumberLegible, formatPercentChange, formatSign, formatWhole } from '@app/common/format/number-format';
 import { OsrsPricesRepo, TimeSpan } from '@app/common/api/osrs-prices-repo';
+import { PRICE_WORLD } from '@app/common/api/price-world';
 import { RecentItem } from './price-tracker-store';
 
 interface ItemRowPrice {
@@ -78,6 +79,7 @@ interface ItemRowPrice {
 })
 export class ItemRow {
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
+  private readonly world = inject(PRICE_WORLD);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   readonly item = input.required<RecentItem>();
@@ -90,8 +92,8 @@ export class ItemRow {
     params: () => (this.isBrowser ? { id: this.item().id } : undefined),
     stream: ({ params: { id } }) =>
       forkJoin([
-        this.osrsPricesRepo.getLatestPrices(id),
-        this.osrsPricesRepo.getCachedPriceAverage(id, TimeSpan.DAY, yesterdayStart()),
+        this.osrsPricesRepo.getLatestPrices(id, this.world),
+        this.osrsPricesRepo.getCachedPriceAverage(id, TimeSpan.DAY, yesterdayStart(), this.world),
       ]).pipe(
         map(([latest, recent]): ItemRowPrice => {
           const price = latest.low ?? null;

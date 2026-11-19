@@ -12,6 +12,7 @@ import { StatTile } from '@app/common/ui/cards/stat-tile';
 import { StatusPanel } from '@app/common/ui/page/status-panel';
 import { timeAgo } from '@app/common/format/time-ago-pipe';
 import { AveragePricesAtTime, Lookback, OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
+import { PRICE_WORLD } from '@app/common/api/price-world';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { isHumanVisitor } from '@app/core/platform/human-visitor';
@@ -66,6 +67,7 @@ export default class ItemDetail implements OnInit {
   private readonly analyticsService = inject(AnalyticsService);
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
+  private readonly world = inject(PRICE_WORLD);
   private readonly priceTrackerStore = inject(PriceTrackerStore);
   private readonly router = inject(Router);
   // Only available during SSR, `null` in the browser
@@ -87,7 +89,7 @@ export default class ItemDetail implements OnInit {
 
   readonly latest = rxResource({
     params: () => this.item()?.id,
-    stream: ({ params: id }) => this.osrsPricesRepo.getLatestPrices(id),
+    stream: ({ params: id }) => this.osrsPricesRepo.getLatestPrices(id, this.world),
   });
 
   /**
@@ -106,7 +108,8 @@ export default class ItemDetail implements OnInit {
     const id = this.item()?.id;
     if (id === undefined || !this.isBrowser) return undefined;
 
-    const fetch = (lookback: Lookback) => this.osrsPricesRepo.getPriceTimeSeries(id, lookback).pipe(shareReplay(1));
+    const fetch = (lookback: Lookback) =>
+      this.osrsPricesRepo.getPriceTimeSeries(id, lookback, this.world).pipe(shareReplay(1));
     return {
       '1D': fetch(PRICE_RANGES['1D'].lookback),
       '1W': fetch(PRICE_RANGES['1W'].lookback),

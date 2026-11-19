@@ -21,6 +21,7 @@ import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Icon } from '@app/common/icon/icon';
 import { formatNumberLegible } from '@app/common/format/number-format';
 import { OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
+import { PRICE_WORLD } from '@app/common/api/price-world';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { announceChanges } from '@app/common/a11y/announcer';
@@ -168,6 +169,7 @@ export class ItemSearch {
   private readonly analyticsService = inject(AnalyticsService);
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
+  private readonly world = inject(PRICE_WORLD);
   private readonly router = inject(Router);
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
@@ -217,9 +219,9 @@ export class ItemSearch {
     // Typed here: `Object.fromEntries` returns `any`, and `rxResource` takes no partial generic
     stream: ({ params: { ids } }): Observable<Record<number, number | undefined>> =>
       ids.length
-        ? forkJoin(ids.map(id => this.osrsPricesRepo.getLatestPrices(id).pipe(map(prices => [id, prices.low])))).pipe(
-            map(entries => Object.fromEntries(entries)),
-          )
+        ? forkJoin(
+            ids.map(id => this.osrsPricesRepo.getLatestPrices(id, this.world).pipe(map(prices => [id, prices.low]))),
+          ).pipe(map(entries => Object.fromEntries(entries)))
         : of({}),
     defaultValue: {},
   });
