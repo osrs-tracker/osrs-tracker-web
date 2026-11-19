@@ -2,10 +2,11 @@ import { readFile } from 'node:fs/promises';
 import { git, hasFullHistory, SITE_URL, writeSitemap } from './sitemap-file.js';
 
 const OUTPUT = 'public/sitemap.xml';
-// The site sitemap is a file in public/; the items and players ones are built by the server from the API
-// (src/server/routers/sitemaps.ts), so they change without a deploy and have no build-time date.
+// The site sitemap is a file in public/; the items and players ones are built by the server from the API and, for
+// Hardcore Worlds, the Wiki (src/server/routers/sitemaps.ts), so they change without a deploy and have no build-time
+// date.
 const DATED = ['sitemap-site.xml'];
-const UNDATED = ['sitemap-items.xml', 'sitemap-players.xml'];
+const UNDATED = ['sitemap-items.xml', 'sitemap-items-hardcore.xml', 'sitemap-players.xml'];
 
 const day = date => date.toISOString().slice(0, 10);
 

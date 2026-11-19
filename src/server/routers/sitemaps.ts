@@ -15,6 +15,7 @@ interface SitemapUrl {
 const BROWSE_LETTERS = [...'abcdefghijklmnopqrstuvwxyz', '0'];
 
 const FETCH_TIMEOUT_MS = 10_000;
+const DAY_SECONDS = 86_400;
 // After a failed load, how long a sitemap keeps its last good copy (or 503) before it tries again
 const RETRY_AFTER_MS = 60_000;
 
@@ -51,6 +52,21 @@ async function itemsSitemap(getJson: GetJson): Promise<string> {
       .sort(([a], [b]) => a - b)
       .map(([id, updatedAt]) => ({ loc: `${config.siteUrl}/trackers/price/${id}`, lastmod: updatedAt })),
   );
+}
+
+/**
+ * The Hardcore Worlds items that traded yesterday, from the Wiki's `/24h` for that finished UTC day (as the item lists
+ * use): every one passes the item page's `noindex` rule, which asks only for a trade in the world's `/latest`, and the
+ * pages shown have prices. Items nobody traded yesterday stay out, though they may be indexable. No `<lastmod>`: an
+ * item's page changes with every price.
+ */
+async function hardcoreItemsSitemap(getPrices: GetJson): Promise<string> {
+  const yesterday = Math.floor(Date.now() / 1000 / DAY_SECONDS) * DAY_SECONDS - DAY_SECONDS;
+  const { data } = (await getPrices(`/24h?timestamp=${yesterday}`)) as { data: Record<string, unknown> };
+  const ids = Object.keys(data).map(Number);
+  if (ids.length === 0) throw new Error('The Wiki has no Hardcore Worlds trades for yesterday');
+
+  return urlset(ids.sort((a, b) => a - b).map(id => ({ loc: `${config.siteUrl}/trackers/price/hardcore/${id}` })));
 }
 
 /**
@@ -108,17 +124,42 @@ const fetchApiJson: GetJson = async path => {
   return response.json();
 };
 
+/** The Wiki's call during a request waits as long as an SSR one does (`SSR_TIMEOUT`) */
+const fetchHardcorePrices: GetJson = async path => {
+  const response = await fetch(`${config.pricesBaseUrl.hardcore}${path}`, {
+    headers: { 'User-Agent': config.userAgent },
+    signal: AbortSignal.timeout(serverConfig.ssrRequestTimeout),
+  });
+  if (!response.ok) throw new Error(`GET ${path} answered ${response.status}`);
+  return response.json();
+};
+
 /**
- * Built from the API when requested rather than at build time: players get a new hiscore entry every day and the API new
- * items, neither with a deploy. Cached as long as the API caches the lists (a day for items, an hour for players).
+ * Built from the API (and the Wiki, for Hardcore Worlds) when requested rather than at build time: players get a new
+ * hiscore entry every day and the API new items, neither with a deploy. Cached as long as the API caches the lists (a
+ * day for items, an hour for players).
  */
-export function createSitemapRouter({ logger, getJson = fetchApiJson }: { logger: Logger; getJson?: GetJson }) {
+export function createSitemapRouter({
+  logger,
+  getJson = fetchApiJson,
+  getHardcorePrices = fetchHardcorePrices,
+}: {
+  logger: Logger;
+  getJson?: GetJson;
+  getHardcorePrices?: GetJson;
+}) {
   const log = logger.child({ type: 'sitemap' satisfies WebLogType });
   const sitemaps = {
     '/sitemap-items.xml': cachedSitemap(
       () => itemsSitemap(getJson),
       86_400_000,
       error => log.warn({ error }, 'Building the items sitemap failed'),
+    ),
+    // The finished day's bucket doesn't change, and the key moves at 00:00 UTC
+    '/sitemap-items-hardcore.xml': cachedSitemap(
+      () => hardcoreItemsSitemap(getHardcorePrices),
+      86_400_000,
+      error => log.warn({ error }, 'Building the Hardcore Worlds items sitemap failed'),
     ),
     '/sitemap-players.xml': cachedSitemap(
       () => playersSitemap(getJson),

@@ -7,11 +7,14 @@ import { cachedSitemap, createSitemapRouter, type GetJson } from './sitemaps';
 
 describe('createSitemapRouter', () => {
   const getJson = vi.fn<GetJson>();
+  const getHardcorePrices = vi.fn<GetJson>();
   const logs = collectLogs();
-  const get = serve(express().use(createSitemapRouter({ logger: logs.logger, getJson })));
+  const get = serve(express().use(createSitemapRouter({ logger: logs.logger, getJson, getHardcorePrices })));
   // A router of its own, without the copies the tests above cache in the first
   const failing = vi.fn<GetJson>();
-  const getFailing = serve(express().use(createSitemapRouter({ logger: logs.logger, getJson: failing })));
+  const getFailing = serve(
+    express().use(createSitemapRouter({ logger: logs.logger, getJson: failing, getHardcorePrices: failing })),
+  );
 
   const api = (players: unknown[]) =>
     getJson.mockImplementation(async path => {
@@ -24,6 +27,7 @@ describe('createSitemapRouter', () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ['Date'] });
     getJson.mockReset();
+    getHardcorePrices.mockReset();
     logs.lines.splice(0);
   });
 
@@ -45,6 +49,27 @@ describe('createSitemapRouter', () => {
       ].join('\n'),
     );
     expect(getJson).toHaveBeenCalledTimes(27);
+  });
+
+  it("lists the Hardcore Worlds items that traded on the Wiki's last finished day, by id", async () => {
+    vi.setSystemTime(new Date('2026-11-19T12:00:00Z'));
+    getHardcorePrices.mockResolvedValue({ data: { '4151': {}, '2': {} } });
+
+    const res = await get('/sitemap-items-hardcore.xml');
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get('cache-control')).toBe('public, max-age=3600');
+    expect(await res.text()).toBe(
+      [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+        '<url><loc>https://osrs-tracker.net/trackers/price/hardcore/2</loc></url>',
+        '<url><loc>https://osrs-tracker.net/trackers/price/hardcore/4151</loc></url>',
+        '</urlset>',
+      ].join('\n'),
+    );
+    // 18 Nov 2026, 00:00 UTC
+    expect(getHardcorePrices).toHaveBeenCalledWith('/24h?timestamp=1794960000');
   });
 
   it('lists the players at their canonical URL, dated by their newest entry, and caches them for an hour', async () => {

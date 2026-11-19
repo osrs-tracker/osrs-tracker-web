@@ -398,6 +398,10 @@ Choices that look like accidents without their context: what was decided, why, a
   failed or empty load keeps the last good copy and retries after a minute; with none yet, 503. The site sitemap and the
   index stay build-time files: their dates come from git, which the image doesn't have. The index dates only the site
   sitemap. No `<priority>` or `<changefreq>`: Google ignores both.
+- **Hardcore Worlds (2026-11-19):** `/sitemap-items-hardcore.xml` lists the items in the Wiki's Hardcore `/24h` for
+  yesterday (UTC), cached a day, so crawlers go to pages with a price (about 2,100 of 4,680 items), all of which pass
+  the item page's `noindex` rule. It reads the Wiki, not the API's lists: a new item the Wiki has before the API's
+  ingester would 404 until the API catches up (none on 2026-11-19), the price of listing only traded items.
 - **Revisit:** if a sitemap nears 50,000 URLs (4,663 items and 534 players on 2026-10-10), or the API gets one endpoint
   for every item id.
 

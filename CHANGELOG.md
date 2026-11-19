@@ -21,6 +21,9 @@
   with its own title, description and address for search engines and link previews. The Margins, High-alch profit, New
   on the GE and Items A–Z versions show the Hardcore Worlds prices (High alch with that world's nature rune price) and
   link to Hardcore Worlds pages. The price events in Google Analytics now say which world they come from.
+- Behind the scenes, search engines can now find the Hardcore Worlds price pages: the sitemaps list the Hardcore Worlds
+  landing, Margins, High-alch profit, New on the GE and Items A–Z pages, and a new sitemap lists each item traded there
+  yesterday, built from the Wiki when requested.
 
 ## 2026-11-11
 
