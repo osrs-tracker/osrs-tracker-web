@@ -1,7 +1,7 @@
 <div class="max-w-page mx-auto flex px-4 sm:px-6 pt-3">
-  <a routerLink="/trackers/price" class="link inline-flex items-center gap-1.5 min-h-6 text-sm">
+  <a [routerLink]="trackerPath" class="link inline-flex items-center gap-1.5 min-h-6 text-sm">
     <svg lucideArrowLeft class="size-4" strokeWidth="2.5" />
-    Price Tracker
+    {{ world === 'hardcore' ? 'Hardcore Worlds Price Tracker' : 'Price Tracker' }}
   </a>
 </div>
 
@@ -17,7 +17,7 @@
     <section class="rounded-2xl bg-card overflow-hidden" [attr.aria-label]="heading()">
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
         @for (item of items; track item.id) {
-          <a item-row [routerLink]="['/trackers/price', item.id]" [item]="item"></a>
+          <a item-row [routerLink]="[trackerPath, item.id]" [item]="item"></a>
         }
       </div>
     </section>

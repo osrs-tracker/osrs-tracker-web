@@ -14,7 +14,7 @@ import { RouterLink } from '@angular/router';
 import { forkJoin, map, of, tap } from 'rxjs';
 import { announceChanges } from '@app/common/a11y/announcer';
 import { OsrsPricesRepo, TimeSpan } from '@app/common/api/osrs-prices-repo';
-import { PRICE_WORLD, worldKey } from '@app/common/api/price-world';
+import { PRICE_WORLD, priceTrackerPath, worldKey } from '@app/common/api/price-world';
 import { NewItem, OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { Icon } from '@app/common/icon/icon';
 import { LoadError } from '@app/common/ui/loading/load-error';
@@ -75,6 +75,9 @@ export default class NewItemsPage {
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
   private readonly world = inject(PRICE_WORLD);
+  protected readonly trackerPath = priceTrackerPath(this.world);
+  protected readonly hardcore = this.world === 'hardcore';
+  protected readonly title = this.hardcore ? 'New on the Hardcore Worlds GE' : 'New on the GE';
   private readonly transferState = inject(TransferState);
   private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
 

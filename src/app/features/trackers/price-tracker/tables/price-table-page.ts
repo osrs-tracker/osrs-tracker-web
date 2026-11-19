@@ -18,7 +18,7 @@ import { forkJoin, map, tap } from 'rxjs';
 import { announceChanges } from '@app/common/a11y/announcer';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { LatestPriceList, OsrsPricesRepo, TimeSpan } from '@app/common/api/osrs-prices-repo';
-import { PRICE_WORLD, worldKey } from '@app/common/api/price-world';
+import { PRICE_WORLD, priceTrackerPath, worldKey } from '@app/common/api/price-world';
 import { formatWhole } from '@app/common/format/number-format';
 import { Icon } from '@app/common/icon/icon';
 import { Segmented, SegmentedOption } from '@app/common/ui/controls/segmented';
@@ -198,8 +198,14 @@ export default class PriceTablePage {
     );
   });
 
+  protected readonly trackerPath = priceTrackerPath(this.world);
+  protected readonly hardcore = this.world === 'hardcore';
+
   readonly isHighAlch = computed(() => this.kind() === 'high-alch');
-  readonly title = computed(() => (this.isHighAlch() ? 'High-alch profit' : 'Margins'));
+  readonly title = computed(() => {
+    const title = this.isHighAlch() ? 'High-alch profit' : 'Margins';
+    return this.hardcore ? `Hardcore Worlds ${title.toLowerCase()}` : title;
+  });
   readonly query = computed(() => this.options().query.trim());
   readonly caption = computed(() => `${this.title()} at the latest prices`);
 

@@ -5,6 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { GTAG_TOKEN } from '@app/common/analytics/gtag-token';
+import { PRICE_WORLD, PriceWorld } from '@app/common/api/price-world';
 import { config } from '@config/config';
 import NewItemsPage, { NewItemPrices } from './new-items-page';
 
@@ -25,7 +26,7 @@ describe('NewItemsPage', () => {
   const rowNames = () => [...page().querySelectorAll('tbody th[scope=row]')].map(th => th.textContent?.trim());
   const dayHeaders = () => [...page().querySelectorAll('th[scope=rowgroup]')].map(th => th.textContent?.trim());
 
-  function setUp(platform: 'browser' | 'server', transferred?: NewItemPrices) {
+  function setUp(platform: 'browser' | 'server', transferred?: NewItemPrices, world: PriceWorld = 'main') {
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
@@ -34,6 +35,7 @@ describe('NewItemsPage', () => {
         provideRouter([]),
         { provide: PLATFORM_ID, useValue: platform },
         { provide: GTAG_TOKEN, useValue: null },
+        { provide: PRICE_WORLD, useValue: world },
       ],
     });
     if (transferred) TestBed.inject(TransferState).set(makeStateKey<NewItemPrices>('new-items-prices'), transferred);
@@ -58,19 +60,19 @@ describe('NewItemsPage', () => {
    * The Wiki's lists: the first item traded two hours ago, the second never, the rest a minute ago. `day: false` when
    * the repo still has the day from an earlier load (it keeps it).
    */
-  async function flushLists({ day = true } = {}) {
+  async function flushLists({ day = true, world = 'main' as PriceWorld } = {}) {
     await settle();
     const latest = Object.fromEntries(
       newItems.slice(2).map(item => [item.id, { high: 12_345, highTime: now / 1000 - 60 }]),
     );
     latest[newItems[0].id] = { high: 52_626_135, highTime: now / 1000 - 7200 };
-    httpTesting.expectOne(`${config.pricesBaseUrl.main}/latest`).flush({ data: latest });
-    if (day) flushDay();
+    httpTesting.expectOne(`${config.pricesBaseUrl[world]}/latest`).flush({ data: latest });
+    if (day) flushDay(world);
   }
 
-  function flushDay() {
+  function flushDay(world: PriceWorld = 'main') {
     httpTesting
-      .expectOne(req => req.url === `${config.pricesBaseUrl.main}/24h`)
+      .expectOne(req => req.url === `${config.pricesBaseUrl[world]}/24h`)
       .flush({ data: { [newItems[0].id]: { highPriceVolume: 900, lowPriceVolume: 467 } }, timestamp: 0 });
   }
 
@@ -103,6 +105,19 @@ describe('NewItemsPage', () => {
     await fixture.whenStable();
     expect(rowNames()).toHaveLength(30);
     expect([...page().querySelectorAll('button')].some(button => button.textContent?.includes('more'))).toBe(false);
+  });
+
+  it('lists the same new items with Hardcore Worlds prices and links', async () => {
+    setUp('browser', undefined, 'hardcore');
+    flushItems();
+    await flushLists({ world: 'hardcore' });
+    await fixture.whenStable();
+
+    expect(page().querySelector('h1')?.textContent).toBe('New on the Hardcore Worlds GE');
+    expect(text()).toContain('52.6M');
+    const hrefs = [...page().querySelectorAll('a')].map(a => a.getAttribute('href'));
+    expect(hrefs).toContain('/trackers/price/hardcore');
+    expect(hrefs).toContain('/trackers/price/hardcore/34000');
   });
 
   it("uses the server's prices for every listed item, so it fetches only the list", async () => {

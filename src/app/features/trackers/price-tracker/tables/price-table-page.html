@@ -1,11 +1,11 @@
 <div class="max-w-page mx-auto flex flex-wrap items-center justify-between gap-x-4 px-4 sm:px-6 pt-3">
-  <a routerLink="/trackers/price" class="link inline-flex items-center gap-1.5 min-h-6 text-sm">
+  <a [routerLink]="trackerPath" class="link inline-flex items-center gap-1.5 min-h-6 text-sm">
     <svg lucideArrowLeft class="size-4" strokeWidth="2.5" />
-    Price Tracker
+    {{ hardcore ? 'Hardcore Worlds Price Tracker' : 'Price Tracker' }}
   </a>
   <a
     class="link inline-flex items-center gap-1.5 min-h-6 text-sm"
-    [routerLink]="isHighAlch() ? '/trackers/price/margins' : '/trackers/price/high-alch'"
+    [routerLink]="trackerPath + (isHighAlch() ? '/margins' : '/high-alch')"
   >
     {{ isHighAlch() ? 'Margins' : 'High-alch profit' }}
     <svg lucideArrowRight class="size-4" strokeWidth="2.5" />
@@ -181,7 +181,7 @@
                      doesn't position inside a relative <tr>. Values with a tooltip sit above it -->
                 <a
                   class="flex items-center gap-3 min-w-0 text-strong after:content-[''] after:absolute after:inset-y-0 after:left-0 after:w-screen focus-visible:outline-none"
-                  [routerLink]="['/trackers/price', row.id]"
+                  [routerLink]="[trackerPath, row.id]"
                 >
                   <span
                     class="flex items-center justify-center size-10 shrink-0 rounded-xl bg-deep border border-line"

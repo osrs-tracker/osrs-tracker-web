@@ -7,6 +7,7 @@ import { provideLocationMocks } from '@angular/common/testing';
 import { provideRouter } from '@angular/router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { GTAG_TOKEN } from '@app/common/analytics/gtag-token';
+import { PRICE_WORLD, PriceWorld } from '@app/common/api/price-world';
 import { config } from '@config/config';
 import PriceTablePage from './price-table-page';
 import { TableRow } from './price-table';
@@ -33,7 +34,12 @@ describe('PriceTablePage', () => {
   let fixture: ComponentFixture<PriceTablePage>;
   let httpTesting: HttpTestingController;
 
-  function setUp(platform: 'browser' | 'server', transferred?: { rows: TableRow[]; total: number }, query = '') {
+  function setUp(
+    platform: 'browser' | 'server',
+    transferred?: { rows: TableRow[]; total: number },
+    query = '',
+    world: PriceWorld = 'main',
+  ) {
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
@@ -43,6 +49,7 @@ describe('PriceTablePage', () => {
         provideLocationMocks(),
         { provide: PLATFORM_ID, useValue: platform },
         { provide: GTAG_TOKEN, useValue: null },
+        { provide: PRICE_WORLD, useValue: world },
       ],
     });
     if (transferred)
@@ -57,11 +64,12 @@ describe('PriceTablePage', () => {
     fixture.componentRef.setInput('kind', 'high-alch');
   }
 
-  function flushLists() {
+  function flushLists(world: PriceWorld = 'main') {
+    const base = config.pricesBaseUrl[world];
     TestBed.tick();
-    httpTesting.expectOne(`${config.pricesBaseUrl.main}/mapping`).flush(items);
-    httpTesting.expectOne(`${config.pricesBaseUrl.main}/latest`).flush({ data: latest });
-    httpTesting.expectOne(req => req.url === `${config.pricesBaseUrl.main}/24h`).flush({ data: day, timestamp: 0 });
+    httpTesting.expectOne(`${base}/mapping`).flush(items);
+    httpTesting.expectOne(`${base}/latest`).flush({ data: latest });
+    httpTesting.expectOne(req => req.url === `${base}/24h`).flush({ data: day, timestamp: 0 });
   }
 
   const rowNames = () =>
@@ -106,6 +114,22 @@ describe('PriceTablePage', () => {
     flushLists();
     await fixture.whenStable();
     expect(rowNames()[0]).toBe('Item 00');
+  });
+
+  it('reads the Hardcore Worlds prices and links its rows and back links under hardcore', async () => {
+    setUp('browser', undefined, '', 'hardcore');
+    flushLists('hardcore');
+    await fixture.whenStable();
+
+    const page = fixture.nativeElement as HTMLElement;
+    expect(page.querySelector('h1')?.textContent).toBe('Hardcore Worlds high-alch profit');
+    const hrefs = [...page.querySelectorAll('a')].map(a => a.getAttribute('href'));
+    expect(hrefs).toContain('/trackers/price/hardcore');
+    expect(hrefs).toContain('/trackers/price/hardcore/margins');
+    expect(hrefs).toContain('/trackers/price/hardcore/1000');
+    expect(
+      hrefs.filter(href => href?.startsWith('/trackers/price/') && !href.startsWith('/trackers/price/hardcore')),
+    ).toEqual([]);
   });
 
   it('loads the lists straight away without transferred rows, shows 25 at a time', async () => {
