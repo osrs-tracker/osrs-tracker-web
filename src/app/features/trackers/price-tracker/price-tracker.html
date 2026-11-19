@@ -1,11 +1,18 @@
 <header
   tracker-hero
-  subject="Price"
-  intro="Real-time Grand Exchange prices and market trends for every tradeable item. Stay ahead and make smart decisions with the latest prices."
+  [subject]="isHardcore ? 'Hardcore Worlds' : 'Price'"
+  [titleRest]="isHardcore ? 'prices' : 'Tracker'"
+  [intro]="
+    isHardcore
+      ? 'Live Grand Exchange prices from the Hardcore Worlds’ own economy, separate from the main game. Every tradeable item, with its latest trades and price history.'
+      : 'Real-time Grand Exchange prices and market trends for every tradeable item. Stay ahead and make smart decisions with the latest prices.'
+  "
 >
   <img icon alt="" name="coin stack" [scale]="2" />
 
-  <item-search class="max-w-160" [initialQuery]="q() ?? ''" />
+  <item-search #search class="max-w-160" [initialQuery]="q() ?? ''">
+    <nav world-switch leading class="max-sm:basis-full" [current]="world" [query]="search.query()"></nav>
+  </item-search>
   <div price-tracker-links></div>
 </header>
 
@@ -27,7 +34,7 @@
           emptyHint="Star an item on its page to pin it here."
         >
           @for (item of favoriteItems(); track item.id) {
-            <a item-row [routerLink]="['/trackers/price', item.id]" [item]="item"></a>
+            <a item-row [routerLink]="[itemsPath, item.id]" [item]="item"></a>
           }
         </section>
       } @placeholder {
@@ -53,7 +60,7 @@
           emptyHint="Search for an item above to see its price."
         >
           @for (item of recentItems(); track item.id) {
-            <a item-row [routerLink]="['/trackers/price', item.id]" [item]="item"></a>
+            <a item-row [routerLink]="[itemsPath, item.id]" [item]="item"></a>
           }
         </section>
       } @placeholder {
@@ -87,9 +94,30 @@
       <!-- Projected content is created in every state, and value() throws in the error state -->
       @if (recentItemLookups.hasValue()) {
         @for (item of recentItemLookups.value(); track item.id) {
-          <a item-row [routerLink]="['/trackers/price', item.id]" [item]="item"></a>
+          <a item-row [routerLink]="[itemsPath, item.id]" [item]="item"></a>
         }
       }
     </section>
   </div>
+  @if (isHardcore) {
+    <section class="flex flex-col gap-4 mt-12" aria-labelledby="faq-heading">
+      <h2 id="faq-heading" class="text-2xl font-bold text-strong">About Hardcore Worlds prices</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        @for (faq of faqs; track faq.question) {
+          <div class="rounded-2xl bg-card px-card py-4">
+            <h3 class="mb-2 text-lg font-bold text-strong">{{ faq.question }}</h3>
+            <p>{{ faq.answer }}</p>
+          </div>
+        }
+      </div>
+    </section>
+
+    <p class="mt-6 text-sm text-muted">
+      Prices from the
+      <a class="link" href="https://prices.runescape.wiki/osrs/" target="_blank" rel="noopener"
+        >OSRS Wiki’s real-time prices<span class="sr-only"> (opens in a new tab)</span></a
+      >
+      for Hardcore Worlds, refreshed every minute.
+    </p>
+  }
 </div>

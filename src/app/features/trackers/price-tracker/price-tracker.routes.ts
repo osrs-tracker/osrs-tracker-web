@@ -1,10 +1,12 @@
 import { Route } from '@angular/router';
 import { PRICE_WORLD, PriceWorld, priceTrackerPath } from '@app/common/api/price-world';
 import { PageMeta } from '@app/common/seo/page-meta-strategy';
+import { faqPage } from '@app/common/seo/structured-data';
 import { itemDetailResolver } from './item-detail/item-detail-resolver';
 import { itemDetailMeta } from './item-detail/item-detail-meta';
 import { browseItemsResolver } from './browse/browse-items-resolver';
 import { browseMeta } from './browse/browse-meta';
+import { HARDCORE_FAQ } from './hardcore-faq';
 import { priceBreadcrumbs } from './price-breadcrumbs';
 import { TableKind } from './tables/price-table';
 
@@ -29,7 +31,7 @@ export const priceTrackerRoutes = (world: PriceWorld): Route[] => {
             ? 'Check live OSRS Hardcore Worlds prices for every Grand Exchange item: buy and sell prices, margins, buy limits, alch values and price history. Hardcore Worlds have their own Grand Exchange.'
             : 'Check live OSRS prices for every Grand Exchange item: buy and sell prices, margins, buy limits, alch values and price history, all in the OSRS Price Tracker.',
           canonicalPath: path,
-          jsonLd: [priceBreadcrumbs(world)],
+          jsonLd: [priceBreadcrumbs(world), ...(hardcore ? [faqPage(HARDCORE_FAQ)] : [])],
         } satisfies PageMeta,
       },
       loadComponent: () => import('./price-tracker'),

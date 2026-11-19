@@ -21,7 +21,7 @@ import { Skeleton } from '@app/common/ui/loading/skeleton';
 import { Icon } from '@app/common/icon/icon';
 import { formatNumberLegible } from '@app/common/format/number-format';
 import { OsrsPricesRepo } from '@app/common/api/osrs-prices-repo';
-import { PRICE_WORLD } from '@app/common/api/price-world';
+import { PRICE_WORLD, PriceWorld, priceTrackerPath } from '@app/common/api/price-world';
 import { OsrsTrackerRepo } from '@app/common/api/osrs-tracker-repo';
 import { AnalyticsService } from '@app/common/analytics/analytics-service';
 import { announceChanges } from '@app/common/a11y/announcer';
@@ -126,7 +126,7 @@ const NAVIGATION_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageUp'
                 class="flex items-center gap-3 min-h-11 px-4 py-1.5 font-bold text-strong hover:bg-row aria-selected:bg-row in-data-enter-opens:aria-selected:outline-2 in-data-enter-opens:aria-selected:-outline-offset-2 in-data-enter-opens:aria-selected:outline-accent"
                 [value]="item.id"
                 [label]="item.name"
-                [routerLink]="['/trackers/price', item.id]"
+                [routerLink]="[itemsPath(), item.id]"
                 (click)="onOptionClick($event)"
               >
                 <span class="flex items-center justify-center size-8 shrink-0" aria-hidden="true">
@@ -169,11 +169,14 @@ export class ItemSearch {
   private readonly analyticsService = inject(AnalyticsService);
   private readonly osrsTrackerRepo = inject(OsrsTrackerRepo);
   private readonly osrsPricesRepo = inject(OsrsPricesRepo);
-  private readonly world = inject(PRICE_WORLD);
   private readonly router = inject(Router);
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
+  /** Which world's prices the results show and link to; the page's, unless Home says otherwise */
+  readonly world = input<PriceWorld>(inject(PRICE_WORLD));
   readonly initialQuery = input('');
+
+  readonly itemsPath = computed(() => priceTrackerPath(this.world()));
 
   readonly query = signal('');
   /** The query each search was started with; a new object per search, so searching the same query again refetches */
@@ -184,7 +187,7 @@ export class ItemSearch {
     stream: ({ params: { query } }) =>
       this.osrsTrackerRepo.searchItems(query).pipe(
         map(items => items ?? []),
-        tap(items => this.analyticsService.trackSearch('item', query, items.length, this.world)),
+        tap(items => this.analyticsService.trackSearch('item', query, items.length, this.world())),
       ),
   });
   readonly loading = this.search.isLoading;
@@ -215,12 +218,12 @@ export class ItemSearch {
 
   /** The requests share one fetch of all latest prices. */
   readonly pricesResource = rxResource({
-    params: () => ({ ids: this.results().map(item => item.id) }),
+    params: () => ({ ids: this.results().map(item => item.id), world: this.world() }),
     // Typed here: `Object.fromEntries` returns `any`, and `rxResource` takes no partial generic
-    stream: ({ params: { ids } }): Observable<Record<number, number | undefined>> =>
+    stream: ({ params: { ids, world } }): Observable<Record<number, number | undefined>> =>
       ids.length
         ? forkJoin(
-            ids.map(id => this.osrsPricesRepo.getLatestPrices(id, this.world).pipe(map(prices => [id, prices.low]))),
+            ids.map(id => this.osrsPricesRepo.getLatestPrices(id, world).pipe(map(prices => [id, prices.low]))),
           ).pipe(map(entries => Object.fromEntries(entries)))
         : of({}),
     defaultValue: {},
@@ -282,7 +285,7 @@ export class ItemSearch {
     const [id] = this.selected();
     if (this.enterOpens() && id !== undefined) {
       this.close();
-      void this.router.navigate(['/trackers/price', id]);
+      void this.router.navigate([this.itemsPath(), id]);
     } else {
       this.searchItems();
     }

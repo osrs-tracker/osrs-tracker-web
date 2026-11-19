@@ -3,6 +3,7 @@ import { patchState, signalStore, withHooks, withMethods, withState } from '@ngr
 import { StorageKey } from '@app/common/storage/storage';
 import { StorageService } from '@app/common/storage/storage-service';
 import { pushToFront, readStoredList, toggleInList, writeStoredList } from '@app/common/storage/stored-list';
+import { PriceWorld } from '@app/common/api/price-world';
 import { config } from '@config/config';
 
 export interface RecentItem {
@@ -11,10 +12,15 @@ export interface RecentItem {
   icon: string;
 }
 
+const RECENT_KEYS: Record<PriceWorld, StorageKey> = {
+  main: StorageKey.PriceTrackerRecentItems,
+  hardcore: StorageKey.PriceTrackerHardcoreRecentItems,
+};
+
 const sameItem = (a: RecentItem, b: RecentItem): boolean => a.id === b.id;
 
 class PriceTrackerState {
-  recentItems: RecentItem[] = [];
+  recentItems: Record<PriceWorld, RecentItem[]> = { main: [], hardcore: [] };
   favoriteItems: RecentItem[] = [];
 }
 
@@ -27,15 +33,18 @@ export const PriceTrackerStore = signalStore(
     return {
       loadFromStorage(): void {
         patchState(store, {
-          recentItems: readStoredList<RecentItem>(storageService, StorageKey.PriceTrackerRecentItems),
+          recentItems: {
+            main: readStoredList<RecentItem>(storageService, RECENT_KEYS.main),
+            hardcore: readStoredList<RecentItem>(storageService, RECENT_KEYS.hardcore),
+          },
           favoriteItems: readStoredList<RecentItem>(storageService, StorageKey.PriceTrackerFavoriteItems),
         });
       },
 
-      pushRecentItem(recentItem: RecentItem): void {
-        const recentItems = pushToFront(store.recentItems(), recentItem, sameItem, config.maxStoredItems);
-        writeStoredList(storageService, StorageKey.PriceTrackerRecentItems, recentItems);
-        patchState(store, { recentItems });
+      pushRecentItem(recentItem: RecentItem, world: PriceWorld = 'main'): void {
+        const recent = pushToFront(store.recentItems()[world], recentItem, sameItem, config.maxStoredItems);
+        writeStoredList(storageService, RECENT_KEYS[world], recent);
+        patchState(store, { recentItems: { ...store.recentItems(), [world]: recent } });
       },
 
       isFavoriteItem(id: number): boolean {
