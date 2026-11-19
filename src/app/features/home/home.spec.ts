@@ -10,7 +10,7 @@ import { ItemSearch } from '@app/features/trackers/price-tracker/item-search';
 import { PlayerSearch } from '@app/features/trackers/xp-tracker/player-search';
 import Home from './home';
 
-describe('Home search switch', () => {
+describe('Home', () => {
   let fixture: ComponentFixture<Home>;
   let root: HTMLElement;
 
@@ -119,5 +119,22 @@ describe('Home search switch', () => {
       '/trackers/price/hardcore/margins',
       '/trackers/price/hardcore/new',
     ]);
+  });
+
+  it("links the Price Tracker card's footer to the A–Z list and to Hardcore Worlds prices, named in full", async () => {
+    await render();
+    const links = [...root.querySelectorAll<HTMLAnchorElement>('[footer] a')];
+    // jsdom applies no CSS, so the name is the text without the aria-hidden short label (the full one is sr-only)
+    const accessibleName = (link: HTMLAnchorElement): string => {
+      const clone = link.cloneNode(true) as HTMLElement;
+      clone.querySelectorAll('[aria-hidden="true"]').forEach(hidden => hidden.remove());
+      return clone.textContent!.replace(/\s+/g, ' ').trim();
+    };
+
+    expect(links.map(link => link.getAttribute('href'))).toEqual([
+      '/trackers/price/browse/a',
+      '/trackers/price/hardcore',
+    ]);
+    expect(links.map(accessibleName)).toEqual(['Browse items A–Z', 'Hardcore Worlds prices']);
   });
 });

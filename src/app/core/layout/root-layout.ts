@@ -15,10 +15,39 @@ import { PlayersOnlineCard } from './players-online-card';
 import {
   LucideArrowUpDown,
   LucideClock,
+  LucideDynamicIcon,
+  LucideIcon,
   LucideNewspaper,
   LucidePackagePlus,
   LucideWandSparkles,
 } from '@lucide/angular';
+import { PlayerType } from '@osrs-tracker/models';
+
+/** The price lists in the Trackers menu; `icon` null shows "A–Z" text instead */
+const PRICE_LISTS: { path: string; label: string; sub: string; icon: LucideIcon | null; newUntil?: string }[] = [
+  { path: '/browse/a', label: 'Browse all items', sub: 'Every item, by its first letter', icon: null },
+  {
+    path: '/high-alch',
+    label: 'High-alch profit',
+    sub: 'Profit per cast after the item and rune',
+    icon: LucideWandSparkles,
+    newUntil: '2026-11-14',
+  },
+  {
+    path: '/margins',
+    label: 'Margins',
+    sub: 'Buy and sell spread after tax, per buy limit',
+    icon: LucideArrowUpDown,
+    newUntil: '2026-11-14',
+  },
+  {
+    path: '/new',
+    label: 'New on the GE',
+    sub: 'The latest game updates’ items and prices',
+    icon: LucidePackagePlus,
+    newUntil: '2026-11-22',
+  },
+];
 
 @Component({
   selector: 'root-layout',
@@ -36,10 +65,8 @@ import {
     PlayersOnlineCard,
     Segmented,
     LucideNewspaper,
-    LucideArrowUpDown,
-    LucidePackagePlus,
     LucideClock,
-    LucideWandSparkles,
+    LucideDynamicIcon,
   ],
   providers: [NavMenus],
 })
@@ -84,7 +111,18 @@ export default class RootLayout {
     source: () => ({ url: this.navMenus.url(), open: this.navMenus.open() }),
     computation: ({ url }) => (url.split(/[?#]/)[0].startsWith(priceTrackerPath('hardcore')) ? 'hardcore' : 'main'),
   });
-  readonly priceBase = computed(() => priceTrackerPath(this.priceWorld()));
+
+  protected readonly priceSearch = { main: priceTrackerPath('main'), hardcore: priceTrackerPath('hardcore') };
+  protected readonly hardcoreIcon = PlayerType.HardcoreMain;
+
+  /**
+   * Both worlds' lists are rendered and the switch only hides one: links that exist only after a click aren't in the
+   * server HTML, so crawlers would never find the Hardcore Worlds lists.
+   */
+  protected readonly priceListSets = (['main', 'hardcore'] as const).map(world => ({
+    world,
+    rows: PRICE_LISTS.map(row => ({ ...row, href: priceTrackerPath(world) + row.path })),
+  }));
 
   readonly homeMarked = computed(() => !this.navMenus.open() && this.navMenus.url().split(/[?#]/)[0] === '/');
 

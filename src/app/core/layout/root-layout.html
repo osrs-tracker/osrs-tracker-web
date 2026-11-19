@@ -56,8 +56,26 @@
               <img icon class="size-5.5" name="overall" [skill]="true" alt="" />
             </a>
             <div class="h-px -mx-1.5 sm:-mx-2 mt-2 mb-1 bg-line"></div>
+            <p class="px-2.5 pt-1.5 pb-1.5 text-sm font-bold text-muted">Price Tracker</p>
+            <a
+              nav-menu-row
+              label="Search items"
+              sub="Prices and charts for every tradeable item"
+              [routerLink]="priceSearch.main"
+            >
+              <img icon name="coin stack" [scale]="1.5" alt="" />
+            </a>
+            <a
+              nav-menu-row
+              label="Search Hardcore Worlds items"
+              sub="Their own Grand Exchange, their own prices"
+              [routerLink]="priceSearch.hardcore"
+            >
+              <img icon class="size-5.5" [name]="hardcoreIcon" alt="" />
+            </a>
+            <div class="h-px mx-2.5 my-1.5 bg-line"></div>
             <div class="flex items-center justify-between gap-2 px-2.5 pt-1.5 pb-1.5">
-              <p class="text-sm font-bold text-muted">Price Tracker</p>
+              <p class="text-sm font-bold text-muted">Item lists</p>
               <segmented
                 variant="compact"
                 label="Game world"
@@ -66,50 +84,20 @@
                 (valueChange)="priceWorld.set($event)"
               />
             </div>
-            <a
-              nav-menu-row
-              label="Search items"
-              sub="Prices and charts for every tradeable item"
-              [routerLink]="priceBase()"
-            >
-              <img icon name="coin stack" [scale]="1.5" alt="" />
-            </a>
-            <div class="h-px mx-2.5 my-1.5 bg-line"></div>
-            <a
-              nav-menu-row
-              label="Browse all items"
-              sub="Every item, by its first letter"
-              [routerLink]="priceBase() + '/browse/a'"
-            >
-              <span class="text-xs font-bold">A–Z</span>
-            </a>
-            <a
-              nav-menu-row
-              label="High-alch profit"
-              sub="Profit per cast after the item and rune"
-              newUntil="2026-11-14"
-              [routerLink]="priceBase() + '/high-alch'"
-            >
-              <svg lucideWandSparkles class="size-5" strokeWidth="2.5" />
-            </a>
-            <a
-              nav-menu-row
-              label="Margins"
-              sub="Buy and sell spread after tax, per buy limit"
-              newUntil="2026-11-14"
-              [routerLink]="priceBase() + '/margins'"
-            >
-              <svg lucideArrowUpDown class="size-5" strokeWidth="2.5" />
-            </a>
-            <a
-              nav-menu-row
-              label="New on the GE"
-              sub="The latest game updates’ items and prices"
-              newUntil="2026-11-22"
-              [routerLink]="priceBase() + '/new'"
-            >
-              <svg lucidePackagePlus class="size-5" strokeWidth="2.5" />
-            </a>
+            @for (set of priceListSets; track set.world) {
+              <!-- hidden, not @if: the other world's links stay in the server HTML (see priceListSets) -->
+              <div [attr.hidden]="set.world === priceWorld() ? null : ''">
+                @for (row of set.rows; track row.path) {
+                  <a nav-menu-row [label]="row.label" [sub]="row.sub" [newUntil]="row.newUntil" [routerLink]="row.href">
+                    @if (row.icon; as icon) {
+                      <svg class="size-5" [lucideIcon]="icon" strokeWidth="2.5" />
+                    } @else {
+                      <span class="text-xs font-bold">A–Z</span>
+                    }
+                  </a>
+                }
+              </div>
+            }
           </nav-menu>
         </li>
         <li class="flex">

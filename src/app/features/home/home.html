@@ -146,15 +146,27 @@
           <a item-row [routerLink]="['/trackers/price', item.id]" [item]="item"></a>
         }
       }
-      <!-- Matches the XP card's footer, so the two cards stay level side by side -->
-      <a
-        footer
-        class="link flex items-center justify-center gap-1.5 min-h-11 -mt-px border-t border-line text-sm/5 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent"
-        routerLink="/trackers/price/browse/a"
-      >
-        Browse items A–Z
-        <ng-container *ngTemplateOutlet="arrow" />
-      </a>
+      <!-- Matches the XP card's footer, so the two cards stay level side by side. The full labels don't fit a half on
+           phones, nor from md, where the cards sit side by side, until lg: there the short ones show, and the full ones
+           stay the links' names. The space between the two keeps the words apart for crawlers, which read both -->
+      <div footer class="grid grid-cols-2 min-h-11 -mt-px border-t border-line text-sm/5">
+        <a
+          class="link flex items-center justify-center gap-1.5 px-card whitespace-nowrap focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent"
+          routerLink="/trackers/price/browse/a"
+        >
+          <span class="max-sm:sr-only md:max-lg:sr-only">Browse items A–Z</span>&ngsp;
+          <span class="sm:max-md:hidden lg:hidden" aria-hidden="true">Items A–Z</span>
+          <ng-container *ngTemplateOutlet="arrow" />
+        </a>
+        <a
+          class="link flex items-center justify-center gap-1.5 px-card whitespace-nowrap border-l border-line focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent"
+          [routerLink]="hardcorePricesPath"
+        >
+          <span class="max-sm:sr-only md:max-lg:sr-only">Hardcore Worlds prices</span>&ngsp;
+          <span class="sm:max-md:hidden lg:hidden" aria-hidden="true">HCW prices</span>
+          <ng-container *ngTemplateOutlet="arrow" />
+        </a>
+      </div>
     </section>
   </div>
 </div>

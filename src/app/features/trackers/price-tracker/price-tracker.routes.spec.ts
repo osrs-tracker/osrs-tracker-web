@@ -30,14 +30,14 @@ describe('priceTrackerRoutes', () => {
     expect(metaOf('', main).canonicalPath).toBe('/trackers/price');
     expect(metaOf('margins').canonicalPath).toBe('/trackers/price/margins');
 
-    expect(hardcore[0].title).toBe('OSRS Hardcore Worlds GE Prices: Live Grand Exchange prices');
+    expect(hardcore[0].title).toBe('OSRS Hardcore Worlds GE Tracker: Live Grand Exchange prices');
     expect(metaOf('', hardcore).canonicalPath).toBe('/trackers/price/hardcore');
     expect(hardcore.find(route => route.path === 'margins')!.title).toBe(
       'OSRS Hardcore Worlds GE Margins: Flips after tax',
     );
     expect(metaOf('margins', hardcore).canonicalPath).toBe('/trackers/price/hardcore/margins');
     expect(hardcore.find(route => route.path === 'high-alch')!.title).toBe('OSRS Hardcore Worlds High Alch Profit');
-    expect(hardcore.find(route => route.path === 'new')!.title).toBe('New on the Hardcore Worlds GE');
+    expect(hardcore.find(route => route.path === 'new')!.title).toBe('New OSRS Hardcore Worlds GE items');
     expect(metaOf('high-alch', hardcore).canonicalPath).toBe('/trackers/price/hardcore/high-alch');
     expect(metaOf('new', hardcore).canonicalPath).toBe('/trackers/price/hardcore/new');
   });
@@ -51,11 +51,12 @@ describe('priceTrackerRoutes', () => {
     expect(crumbs(metaOf('margins', hardcore))).toEqual(['Home', 'Price Tracker', 'Hardcore Worlds', 'Margins']);
   });
 
-  it('describes the Hardcore Worlds questions as a FAQPage, on its landing only', () => {
+  it('describes the landings with breadcrumbs only: Google no longer shows FAQ rich results', () => {
     const types = (meta: PageMeta) => meta.jsonLd!.map(node => node['@type']);
 
-    expect(types(metaOf('', hardcore))).toEqual(['BreadcrumbList', 'FAQPage']);
+    expect(types(metaOf('', hardcore))).toEqual(['BreadcrumbList']);
     expect(types(metaOf('', main))).toEqual(['BreadcrumbList']);
+    expect(metaOf('', hardcore).description).toMatch(/^The OSRS Hardcore Worlds GE tracker: live prices/);
   });
 
   it('builds the browse and item metas for the world', () => {
@@ -64,7 +65,7 @@ describe('priceTrackerRoutes', () => {
       (list.find(r => r.path === path)!.data!['meta'] as (route: ActivatedRouteSnapshot) => PageMeta)(snapshot)!;
 
     expect(meta(hardcore, 'browse/:letter', route({ letter: 'a' }))).toMatchObject({
-      title: 'Hardcore Worlds items: A',
+      title: 'OSRS Hardcore Worlds items starting with A',
       canonicalPath: '/trackers/price/hardcore/browse/a',
     });
     expect(meta(main, 'browse/:letter', route({ letter: 'a' })).canonicalPath).toBe('/trackers/price/browse/a');

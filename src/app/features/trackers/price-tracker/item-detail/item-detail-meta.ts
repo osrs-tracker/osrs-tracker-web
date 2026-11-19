@@ -22,10 +22,9 @@ export const itemDetailMeta =
  * previews show on their own (as the landing pages' titles do).
  */
 export function itemTitle(item: Item, world: PriceWorld = 'main'): string {
-  if (world === 'hardcore') return `${item.name} - OSRS Hardcore Worlds price and buy limit`;
   const facts = ['price', item.highalch ? 'high alch' : '', item.limit ? 'buy limit' : ''].filter(Boolean);
   const listed = facts.length > 1 ? `${facts.slice(0, -1).join(', ')} and ${facts.at(-1)}` : facts[0];
-  return `${item.name} - OSRS ${listed}`;
+  return `${item.name} - OSRS ${world === 'hardcore' ? 'Hardcore Worlds ' : ''}${listed}`;
 }
 
 /**

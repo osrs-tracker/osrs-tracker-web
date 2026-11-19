@@ -1,13 +1,11 @@
 import { Route } from '@angular/router';
 import { PRICE_WORLD, PriceWorld, priceTrackerPath } from '@app/common/api/price-world';
 import { PageMeta } from '@app/common/seo/page-meta-strategy';
-import { faqPage } from '@app/common/seo/structured-data';
 import { itemDetailResolver } from './item-detail/item-detail-resolver';
 import { itemDetailMeta } from './item-detail/item-detail-meta';
 import { itemTradedResolver } from './item-detail/item-traded-resolver';
 import { browseItemsResolver } from './browse/browse-items-resolver';
 import { browseMeta } from './browse/browse-meta';
-import { HARDCORE_FAQ } from './hardcore-faq';
 import { priceBreadcrumbs } from './price-breadcrumbs';
 import { TableKind } from './tables/price-table';
 
@@ -22,17 +20,18 @@ export const priceTrackerRoutes = (world: PriceWorld): Route[] => {
   return [
     {
       title: hardcore
-        ? 'OSRS Hardcore Worlds GE Prices: Live Grand Exchange prices'
+        ? 'OSRS Hardcore Worlds GE Tracker: Live Grand Exchange prices'
         : 'OSRS Price Tracker: Live Grand Exchange prices',
       path: '',
       pathMatch: 'full',
       data: {
         meta: {
           description: hardcore
-            ? 'Check live OSRS Hardcore Worlds prices for every Grand Exchange item: buy and sell prices, margins, buy limits, alch values and price history. Hardcore Worlds have their own Grand Exchange.'
+            ? 'The OSRS Hardcore Worlds GE tracker: live prices for every Grand Exchange item, with buy and sell prices, margins, buy limits, alch values and price history. Hardcore Worlds have their own Grand Exchange.'
             : 'Check live OSRS prices for every Grand Exchange item: buy and sell prices, margins, buy limits, alch values and price history, all in the OSRS Price Tracker.',
           canonicalPath: path,
-          jsonLd: [priceBreadcrumbs(world), ...(hardcore ? [faqPage(HARDCORE_FAQ)] : [])],
+          // No FAQPage: Google stopped showing FAQ rich results in May 2026
+          jsonLd: [priceBreadcrumbs(world)],
         } satisfies PageMeta,
       },
       loadComponent: () => import('./price-tracker'),
@@ -74,7 +73,7 @@ export const priceTrackerRoutes = (world: PriceWorld): Route[] => {
     },
     {
       title: hardcore
-        ? 'New on the Hardcore Worlds GE'
+        ? 'New OSRS Hardcore Worlds GE items'
         : 'New OSRS Items: The latest Grand Exchange additions and prices',
       path: 'new',
       pathMatch: 'full',

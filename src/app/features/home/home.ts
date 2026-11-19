@@ -21,7 +21,7 @@ import OsrsNewsCard from './osrs-news-card/osrs-news-card';
 import { PreviewCard } from './preview-card';
 import { LucideArrowRight } from '@lucide/angular';
 import { PlayerType } from '@osrs-tracker/models';
-import { PriceWorld } from '@app/common/api/price-world';
+import { PriceWorld, priceTrackerPath } from '@app/common/api/price-world';
 
 type SearchMode = 'player' | 'item' | 'hcw';
 
@@ -61,6 +61,8 @@ export default class Home {
     // The title names the world in full; the visible label stays in the accessible name
     { value: 'hcw', label: 'HCW items', title: 'Hardcore Worlds items', icon: { name: PlayerType.HardcoreMain } },
   ];
+
+  readonly hardcorePricesPath = priceTrackerPath('hardcore');
 
   readonly searchMode = signal<SearchMode>('player');
   readonly itemWorld = computed<PriceWorld>(() => (this.searchMode() === 'hcw' ? 'hardcore' : 'main'));
