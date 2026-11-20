@@ -1,3 +1,11 @@
+## 2026-11-20
+
+### Behind the scenes
+
+- Dependency updates: the code checks that run on every change are on their latest versions, which brings a security fix
+  for a library they use to match file names. It only runs while the site is built and checked, so nothing changes for
+  visitors.
+
 ## 2026-11-19
 
 ### Hardcore Worlds
